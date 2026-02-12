@@ -48,10 +48,9 @@ export async function logWorkout(
       return { error: "کاربر وارد نشده است" };
     }
 
-    console.log("✅ Authenticated user:", {
-      id: user.id,
-      email: user.email,
-    });
+    if (process.env.NODE_ENV === "development") {
+      console.log("✅ Authenticated user ID:", user.id);
+    }
 
     // دریافت اطلاعات از فرم
     const sportId = formData.get("sport_type_id");
