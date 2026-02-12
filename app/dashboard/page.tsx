@@ -37,28 +37,42 @@ export default async function Dashboard() {
   }
 
   const supabase = await createClient();
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", user.id)
     .single();
 
+  if (profileError) {
+    console.error("Error fetching profile:", profileError);
+    throw new Error("Failed to load profile");
+  }
+
   const today = new Date();
   const dayIndex = today.getDay();
   const dateString = today.toISOString().split("T")[0];
 
-  const { data: todaysPlan } = await supabase
+  const { data: todaysPlan, error: todaysPlanError } = await supabase
     .from("schedules")
     .select("*, sport_types(name, xp_multiplier, id)")
     .eq("user_id", user.id)
     .eq("day_of_week", dayIndex);
 
-  const { data: todaysLogs } = await supabase
+  if (todaysPlanError) {
+    console.error("Error fetching today's plan:", todaysPlanError);
+    throw new Error("Failed to load today's plan");
+  }
+
+  const { data: todaysLogs, error: todaysLogsError } = await supabase
     .from("logs")
     .select("sport_type_id")
     .eq("user_id", user.id)
     .eq("date", dateString);
 
+  if (todaysLogsError) {
+    console.error("Error fetching today's logs:", todaysLogsError);
+    throw new Error("Failed to load today's logs");
+  }
   const isCompleted = (sportId: number) => {
     return todaysLogs?.some((log) => log.sport_type_id === sportId);
   };
