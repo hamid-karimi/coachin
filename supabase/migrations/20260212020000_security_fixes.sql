@@ -25,18 +25,12 @@ BEGIN
   INTO v_invite
   FROM public.coach_invite_codes
   WHERE code = UPPER(TRIM(p_invite_code))
+  AND is_active = true
+  AND (expires_at IS NULL OR expires_at > now())
   LIMIT 1;
 
   IF NOT FOUND THEN
     RETURN jsonb_build_object('error', 'Invalid invite code');
-  END IF;
-
-  IF NOT v_invite.is_active THEN
-    RETURN jsonb_build_object('error', 'Invite code is inactive');
-  END IF;
-
-  IF v_invite.expires_at IS NOT NULL AND v_invite.expires_at <= now() THEN
-    RETURN jsonb_build_object('error', 'Invite code has expired');
   END IF;
 
   IF v_invite.coach_id = v_user_id THEN
@@ -222,8 +216,7 @@ BEGIN
   LEFT JOIN public.weekly_leaderboard wl ON p.id = wl.user_id
   WHERE
     (p_user_ids IS NULL OR p.id = ANY(p_user_ids))
-    AND wl.weekly_xp IS NOT NULL
-  ORDER BY weekly_xp DESC
+  ORDER BY COALESCE(wl.weekly_xp, 0) DESC
   LIMIT p_limit;
 END;
 $$;
