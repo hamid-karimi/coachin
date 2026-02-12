@@ -13,7 +13,7 @@ const SubmitButton = ({ isPending }: { isPending: boolean }) => (
       ${
         isPending
           ? "bg-gray-400 cursor-not-allowed"
-          : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-500/30"
+          : "bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-500/30"
       }`}>
     {isPending ? "⏳ در حال ثبت..." : "انجام شد ✅"}
   </button>
@@ -49,11 +49,12 @@ export function WorkoutCard({
         const randomInRange = (min: number, max: number) =>
           Math.random() * (max - min) + min;
 
-        const interval: NodeJS.Timeout = setInterval(function () {
+        const interval: ReturnType<typeof setInterval> = setInterval(function () {
           const timeLeft = animationEnd - Date.now();
 
           if (timeLeft <= 0) {
-            return clearInterval(interval);
+            clearInterval(interval);
+            return;
           }
 
           const particleCount = 50 * (timeLeft / duration);
@@ -68,6 +69,8 @@ export function WorkoutCard({
             origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
           });
         }, 250);
+
+        return () => clearInterval(interval);
       });
     }
   }, [justCompleted]);
