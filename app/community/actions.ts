@@ -1,5 +1,6 @@
 "use server";
 
+import { randomInt } from "crypto";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
@@ -21,7 +22,7 @@ function randomChunk(length = 6) {
   let output = "";
 
   for (let i = 0; i < length; i += 1) {
-    output += alphabet[Math.floor(Math.random() * alphabet.length)];
+    output += alphabet[randomInt(0, alphabet.length)];
   }
 
   return output;
@@ -121,43 +122,17 @@ export async function connectCoachByCodeAction(
     return { error: "نقش فعلی شما اجازه افزودن مربی ندارد" };
   }
 
-  const { data: invite, error: inviteError } = await supabase
-    .from("coach_invite_codes")
-    .select("coach_id, sport_type_id, is_active, expires_at")
-    .eq("code", code)
-    .single();
+  const { data: result, error: rpcError } = await supabase.rpc(
+    "join_coaching_via_invite_code",
+    { p_invite_code: code }
+  );
 
-  if (inviteError || !invite) {
-    return { error: "کد دعوت معتبر نیست" };
+  if (rpcError) {
+    return { error: `خطا در اتصال مربی: ${rpcError.message}` };
   }
 
-  if (!invite.is_active) {
-    return { error: "این کد دعوت غیرفعال شده است" };
-  }
-
-  if (invite.expires_at && new Date(invite.expires_at) <= new Date()) {
-    return { error: "اعتبار این کد دعوت تمام شده است" };
-  }
-
-  if (invite.coach_id === user.id) {
-    return { error: "نمی‌توانید خودتان را به‌عنوان مربی اضافه کنید" };
-  }
-
-  const { error: relationError } = await supabase
-    .from("coaching_relationships")
-    .insert({
-      coach_id: invite.coach_id,
-      student_id: user.id,
-      sport_type_id: invite.sport_type_id,
-      status: "active",
-    });
-
-  if (relationError) {
-    if (relationError.code === "23505") {
-      return { error: "این رابطه مربیگری از قبل ثبت شده است" };
-    }
-
-    return { error: `خطا در اتصال مربی: ${relationError.message}` };
+  if (result?.error) {
+    return { error: result.error };
   }
 
   revalidatePath("/community");
@@ -182,36 +157,17 @@ export async function joinClubByInviteAction(
     return { error: "برای این عملیات باید وارد حساب شوید" };
   }
 
-  const { data: club, error: clubError } = await supabase
-    .from("clubs")
-    .select("id")
-    .eq("invite_code", inviteCode)
-    .single();
+  const { data: result, error: rpcError } = await supabase.rpc(
+    "join_club_via_invite_code",
+    { p_invite_code: inviteCode }
+  );
 
-  if (clubError || !club?.id) {
-    return { error: "کد دعوت کلاب معتبر نیست" };
+  if (rpcError) {
+    return { error: `خطا در عضویت کلاب: ${rpcError.message}` };
   }
 
-  const { data: existingPrimary } = await supabase
-    .from("club_members")
-    .select("id")
-    .eq("user_id", user.id)
-    .eq("is_primary", true)
-    .maybeSingle();
-
-  const { error: insertError } = await supabase.from("club_members").insert({
-    club_id: club.id,
-    user_id: user.id,
-    role: "member",
-    is_primary: !existingPrimary,
-  });
-
-  if (insertError) {
-    if (insertError.code === "23505") {
-      return { error: "شما قبلاً عضو این کلاب شده‌اید" };
-    }
-
-    return { error: `خطا در عضویت کلاب: ${insertError.message}` };
+  if (result?.error) {
+    return { error: result.error };
   }
 
   revalidatePath("/community");
