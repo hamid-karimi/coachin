@@ -1,9 +1,33 @@
 import { createClient, getUser } from "@/lib/supabase/server";
-import { LogoutButton } from "./logout-button";
-import { AuthContainer } from "../auth/components/auth-container";
 import { redirect } from "next/navigation";
+import { AuthContainer } from "../auth/components/auth-container";
+import { LogoutButton } from "./logout-button";
+import { WorkoutCard } from "./components/workout-card";
 
 export const dynamic = "force-dynamic";
+
+const DAY_NAMES = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+type SportTypeSummary = {
+  id?: number | null;
+  name?: string | null;
+  xp_multiplier?: number | null;
+};
+
+export type ScheduleItem = {
+  id: number;
+  sport_type_id: number;
+  time?: string | null;
+  sport_types?: SportTypeSummary | null;
+};
 
 export default async function Dashboard() {
   const user = await getUser();
@@ -13,9 +37,55 @@ export default async function Dashboard() {
   }
 
   const supabase = await createClient();
-  const { data: sportTypes, error } = await supabase
-    .from("sport_types")
-    .select("*");
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  if (profileError) {
+    console.error("Error fetching profile:", profileError);
+    throw new Error("Failed to load profile");
+  }
+
+  const today = new Date();
+  const dayIndex = today.getDay();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  const dateString = `${year}-${month}-${day}`;
+
+  const { data: todaysPlan, error: todaysPlanError } = await supabase
+    .from("schedules")
+    .select("*, sport_types(name, xp_multiplier, id)")
+    .eq("user_id", user.id)
+    .eq("day_of_week", dayIndex);
+
+  if (todaysPlanError) {
+    console.error("Error fetching today's plan:", todaysPlanError);
+    throw new Error("Failed to load today's plan");
+  }
+
+  const { data: todaysLogs, error: todaysLogsError } = await supabase
+    .from("logs")
+    .select("sport_type_id")
+    .eq("user_id", user.id)
+    .eq("date", dateString);
+
+  if (todaysLogsError) {
+    console.error("Error fetching today's logs:", todaysLogsError);
+    throw new Error("Failed to load today's logs");
+  }
+  
+  // Note: This completion check uses sport_type_id only. If a user has multiple
+  // schedule items for the same sport type in one day, completing one will mark
+  // all as completed. To fix this, the logs table should include a schedule_id
+  // field to track completion per schedule item.
+  const isCompleted = (sportId: number) => {
+    return todaysLogs?.some((log) => log.sport_type_id === sportId);
+  };
+
+  const xpProgress = ((profile?.xp || 0) % 1000) / 10;
 
   return (
     <AuthContainer>
@@ -30,44 +100,77 @@ export default async function Dashboard() {
               <p className='text-slate-600 dark:text-slate-400 mt-1'>
                 Welcome back, {user.user_metadata.full_name || user.email}!
               </p>
+              <p className='text-sm text-slate-500 dark:text-slate-400 mt-2'>
+                {DAY_NAMES[dayIndex]}, {dateString}
+              </p>
             </div>
             <LogoutButton />
           </div>
 
           {/* Content */}
-          <div>
-            <h2 className='text-2xl font-bold text-slate-900 dark:text-white mb-6'>
-              Sport Types 🏃‍♂️
-            </h2>
-
-            {error ? (
-              <div className='p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'>
-                <p className='text-sm text-red-800 dark:text-red-200'>
-                  Error: {error.message}
+          <div className='grid gap-6'>
+            <div className='grid gap-4 sm:grid-cols-3'>
+              <div className='rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/40 p-4'>
+                <p className='text-sm text-slate-600 dark:text-slate-300'>
+                  Streak
+                </p>
+                <p className='text-2xl font-bold text-slate-900 dark:text-white'>
+                  {profile?.current_streak || 0}
                 </p>
               </div>
-            ) : sportTypes && sportTypes.length > 0 ? (
-              <div className='grid gap-4'>
-                {sportTypes.map((sport) => (
+              <div className='rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/40 p-4'>
+                <p className='text-sm text-slate-600 dark:text-slate-300'>
+                  Level
+                </p>
+                <p className='text-2xl font-bold text-slate-900 dark:text-white'>
+                  {profile?.level || 1}
+                </p>
+              </div>
+              <div className='rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/40 p-4'>
+                <p className='text-sm text-slate-600 dark:text-slate-300'>
+                  Total XP
+                </p>
+                <p className='text-2xl font-bold text-slate-900 dark:text-white'>
+                  {profile?.xp || 0}
+                </p>
+              </div>
+              <div className='rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 sm:col-span-3'>
+                <div className='flex justify-between text-sm text-slate-600 dark:text-slate-300'>
+                  <span>Progress to next level</span>
+                  <span>{Math.round(xpProgress)}%</span>
+                </div>
+                <div className='mt-3 h-3 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden'>
                   <div
-                    key={sport.id}
-                    className='flex justify-between items-center p-5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 hover:shadow-md transition-shadow'>
-                    <span className='text-lg font-medium text-slate-900 dark:text-white'>
-                      {sport.name}
-                    </span>
-                    <span className='px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 font-medium text-sm'>
-                      x{sport.xp_multiplier}
-                    </span>
-                  </div>
-                ))}
+                    className='h-full bg-linear-to-r from-blue-500 to-indigo-500 transition-all duration-500'
+                    style={{ width: `${xpProgress}%` }}
+                  />
+                </div>
               </div>
-            ) : (
-              <div className='text-center py-12'>
-                <p className='text-slate-500 dark:text-slate-400'>
-                  No sport types found
-                </p>
-              </div>
-            )}
+            </div>
+
+            <div>
+              <h2 className='text-2xl font-bold text-slate-900 dark:text-white mb-6'>
+                ماموریت‌های امروز
+              </h2>
+
+              {!todaysPlan || todaysPlan.length === 0 ? (
+                <div className='text-center p-8'>استراحت</div>
+              ) : (
+                <div className='grid gap-4'>
+                  {todaysPlan.map((item: ScheduleItem) => {
+                    const completed = isCompleted(item.sport_type_id);
+
+                    return (
+                      <WorkoutCard
+                        key={item.id}
+                        item={item}
+                        completed={completed}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
