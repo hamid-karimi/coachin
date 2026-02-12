@@ -122,63 +122,34 @@ const buildWeeklyLeaderboard = async (
   supabase: Awaited<ReturnType<typeof createClient>>,
   userIds?: string[],
 ): Promise<ProfileSummary[]> => {
-  const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-
-  let txQuery = supabase
-    .from("xp_transactions")
-    .select("user_id, amount")
-    .gte("created_at", since);
-
-  if (userIds && userIds.length > 0) {
-    txQuery = txQuery.in("user_id", userIds);
-  }
-
-  const { data: txRows } = await txQuery;
-
-  if (!txRows || txRows.length === 0) {
-    return [];
-  }
-
-  const totals = new Map<string, number>();
-
-  for (const row of txRows) {
-    const userId = row.user_id as string | null;
-    const amount = Number(row.amount ?? 0);
-
-    if (!userId) {
-      continue;
+  const { data: leaderboard, error } = await supabase.rpc(
+    "get_weekly_leaderboard",
+    {
+      p_user_ids: userIds ?? null,
+      p_limit: 50,
     }
+  );
 
-    totals.set(userId, (totals.get(userId) ?? 0) + amount);
-  }
-
-  const leaderboardUserIds = [...totals.keys()];
-
-  if (leaderboardUserIds.length === 0) {
+  if (error || !leaderboard) {
     return [];
   }
 
-  const { data: profiles } = await supabase
-    .from("profiles")
-    .select("id, email, full_name, avatar_url, level")
-    .in("id", leaderboardUserIds);
-
-  if (!profiles) {
-    return [];
-  }
-
-  return profiles
-    .filter((profile) => profile?.id)
-    .map((profile) => ({
-      id: profile.id,
-      email: profile.email ?? null,
-      full_name: profile.full_name ?? null,
-      avatar_url: profile.avatar_url ?? null,
-      level: profile.level ?? 1,
-      xp: totals.get(profile.id) ?? 0,
-      weekly_xp: totals.get(profile.id) ?? 0,
-    }))
-    .sort((first, second) => (second.weekly_xp ?? 0) - (first.weekly_xp ?? 0));
+  return leaderboard.map((row: {
+    id: string;
+    email: string | null;
+    full_name: string | null;
+    avatar_url: string | null;
+    level: number | null;
+    weekly_xp: number | null;
+  }) => ({
+    id: row.id,
+    email: row.email ?? null,
+    full_name: row.full_name ?? null,
+    avatar_url: row.avatar_url ?? null,
+    level: row.level ?? 1,
+    xp: row.weekly_xp ?? 0,
+    weekly_xp: row.weekly_xp ?? 0,
+  }));
 };
 
 const normalizeClubMemberships = (
@@ -373,10 +344,7 @@ export async function getCommunityData(
     (discoverProfilesData as ProfileSummary[] | null) ?? [];
   const discoverHasNextPage = discoverProfiles.length > discoverPageSize;
 
-  const globalLeaderboard = (await buildWeeklyLeaderboard(supabase)).slice(
-    0,
-    50,
-  );
+  const globalLeaderboard = await buildWeeklyLeaderboard(supabase);
   const myCircleLeaderboard = followingIds.length
     ? await buildWeeklyLeaderboard(supabase, followingIds)
     : [];
