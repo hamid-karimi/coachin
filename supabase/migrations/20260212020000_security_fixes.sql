@@ -180,8 +180,7 @@ SELECT
   SUM(amount) as weekly_xp
 FROM public.xp_transactions
 WHERE created_at >= (now() - interval '7 days')
-GROUP BY user_id
-ORDER BY weekly_xp DESC;
+GROUP BY user_id;
 
 -- Grant select on view to authenticated users
 GRANT SELECT ON public.weekly_leaderboard TO authenticated;
@@ -200,7 +199,7 @@ RETURNS TABLE (
   weekly_xp bigint
 )
 LANGUAGE plpgsql
-SECURITY DEFINER
+STABLE
 SET search_path = public
 AS $$
 BEGIN
