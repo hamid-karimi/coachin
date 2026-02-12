@@ -215,7 +215,7 @@ BEGIN
   LEFT JOIN public.weekly_leaderboard wl ON p.id = wl.user_id
   WHERE
     (p_user_ids IS NULL OR p.id = ANY(p_user_ids))
-  ORDER BY COALESCE(wl.weekly_xp, 0) DESC
+  ORDER BY 6 DESC
   LIMIT p_limit;
 END;
 $$;
