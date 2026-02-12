@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef } from "react";
 import { logWorkout } from "../actions";
-import { ScheduleItem } from "../page";
+import type { ScheduleItem } from "../page";
 
 // استایل ساده برای دکمه لودینگ
 const SubmitButton = ({ isPending }: { isPending: boolean }) => (
