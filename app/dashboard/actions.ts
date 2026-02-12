@@ -171,7 +171,6 @@ export async function logWorkout(
 
     console.log("✅ Profile updated successfully");
 
-    revalidatePath("/dashboard");
     return { success: true, earnedXp };
   } catch (err) {
     console.error("❌ Unexpected error in logWorkout:", err);

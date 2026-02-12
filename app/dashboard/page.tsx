@@ -138,23 +138,13 @@ export default async function Dashboard() {
                   {todaysPlan.map((item: ScheduleItem) => {
                     const completed = isCompleted(item.sport_type_id);
 
-                    if (completed) {
-                      return (
-                        <div
-                          key={item.id}
-                          className='rounded-2xl border border-emerald-200 bg-emerald-50 p-6'>
-                          <h3 className='text-xl font-bold text-emerald-800'>
-                            {item.sport_types?.name}
-                          </h3>
-                          <div className='mt-2 text-emerald-700 font-medium bg-emerald-100 w-fit px-3 py-1 rounded-lg'>
-                            انجام شد ✅
-                          </div>
-                        </div>
-                      );
-                    }
-
-                    // اینجا به جای فرم مستقیم، از کلاینت کامپوننت استفاده می‌کنیم
-                    return <WorkoutCard key={item.id} item={item} />;
+                    return (
+                      <WorkoutCard
+                        key={item.id}
+                        item={item}
+                        completed={completed}
+                      />
+                    );
                   })}
                 </div>
               )}
