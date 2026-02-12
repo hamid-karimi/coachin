@@ -54,7 +54,7 @@ export async function logWorkout(
 
     // دریافت اطلاعات از فرم
     const sportId = formData.get("sport_type_id");
-    const duration = Number(formData.get("duration") || 60); // پیش‌فرض ۶۰ دقیقه
+    const duration = 60; // مدت زمان پیش‌فرض ۶۰ دقیقه
     const notes = formData.get("notes") as string;
     const date = new Date().toISOString().split("T")[0]; // تاریخ امروز YYYY-MM-DD
 
