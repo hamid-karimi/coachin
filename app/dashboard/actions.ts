@@ -12,24 +12,16 @@ export type DashboardActionState = {
 };
 
 export async function logoutAction(): Promise<DashboardActionState> {
-  try {
-    const supabase = await createClient();
+  const supabase = await createClient();
 
-    const { error } = await supabase.auth.signOut();
+  const { error } = await supabase.auth.signOut();
 
-    if (error) {
-      console.error("Logout error:", error);
-      return { error: error.message };
-    }
-
-    revalidatePath("/", "layout");
-  } catch (err) {
-    console.error("Unexpected logout error:", err);
-    return {
-      error: err instanceof Error ? err.message : "خطای غیرمنتظره",
-    };
+  if (error) {
+    console.error("Logout error:", error);
+    return { error: error.message };
   }
-  
+
+  revalidatePath("/", "layout");
   redirect("/auth/login");
 }
 
