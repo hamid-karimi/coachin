@@ -50,7 +50,10 @@ export default async function Dashboard() {
 
   const today = new Date();
   const dayIndex = today.getDay();
-  const dateString = today.toISOString().split("T")[0];
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  const dateString = `${year}-${month}-${day}`;
 
   const { data: todaysPlan, error: todaysPlanError } = await supabase
     .from("schedules")
@@ -73,6 +76,11 @@ export default async function Dashboard() {
     console.error("Error fetching today's logs:", todaysLogsError);
     throw new Error("Failed to load today's logs");
   }
+  
+  // Note: This completion check uses sport_type_id only. If a user has multiple
+  // schedule items for the same sport type in one day, completing one will mark
+  // all as completed. To fix this, the logs table should include a schedule_id
+  // field to track completion per schedule item.
   const isCompleted = (sportId: number) => {
     return todaysLogs?.some((log) => log.sport_type_id === sportId);
   };

@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export type DashboardActionState = {
   error?: string;
@@ -11,24 +12,17 @@ export type DashboardActionState = {
 };
 
 export async function logoutAction(): Promise<DashboardActionState> {
-  try {
-    const supabase = await createClient();
+  const supabase = await createClient();
 
-    const { error } = await supabase.auth.signOut();
+  const { error } = await supabase.auth.signOut();
 
-    if (error) {
-      console.error("Logout error:", error);
-      return { error: error.message };
-    }
-
-    revalidatePath("/", "layout");
-    return { success: true, redirect: "/auth/login" };
-  } catch (err) {
-    console.error("Unexpected logout error:", err);
-    return {
-      error: err instanceof Error ? err.message : "خطای غیرمنتظره",
-    };
+  if (error) {
+    console.error("Logout error:", error);
+    return { error: error.message };
   }
+
+  revalidatePath("/", "layout");
+  redirect("/auth/login");
 }
 
 export async function logWorkout(
@@ -56,7 +50,11 @@ export async function logWorkout(
     const sportId = formData.get("sport_type_id");
     const duration = 60; // مدت زمان پیش‌فرض ۶۰ دقیقه
     const notes = formData.get("notes") as string;
-    const date = new Date().toISOString().split("T")[0]; // تاریخ امروز YYYY-MM-DD
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    const date = `${year}-${month}-${day}`;
 
     if (!sportId) {
       return { error: "لطفا نوع ورزش را انتخاب کنید" };
