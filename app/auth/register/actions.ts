@@ -1,11 +1,11 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 
 export type RegisterState = {
   error?: string;
   success?: boolean;
+  redirect?: string;
 };
 
 export async function registerAction(
@@ -72,7 +72,7 @@ export async function registerAction(
     // If email confirmation is enabled, user needs to verify email
     if (data.session) {
       // User is automatically logged in
-      redirect("/dashboard");
+      return { success: true, redirect: "/dashboard" };
     } else {
       // User needs to verify email
       return {
