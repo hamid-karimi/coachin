@@ -18,7 +18,7 @@ export type DiscoverProfilesInput = {
 };
 
 export function sanitizeDiscoverSearchTerm(value: string) {
-  return value.replace(/[%(),]/g, " ").trim();
+  return value.replace(/[%(),;'"\\]/g, " ").trim();
 }
 
 export function normalizeDiscoverLimit(
