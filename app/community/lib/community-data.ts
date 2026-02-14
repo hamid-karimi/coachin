@@ -434,12 +434,18 @@ export async function getCommunityData(
     .map((row) => row.following_id)
     .filter((id): id is string => Boolean(id));
 
-  const { data: followingProfilesData } = followingIds.length
-    ? await supabase
-        .from("profiles")
-        .select("id, email, full_name, xp, level, avatar_url")
-        .in("id", followingIds)
-    : { data: [] as ProfileSummary[] };
+  let followingProfilesData: ProfileSummary[] = [];
+
+  if (isLeaderboardsTab) {
+    const { data: rawFollowingProfilesData } = followingIds.length
+      ? await supabase
+          .from("profiles")
+          .select("id, email, full_name, xp, level, avatar_url")
+          .in("id", followingIds)
+      : { data: [] as ProfileSummary[] };
+
+    followingProfilesData = rawFollowingProfilesData ?? [];
+  }
 
   const discoverProfiles = isLeaderboardsTab
     ? await (async () => {
@@ -516,7 +522,7 @@ export async function getCommunityData(
     clubMemberships: normalizedClubMemberships,
     primaryClubName: primaryClubMembership?.club_name ?? null,
     followingUserIds: followingIds,
-    followingProfiles: (followingProfilesData as ProfileSummary[] | null) ?? [],
+    followingProfiles: followingProfilesData,
     discoverProfiles: discoverProfiles.slice(0, discoverPageSize),
     discoverPage,
     discoverHasNextPage,

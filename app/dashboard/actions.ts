@@ -175,7 +175,10 @@ export async function logWorkout(
       });
 
     if (xpTransactionError) {
-      console.error("⚠️ Error inserting xp transaction:", xpTransactionError);
+      console.error("❌ Error inserting xp transaction:", xpTransactionError);
+      return {
+        error: `ورزش ثبت شد اما خطا در ثبت تراکنش XP: ${xpTransactionError.message}`,
+      };
     }
 
     console.log("✅ Profile updated successfully");
