@@ -56,7 +56,9 @@ EXCEPTION
     -- This handles the invite_code uniqueness constraint
     RETURN jsonb_build_object('error', 'Invite code already exists');
   WHEN OTHERS THEN
-    RETURN jsonb_build_object('error', SQLERRM);
+    -- Log error server-side but return generic message
+    RAISE WARNING 'Club creation failed: %', SQLERRM;
+    RETURN jsonb_build_object('error', 'خطا در ساخت کلاب');
 END;
 $$;
 
@@ -118,7 +120,9 @@ BEGIN
   );
 EXCEPTION
   WHEN OTHERS THEN
-    RETURN jsonb_build_object('error', SQLERRM);
+    -- Log error server-side but return generic message
+    RAISE WARNING 'Schedule assignment failed: %', SQLERRM;
+    RETURN jsonb_build_object('error', 'خطا در جایگزینی برنامه');
 END;
 $$;
 

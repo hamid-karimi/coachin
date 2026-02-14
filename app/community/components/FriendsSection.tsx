@@ -2,7 +2,7 @@
 
 import type { ProfileSummary } from "../types";
 import { FollowToggleButton } from "./FollowToggleButton";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface FriendsSectionProps {
   followingProfiles: ProfileSummary[];
@@ -27,7 +27,7 @@ export function FriendsSection({
     useState<string[]>(followingUserIds);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [requestSequence, setRequestSequence] = useState(0);
+  const requestSequenceRef = useRef(0);
 
   const mergedFollowingIds = useMemo(() => {
     return new Set([...followingUserIds, ...remoteFollowingIds]);
@@ -45,8 +45,7 @@ export function FriendsSection({
       return () => controller.abort();
     }
 
-    const currentSequence = requestSequence + 1;
-    setRequestSequence(currentSequence);
+    const currentSequence = ++requestSequenceRef.current;
 
     const timeoutId = window.setTimeout(async () => {
       try {
@@ -72,13 +71,10 @@ export function FriendsSection({
         };
 
         // Only update state if this is still the most recent request
-        setRequestSequence((latestSequence) => {
-          if (currentSequence === latestSequence) {
-            setProfiles(payload.profiles ?? []);
-            setRemoteFollowingIds(payload.followingUserIds ?? []);
-          }
-          return latestSequence;
-        });
+        if (currentSequence === requestSequenceRef.current) {
+          setProfiles(payload.profiles ?? []);
+          setRemoteFollowingIds(payload.followingUserIds ?? []);
+        }
       } catch (error) {
         if ((error as Error).name === "AbortError") {
           return;
