@@ -434,7 +434,7 @@ export async function getCommunityData(
     .map((row) => row.following_id)
     .filter((id): id is string => Boolean(id));
 
-  let followingProfilesData: ProfileSummary[] | null = null;
+  let followingProfilesData: ProfileSummary[] = [];
 
   if (isLeaderboardsTab) {
     const { data: rawFollowingProfilesData } = followingIds.length
@@ -444,7 +444,7 @@ export async function getCommunityData(
           .in("id", followingIds)
       : { data: [] as ProfileSummary[] };
     
-    followingProfilesData = rawFollowingProfilesData;
+    followingProfilesData = rawFollowingProfilesData ?? [];
   }
 
   const discoverProfiles = isLeaderboardsTab
@@ -522,7 +522,7 @@ export async function getCommunityData(
     clubMemberships: normalizedClubMemberships,
     primaryClubName: primaryClubMembership?.club_name ?? null,
     followingUserIds: followingIds,
-    followingProfiles: (followingProfilesData as ProfileSummary[] | null) ?? [],
+    followingProfiles: followingProfilesData,
     discoverProfiles: discoverProfiles.slice(0, discoverPageSize),
     discoverPage,
     discoverHasNextPage,
