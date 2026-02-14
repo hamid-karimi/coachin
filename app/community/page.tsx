@@ -108,11 +108,7 @@ export default async function CommunityPage({
         {activeTab === "leaderboards" && (
           <section className='space-y-4'>
             <LeaderboardSection
-              leaderboard={
-                leaderboardDataByBoard[
-                  activeBoard as "global" | "club" | "circle"
-                ]
-              }
+              leaderboard={leaderboardDataByBoard[activeBoard]}
               currentUserId={user.id}
               title={leaderboardTitleByBoard[activeBoard]}
               emptyMessage={leaderboardEmptyByBoard[activeBoard]}

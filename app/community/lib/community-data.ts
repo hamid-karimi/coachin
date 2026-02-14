@@ -434,12 +434,18 @@ export async function getCommunityData(
     .map((row) => row.following_id)
     .filter((id): id is string => Boolean(id));
 
-  const { data: followingProfilesData } = followingIds.length
-    ? await supabase
-        .from("profiles")
-        .select("id, email, full_name, xp, level, avatar_url")
-        .in("id", followingIds)
-    : { data: [] as ProfileSummary[] };
+  let followingProfilesData: ProfileSummary[] | null = null;
+
+  if (isLeaderboardsTab) {
+    const { data: rawFollowingProfilesData } = followingIds.length
+      ? await supabase
+          .from("profiles")
+          .select("id, email, full_name, xp, level, avatar_url")
+          .in("id", followingIds)
+      : { data: [] as ProfileSummary[] };
+    
+    followingProfilesData = rawFollowingProfilesData;
+  }
 
   const discoverProfiles = isLeaderboardsTab
     ? await (async () => {
