@@ -138,11 +138,43 @@ const buildWeeklyLeaderboard = async (
     },
   );
 
+  const buildTotalXpLeaderboard = async (): Promise<ProfileSummary[]> => {
+    let query = supabase
+      .from("profiles")
+      .select("id, email, full_name, avatar_url, level, xp")
+      .order("xp", { ascending: false })
+      .limit(50);
+
+    if (userIds && userIds.length > 0) {
+      query = query.in("id", userIds);
+    }
+
+    const { data: totalXpRows } = await query;
+
+    return (totalXpRows ?? []).map(
+      (row: {
+        id: string;
+        email: string | null;
+        full_name: string | null;
+        avatar_url: string | null;
+        level: number | null;
+        xp: number | null;
+      }) => ({
+        id: row.id,
+        email: row.email ?? null,
+        full_name: row.full_name ?? null,
+        avatar_url: row.avatar_url ?? null,
+        level: row.level ?? 1,
+        xp: row.xp ?? 0,
+      }),
+    );
+  };
+
   if (error || !leaderboard) {
-    return [];
+    return buildTotalXpLeaderboard();
   }
 
-  return leaderboard.map(
+  const mappedWeeklyLeaderboard = leaderboard.map(
     (row: {
       id: string;
       email: string | null;
@@ -160,6 +192,16 @@ const buildWeeklyLeaderboard = async (
       weekly_xp: row.weekly_xp ?? 0,
     }),
   );
+
+  const hasAnyWeeklyXp = mappedWeeklyLeaderboard.some(
+    (row) => (row.weekly_xp ?? 0) > 0,
+  );
+
+  if (!hasAnyWeeklyXp) {
+    return buildTotalXpLeaderboard();
+  }
+
+  return mappedWeeklyLeaderboard;
 };
 
 const normalizeClubMemberships = (
