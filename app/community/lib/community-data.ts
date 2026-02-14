@@ -443,7 +443,7 @@ export async function getCommunityData(
           .select("id, email, full_name, xp, level, avatar_url")
           .in("id", followingIds)
       : { data: [] as ProfileSummary[] };
-    
+
     followingProfilesData = rawFollowingProfilesData ?? [];
   }
 
