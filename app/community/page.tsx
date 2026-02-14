@@ -4,19 +4,23 @@ import { CoachesSection } from "./components/CoachesSection";
 import { FriendsSection } from "./components/FriendsSection";
 import { LeaderboardSection } from "./components/LeaderboardSection";
 import { StudentsSection } from "./components/StudentsSection";
+import { TabNavigation } from "./components/TabNavigation";
 import { getCommunityData } from "./lib/community-data";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
 type CommunityPageProps = {
-  searchParams?: {
+  searchParams?: Promise<{
     tab?: string;
     board?: string;
     q?: string;
     page?: string;
-  };
+  }>;
 };
+
+type ActiveTab = "leaderboards" | "coaching";
+type ActiveBoard = "global" | "club" | "circle";
 
 const COACH_ENABLED_ROLES = new Set(["coach", "both", "admin"]);
 const STUDENT_ENABLED_ROLES = new Set(["student", "both", "admin"]);
@@ -24,6 +28,16 @@ const STUDENT_ENABLED_ROLES = new Set(["student", "both", "admin"]);
 export default async function CommunityPage({
   searchParams,
 }: CommunityPageProps) {
+  const resolvedSearchParams = await searchParams;
+
+  const activeTab: ActiveTab =
+    resolvedSearchParams?.tab === "coaching" ? "coaching" : "leaderboards";
+  const activeBoard: ActiveBoard =
+    resolvedSearchParams?.board === "club" ||
+    resolvedSearchParams?.board === "circle"
+      ? resolvedSearchParams.board
+      : "global";
+
   const {
     user,
     profileRole,
@@ -43,16 +57,13 @@ export default async function CommunityPage({
     discoverPage,
     discoverHasNextPage,
   } = await getCommunityData(
-    searchParams?.q,
-    Number(searchParams?.page ?? "1"),
+    resolvedSearchParams?.q,
+    Number(resolvedSearchParams?.page ?? "1"),
+    {
+      activeTab,
+      activeBoard,
+    },
   );
-
-  const activeTab =
-    searchParams?.tab === "coaching" ? "coaching" : "leaderboards";
-  const activeBoard =
-    searchParams?.board === "club" || searchParams?.board === "circle"
-      ? searchParams.board
-      : "global";
 
   const canCoach = COACH_ENABLED_ROLES.has(profileRole);
   const canStudy = STUDENT_ENABLED_ROLES.has(profileRole);
@@ -93,127 +104,78 @@ export default async function CommunityPage({
         </p>
       </header>
 
-      <nav className='flex flex-wrap gap-2'>
-        <Link
-          href='/community?tab=leaderboards&board=global'
-          className={`px-4 py-2 rounded-xl text-sm font-medium ${
-            activeTab === "leaderboards"
-              ? "bg-blue-600 text-white"
-              : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200"
-          }`}>
-          Leaderboards 🏆
-        </Link>
-        <Link
-          href='/community?tab=coaching'
-          className={`px-4 py-2 rounded-xl text-sm font-medium ${
-            activeTab === "coaching"
-              ? "bg-purple-600 text-white"
-              : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200"
-          }`}>
-          Coaching Zone 🎓
-        </Link>
-      </nav>
+      <TabNavigation activeTab={activeTab} activeBoard={activeBoard}>
+        {activeTab === "leaderboards" && (
+          <section className='space-y-4'>
+            <LeaderboardSection
+              leaderboard={
+                leaderboardDataByBoard[
+                  activeBoard as "global" | "club" | "circle"
+                ]
+              }
+              currentUserId={user.id}
+              title={leaderboardTitleByBoard[activeBoard]}
+              emptyMessage={leaderboardEmptyByBoard[activeBoard]}
+              enableFollowActions
+              followingUserIds={followingUserIds}
+            />
 
-      {activeTab === "leaderboards" && (
-        <section className='space-y-4'>
-          <div className='flex flex-wrap gap-2'>
-            <Link
-              href='/community?tab=leaderboards&board=global'
-              className={`px-3 py-1.5 rounded-lg text-sm ${
-                activeBoard === "global"
-                  ? "bg-yellow-500 text-white"
-                  : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200"
-              }`}>
-              Global League
-            </Link>
-            <Link
-              href='/community?tab=leaderboards&board=club'
-              className={`px-3 py-1.5 rounded-lg text-sm ${
-                activeBoard === "club"
-                  ? "bg-yellow-500 text-white"
-                  : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200"
-              }`}>
-              My Club
-            </Link>
-            <Link
-              href='/community?tab=leaderboards&board=circle'
-              className={`px-3 py-1.5 rounded-lg text-sm ${
-                activeBoard === "circle"
-                  ? "bg-yellow-500 text-white"
-                  : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200"
-              }`}>
-              My Circle
-            </Link>
-          </div>
+            <ClubMembershipSection memberships={clubMemberships} />
 
-          <LeaderboardSection
-            leaderboard={
-              leaderboardDataByBoard[
-                activeBoard as "global" | "club" | "circle"
-              ]
-            }
-            currentUserId={user.id}
-            title={leaderboardTitleByBoard[activeBoard]}
-            emptyMessage={leaderboardEmptyByBoard[activeBoard]}
-            enableFollowActions
-            followingUserIds={followingUserIds}
-          />
+            <FriendsSection
+              followingProfiles={followingProfiles}
+              discoverProfiles={discoverProfiles}
+              followingUserIds={followingUserIds}
+              searchTerm={resolvedSearchParams?.q ?? ""}
+              discoverPage={discoverPage}
+              discoverHasNextPage={discoverHasNextPage}
+            />
+          </section>
+        )}
 
-          <ClubMembershipSection memberships={clubMemberships} />
-
-          <FriendsSection
-            followingProfiles={followingProfiles}
-            discoverProfiles={discoverProfiles}
-            followingUserIds={followingUserIds}
-            searchTerm={searchParams?.q ?? ""}
-            discoverPage={discoverPage}
-            discoverHasNextPage={discoverHasNextPage}
-          />
-        </section>
-      )}
-
-      {activeTab === "coaching" && (
-        <section className='space-y-5'>
-          <div className='grid gap-5 lg:grid-cols-2'>
-            {(canStudy || profileRole === "student") && (
-              <CoachesSection coaches={coaches} canManage={canStudy} />
-            )}
-            {(canCoach || profileRole === "coach") && (
-              <StudentsSection
-                students={students}
-                sportTypes={sportTypes}
-                inviteCodes={coachInviteCodes}
-                canManage={canCoach}
-              />
-            )}
-          </div>
-
-          {(canCoach || profileRole === "coach") && (
-            <div className='space-y-4'>
-              <LeaderboardSection
-                leaderboard={coachStudentsLeaderboard}
-                currentUserId={user.id}
-                title='📈 لیدربرد داخلی شاگردها'
-                emptyMessage='هنوز شاگردی برای رتبه‌بندی وجود ندارد.'
-              />
-
-              <div className='flex justify-end'>
-                <Link
-                  href='/dashboard'
-                  className='rounded-xl bg-indigo-600 text-white px-4 py-2 text-sm font-medium'>
-                  Create Workout for Student
-                </Link>
-              </div>
+        {activeTab === "coaching" && (
+          <section className='space-y-5'>
+            <div className='grid gap-5 lg:grid-cols-2'>
+              {(canStudy || profileRole === "student") && (
+                <CoachesSection coaches={coaches} canManage={canStudy} />
+              )}
+              {(canCoach || profileRole === "coach") && (
+                <StudentsSection
+                  students={students}
+                  sportTypes={sportTypes}
+                  inviteCodes={coachInviteCodes}
+                  canManage={canCoach}
+                />
+              )}
             </div>
-          )}
-        </section>
-      )}
 
-      {!canCoach && !canStudy && (
-        <p className='text-sm text-amber-600 dark:text-amber-400'>
-          نقش فعلی شما برای بخش Coaching محدود است.
-        </p>
-      )}
+            {(canCoach || profileRole === "coach") && (
+              <div className='space-y-4'>
+                <LeaderboardSection
+                  leaderboard={coachStudentsLeaderboard}
+                  currentUserId={user.id}
+                  title='📈 لیدربرد داخلی شاگردها'
+                  emptyMessage='هنوز شاگردی برای رتبه‌بندی وجود ندارد.'
+                />
+
+                <div className='flex justify-end'>
+                  <Link
+                    href='/dashboard'
+                    className='rounded-xl bg-indigo-600 text-white px-4 py-2 text-sm font-medium'>
+                    Create Workout for Student
+                  </Link>
+                </div>
+              </div>
+            )}
+          </section>
+        )}
+
+        {!canCoach && !canStudy && (
+          <p className='text-sm text-amber-600 dark:text-amber-400'>
+            نقش فعلی شما برای بخش Coaching محدود است.
+          </p>
+        )}
+      </TabNavigation>
     </CommunityLayout>
   );
 }
