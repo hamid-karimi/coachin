@@ -2,7 +2,7 @@
 
 import type { ProfileSummary } from "../types";
 import { FollowToggleButton } from "./FollowToggleButton";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface FriendsSectionProps {
   followingProfiles: ProfileSummary[];
@@ -27,6 +27,7 @@ export function FriendsSection({
     useState<string[]>(followingUserIds);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const requestSequenceRef = useRef(0);
 
   const mergedFollowingIds = useMemo(() => {
     return new Set([...followingUserIds, ...remoteFollowingIds]);
@@ -43,6 +44,8 @@ export function FriendsSection({
       setErrorMessage(null);
       return () => controller.abort();
     }
+
+    const currentSequence = ++requestSequenceRef.current;
 
     const timeoutId = window.setTimeout(async () => {
       try {
@@ -67,8 +70,11 @@ export function FriendsSection({
           followingUserIds?: string[];
         };
 
-        setProfiles(payload.profiles ?? []);
-        setRemoteFollowingIds(payload.followingUserIds ?? []);
+        // Only update state if this is still the most recent request
+        if (currentSequence === requestSequenceRef.current) {
+          setProfiles(payload.profiles ?? []);
+          setRemoteFollowingIds(payload.followingUserIds ?? []);
+        }
       } catch (error) {
         if ((error as Error).name === "AbortError") {
           return;
@@ -84,7 +90,7 @@ export function FriendsSection({
       controller.abort();
       window.clearTimeout(timeoutId);
     };
-  }, [query, followingUserIds]);
+  }, [query]);
 
   return (
     <section className='bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700 p-6 shadow-sm space-y-4'>
@@ -180,7 +186,6 @@ export function FriendsSection({
                       {displayName(profile)}
                     </p>
                     <p className='text-xs text-slate-500 dark:text-slate-400'>
-                      {profile.email ? `${profile.email} · ` : ""}
                       Level {profile.level ?? 1} ·{" "}
                       {(profile.xp ?? 0).toLocaleString()} XP
                     </p>
@@ -189,14 +194,11 @@ export function FriendsSection({
                     targetUserId={profile.id}
                     isFollowing={isFollowing}
                     onSuccess={() => {
-                      setProfiles((currentProfiles) =>
-                        currentProfiles.filter(
-                          (currentProfile) => currentProfile.id !== profile.id,
-                        ),
-                      );
                       setRemoteFollowingIds((currentFollowingIds) =>
                         currentFollowingIds.includes(profile.id)
-                          ? currentFollowingIds
+                          ? currentFollowingIds.filter(
+                              (id) => id !== profile.id,
+                            )
                           : [...currentFollowingIds, profile.id],
                       );
                     }}

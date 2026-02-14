@@ -41,8 +41,9 @@ export async function GET(request: Request) {
   });
 
   if (error) {
+    console.error("Discover query failed:", error);
     return NextResponse.json(
-      { error: `Discover query failed: ${error.message}` },
+      { error: "خطا در جستجو" },
       { status: 400 },
     );
   }

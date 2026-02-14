@@ -196,72 +196,41 @@ export async function createClubAction(
     return { error: "برای این عملیات باید وارد حساب شوید" };
   }
 
-  let inviteCode = "";
-  let createdClubId: string | null = null;
-
+  // Try up to 5 times to create a club with a unique invite code
   for (let attempt = 0; attempt < 5; attempt += 1) {
-    inviteCode = normalizeCode(`CLUB-${randomChunk(6)}`);
+    const inviteCode = normalizeCode(`CLUB-${randomChunk(6)}`);
 
-    const { data: createdClub, error: createClubError } = await supabase
-      .from("clubs")
-      .insert({
-        name: rawName,
-        description: rawDescription || null,
-        owner_id: user.id,
-        invite_code: inviteCode,
-      })
-      .select("id")
-      .single();
+    const { data: result, error: rpcError } = await supabase.rpc(
+      "create_club_with_owner",
+      {
+        p_club_name: rawName,
+        p_club_description: rawDescription,
+        p_invite_code: inviteCode,
+      },
+    );
 
-    if (createClubError) {
-      if (
-        createClubError.code === "23505" &&
-        createClubError.message.includes("invite_code")
-      ) {
-        continue;
-      }
-
-      return { error: `خطا در ساخت کلاب: ${createClubError.message}` };
+    if (rpcError) {
+      return { error: `خطا در ساخت کلاب: ${rpcError.message}` };
     }
 
-    createdClubId = createdClub.id;
-    break;
-  }
+    if (result?.error) {
+      // If it's an invite code conflict, retry with a new code
+      if (result.error.includes("Invite code already exists")) {
+        continue;
+      }
+      return { error: result.error };
+    }
 
-  if (!createdClubId) {
-    return { error: "در ساخت کد دعوت یکتا برای کلاب خطا رخ داد" };
-  }
+    // Success!
+    revalidatePath("/community");
 
-  const { data: hasPrimaryClub } = await supabase
-    .from("club_members")
-    .select("id")
-    .eq("user_id", user.id)
-    .eq("is_primary", true)
-    .limit(1)
-    .maybeSingle();
-
-  const { error: addOwnerMembershipError } = await supabase
-    .from("club_members")
-    .insert({
-      club_id: createdClubId,
-      user_id: user.id,
-      role: "owner",
-      is_primary: !hasPrimaryClub?.id,
-    });
-
-  if (addOwnerMembershipError) {
-    await supabase.from("clubs").delete().eq("id", createdClubId);
     return {
-      error: `خطا در افزودن شما به کلاب: ${addOwnerMembershipError.message}`,
+      success: true,
+      message: `کلاب ساخته شد. کد دعوت: ${result.invite_code}`,
     };
   }
 
-  revalidatePath("/community");
-
-  return {
-    success: true,
-    message: `کلاب ساخته شد. کد دعوت: ${inviteCode}`,
-  };
+  return { error: "در ساخت کد دعوت یکتا برای کلاب خطا رخ داد" };
 }
 
 export async function setPrimaryClubAction(
@@ -395,61 +364,20 @@ export async function assignCoachWeeklyPlanAction(
     return { error: "نقش فعلی شما اجازه ارسال برنامه به شاگرد را ندارد" };
   }
 
-  const { data: relation, error: relationError } = await supabase
-    .from("coaching_relationships")
-    .select("id")
-    .eq("coach_id", user.id)
-    .eq("student_id", studentId)
-    .eq("status", "active")
-    .limit(1)
-    .maybeSingle();
+  // Use the atomic RPC function that handles everything in a transaction
+  const { data: result, error: rpcError } = await supabase.rpc(
+    "assign_coach_schedule_to_student",
+    { p_student_id: studentId },
+  );
 
-  if (relationError || !relation?.id) {
-    return { error: "رابطه مربیگری فعال با این شاگرد یافت نشد" };
-  }
-
-  const { data: coachSchedules, error: coachSchedulesError } = await supabase
-    .from("schedules")
-    .select("day_of_week, sport_type_id, time")
-    .eq("user_id", user.id)
-    .order("day_of_week", { ascending: true });
-
-  if (coachSchedulesError) {
+  if (rpcError) {
     return {
-      error: `خطا در خواندن برنامه مربی: ${coachSchedulesError.message}`,
+      error: `خطا در جایگزینی برنامه شاگرد: ${rpcError.message}`,
     };
   }
 
-  if (!coachSchedules || coachSchedules.length === 0) {
-    return { error: "ابتدا برنامه هفتگی خودت را در onboarding تکمیل کن" };
-  }
-
-  const { error: deleteStudentSchedulesError } = await supabase
-    .from("schedules")
-    .delete()
-    .eq("user_id", studentId);
-
-  if (deleteStudentSchedulesError) {
-    return {
-      error: `خطا در جایگزینی برنامه شاگرد: ${deleteStudentSchedulesError.message}`,
-    };
-  }
-
-  const schedulesToInsert = coachSchedules.map((item) => ({
-    user_id: studentId,
-    day_of_week: item.day_of_week,
-    sport_type_id: item.sport_type_id,
-    time: item.time,
-  }));
-
-  const { error: insertSchedulesError } = await supabase
-    .from("schedules")
-    .insert(schedulesToInsert);
-
-  if (insertSchedulesError) {
-    return {
-      error: `خطا در ذخیره برنامه برای شاگرد: ${insertSchedulesError.message}`,
-    };
+  if (result?.error) {
+    return { error: result.error };
   }
 
   revalidatePath("/community");

@@ -446,18 +446,16 @@ export async function getCommunityData(
   }
 
   const discoverProfiles = isLeaderboardsTab
-    ? searchTerm?.trim()
-      ? (
-          await fetchDiscoverProfiles(supabase, {
-            currentUserId: user.id,
-            searchTerm: searchTerm?.trim(),
-            range: {
-              from: discoverFrom,
-              to: discoverTo,
-            },
-          })
-        ).profiles
-      : []
+    ? (
+        await fetchDiscoverProfiles(supabase, {
+          currentUserId: user.id,
+          searchTerm: searchTerm?.trim(),
+          range: {
+            from: discoverFrom,
+            to: discoverTo,
+          },
+        })
+      ).profiles
     : [];
   const discoverHasNextPage = discoverProfiles.length > discoverPageSize;
 
