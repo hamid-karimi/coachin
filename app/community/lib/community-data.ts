@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
+import { fetchDiscoverProfiles } from "./discover";
 import type {
   ClubMembershipSummary,
   CoachInviteCodeSummary,
@@ -174,7 +175,7 @@ const buildWeeklyLeaderboard = async (
     return buildTotalXpLeaderboard();
   }
 
-  const mappedWeeklyLeaderboard = leaderboard.map(
+  const mappedWeeklyLeaderboard: ProfileSummary[] = leaderboard.map(
     (row: {
       id: string;
       email: string | null;
@@ -265,9 +266,6 @@ const normalizeInviteCodes = (
     };
   });
 };
-
-const sanitizeSearchTerm = (value: string) =>
-  value.replace(/[%(),]/g, " ").trim();
 
 export async function getCommunityData(
   searchTerm?: string,
@@ -448,28 +446,16 @@ export async function getCommunityData(
   }
 
   const discoverProfiles = isLeaderboardsTab
-    ? await (async () => {
-        let discoverQuery = supabase
-          .from("profiles")
-          .select("id, email, full_name, xp, level, avatar_url")
-          .neq("id", user.id)
-          .order("xp", { ascending: false })
-          .range(discoverFrom, discoverTo);
-
-        const trimmedSearchTerm = searchTerm?.trim();
-        const safeSearchTerm = trimmedSearchTerm
-          ? sanitizeSearchTerm(trimmedSearchTerm)
-          : "";
-
-        if (safeSearchTerm) {
-          discoverQuery = discoverQuery.or(
-            `full_name.ilike.%${safeSearchTerm}%,email.ilike.%${safeSearchTerm}%`,
-          );
-        }
-
-        const { data: discoverProfilesData } = await discoverQuery;
-        return (discoverProfilesData as ProfileSummary[] | null) ?? [];
-      })()
+    ? (
+        await fetchDiscoverProfiles(supabase, {
+          currentUserId: user.id,
+          searchTerm: searchTerm?.trim(),
+          range: {
+            from: discoverFrom,
+            to: discoverTo,
+          },
+        })
+      ).profiles
     : [];
   const discoverHasNextPage = discoverProfiles.length > discoverPageSize;
 

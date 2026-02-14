@@ -124,7 +124,7 @@ export async function connectCoachByCodeAction(
 
   const { data: result, error: rpcError } = await supabase.rpc(
     "join_coaching_via_invite_code",
-    { p_invite_code: code }
+    { p_invite_code: code },
   );
 
   if (rpcError) {
@@ -159,7 +159,7 @@ export async function joinClubByInviteAction(
 
   const { data: result, error: rpcError } = await supabase.rpc(
     "join_club_via_invite_code",
-    { p_invite_code: inviteCode }
+    { p_invite_code: inviteCode },
   );
 
   if (rpcError) {
@@ -173,6 +173,64 @@ export async function joinClubByInviteAction(
   revalidatePath("/community");
 
   return { success: true, message: "با موفقیت به کلاب پیوستید" };
+}
+
+export async function createClubAction(
+  _prevState: CommunityActionState,
+  formData: FormData,
+): Promise<CommunityActionState> {
+  const rawName = String(formData.get("club_name") ?? "").trim();
+  const rawDescription = String(formData.get("club_description") ?? "").trim();
+
+  if (!rawName) {
+    return { error: "نام کلاب را وارد کنید" };
+  }
+
+  if (rawName.length < 3) {
+    return { error: "نام کلاب باید حداقل ۳ کاراکتر باشد" };
+  }
+
+  const { supabase, user } = await getCurrentUserAndRole();
+
+  if (!user) {
+    return { error: "برای این عملیات باید وارد حساب شوید" };
+  }
+
+  // Try up to 5 times to create a club with a unique invite code
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const inviteCode = normalizeCode(`CLUB-${randomChunk(6)}`);
+
+    const { data: result, error: rpcError } = await supabase.rpc(
+      "create_club_with_owner",
+      {
+        p_club_name: rawName,
+        p_club_description: rawDescription,
+        p_invite_code: inviteCode,
+      },
+    );
+
+    if (rpcError) {
+      return { error: `خطا در ساخت کلاب: ${rpcError.message}` };
+    }
+
+    if (result?.error) {
+      // If it's an invite code conflict, retry with a new code
+      if (result.error.includes("Invite code already exists")) {
+        continue;
+      }
+      return { error: result.error };
+    }
+
+    // Success!
+    revalidatePath("/community");
+
+    return {
+      success: true,
+      message: `کلاب ساخته شد. کد دعوت: ${result.invite_code}`,
+    };
+  }
+
+  return { error: "در ساخت کد دعوت یکتا برای کلاب خطا رخ داد" };
 }
 
 export async function setPrimaryClubAction(
@@ -284,6 +342,51 @@ export async function leaveClubAction(
   revalidatePath("/community");
 
   return { success: true, message: "از کلاب خارج شدید" };
+}
+
+export async function assignCoachWeeklyPlanAction(
+  _prevState: CommunityActionState,
+  formData: FormData,
+): Promise<CommunityActionState> {
+  const studentId = String(formData.get("student_id") ?? "").trim();
+
+  if (!studentId) {
+    return { error: "شاگرد معتبر نیست" };
+  }
+
+  const { supabase, user, role } = await getCurrentUserAndRole();
+
+  if (!user) {
+    return { error: "برای این عملیات باید وارد حساب شوید" };
+  }
+
+  if (!COACH_ENABLED_ROLES.has(role ?? "")) {
+    return { error: "نقش فعلی شما اجازه ارسال برنامه به شاگرد را ندارد" };
+  }
+
+  // Use the atomic RPC function that handles everything in a transaction
+  const { data: result, error: rpcError } = await supabase.rpc(
+    "assign_coach_schedule_to_student",
+    { p_student_id: studentId },
+  );
+
+  if (rpcError) {
+    return {
+      error: `خطا در جایگزینی برنامه شاگرد: ${rpcError.message}`,
+    };
+  }
+
+  if (result?.error) {
+    return { error: result.error };
+  }
+
+  revalidatePath("/community");
+  revalidatePath("/dashboard");
+
+  return {
+    success: true,
+    message: "برنامه هفتگی شما برای شاگرد جایگزین شد",
+  };
 }
 
 export async function followUserAction(

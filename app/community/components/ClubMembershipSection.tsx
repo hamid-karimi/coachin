@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import type { ClubMembershipSummary } from "../types";
 import {
   type CommunityActionState,
+  createClubAction,
   joinClubByInviteAction,
   leaveClubAction,
   setPrimaryClubAction,
@@ -18,6 +19,10 @@ interface ClubMembershipSectionProps {
 export function ClubMembershipSection({
   memberships,
 }: ClubMembershipSectionProps) {
+  const [createState, createAction, creating] = useActionState(
+    createClubAction,
+    initialState,
+  );
   const [state, joinAction, pending] = useActionState(
     joinClubByInviteAction,
     initialState,
@@ -26,10 +31,7 @@ export function ClubMembershipSection({
     setPrimaryClubAction,
     initialState,
   );
-  const [, leaveAction] = useActionState(
-    leaveClubAction,
-    initialState,
-  );
+  const [, leaveAction] = useActionState(leaveClubAction, initialState);
 
   return (
     <section className='bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700 p-6 shadow-sm space-y-4'>
@@ -41,6 +43,46 @@ export function ClubMembershipSection({
           می‌تونی چند کلاب داشته باشی و یکی رو به‌عنوان primary انتخاب کنی.
         </p>
       </header>
+
+      <form action={createAction} className='space-y-3'>
+        <label className='text-xs text-slate-500 dark:text-slate-400 block'>
+          ساخت کلاب جدید
+        </label>
+        <div className='grid gap-2 md:grid-cols-3'>
+          <input
+            name='club_name'
+            type='text'
+            required
+            minLength={3}
+            placeholder='نام کلاب'
+            className='md:col-span-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm'
+          />
+          <input
+            name='club_description'
+            type='text'
+            placeholder='توضیح کوتاه (اختیاری)'
+            className='md:col-span-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm'
+          />
+          <button
+            type='submit'
+            disabled={creating}
+            className='md:col-span-1 rounded-lg bg-indigo-600 text-white px-4 py-2 text-sm disabled:opacity-60'>
+            {creating ? "در حال ساخت..." : "ایجاد کلاب"}
+          </button>
+        </div>
+
+        {createState.error && (
+          <p className='text-xs text-red-600 dark:text-red-400'>
+            {createState.error}
+          </p>
+        )}
+
+        {createState.success && createState.message && (
+          <p className='text-xs text-emerald-600 dark:text-emerald-400'>
+            {createState.message}
+          </p>
+        )}
+      </form>
 
       <form action={joinAction} className='space-y-3'>
         <label className='text-xs text-slate-500 dark:text-slate-400 block'>
