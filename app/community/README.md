@@ -13,6 +13,7 @@
   - نمایش شاگردهای من
   - تولید کد دعوت مربیگری per coach + sport
   - اتصال شاگرد به مربی از طریق کد دعوت
+  - ارسال برنامه هفتگی مربی برای شاگرد (جایگزینی برنامه فعلی شاگرد)
 - **Friends Management**
   - لیست Following مستقل
   - جستجوی کاربران و Follow/Unfollow
@@ -85,6 +86,7 @@
 - My Circle صرفاً بر پایه `social_graph` محاسبه می‌شود.
 - Invite مربیگری به‌صورت **per-coach+sport** است.
 - CTA `Create Workout for Student` فعلاً placeholder است و به workflow اصلی هدایت می‌کند.
+- دکمه `ارسال برنامه` در لیست شاگردان، برنامه هفتگی مربی را برای همان شاگرد کپی می‌کند.
 - لیدربرد ابتدا از RPC `get_weekly_leaderboard` می‌خواند.
 - اگر RPC خطا بدهد یا همه `weekly_xp` ها صفر باشند، fallback به `profiles.xp` (Total XP) انجام می‌شود تا نمایش امتیاز با dashboard هم‌راستا بماند.
 - برای همگام بودن داده هفتگی، ثبت تمرین در dashboard باید در `xp_transactions` نیز رکورد ایجاد کند.

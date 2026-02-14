@@ -1,6 +1,7 @@
 import type { StudentRelationship } from "../types";
 import type { CoachInviteCodeSummary, SportTypeSummary } from "../types";
 import { GenerateInviteCodeForm } from "./GenerateInviteCodeForm";
+import { AssignPlanButton } from "./AssignPlanButton";
 
 interface StudentsSectionProps {
   students: StudentRelationship[];
@@ -59,7 +60,10 @@ export function StudentsSection({
                   </div>
                 </div>
                 <div className='text-sm font-bold text-slate-700 dark:text-slate-200'>
-                  {student.xp?.toLocaleString() ?? 0} XP
+                  <p className='text-right mb-1'>
+                    {student.xp?.toLocaleString() ?? 0} XP
+                  </p>
+                  {canManage && <AssignPlanButton studentId={student.id} />}
                 </div>
               </li>
             );

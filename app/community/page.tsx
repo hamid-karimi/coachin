@@ -54,8 +54,6 @@ export default async function CommunityPage({
     followingUserIds,
     followingProfiles,
     discoverProfiles,
-    discoverPage,
-    discoverHasNextPage,
   } = await getCommunityData(
     resolvedSearchParams?.q,
     Number(resolvedSearchParams?.page ?? "1"),
@@ -123,8 +121,6 @@ export default async function CommunityPage({
               discoverProfiles={discoverProfiles}
               followingUserIds={followingUserIds}
               searchTerm={resolvedSearchParams?.q ?? ""}
-              discoverPage={discoverPage}
-              discoverHasNextPage={discoverHasNextPage}
             />
           </section>
         )}

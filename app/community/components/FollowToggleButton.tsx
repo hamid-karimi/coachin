@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useEffect } from "react";
 import {
   type CommunityActionState,
   followUserAction,
@@ -12,14 +13,22 @@ const initialState: CommunityActionState = {};
 interface FollowToggleButtonProps {
   targetUserId: string;
   isFollowing: boolean;
+  onSuccess?: () => void;
 }
 
 export function FollowToggleButton({
   targetUserId,
   isFollowing,
+  onSuccess,
 }: FollowToggleButtonProps) {
   const action = isFollowing ? unfollowUserAction : followUserAction;
   const [state, formAction, pending] = useActionState(action, initialState);
+
+  useEffect(() => {
+    if (state.success) {
+      onSuccess?.();
+    }
+  }, [state.success, onSuccess]);
 
   return (
     <form action={formAction} className='flex flex-col items-end gap-1'>
