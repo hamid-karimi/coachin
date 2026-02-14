@@ -29,6 +29,24 @@
 - `app/community/lib/community-data.ts`: لایه بارگذاری داده‌ها
 - `app/community/components/*`: سکشن‌ها و فرم‌های UI
 - `app/community/types.ts`: تایپ‌های مشترک ماژول
+- `app/community/components/TabNavigation.tsx`: ناوبری client-side تب‌ها با `useTransition` + spinner روی دکمه‌ها
+- `app/community/loading.tsx`: اسکلتون اولیه مسیر
+
+## Navigation & Loading UX
+
+- سوییچ تب‌ها (`leaderboards` / `coaching`) و بردها (`global` / `club` / `circle`) با `router.push` در `TabNavigation` انجام می‌شود.
+- هنگام pending شدن transition:
+  - URL بلافاصله آپدیت می‌شود.
+  - روی دکمه تب/برد مقصد spinner نمایش داده می‌شود.
+  - محتوای سکشن با اسکلتون موقت جایگزین می‌شود تا کاربر جریان لود را ببیند.
+- `loading.tsx` مخصوص initial route load است؛ برای searchParams transitions، لودینگ داخلی `TabNavigation` استفاده می‌شود.
+
+## Data Loading Strategy (Performance)
+
+- در `getCommunityData` فقط دیتای لازم برای `activeTab` و `activeBoard` fetch می‌شود.
+- تب `coaching` فقط داده‌های مربیگری (`coaching_relationships`, `coach_invite_codes`, `sport_types`) را می‌گیرد.
+- تب `leaderboards` فقط داده‌های لیدربرد/اجتماعی (`club_members`, `social_graph`, discover/following`) را می‌گیرد.
+- این تفکیک باعث کاهش queryهای غیرضروری و بهبود زمان سوییچ تب شده است.
 
 ## Database Dependencies
 
@@ -67,3 +85,6 @@
 - My Circle صرفاً بر پایه `social_graph` محاسبه می‌شود.
 - Invite مربیگری به‌صورت **per-coach+sport** است.
 - CTA `Create Workout for Student` فعلاً placeholder است و به workflow اصلی هدایت می‌کند.
+- لیدربرد ابتدا از RPC `get_weekly_leaderboard` می‌خواند.
+- اگر RPC خطا بدهد یا همه `weekly_xp` ها صفر باشند، fallback به `profiles.xp` (Total XP) انجام می‌شود تا نمایش امتیاز با dashboard هم‌راستا بماند.
+- برای همگام بودن داده هفتگی، ثبت تمرین در dashboard باید در `xp_transactions` نیز رکورد ایجاد کند.

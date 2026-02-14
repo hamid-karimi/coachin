@@ -166,6 +166,21 @@ export async function logWorkout(
       };
     }
 
+    const { error: xpTransactionError } = await supabase
+      .from("xp_transactions")
+      .insert({
+        user_id: user.id,
+        amount: earnedXp,
+        reason: `workout_log:${sportId}`,
+      });
+
+    if (xpTransactionError) {
+      console.error("❌ Error inserting xp transaction:", xpTransactionError);
+      return {
+        error: `ورزش ثبت شد اما خطا در ثبت تراکنش XP: ${xpTransactionError.message}`,
+      };
+    }
+
     console.log("✅ Profile updated successfully");
 
     return { success: true, earnedXp };

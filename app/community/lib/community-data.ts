@@ -30,6 +30,14 @@ export type CommunityData = {
   discoverHasNextPage: boolean;
 };
 
+type CommunityTab = "leaderboards" | "coaching";
+type CommunityBoard = "global" | "club" | "circle";
+
+type CommunityDataOptions = {
+  activeTab?: CommunityTab;
+  activeBoard?: CommunityBoard;
+};
+
 const normalizeSportTypes = (
   rows: Array<{ id: number; name: string | null }> | null,
 ): SportTypeSummary[] => {
@@ -127,29 +135,73 @@ const buildWeeklyLeaderboard = async (
     {
       p_user_ids: userIds ?? null,
       p_limit: 50,
-    }
+    },
   );
 
+  const buildTotalXpLeaderboard = async (): Promise<ProfileSummary[]> => {
+    let query = supabase
+      .from("profiles")
+      .select("id, email, full_name, avatar_url, level, xp")
+      .order("xp", { ascending: false })
+      .limit(50);
+
+    if (userIds && userIds.length > 0) {
+      query = query.in("id", userIds);
+    }
+
+    const { data: totalXpRows } = await query;
+
+    return (totalXpRows ?? []).map(
+      (row: {
+        id: string;
+        email: string | null;
+        full_name: string | null;
+        avatar_url: string | null;
+        level: number | null;
+        xp: number | null;
+      }) => ({
+        id: row.id,
+        email: row.email ?? null,
+        full_name: row.full_name ?? null,
+        avatar_url: row.avatar_url ?? null,
+        level: row.level ?? 1,
+        xp: row.xp ?? 0,
+      }),
+    );
+  };
+
   if (error || !leaderboard) {
-    return [];
+    return buildTotalXpLeaderboard();
   }
 
-  return leaderboard.map((row: {
-    id: string;
-    email: string | null;
-    full_name: string | null;
-    avatar_url: string | null;
-    level: number | null;
-    weekly_xp: number | null;
-  }) => ({
-    id: row.id,
-    email: row.email ?? null,
-    full_name: row.full_name ?? null,
-    avatar_url: row.avatar_url ?? null,
-    level: row.level ?? 1,
-    xp: row.weekly_xp ?? 0,
-    weekly_xp: row.weekly_xp ?? 0,
-  }));
+  const mappedWeeklyLeaderboard = leaderboard.map(
+    (row: {
+      id: string;
+      email: string | null;
+      full_name: string | null;
+      avatar_url: string | null;
+      level: number | null;
+      weekly_xp: number | null;
+    }) => ({
+      id: row.id,
+      email: row.email ?? null,
+      full_name: row.full_name ?? null,
+      avatar_url: row.avatar_url ?? null,
+      level: row.level ?? 1,
+      xp: row.weekly_xp ?? 0,
+      weekly_xp: row.weekly_xp ?? 0,
+    }),
+  );
+
+  const hasAnyWeeklyXp = mappedWeeklyLeaderboard.some(
+    (row) => (row.weekly_xp ?? 0) > 0,
+  );
+
+  if (!hasAnyWeeklyXp) {
+    return buildTotalXpLeaderboard();
+  }
+
+  return mappedWeeklyLeaderboard;
 };
 
 const normalizeClubMemberships = (
@@ -220,6 +272,7 @@ const sanitizeSearchTerm = (value: string) =>
 export async function getCommunityData(
   searchTerm?: string,
   discoverPageInput = 1,
+  options: CommunityDataOptions = {},
 ): Promise<CommunityData> {
   const discoverPage = Number.isNaN(discoverPageInput)
     ? 1
@@ -227,6 +280,10 @@ export async function getCommunityData(
   const discoverPageSize = 10;
   const discoverFrom = (discoverPage - 1) * discoverPageSize;
   const discoverTo = discoverFrom + discoverPageSize;
+  const activeTab = options.activeTab ?? "leaderboards";
+  const activeBoard = options.activeBoard ?? "global";
+  const isCoachingTab = activeTab === "coaching";
+  const isLeaderboardsTab = activeTab === "leaderboards";
 
   const supabase = await createClient();
   const {
@@ -245,65 +302,128 @@ export async function getCommunityData(
 
   const profileRole = profileData?.role ?? "student";
 
-  const { data: coachesData } = await supabase
-    .from("coaching_relationships")
-    .select(
-      "coach:profiles(id, email, xp, level, full_name, avatar_url), sport_types(id, name)",
-    )
-    .eq("student_id", user.id)
-    .eq("status", "active");
+  let coachesData: Array<{
+    coach: ProfileSummary[];
+    sport_types: unknown;
+  }> | null = null;
+  let studentsData: Array<{
+    student: ProfileSummary[];
+    sport_types: unknown;
+  }> | null = null;
+  let sportTypesData: Array<{ id: number; name: string | null }> | null = null;
+  let coachInviteCodesData: Array<{
+    code: string;
+    is_active: boolean;
+    expires_at: string | null;
+    sport_types:
+      | { id: number; name: string }
+      | Array<{ id: number; name: string }>
+      | null;
+  }> | null = null;
 
-  const { data: studentsData } = await supabase
-    .from("coaching_relationships")
-    .select(
-      "student:profiles(id, email, xp, level, full_name, avatar_url), sport_types(id, name)",
-    )
-    .eq("coach_id", user.id)
-    .eq("status", "active");
+  if (isCoachingTab) {
+    const [{ data: rawCoachesData }, { data: rawStudentsData }] =
+      await Promise.all([
+        supabase
+          .from("coaching_relationships")
+          .select(
+            "coach:profiles(id, email, xp, level, full_name, avatar_url), sport_types(id, name)",
+          )
+          .eq("student_id", user.id)
+          .eq("status", "active"),
+        supabase
+          .from("coaching_relationships")
+          .select(
+            "student:profiles(id, email, xp, level, full_name, avatar_url), sport_types(id, name)",
+          )
+          .eq("coach_id", user.id)
+          .eq("status", "active"),
+      ]);
 
-  const { data: sportTypesData } = await supabase
-    .from("sport_types")
-    .select("id, name")
-    .order("name", { ascending: true });
+    coachesData =
+      (rawCoachesData as Array<{
+        coach: ProfileSummary[];
+        sport_types: unknown;
+      }> | null) ?? null;
+    studentsData =
+      (rawStudentsData as Array<{
+        student: ProfileSummary[];
+        sport_types: unknown;
+      }> | null) ?? null;
 
-  const { data: coachInviteCodesData } = await supabase
-    .from("coach_invite_codes")
-    .select("code, is_active, expires_at, sport_types(id, name)")
-    .eq("coach_id", user.id)
-    .order("updated_at", { ascending: false });
+    const [{ data: rawSportTypesData }, { data: rawCoachInviteCodesData }] =
+      await Promise.all([
+        supabase
+          .from("sport_types")
+          .select("id, name")
+          .order("name", { ascending: true }),
+        supabase
+          .from("coach_invite_codes")
+          .select("code, is_active, expires_at, sport_types(id, name)")
+          .eq("coach_id", user.id)
+          .order("updated_at", { ascending: false }),
+      ]);
 
-  const { data: clubMembershipsData } = await supabase
-    .from("club_members")
-    .select("club_id, is_primary, clubs(id, name, invite_code)")
-    .eq("user_id", user.id);
+    sportTypesData =
+      (rawSportTypesData as Array<{
+        id: number;
+        name: string | null;
+      }> | null) ?? null;
+    coachInviteCodesData =
+      (rawCoachInviteCodesData as Array<{
+        code: string;
+        is_active: boolean;
+        expires_at: string | null;
+        sport_types:
+          | { id: number; name: string }
+          | Array<{ id: number; name: string }>
+          | null;
+      }> | null) ?? null;
+  }
 
-  const { data: followingRows } = await supabase
-    .from("social_graph")
-    .select("following_id")
-    .eq("follower_id", user.id);
+  let clubMembershipsData: Array<{
+    club_id: string;
+    is_primary: boolean;
+    clubs:
+      | { id: string; name: string; invite_code: string }
+      | Array<{ id: string; name: string; invite_code: string }>
+      | null;
+  }> | null = null;
+  let followingRows: Array<{ following_id: string | null }> | null = null;
 
-  const normalizedCoaches = normalizeCoaches(
-    (coachesData as Array<{ coach: ProfileSummary[]; sport_types: unknown }>) ??
-      null,
-  );
+  if (isLeaderboardsTab) {
+    const [{ data: rawClubMembershipsData }, { data: rawFollowingRows }] =
+      await Promise.all([
+        supabase
+          .from("club_members")
+          .select("club_id, is_primary, clubs(id, name, invite_code)")
+          .eq("user_id", user.id),
+        supabase
+          .from("social_graph")
+          .select("following_id")
+          .eq("follower_id", user.id),
+      ]);
 
-  const normalizedStudents = normalizeStudents(
-    (studentsData as Array<{
-      student: ProfileSummary[];
-      sport_types: unknown;
-    }>) ?? null,
-  );
+    clubMembershipsData =
+      (rawClubMembershipsData as Array<{
+        club_id: string;
+        is_primary: boolean;
+        clubs:
+          | { id: string; name: string; invite_code: string }
+          | Array<{ id: string; name: string; invite_code: string }>
+          | null;
+      }> | null) ?? null;
+    followingRows =
+      (rawFollowingRows as Array<{ following_id: string | null }> | null) ??
+      null;
+  }
 
-  const normalizedClubMemberships = normalizeClubMemberships(
-    clubMembershipsData as Array<{
-      club_id: string;
-      is_primary: boolean;
-      clubs:
-        | { id: string; name: string; invite_code: string }
-        | Array<{ id: string; name: string; invite_code: string }>
-        | null;
-    }> | null,
-  );
+  const normalizedCoaches = normalizeCoaches(coachesData);
+
+  const normalizedStudents = normalizeStudents(studentsData);
+
+  const normalizedClubMemberships =
+    normalizeClubMemberships(clubMembershipsData);
 
   const primaryClubMembership =
     normalizedClubMemberships.find((membership) => membership.is_primary) ??
@@ -314,55 +434,73 @@ export async function getCommunityData(
     .map((row) => row.following_id)
     .filter((id): id is string => Boolean(id));
 
-  const { data: followingProfilesData } = followingIds.length
-    ? await supabase
-        .from("profiles")
-        .select("id, email, full_name, xp, level, avatar_url")
-        .in("id", followingIds)
-    : { data: [] as ProfileSummary[] };
+  let followingProfilesData: ProfileSummary[] = [];
 
-  let discoverQuery = supabase
-    .from("profiles")
-    .select("id, email, full_name, xp, level, avatar_url")
-    .neq("id", user.id)
-    .order("xp", { ascending: false })
-    .range(discoverFrom, discoverTo);
+  if (isLeaderboardsTab) {
+    const { data: rawFollowingProfilesData } = followingIds.length
+      ? await supabase
+          .from("profiles")
+          .select("id, email, full_name, xp, level, avatar_url")
+          .in("id", followingIds)
+      : { data: [] as ProfileSummary[] };
 
-  const trimmedSearchTerm = searchTerm?.trim();
-  const safeSearchTerm = trimmedSearchTerm
-    ? sanitizeSearchTerm(trimmedSearchTerm)
-    : "";
-
-  if (safeSearchTerm) {
-    discoverQuery = discoverQuery.or(
-      `full_name.ilike.%${safeSearchTerm}%,email.ilike.%${safeSearchTerm}%`,
-    );
+    followingProfilesData = rawFollowingProfilesData ?? [];
   }
 
-  const { data: discoverProfilesData } = await discoverQuery;
-  const discoverProfiles =
-    (discoverProfilesData as ProfileSummary[] | null) ?? [];
+  const discoverProfiles = isLeaderboardsTab
+    ? await (async () => {
+        let discoverQuery = supabase
+          .from("profiles")
+          .select("id, email, full_name, xp, level, avatar_url")
+          .neq("id", user.id)
+          .order("xp", { ascending: false })
+          .range(discoverFrom, discoverTo);
+
+        const trimmedSearchTerm = searchTerm?.trim();
+        const safeSearchTerm = trimmedSearchTerm
+          ? sanitizeSearchTerm(trimmedSearchTerm)
+          : "";
+
+        if (safeSearchTerm) {
+          discoverQuery = discoverQuery.or(
+            `full_name.ilike.%${safeSearchTerm}%,email.ilike.%${safeSearchTerm}%`,
+          );
+        }
+
+        const { data: discoverProfilesData } = await discoverQuery;
+        return (discoverProfilesData as ProfileSummary[] | null) ?? [];
+      })()
+    : [];
   const discoverHasNextPage = discoverProfiles.length > discoverPageSize;
 
-  const globalLeaderboard = await buildWeeklyLeaderboard(supabase);
-  const myCircleLeaderboard = followingIds.length
-    ? await buildWeeklyLeaderboard(supabase, followingIds)
-    : [];
-
+  let globalLeaderboard: ProfileSummary[] = [];
   let myClubLeaderboard: ProfileSummary[] = [];
+  let myCircleLeaderboard: ProfileSummary[] = [];
 
-  if (primaryClubMembership?.club_id) {
-    const { data: clubMemberRows } = await supabase
-      .from("club_members")
-      .select("user_id")
-      .eq("club_id", primaryClubMembership.club_id);
+  if (isLeaderboardsTab) {
+    if (activeBoard === "global") {
+      globalLeaderboard = await buildWeeklyLeaderboard(supabase);
+    }
 
-    const clubUserIds = (clubMemberRows ?? [])
-      .map((row) => row.user_id)
-      .filter((id): id is string => Boolean(id));
+    if (activeBoard === "circle") {
+      myCircleLeaderboard = followingIds.length
+        ? await buildWeeklyLeaderboard(supabase, followingIds)
+        : [];
+    }
 
-    if (clubUserIds.length > 0) {
-      myClubLeaderboard = await buildWeeklyLeaderboard(supabase, clubUserIds);
+    if (activeBoard === "club" && primaryClubMembership?.club_id) {
+      const { data: clubMemberRows } = await supabase
+        .from("club_members")
+        .select("user_id")
+        .eq("club_id", primaryClubMembership.club_id);
+
+      const clubUserIds = (clubMemberRows ?? [])
+        .map((row) => row.user_id)
+        .filter((id): id is string => Boolean(id));
+
+      if (clubUserIds.length > 0) {
+        myClubLeaderboard = await buildWeeklyLeaderboard(supabase, clubUserIds);
+      }
     }
   }
 
@@ -379,24 +517,12 @@ export async function getCommunityData(
     coaches: normalizedCoaches,
     students: normalizedStudents,
     coachStudentsLeaderboard,
-    sportTypes: normalizeSportTypes(
-      sportTypesData as Array<{ id: number; name: string | null }> | null,
-    ),
-    coachInviteCodes: normalizeInviteCodes(
-      coachInviteCodesData as Array<{
-        code: string;
-        is_active: boolean;
-        expires_at: string | null;
-        sport_types:
-          | { id: number; name: string }
-          | Array<{ id: number; name: string }>
-          | null;
-      }> | null,
-    ),
+    sportTypes: normalizeSportTypes(sportTypesData),
+    coachInviteCodes: normalizeInviteCodes(coachInviteCodesData),
     clubMemberships: normalizedClubMemberships,
     primaryClubName: primaryClubMembership?.club_name ?? null,
     followingUserIds: followingIds,
-    followingProfiles: (followingProfilesData as ProfileSummary[] | null) ?? [],
+    followingProfiles: followingProfilesData,
     discoverProfiles: discoverProfiles.slice(0, discoverPageSize),
     discoverPage,
     discoverHasNextPage,
