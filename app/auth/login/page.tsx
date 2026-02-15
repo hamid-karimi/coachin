@@ -27,6 +27,16 @@ export default function LoginPage() {
           </div>
 
           <form action={formAction} className='space-y-6'>
+            {state.error && (
+              <div
+                id='login-error'
+                role='alert'
+                aria-live='polite'
+                className='sr-only'>
+                {state.error}
+              </div>
+            )}
+
             <div>
               <label
                 htmlFor='email'
@@ -39,6 +49,7 @@ export default function LoginPage() {
                 type='email'
                 autoComplete='email'
                 required
+                aria-describedby={state.error ? "login-error" : undefined}
                 className='w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition'
                 placeholder='you@example.com'
               />
@@ -56,6 +67,7 @@ export default function LoginPage() {
                 type='password'
                 autoComplete='current-password'
                 required
+                aria-describedby={state.error ? "login-error" : undefined}
                 className='w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition'
                 placeholder='••••••••'
               />
