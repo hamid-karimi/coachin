@@ -63,7 +63,10 @@ BEGIN
   RETURN jsonb_build_object('success', true, 'status', 'created');
 EXCEPTION
   WHEN OTHERS THEN
-    RETURN jsonb_build_object('error', SQLERRM);
+    -- Log error server-side for debugging
+    RAISE WARNING 'Error in join_coaching_via_invite_code: % (SQLSTATE: %)', SQLERRM, SQLSTATE;
+    -- Return generic user-facing message
+    RETURN jsonb_build_object('error', 'An error occurred while processing your request. Please try again.');
 END;
 $$;
 
