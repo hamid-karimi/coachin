@@ -3,6 +3,7 @@
 import type { ProfileSummary } from "../types";
 import { FollowToggleButton } from "./FollowToggleButton";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 
 interface FriendsSectionProps {
   followingProfiles: ProfileSummary[];
@@ -12,7 +13,7 @@ interface FriendsSectionProps {
 }
 
 function displayName(profile: ProfileSummary) {
-  return profile.full_name || profile.email?.split("@")[0] || "کاربر";
+  return profile.full_name || profile.email?.split("@")[0] || "User";
 }
 
 export function FriendsSection({
@@ -26,7 +27,6 @@ export function FriendsSection({
   const [remoteFollowingIds, setRemoteFollowingIds] =
     useState<string[]>(followingUserIds);
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const requestSequenceRef = useRef(0);
 
   const mergedFollowingIds = useMemo(() => {
@@ -41,7 +41,6 @@ export function FriendsSection({
       setProfiles([]);
       setRemoteFollowingIds(followingUserIds);
       setIsLoading(false);
-      setErrorMessage(null);
       return () => controller.abort();
     }
 
@@ -50,7 +49,6 @@ export function FriendsSection({
     const timeoutId = window.setTimeout(async () => {
       try {
         setIsLoading(true);
-        setErrorMessage(null);
 
         const response = await fetch(
           `/community/api/discover?q=${encodeURIComponent(trimmedQuery)}&limit=8`,
@@ -80,7 +78,8 @@ export function FriendsSection({
           return;
         }
 
-        setErrorMessage("خطا در دریافت نتایج جستجو");
+        setProfiles([]);
+        toast.error("Failed to load search results.");
       } finally {
         setIsLoading(false);
       }
@@ -90,7 +89,7 @@ export function FriendsSection({
       controller.abort();
       window.clearTimeout(timeoutId);
     };
-  }, [query]);
+  }, [query, followingUserIds]);
 
   return (
     <section className='bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700 p-6 shadow-sm space-y-4'>
@@ -99,13 +98,13 @@ export function FriendsSection({
           Friends & Circle
         </h2>
         <p className='text-xs text-slate-500 dark:text-slate-400'>
-          کاربران را جستجو کن و Circle خودت را مستقل از لیدربرد مدیریت کن.
+          Search users and manage your Circle independently of leaderboards.
         </p>
       </header>
 
       <div className='space-y-3'>
         <label className='text-xs text-slate-500 dark:text-slate-400 block'>
-          جستجوی کاربر (نام یا ایمیل)
+          Search users (name or email)
         </label>
         <div className='space-y-2'>
           <input
@@ -113,24 +112,24 @@ export function FriendsSection({
             onChange={(event) => setQuery(event.target.value)}
             type='search'
             autoComplete='off'
-            placeholder='مثال: ali'
+            placeholder='Example: alex'
             className='flex-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm'
           />
           <p className='text-[11px] text-slate-500 dark:text-slate-400'>
             {query.trim()
-              ? "نتایج به‌صورت خودکار به‌روزرسانی می‌شوند."
-              : "نتایج فقط بعد از وارد کردن عبارت جستجو نمایش داده می‌شوند."}
+              ? "Results refresh automatically."
+              : "Results appear after you enter a search term."}
           </p>
         </div>
       </div>
 
       <div className='space-y-2'>
         <p className='text-xs text-slate-500 dark:text-slate-400'>
-          Following من
+          My Following
         </p>
         {followingProfiles.length === 0 ? (
           <p className='text-sm text-slate-500 dark:text-slate-400'>
-            هنوز کسی را فالو نکرده‌ای.
+            You are not following anyone yet.
           </p>
         ) : (
           <ul className='space-y-2'>
@@ -156,21 +155,19 @@ export function FriendsSection({
 
       <div className='space-y-2'>
         <p className='text-xs text-slate-500 dark:text-slate-400'>
-          نتایج جستجو
+          Search Results
         </p>
         {!query.trim() ? (
           <p className='text-sm text-slate-500 dark:text-slate-400'>
-            برای جستجو، نام یا ایمیل کاربر را وارد کن.
+            Enter a user name or email to search.
           </p>
-        ) : errorMessage ? (
-          <p className='text-sm text-rose-500'>{errorMessage}</p>
         ) : isLoading ? (
           <p className='text-sm text-slate-500 dark:text-slate-400'>
-            در حال جستجو...
+            Searching...
           </p>
         ) : profiles.length === 0 ? (
           <p className='text-sm text-slate-500 dark:text-slate-400'>
-            نتیجه‌ای پیدا نشد.
+            No results found.
           </p>
         ) : (
           <ul className='space-y-2'>

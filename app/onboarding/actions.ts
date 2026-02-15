@@ -6,10 +6,12 @@ import { createClient } from "@/lib/supabase/server";
 export type OnboardingActionState = {
   error?: string;
   success?: boolean;
+  message?: string;
+  status?: "success" | "info" | "error";
   redirect?: string;
 };
 
-// دریافت لیست ورزش‌ها برای نمایش در دراپ‌داون
+// Fetch sport types for dropdown rendering
 export async function getSportTypes() {
   const supabase = await createClient();
   const { data, error } = await supabase.from("sport_types").select("*");
@@ -18,7 +20,7 @@ export async function getSportTypes() {
   return data;
 }
 
-// دریافت برنامه‌های کاربر فعلی
+// Fetch current user's schedules
 export async function getUserSchedules() {
   try {
     const supabase = await createClient();
@@ -28,7 +30,7 @@ export async function getUserSchedules() {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      throw new Error("کاربر وارد نشده است");
+      throw new Error("User is not signed in");
     }
 
     const { data, error } = await supabase
@@ -44,7 +46,7 @@ export async function getUserSchedules() {
   }
 }
 
-// ذخیره یک آیتم در برنامه هفتگی
+// Save one item in weekly schedule
 export async function addScheduleItem(
   _prevState: OnboardingActionState,
   formData: FormData,
@@ -52,14 +54,14 @@ export async function addScheduleItem(
   try {
     const supabase = await createClient();
 
-    // دریافت کاربر فعلی
+    // Get current user
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
     if (!user) {
       console.error("❌ No authenticated user found");
-      return { error: "کاربر وارد نشده است" };
+      return { error: "User is not signed in." };
     }
 
     console.log("✅ Authenticated user:", {
@@ -69,10 +71,10 @@ export async function addScheduleItem(
 
     const sportId = formData.get("sport_type_id");
     const dayOfWeek = formData.get("day_of_week");
-    const time = formData.get("time"); // فرمت HH:MM
+    const time = formData.get("time"); // HH:MM
 
     if (!sportId || !dayOfWeek) {
-      return { error: "لطفا تمام فیلدهای مورد نیاز را پر کنید" };
+      return { error: "Please fill in all required fields." };
     }
 
     const insertData = {
@@ -96,27 +98,28 @@ export async function addScheduleItem(
       // Check if it's an RLS policy error
       if (error.message.includes("row-level security")) {
         return {
-          error: `خطا در دسترسی: سیاست محدودیت سطح ردیف (RLS) از اضافه کردن داده جلوگیری می‌کند. لطفا سیاست های Supabase را بررسی کنید.`,
+          error:
+            "Access denied: row-level security policy prevents inserting schedule items. Please review your Supabase policies.",
         };
       }
 
       return {
-        error: `خطا در ذخیره برنامه: ${error.message || "خطای نامشخص"}. لطفا دوباره تلاش کنید یا با پشتیبان تماس بگیرید.`,
+        error: `Failed to save schedule: ${error.message || "Unknown error"}. Please try again.`,
       };
     }
 
     console.log("✅ Schedule item inserted successfully:", data);
     revalidatePath("/onboarding");
-    return { success: true };
+    return { success: true, message: "Activity added to your schedule." };
   } catch (err) {
     console.error("❌ Unexpected error adding schedule:", err);
     return {
-      error: `خطای غیرمنتظره: ${err instanceof Error ? err.message : "نامشخص"}`,
+      error: `Unexpected error: ${err instanceof Error ? err.message : "Unknown"}`,
     };
   }
 }
 
-// حذف یک آیتم (برای اینکه کاربر بتونه اصلاح کنه)
+// Delete one schedule item
 export async function deleteScheduleItem(
   _prevState: OnboardingActionState,
   formData: FormData,
@@ -125,18 +128,18 @@ export async function deleteScheduleItem(
     const scheduleId = formData.get("scheduleId") as string;
 
     if (!scheduleId) {
-      return { error: "شناسه برنامه مشخص نشده است" };
+      return { error: "Schedule ID is missing." };
     }
 
     const supabase = await createClient();
 
-    // تأیید اینکه کاربر وارد شده است
+    // Confirm user is authenticated
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return { error: "کاربر وارد نشده است" };
+      return { error: "User is not signed in." };
     }
 
     console.log("🗑️ Attempting to delete schedule:", {
@@ -152,21 +155,28 @@ export async function deleteScheduleItem(
     if (error) {
       console.error("❌ Error deleting schedule:", error);
       if (error.message.includes("row-level security")) {
-        return { error: "خطا در دسترسی: شما مجاز به حذف این برنامه نیستید" };
+        return {
+          error:
+            "Access denied: you are not allowed to delete this schedule item.",
+        };
       }
-      return { error: "مشکلی در حذف برنامه پیش آمد." };
+      return { error: "Failed to delete the schedule item." };
     }
 
     console.log("✅ Schedule deleted successfully");
     revalidatePath("/onboarding");
-    return { success: true };
+    return { success: true, message: "Activity removed from your schedule." };
   } catch (err) {
     console.error("❌ Unexpected error deleting schedule:", err);
-    return { error: "خطای غیرمنتظره رخ داد" };
+    return { error: "Unexpected error occurred." };
   }
 }
 
-// پایان تنظیمات و رفتن به داشبورد
+// Finish onboarding and redirect to dashboard
 export async function completeOnboarding(): Promise<OnboardingActionState> {
-  return { success: true, redirect: "/dashboard" };
+  return {
+    success: true,
+    message: "Onboarding completed successfully.",
+    redirect: "/dashboard",
+  };
 }

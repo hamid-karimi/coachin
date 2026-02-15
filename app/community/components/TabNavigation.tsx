@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ReactNode, useTransition, useState, useEffect } from "react";
+import { ReactNode, useTransition, useState } from "react";
 
 type ActiveTab = "leaderboards" | "coaching";
 type ActiveBoard = "global" | "club" | "circle";
@@ -81,12 +81,6 @@ export function TabNavigation({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [pendingHref, setPendingHref] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!isPending) {
-      setPendingHref(null);
-    }
-  }, [isPending]);
 
   const navigate = (url: string) => {
     setPendingHref(url);

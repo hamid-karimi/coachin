@@ -6,12 +6,14 @@ import { registerAction, type RegisterState } from "./actions";
 import { SubmitButton } from "../components/submit-button";
 import { AuthContainer } from "../components/auth-container";
 import Link from "next/link";
+import { useActionToast } from "@/components/hooks/use-action-toast";
 
 const initialState: RegisterState = {};
 
 export default function RegisterPage() {
   const router = useRouter();
   const [state, formAction] = useActionState(registerAction, initialState);
+  useActionToast(state);
 
   useEffect(() => {
     if (state.redirect) {
@@ -33,6 +35,16 @@ export default function RegisterPage() {
           </div>
 
           <form action={formAction} className='space-y-6'>
+            {state.error && (
+              <div
+                id='register-error'
+                role='alert'
+                aria-live='polite'
+                className='sr-only'>
+                {state.error}
+              </div>
+            )}
+
             <div>
               <label
                 htmlFor='fullName'
@@ -45,9 +57,9 @@ export default function RegisterPage() {
                 type='text'
                 autoComplete='name'
                 required
+                aria-describedby={state.error ? "register-error" : undefined}
                 className='w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition'
                 placeholder='John Doe'
-                aria-describedby={state.error ? "error-message" : undefined}
               />
             </div>
 
@@ -63,9 +75,9 @@ export default function RegisterPage() {
                 type='email'
                 autoComplete='email'
                 required
+                aria-describedby={state.error ? "register-error" : undefined}
                 className='w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition'
                 placeholder='you@example.com'
-                aria-describedby={state.error ? "error-message" : undefined}
               />
             </div>
 
@@ -81,9 +93,13 @@ export default function RegisterPage() {
                 type='password'
                 autoComplete='new-password'
                 required
+                aria-describedby={
+                  state.error
+                    ? "register-error password-requirements"
+                    : "password-requirements"
+                }
                 className='w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition'
                 placeholder='••••••••'
-                aria-describedby='password-requirements'
               />
               <p
                 id='password-requirements'
@@ -104,31 +120,11 @@ export default function RegisterPage() {
                 type='password'
                 autoComplete='new-password'
                 required
+                aria-describedby={state.error ? "register-error" : undefined}
                 className='w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition'
                 placeholder='••••••••'
-                aria-describedby={state.error ? "error-message" : undefined}
               />
             </div>
-
-            {state.error && (
-              <div
-                id='error-message'
-                role='alert'
-                className={`p-4 rounded-lg border ${
-                  state.success
-                    ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
-                    : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
-                }`}>
-                <p
-                  className={`text-sm ${
-                    state.success
-                      ? "text-green-800 dark:text-green-200"
-                      : "text-red-800 dark:text-red-200"
-                  }`}>
-                  {state.error}
-                </p>
-              </div>
-            )}
 
             <SubmitButton pendingText='Creating account...'>
               Create Account

@@ -6,6 +6,8 @@ import { redirect } from "next/navigation";
 export type LoginState = {
   error?: string;
   success?: boolean;
+  message?: string;
+  status?: "success" | "info" | "error";
 };
 
 export async function loginAction(

@@ -83,22 +83,22 @@ export default async function CommunityPage({
   };
 
   const leaderboardEmptyByBoard: Record<string, string> = {
-    global: "هنوز رکوردی برای این هفته ثبت نشده است.",
-    club: "برای کلاب اصلی شما هنوز رکوردی ثبت نشده است.",
-    circle: "برای My Circle هنوز داده‌ای ثبت نشده است.",
+    global: "No records were logged this week yet.",
+    club: "No records for your primary club yet.",
+    circle: "No data in My Circle yet.",
   };
 
   return (
     <CommunityLayout>
-      <header className='text-right space-y-1'>
+      <header className='space-y-1'>
         <p className='text-sm text-slate-500 dark:text-slate-400'>
-          سلام، {displayName}!
+          Hi, {displayName}!
         </p>
         <h1 className='text-3xl font-bold text-slate-900 dark:text-white'>
-          جامعه ورزشی 🌍
+          Sports Community 🌍
         </h1>
         <p className='text-sm text-slate-500 dark:text-slate-400'>
-          لیدربردها و فضای مربیگری رو اینجا مدیریت کن.
+          Manage leaderboards and coaching space here.
         </p>
       </header>
 
@@ -146,8 +146,8 @@ export default async function CommunityPage({
                 <LeaderboardSection
                   leaderboard={coachStudentsLeaderboard}
                   currentUserId={user.id}
-                  title='📈 لیدربرد داخلی شاگردها'
-                  emptyMessage='هنوز شاگردی برای رتبه‌بندی وجود ندارد.'
+                  title='📈 Student Internal Leaderboard'
+                  emptyMessage='No students available for ranking yet.'
                 />
 
                 <div className='flex justify-end'>
@@ -164,7 +164,7 @@ export default async function CommunityPage({
 
         {!canCoach && !canStudy && (
           <p className='text-sm text-amber-600 dark:text-amber-400'>
-            نقش فعلی شما برای بخش Coaching محدود است.
+            Your current role has limited access to Coaching.
           </p>
         )}
       </TabNavigation>

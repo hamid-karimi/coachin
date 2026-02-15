@@ -76,7 +76,7 @@ export default async function Dashboard() {
     console.error("Error fetching today's logs:", todaysLogsError);
     throw new Error("Failed to load today's logs");
   }
-  
+
   // Note: This completion check uses sport_type_id only. If a user has multiple
   // schedule items for the same sport type in one day, completing one will mark
   // all as completed. To fix this, the logs table should include a schedule_id
@@ -150,11 +150,11 @@ export default async function Dashboard() {
 
             <div>
               <h2 className='text-2xl font-bold text-slate-900 dark:text-white mb-6'>
-                ماموریت‌های امروز
+                Today&apos;s Missions
               </h2>
 
               {!todaysPlan || todaysPlan.length === 0 ? (
-                <div className='text-center p-8'>استراحت</div>
+                <div className='text-center p-8'>Rest day</div>
               ) : (
                 <div className='grid gap-4'>
                   {todaysPlan.map((item: ScheduleItem) => {

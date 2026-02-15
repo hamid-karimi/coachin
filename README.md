@@ -1,66 +1,84 @@
 # CoachIn
 
-CoachIn یک اپلیکیشن ورزشی مبتنی بر Next.js است برای برنامه‌ریزی تمرین، ثبت فعالیت روزانه، و قابلیت‌های اجتماعی/مربیگری.
+CoachIn is a Next.js fitness app for weekly planning, workout logging, social leaderboards, and coach-student collaboration.
 
 ## Tech Stack
 
 - Next.js 16 (App Router)
 - TypeScript
 - Tailwind CSS v4
-- Supabase (Auth + Database + RLS)
+- Supabase (Auth, Postgres, RLS)
+- Sonner (toast notifications)
+- Storybook 10 (`@storybook/nextjs-vite`)
 
-## Main Features
+## Core Features
 
-- احراز هویت (Login/Register)
-- Onboarding برای تعریف برنامه هفتگی تمرین
-- Dashboard روزانه با ثبت تمرین و XP
-- Community:
-  - لیدربردهای `Global League`، `My Club`، `My Circle`
-  - Coaching Zone (مربی‌ها، شاگردها، Invite code)
-  - Club memberships (join/leave/set primary)
-  - Friends management (follow/unfollow + search)
-  - Tab navigation با loading feedback (spinner روی تب + skeleton محتوا)
-  - بهینه‌سازی fetch بر اساس تب/برد فعال برای کاهش زمان سوییچ
-  - هم‌راستاسازی XP لیدربرد با fallback به `profiles.xp` در صورت نبود داده هفتگی معتبر
+- Authentication (`/auth/login`, `/auth/register`)
+- Weekly schedule onboarding (`/onboarding`)
+- Daily dashboard with workout logging and XP progression (`/dashboard`)
+- Community module (`/community`):
+  - Leaderboards: `Global League`, `My Club`, `My Circle`
+  - Coach-student management via invite codes
+  - Club memberships (create/join/leave/set primary)
+  - Following and user discovery
+
+## Recent Updates (February 2026)
+
+### 1) Add-Coach reliability fix
+
+A root-cause fix was applied for the case where students saw success but no coach was actually added.
+
+- Added deterministic join statuses in DB RPC:
+  - `created`
+  - `already_connected`
+  - `reactivated`
+- App actions now map statuses correctly:
+  - New connection => success toast
+  - Existing connection => info toast (no false positive)
+
+Migration:
+- `supabase/migrations/20260215143000_fix_join_coach_statuses.sql`
+
+### 2) English-only user messaging
+
+User-visible messages were standardized to English across:
+
+- UI labels and placeholders
+- Server action messages
+- API error payloads
+- RPC fallback errors
+
+Migration:
+- `supabase/migrations/20260215144500_translate_rpc_error_messages.sql`
+
+### 3) Unified toast system (shadcn-compatible Sonner)
+
+- Global toaster mounted in `app/layout.tsx`
+- Shared hook for action results: `components/hooks/use-action-toast.ts`
+- Success/error/info feedback migrated from inline transient messages to toast in auth, onboarding, dashboard, and community flows
+
+### 4) Storybook baseline and component stories
+
+Storybook setup:
+- `.storybook/main.ts`
+- `.storybook/preview.js`
+- `npm run storybook`
+- `npm run build-storybook`
+
+Initial stories are available for key UI modules, including interactive component previews.
 
 ## Project Structure
 
-- `app/auth`: صفحات و اکشن‌های ورود/ثبت‌نام
-- `app/onboarding`: تنظیم برنامه هفتگی
-- `app/dashboard`: ثبت تمرین و نمایش برنامه روز
-- `app/community`: ماژول اجتماعی/مربیگری (جزئیات در `app/community/README.md`)
-- `lib/supabase`: کلاینت‌های Supabase برای Server و Middleware
-- `supabase/migrations`: اسکیمای دیتابیس و RLS
+- `app/auth`: authentication pages + server actions
+- `app/onboarding`: weekly schedule setup flow
+- `app/dashboard`: daily missions + workout logging
+- `app/community`: social + coaching module
+- `components/ui`: shared UI primitives
+- `components/hooks`: shared client hooks
+- `lib/supabase`: server/client Supabase helpers
+- `supabase/migrations`: schema + RLS + RPC migrations
 
-## Social & Coaching Migration
-
-برای فیچرهای Community این migration ضروری است:
-
-- `supabase/migrations/20260212010000_social_coaching_mvp.sql`
-
-## Community Notes
-
-- در `app/community/components/TabNavigation.tsx` از `useTransition` برای سوییچ نرم بین تب‌ها استفاده می‌شود.
-- `app/community/loading.tsx` برای initial route load است؛ برای تغییر `searchParams` لودینگ داخلی تب‌ها نمایش داده می‌شود.
-- لایه `app/community/lib/community-data.ts` فقط داده‌های لازم تب فعال را load می‌کند.
-- منبع اصلی لیدربرد RPC `get_weekly_leaderboard` است؛ اگر خروجی معتبر نبود، fallback روی `profiles.xp` انجام می‌شود.
-
-## Troubleshooting
-
-- **Dashboard XP با Community XP یکی نیست**
-  - در Community ابتدا RPC هفتگی (`get_weekly_leaderboard`) خوانده می‌شود.
-  - اگر داده هفتگی معتبر نباشد، سیستم به `profiles.xp` fallback می‌کند.
-  - مطمئن شوید در ثبت تمرین، علاوه بر آپدیت `profiles.xp`، رکورد `xp_transactions` هم درج می‌شود.
-
-- **لودینگ فقط بار اول صفحه دیده می‌شود**
-  - `loading.tsx` فقط برای initial route load اجرا می‌شود.
-  - در سوییچ تب‌ها (تغییر `searchParams`) باید لودینگ داخلی `TabNavigation` فعال باشد (spinner + skeleton).
-
-- **سوییچ تب‌ها کند است**
-  - بررسی کنید fetch شرطی بر اساس `activeTab`/`activeBoard` در `community-data.ts` حفظ شده باشد.
-  - اجرای `npm run build` و بررسی queryهای Supabase برای مسیرهای `leaderboards` و `coaching` توصیه می‌شود.
-
-## Development
+## Setup
 
 ```bash
 npm install
@@ -72,4 +90,11 @@ npm run dev
 ```bash
 npm run lint
 npm run build
+```
+
+## Storybook
+
+```bash
+npm run storybook
+npm run build-storybook
 ```

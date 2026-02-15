@@ -43,9 +43,7 @@ export function useLoadData(): UseLoadDataState {
         setSchedules(schedulesData || []);
       } catch (err) {
         console.error("Failed to load data:", err);
-        setError(
-          err instanceof Error ? err.message : "خطا در بارگذاری اطلاعات",
-        );
+        setError(err instanceof Error ? err.message : "Failed to load data");
       } finally {
         setIsLoading(false);
       }

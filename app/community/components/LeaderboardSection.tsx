@@ -13,8 +13,8 @@ interface LeaderboardSectionProps {
 export function LeaderboardSection({
   leaderboard,
   currentUserId,
-  title = "🏆 برترین‌های هفته",
-  emptyMessage = "هنوز هیچ امتیازی ثبت نشده است.",
+  title = "🏆 Top Performers This Week",
+  emptyMessage = "No scores recorded yet.",
   enableFollowActions = false,
   followingUserIds = [],
 }: LeaderboardSectionProps) {
@@ -23,7 +23,7 @@ export function LeaderboardSection({
   if (leaderboard.length === 0) {
     return (
       <section className='rounded-2xl border border-slate-100 dark:border-slate-700 overflow-hidden shadow-sm'>
-        <div className='bg-gradient-to-r from-yellow-500 to-orange-500 p-4 text-white'>
+        <div className='bg-linear-to-r from-yellow-500 to-orange-500 p-4 text-white'>
           <h2 className='text-xl font-bold flex items-center gap-2'>{title}</h2>
         </div>
         <div className='p-6 text-sm text-slate-500 dark:text-slate-400'>
@@ -35,14 +35,14 @@ export function LeaderboardSection({
 
   return (
     <section className='rounded-2xl border border-slate-100 dark:border-slate-700 overflow-hidden shadow-sm'>
-      <div className='bg-gradient-to-r from-yellow-500 to-orange-500 p-4 text-white'>
+      <div className='bg-linear-to-r from-yellow-500 to-orange-500 p-4 text-white'>
         <h2 className='text-xl font-bold flex items-center gap-2'>{title}</h2>
       </div>
       <div className='divide-y divide-slate-100 dark:divide-slate-800'>
         {leaderboard.map((profile, index) => {
           const isCurrent = profile.id === currentUserId;
           const positionClass = isCurrent ? highlightClass : "";
-          const initials = profile.email?.[0]?.toUpperCase() ?? "؟";
+          const initials = profile.email?.[0]?.toUpperCase() ?? "?";
 
           return (
             <div
@@ -58,10 +58,10 @@ export function LeaderboardSection({
                 <p className='text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2'>
                   {profile.full_name ||
                     profile.email?.split("@")[0] ||
-                    "رکورددار"}
+                    "Top athlete"}
                   {isCurrent && (
                     <span className='text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full'>
-                      تو
+                      You
                     </span>
                   )}
                 </p>

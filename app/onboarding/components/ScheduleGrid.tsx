@@ -11,13 +11,13 @@ interface Schedule {
 }
 
 const DAYS = [
-  { id: 0, name: "یکشنبه" },
-  { id: 1, name: "دوشنبه" },
-  { id: 2, name: "سه‌شنبه" },
-  { id: 3, name: "چهارشنبه" },
-  { id: 4, name: "پنج‌شنبه" },
-  { id: 5, name: "جمعه" },
-  { id: 6, name: "شنبه" },
+  { id: 0, name: "Sunday" },
+  { id: 1, name: "Monday" },
+  { id: 2, name: "Tuesday" },
+  { id: 3, name: "Wednesday" },
+  { id: 4, name: "Thursday" },
+  { id: 5, name: "Friday" },
+  { id: 6, name: "Saturday" },
 ];
 
 interface ScheduleGridProps {
@@ -52,7 +52,7 @@ export function ScheduleGrid({
 
             {dayItems.length === 0 ? (
               <p className='text-sm text-slate-500 dark:text-slate-400 italic'>
-                استراحت
+                Rest
               </p>
             ) : (
               <ul className='space-y-2'>

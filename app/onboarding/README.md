@@ -1,21 +1,35 @@
 # Onboarding Module
 
-This module guides new users through setting up their initial weekly workout schedule.
+The onboarding flow helps users build their recurring weekly workout schedule.
 
 ## Structure
 
-- **components/**:
-  - `ScheduleGrid.tsx`: Visual representation of the week's schedule.
-  - `AddScheduleForm.tsx`: UI for selecting a sport, day, and time.
-  - `PageHeader.tsx`, `PageContainer.tsx`: Layout components.
-- **hooks/**: Custom hooks for managing onboarding state.
-  - `useLoadData.ts`: Fetches initial `sport_types` and existing plan.
-  - `useRefreshSchedules.ts`: Refreshes the view after updates.
-- `actions.ts`: Server actions to `upsertSchedule` or `deleteSchedule`.
+- `page.tsx`: main onboarding flow
+- `actions.ts`: server actions for add/delete schedule items and completion
+- `components/`
+  - `AddScheduleForm.tsx`
+  - `ScheduleGrid.tsx`
+  - `CompleteOnboardingButton.tsx`
+  - layout helpers (`PageHeader`, `PageContainer`, `LoadingScreen`)
+- `hooks/`
+  - `useLoadData.ts`
+  - `useRefreshSchedules.ts`
+  - `useRedirect.ts`
 
 ## Data Flow
 
-1. User selects a sport, day, and time.
-2. `upsertSchedule` updates the `schedules` table in Supabase.
-3. UI optimistically updates or re-fetches to show the new card in the grid.
-4. "Complete Setup" redirects to the Dashboard.
+1. User selects day, sport, and optional time.
+2. Action inserts a schedule row in Supabase.
+3. UI refreshes schedule state after mutation.
+4. Completion redirects to dashboard.
+
+## Notifications and Language
+
+- User-facing messages are now English-only.
+- Transient success/error states use toast notifications instead of inline banners.
+
+## Storybook
+
+Initial coverage includes:
+
+- `page-header.stories.tsx`

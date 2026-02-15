@@ -1,5 +1,3 @@
-import { Message } from "./Message";
-
 interface SportType {
   id: string | number;
   name: string;
@@ -7,51 +5,36 @@ interface SportType {
 }
 
 const DAYS = [
-  { id: 0, name: "یکشنبه" },
-  { id: 1, name: "دوشنبه" },
-  { id: 2, name: "سه‌شنبه" },
-  { id: 3, name: "چهارشنبه" },
-  { id: 4, name: "پنج‌شنبه" },
-  { id: 5, name: "جمعه" },
-  { id: 6, name: "شنبه" },
+  { id: 0, name: "Sunday" },
+  { id: 1, name: "Monday" },
+  { id: 2, name: "Tuesday" },
+  { id: 3, name: "Wednesday" },
+  { id: 4, name: "Thursday" },
+  { id: 5, name: "Friday" },
+  { id: 6, name: "Saturday" },
 ];
 
 interface AddScheduleFormProps {
   sports: SportType[];
   onSubmit: (formData: FormData) => void;
   isPending?: boolean;
-  error?: string;
-  success?: boolean;
 }
 
 export function AddScheduleForm({
   sports,
   onSubmit,
   isPending = false,
-  error,
-  success,
 }: AddScheduleFormProps) {
   return (
     <div className='bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg mb-10 border border-blue-200 dark:border-blue-800'>
       <h3 className='font-bold mb-4 text-blue-800 dark:text-blue-300'>
-        ➕ افزودن فعالیت جدید
+        ➕ Add new activity
       </h3>
-
-      {error && (
-        <div className='mb-4'>
-          <Message type='error' message={error} />
-        </div>
-      )}
-      {success && (
-        <div className='mb-4'>
-          <Message type='success' message='فعالیت با موفقیت افزوده شد' />
-        </div>
-      )}
 
       <form action={onSubmit} className='flex flex-wrap gap-4 items-end'>
         <div className='flex flex-col gap-2'>
           <label className='text-sm font-medium text-slate-700 dark:text-slate-300'>
-            روز هفته
+            Day of week
           </label>
           <select
             name='day_of_week'
@@ -67,13 +50,13 @@ export function AddScheduleForm({
 
         <div className='flex flex-col gap-2'>
           <label className='text-sm font-medium text-slate-700 dark:text-slate-300'>
-            نوع ورزش
+            Sport type
           </label>
           <select
             name='sport_type_id'
             className='p-2 border border-slate-300 dark:border-slate-600 rounded-md w-40 bg-white dark:bg-slate-700 text-slate-900 dark:text-white'
             disabled={isPending}>
-            <option value=''>انتخاب کنید</option>
+            <option value=''>Select</option>
             {sports?.map((sport: SportType) => (
               <option key={sport.id} value={sport.id}>
                 {sport.name}
@@ -84,7 +67,7 @@ export function AddScheduleForm({
 
         <div className='flex flex-col gap-2'>
           <label className='text-sm font-medium text-slate-700 dark:text-slate-300'>
-            ساعت (اختیاری)
+            Time (optional)
           </label>
           <input
             type='time'
@@ -98,7 +81,7 @@ export function AddScheduleForm({
           type='submit'
           className='bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed'
           disabled={isPending}>
-          {isPending ? "درحال افزودن..." : "افزودن به برنامه"}
+          {isPending ? "Adding..." : "Add to schedule"}
         </button>
       </form>
     </div>

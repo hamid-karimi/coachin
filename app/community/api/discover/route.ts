@@ -42,10 +42,7 @@ export async function GET(request: Request) {
 
   if (error) {
     console.error("Discover query failed:", error);
-    return NextResponse.json(
-      { error: "خطا در جستجو" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "Search failed" }, { status: 400 });
   }
 
   const profileIds = profiles.map((profile) => profile.id);
