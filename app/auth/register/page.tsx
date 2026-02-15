@@ -57,7 +57,6 @@ export default function RegisterPage() {
                 type='text'
                 autoComplete='name'
                 required
-                aria-invalid={state.error ? "true" : "false"}
                 aria-describedby={state.error ? "register-error" : undefined}
                 className='w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition'
                 placeholder='John Doe'
@@ -76,7 +75,6 @@ export default function RegisterPage() {
                 type='email'
                 autoComplete='email'
                 required
-                aria-invalid={state.error ? "true" : "false"}
                 aria-describedby={state.error ? "register-error" : undefined}
                 className='w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition'
                 placeholder='you@example.com'
@@ -95,7 +93,6 @@ export default function RegisterPage() {
                 type='password'
                 autoComplete='new-password'
                 required
-                aria-invalid={state.error ? "true" : "false"}
                 aria-describedby={
                   state.error
                     ? "register-error password-requirements"
@@ -123,7 +120,6 @@ export default function RegisterPage() {
                 type='password'
                 autoComplete='new-password'
                 required
-                aria-invalid={state.error ? "true" : "false"}
                 aria-describedby={state.error ? "register-error" : undefined}
                 className='w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition'
                 placeholder='••••••••'
