@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/server";
 export type RegisterState = {
   error?: string;
   success?: boolean;
+  message?: string;
+  status?: "success" | "info" | "error";
   redirect?: string;
 };
 
@@ -72,12 +74,18 @@ export async function registerAction(
     // If email confirmation is enabled, user needs to verify email
     if (data.session) {
       // User is automatically logged in
-      return { success: true, redirect: "/dashboard" };
+      return {
+        success: true,
+        message: "Account created successfully.",
+        status: "success",
+        redirect: "/dashboard",
+      };
     } else {
       // User needs to verify email
       return {
         success: true,
-        error: "Please check your email to verify your account",
+        message: "Please check your email to verify your account.",
+        status: "info",
       };
     }
   } catch (error) {

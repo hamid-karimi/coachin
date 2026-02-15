@@ -1,21 +1,32 @@
 # Authentication Module
 
-This directory contains the authentication logic for the CoachIn application, handling user registration and login via Supabase.
+This module handles user sign-in and registration through Supabase Auth.
 
 ## Structure
 
-- **components/**: Shared UI components for auth forms.
-  - `auth-container.tsx`: Layout wrapper centering the content.
-  - `submit-button.tsx`: Form submit button with loading state.
-- **login/**: Logic for existing users.
-  - `page.tsx`: Login form UI.
-  - `actions.ts`: Server action for `signInWithPassword`.
-- **register/**: Logic for new users.
-  - `page.tsx`: Registration form UI with password validation.
-  - `actions.ts`: Server action for `signUp` and validation logic.
+- `components/`
+  - `auth-container.tsx`: auth layout wrapper
+  - `submit-button.tsx`: submit button with pending state
+- `login/`
+  - `page.tsx`
+  - `actions.ts`
+- `register/`
+  - `page.tsx`
+  - `actions.ts`
 
-## Key Features
+## Validation and Behavior
 
-- **Server-Side Validation**: Registration checks for password length, complexity, and matching fields before contacting Supabase.
-- **Supabase Integration**: Uses Supabase Auth for secure handling of credentials.
-- **Error Handling**: Displays user-friendly error messages returned from the server actions.
+- Registration validates required fields, password length, complexity, and confirmation.
+- Login validates required credentials and email format.
+- Server actions return normalized action-state responses.
+
+## Notifications
+
+- Transient auth feedback now uses global toast notifications.
+- Inline transient error blocks were removed for consistency.
+
+## Storybook
+
+Initial coverage includes:
+
+- `components/auth-container.stories.tsx`

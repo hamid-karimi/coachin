@@ -22,7 +22,7 @@ export function StudentsSection({
     <section className='bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700 p-6 shadow-sm'>
       <header className='flex items-center justify-between mb-4'>
         <h2 className='text-lg font-bold text-slate-900 dark:text-white'>
-          شاگردان من
+          My Students
         </h2>
       </header>
 
@@ -39,7 +39,7 @@ export function StudentsSection({
         <ul className='space-y-3'>
           {students.map((relationship) => {
             const { student } = relationship;
-            const initials = student.email?.[0]?.toUpperCase() ?? "؟";
+            const initials = student.email?.[0]?.toUpperCase() ?? "?";
 
             return (
               <li
@@ -51,11 +51,11 @@ export function StudentsSection({
                   </div>
                   <div>
                     <p className='text-sm font-semibold text-slate-900 dark:text-white'>
-                      {student.full_name || student.email || "شاگرد ناشناس"}
+                      {student.full_name || student.email || "Unknown student"}
                     </p>
                     <p className='text-xs text-slate-500 dark:text-slate-400'>
-                      {relationship.sport_type?.name || "مربیگری عمومی"} · Level{" "}
-                      {student.level ?? 1}
+                      {relationship.sport_type?.name || "General coaching"} ·
+                      Level {student.level ?? 1}
                     </p>
                   </div>
                 </div>
@@ -71,7 +71,7 @@ export function StudentsSection({
         </ul>
       ) : (
         <p className='text-sm text-slate-500 dark:text-slate-400'>
-          هنوز شاگردی نداری. کد دعوتت رو بفرست!
+          You don’t have students yet. Share your invite code.
         </p>
       )}
     </section>

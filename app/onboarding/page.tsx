@@ -15,6 +15,7 @@ import {
   PageContainer,
 } from "./components";
 import { useLoadData, useRedirect, useRefreshSchedules } from "./hooks";
+import { useActionToast } from "@/components/hooks/use-action-toast";
 
 export default function OnboardingPage() {
   // Load initial data
@@ -30,6 +31,9 @@ export default function OnboardingPage() {
 
   // Handle redirect on complete
   useRedirect({ redirectUrl: completeState.redirect });
+  useActionToast(addState);
+  useActionToast(deleteState);
+  useActionToast(completeState);
 
   // Refresh schedules after add/delete
   const refreshedSchedulesFromAdd = useRefreshSchedules(
@@ -54,16 +58,11 @@ export default function OnboardingPage() {
   return (
     <PageContainer>
       <PageHeader
-        title='برنامه‌ریزی هفتگی 📅'
-        description='مشخص کن هر روز چه ورزشی داری. این برنامه الگوی تکرارشونده توئه.'
+        title='Weekly Planning 📅'
+        description='Choose your sport for each day. This is your recurring weekly routine.'
       />
 
-      <AddScheduleForm
-        sports={sports}
-        onSubmit={addAction}
-        error={addState.error}
-        success={addState.success}
-      />
+      <AddScheduleForm sports={sports} onSubmit={addAction} />
 
       <ScheduleGrid
         schedules={schedules}
@@ -75,10 +74,7 @@ export default function OnboardingPage() {
         }}
       />
 
-      <CompleteOnboardingButton
-        onSubmit={completeAction}
-        error={completeState.error}
-      />
+      <CompleteOnboardingButton onSubmit={completeAction} />
     </PageContainer>
   );
 }

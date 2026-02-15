@@ -1,92 +1,64 @@
 # Community Module
 
-ماژول `community` شامل منطق اجتماعی، مربیگری و لیدربردهای اپ است.
+The `community` module contains social features, coaching workflows, and leaderboard views.
 
-## Scope (MVP)
+## Scope
 
 - **Leaderboards**
-  - `Global League`: رتبه‌بندی هفتگی کل اپ (بر اساس `xp_transactions` در ۷ روز اخیر)
-  - `My Club`: رتبه‌بندی اعضای کلاب primary کاربر
-  - `My Circle`: رتبه‌بندی کاربرانی که کاربر فالو کرده (`social_graph`)
+  - `Global League`: weekly app-wide ranking from `xp_transactions`
+  - `My Club`: ranking for members of the user's primary club
+  - `My Circle`: ranking for followed users (`social_graph`)
 - **Coaching Zone**
-  - نمایش مربی‌های من
-  - نمایش شاگردهای من
-  - تولید کد دعوت مربیگری per coach + sport
-  - اتصال شاگرد به مربی از طریق کد دعوت
-  - ارسال برنامه هفتگی مربی برای شاگرد (جایگزینی برنامه فعلی شاگرد)
-- **Friends Management**
-  - لیست Following مستقل
-  - جستجوی کاربران و Follow/Unfollow
-  - صفحه‌بندی نتایج جستجو
+  - List my coaches and students
+  - Generate coach invite codes per coach + sport
+  - Connect student to coach via invite code
+  - Assign coach weekly schedule to students
 - **Club Management**
-  - Join با کد کلاب
-  - Leave کلاب
-  - تعیین یک کلاب primary در کنار چند عضویت همزمان
+  - Create club
+  - Join by invite code
+  - Leave club
+  - Set primary club
+- **Friends Management**
+  - Following list
+  - User search + follow/unfollow
 
 ## Main Files
 
-- `app/community/page.tsx`: صفحه اصلی Community (تب‌ها + ترکیب سکشن‌ها)
-- `app/community/actions.ts`: Server Actions اجتماعی/مربیگری
-- `app/community/lib/community-data.ts`: لایه بارگذاری داده‌ها
-- `app/community/components/*`: سکشن‌ها و فرم‌های UI
-- `app/community/types.ts`: تایپ‌های مشترک ماژول
-- `app/community/components/TabNavigation.tsx`: ناوبری client-side تب‌ها با `useTransition` + spinner روی دکمه‌ها
-- `app/community/loading.tsx`: اسکلتون اولیه مسیر
+- `app/community/page.tsx`: module composition and tabs
+- `app/community/actions.ts`: server actions for social/coaching operations
+- `app/community/lib/community-data.ts`: tab-aware data loading
+- `app/community/components/*`: UI components
+- `app/community/api/discover/route.ts`: discover search endpoint
 
-## Navigation & Loading UX
+## UX and Performance
 
-- سوییچ تب‌ها (`leaderboards` / `coaching`) و بردها (`global` / `club` / `circle`) با `router.push` در `TabNavigation` انجام می‌شود.
-- هنگام pending شدن transition:
-  - URL بلافاصله آپدیت می‌شود.
-  - روی دکمه تب/برد مقصد spinner نمایش داده می‌شود.
-  - محتوای سکشن با اسکلتون موقت جایگزین می‌شود تا کاربر جریان لود را ببیند.
-- `loading.tsx` مخصوص initial route load است؛ برای searchParams transitions، لودینگ داخلی `TabNavigation` استفاده می‌شود.
+- Tab navigation uses `useTransition` with loading affordances in `TabNavigation.tsx`.
+- Data fetches are conditioned by active tab/board to avoid unnecessary queries.
+- Leaderboard data falls back to profile XP when weekly aggregation is unavailable.
 
-## Data Loading Strategy (Performance)
+## Coach Invite Join Reliability Fix
 
-- در `getCommunityData` فقط دیتای لازم برای `activeTab` و `activeBoard` fetch می‌شود.
-- تب `coaching` فقط داده‌های مربیگری (`coaching_relationships`, `coach_invite_codes`, `sport_types`) را می‌گیرد.
-- تب `leaderboards` فقط داده‌های لیدربرد/اجتماعی (`club_members`, `social_graph`, discover/following`) را می‌گیرد.
-- این تفکیک باعث کاهش queryهای غیرضروری و بهبود زمان سوییچ تب شده است.
+The student add-coach flow now distinguishes these outcomes explicitly:
 
-## Database Dependencies
+- `created`: relationship inserted
+- `already_connected`: relationship already exists and is active
+- `reactivated`: existing relationship was made active again
 
-### Tables Used
+This prevents false success states and enables correct toast behavior.
 
-- `profiles`
-- `coaching_relationships`
-- `coach_invite_codes`
-- `clubs`
-- `club_members`
-- `social_graph`
-- `xp_transactions`
-- `sport_types`
+Related migration:
 
-### Required Migration
+- `supabase/migrations/20260215143000_fix_join_coach_statuses.sql`
 
-- `supabase/migrations/20260212010000_social_coaching_mvp.sql`
+## Notifications
 
-این migration موارد زیر را اعمال می‌کند:
+Transient success/error/info states are displayed via Sonner toasts.
 
-- جدول `coach_invite_codes`
-- قیود uniqueness و self-check برای روابط مربیگری
-- پشتیبانی کلاب primary در `club_members`
-- ایندکس‌های مرتبط با Social/Coaching
-- RLS policyهای MVP برای جداول اجتماعی
+- Shared hook: `components/hooks/use-action-toast.ts`
+- Global renderer: `components/ui/sonner.tsx`
 
-## Role Model
+## Storybook Coverage
 
-`profiles.role` مبنای دسترسی UI/Action است:
+Initial stories include:
 
-- coach-enabled: `coach`, `both`, `admin`
-- student-enabled: `student`, `both`, `admin`
-
-## Notes
-
-- My Circle صرفاً بر پایه `social_graph` محاسبه می‌شود.
-- Invite مربیگری به‌صورت **per-coach+sport** است.
-- CTA `Create Workout for Student` فعلاً placeholder است و به workflow اصلی هدایت می‌کند.
-- دکمه `ارسال برنامه` در لیست شاگردان، برنامه هفتگی مربی را برای همان شاگرد کپی می‌کند.
-- لیدربرد ابتدا از RPC `get_weekly_leaderboard` می‌خواند.
-- اگر RPC خطا بدهد یا همه `weekly_xp` ها صفر باشند، fallback به `profiles.xp` (Total XP) انجام می‌شود تا نمایش امتیاز با dashboard هم‌راستا بماند.
-- برای همگام بودن داده هفتگی، ثبت تمرین در dashboard باید در `xp_transactions` نیز رکورد ایجاد کند.
+- `community-layout.stories.tsx`

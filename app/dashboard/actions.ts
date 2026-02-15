@@ -32,23 +32,23 @@ export async function logWorkout(
   try {
     const supabase = await createClient();
 
-    // دریافت کاربر فعلی
+    // Get current user
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
     if (!user) {
       console.error("No authenticated user found");
-      return { error: "کاربر وارد نشده است" };
+      return { error: "User is not signed in." };
     }
 
     if (process.env.NODE_ENV === "development") {
       console.log("✅ Authenticated user ID:", user.id);
     }
 
-    // دریافت اطلاعات از فرم
+    // Get values from form
     const sportId = formData.get("sport_type_id");
-    const duration = 60; // مدت زمان پیش‌فرض ۶۰ دقیقه
+    const duration = 60; // Default duration is 60 minutes
     const notes = formData.get("notes") as string;
     const today = new Date();
     const year = today.getFullYear();
@@ -57,14 +57,14 @@ export async function logWorkout(
     const date = `${year}-${month}-${day}`;
 
     if (!sportId) {
-      return { error: "لطفا نوع ورزش را انتخاب کنید" };
+      return { error: "Please select a sport type." };
     }
 
     if (duration <= 0) {
-      return { error: "مدت زمان باید بیشتر از صفر باشد" };
+      return { error: "Duration must be greater than zero." };
     }
 
-    // 1. دریافت ضریب XP ورزش
+    // 1) Fetch sport XP multiplier
     const { data: sport, error: sportError } = await supabase
       .from("sport_types")
       .select("xp_multiplier")
@@ -73,10 +73,10 @@ export async function logWorkout(
 
     if (sportError || !sport) {
       console.error("Sport fetch error:", sportError);
-      return { error: "ورزش مورد نظر یافت نشد" };
+      return { error: "Sport type not found." };
     }
 
-    // 2. محاسبه XP
+    // 2) Calculate XP
     const earnedXp = Math.round(duration * sport.xp_multiplier);
     console.log("📊 Calculated XP:", {
       duration,
@@ -84,7 +84,7 @@ export async function logWorkout(
       earnedXp,
     });
 
-    // 3. ثبت در جدول logs
+    // 3) Insert workout log
     const logData = {
       user_id: user.id,
       sport_type_id: Number(sportId),
@@ -106,16 +106,16 @@ export async function logWorkout(
       if (logError.message.includes("row-level security")) {
         return {
           error:
-            "خطا در دسترسی: سیاست محدودیت سطح ردیف (RLS) از ثبت لاگ جلوگیری می‌کند. لطفا سیاست‌های Supabase را بررسی کنید.",
+            "Access denied: row-level security policy prevents logging this workout. Please review Supabase policies.",
         };
       }
 
-      return { error: `خطا در ثبت ورزش: ${logError.message}` };
+      return { error: `Failed to log workout: ${logError.message}` };
     }
 
     console.log("✅ Workout log inserted successfully");
 
-    // 4. آپدیت پروفایل کاربر (افزایش XP و Level)
+    // 4) Update profile XP and level
     const { data: profile, error: profileFetchError } = await supabase
       .from("profiles")
       .select("xp, current_streak")
@@ -124,12 +124,12 @@ export async function logWorkout(
 
     if (profileFetchError) {
       console.error("Profile fetch error:", profileFetchError);
-      // ادامه می‌دهیم حتی اگر پروفایل نیافتیم
+      // Continue even if profile fetch fails
     }
 
     const currentXp = profile?.xp || 0;
     const newXp = currentXp + earnedXp;
-    // فرمول ساده لول: هر 1000 امتیاز یک لول
+    // Simple level formula: every 1000 XP = +1 level
     const newLevel = Math.floor(newXp / 1000) + 1;
 
     console.log("📈 Updating profile:", {
@@ -144,8 +144,8 @@ export async function logWorkout(
       .update({
         xp: newXp,
         level: newLevel,
-        // اینجا لاجیک استریک پیچیده‌تره که بعدا با Cron Job هندل می‌کنیم
-        // فعلا فقط XP می‌دیم
+        // Streak logic can be handled by a scheduled job later.
+        // For now, only XP/level are updated.
       })
       .eq("id", user.id);
 
@@ -157,12 +157,12 @@ export async function logWorkout(
       if (updateError.message.includes("row-level security")) {
         return {
           error:
-            "خطا در به‌روزرسانی پروفایل: سیاست RLS. ورزش ثبت شد اما امتیاز به‌روز نشد.",
+            "Profile update blocked by RLS. Workout was logged, but XP was not updated.",
         };
       }
 
       return {
-        error: `ورزش ثبت شد اما خطا در به‌روزرسانی پروفایل: ${updateError.message}`,
+        error: `Workout logged, but failed to update profile: ${updateError.message}`,
       };
     }
 
@@ -177,7 +177,7 @@ export async function logWorkout(
     if (xpTransactionError) {
       console.error("❌ Error inserting xp transaction:", xpTransactionError);
       return {
-        error: `ورزش ثبت شد اما خطا در ثبت تراکنش XP: ${xpTransactionError.message}`,
+        error: `Workout logged, but failed to write XP transaction: ${xpTransactionError.message}`,
       };
     }
 
@@ -187,7 +187,7 @@ export async function logWorkout(
   } catch (err) {
     console.error("❌ Unexpected error in logWorkout:", err);
     return {
-      error: `خطای غیرمنتظره: ${err instanceof Error ? err.message : "نامشخص"}`,
+      error: `Unexpected error: ${err instanceof Error ? err.message : "Unknown"}`,
     };
   }
 }

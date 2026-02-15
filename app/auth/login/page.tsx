@@ -5,11 +5,13 @@ import { loginAction, type LoginState } from "./actions";
 import { SubmitButton } from "../components/submit-button";
 import { AuthContainer } from "../components/auth-container";
 import Link from "next/link";
+import { useActionToast } from "@/components/hooks/use-action-toast";
 
 const initialState: LoginState = {};
 
 export default function LoginPage() {
   const [state, formAction] = useActionState(loginAction, initialState);
+  useActionToast(state);
 
   return (
     <AuthContainer>
@@ -39,7 +41,6 @@ export default function LoginPage() {
                 required
                 className='w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition'
                 placeholder='you@example.com'
-                aria-describedby={state.error ? "error-message" : undefined}
               />
             </div>
 
@@ -57,24 +58,10 @@ export default function LoginPage() {
                 required
                 className='w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition'
                 placeholder='••••••••'
-                aria-describedby={state.error ? "error-message" : undefined}
               />
             </div>
 
-            {state.error && (
-              <div
-                id='error-message'
-                role='alert'
-                className='p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'>
-                <p className='text-sm text-red-800 dark:text-red-200'>
-                  {state.error}
-                </p>
-              </div>
-            )}
-
-            <SubmitButton pendingText="Signing in...">
-              Sign In
-            </SubmitButton>
+            <SubmitButton pendingText='Signing in...'>Sign In</SubmitButton>
           </form>
 
           <div className='mt-6 text-center'>

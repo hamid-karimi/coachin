@@ -3,8 +3,9 @@
 import { useActionState, useEffect, useRef } from "react";
 import { logWorkout } from "../actions";
 import type { ScheduleItem } from "../page";
+import { useActionToast } from "@/components/hooks/use-action-toast";
 
-// استایل ساده برای دکمه لودینگ
+// Simple loading button style
 const SubmitButton = ({ isPending }: { isPending: boolean }) => (
   <button
     type='submit'
@@ -15,7 +16,7 @@ const SubmitButton = ({ isPending }: { isPending: boolean }) => (
           ? "bg-gray-400 cursor-not-allowed"
           : "bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-500/30"
       }`}>
-    {isPending ? "⏳ در حال ثبت..." : "انجام شد ✅"}
+    {isPending ? "⏳ Logging..." : "Done ✅"}
   </button>
 );
 
@@ -29,8 +30,16 @@ export function WorkoutCard({
   const [state, action, isPending] = useActionState(logWorkout, {});
   const justCompleted = state?.success;
   const confettiFired = useRef(false);
+  useActionToast({
+    error: state?.error,
+    success: Boolean(state?.success && state?.earnedXp !== undefined),
+    message:
+      state?.success && state?.earnedXp !== undefined
+        ? `Workout logged. +${state.earnedXp} XP earned.`
+        : undefined,
+  });
 
-  // وقتی عملیات موفق بود، فشفشه بزن!
+  // Fire confetti after successful completion.
   useEffect(() => {
     if (justCompleted && !confettiFired.current) {
       confettiFired.current = true;
@@ -49,33 +58,36 @@ export function WorkoutCard({
         const randomInRange = (min: number, max: number) =>
           Math.random() * (max - min) + min;
 
-        const interval: ReturnType<typeof setInterval> = setInterval(function () {
-          const timeLeft = animationEnd - Date.now();
+        const interval: ReturnType<typeof setInterval> = setInterval(
+          function () {
+            const timeLeft = animationEnd - Date.now();
 
-          if (timeLeft <= 0) {
-            clearInterval(interval);
-            return;
-          }
+            if (timeLeft <= 0) {
+              clearInterval(interval);
+              return;
+            }
 
-          const particleCount = 50 * (timeLeft / duration);
-          confetti({
-            ...defaults,
-            particleCount,
-            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-          });
-          confetti({
-            ...defaults,
-            particleCount,
-            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-          });
-        }, 250);
+            const particleCount = 50 * (timeLeft / duration);
+            confetti({
+              ...defaults,
+              particleCount,
+              origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+            });
+            confetti({
+              ...defaults,
+              particleCount,
+              origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+            });
+          },
+          250,
+        );
 
         return () => clearInterval(interval);
       });
     }
   }, [justCompleted]);
 
-  // اگر قبلاً انجام شده (از سرور آمده) یا الان انجام شد:
+  // If this workout is already completed or just completed now:
   if (completed || justCompleted) {
     return (
       <div className='bg-emerald-50 border-2 border-emerald-500 p-6 rounded-2xl animate-in fade-in zoom-in duration-500'>
@@ -85,14 +97,14 @@ export function WorkoutCard({
         <p className='text-emerald-600 mt-2 font-medium'>
           {justCompleted ? (
             <>
-              عالی بود! استریکت حفظ شد.
+              Great job! Streak preserved.
               <br />
               <span className='text-sm opacity-75'>
-                +{state.earnedXp} XP دریافت کردی.
+                +{state.earnedXp} XP earned.
               </span>
             </>
           ) : (
-            "انجام شد ✅"
+            "Done ✅"
           )}
         </p>
       </div>
@@ -101,7 +113,7 @@ export function WorkoutCard({
 
   return (
     <div className='bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 rounded-2xl shadow-sm relative overflow-hidden group'>
-      {/* نوار رنگی کنار کارت */}
+      {/* Accent bar */}
       <div className='absolute right-0 top-0 bottom-0 w-2 bg-blue-500 rounded-l-full'></div>
 
       <div className='flex justify-between items-start mb-6 pr-4'>
@@ -110,7 +122,7 @@ export function WorkoutCard({
             {item.sport_types?.name}
           </h3>
           <p className='text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-2'>
-            <span>⏱️ {item.time ? item.time.slice(0, 5) : "شناور"}</span>
+            <span>⏱️ {item.time ? item.time.slice(0, 5) : "Flexible"}</span>
             <span className='bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded-full font-bold'>
               {item.sport_types?.xp_multiplier}x XP
             </span>
@@ -124,21 +136,15 @@ export function WorkoutCard({
       <form action={action}>
         <input type='hidden' name='sport_type_id' value={item.sport_type_id} />
 
-        {/* اینپوت‌های ساده شده برای MVP */}
+        {/* Minimal inputs for MVP */}
         <div className='mb-4'>
           <input
             type='text'
             name='notes'
-            placeholder='یادداشتی داری؟ (اختیاری)'
+            placeholder='Any notes? (optional)'
             className='w-full bg-slate-50 dark:bg-slate-700/50 border-0 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 transition'
           />
         </div>
-
-        {state?.error && (
-          <p className='text-red-500 text-sm mb-3 bg-red-50 p-2 rounded text-center'>
-            {state.error}
-          </p>
-        )}
 
         <SubmitButton isPending={isPending} />
       </form>

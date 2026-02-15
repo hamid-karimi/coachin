@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { useEffect } from "react";
+import { useActionToast } from "@/components/hooks/use-action-toast";
 import {
   type CommunityActionState,
   followUserAction,
@@ -23,6 +24,7 @@ export function FollowToggleButton({
 }: FollowToggleButtonProps) {
   const action = isFollowing ? unfollowUserAction : followUserAction;
   const [state, formAction, pending] = useActionState(action, initialState);
+  useActionToast(state);
 
   useEffect(() => {
     if (state.success) {
@@ -31,7 +33,7 @@ export function FollowToggleButton({
   }, [state.success, onSuccess]);
 
   return (
-    <form action={formAction} className='flex flex-col items-end gap-1'>
+    <form action={formAction}>
       <input type='hidden' name='following_id' value={targetUserId} />
       <button
         type='submit'
@@ -43,9 +45,6 @@ export function FollowToggleButton({
         } disabled:opacity-60`}>
         {pending ? "..." : isFollowing ? "Unfollow" : "Follow"}
       </button>
-      {state.error && (
-        <span className='text-[10px] text-rose-500'>{state.error}</span>
-      )}
     </form>
   );
 }

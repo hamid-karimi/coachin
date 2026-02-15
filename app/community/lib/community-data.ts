@@ -225,7 +225,7 @@ const normalizeClubMemberships = (
 
       return {
         club_id: club?.id ?? row.club_id,
-        club_name: club?.name ?? "کلاب",
+        club_name: club?.name ?? "Club",
         club_invite_code: club?.invite_code ?? "",
         is_primary: row.is_primary,
       };

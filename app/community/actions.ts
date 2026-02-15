@@ -8,6 +8,7 @@ export type CommunityActionState = {
   error?: string;
   success?: boolean;
   message?: string;
+  status?: "success" | "info" | "error";
 };
 
 const COACH_ENABLED_ROLES = new Set(["coach", "both", "admin"]);
@@ -59,17 +60,17 @@ export async function generateCoachInviteCodeAction(
   const sportTypeId = Number(sportTypeIdValue);
 
   if (!sportTypeId || Number.isNaN(sportTypeId)) {
-    return { error: "نوع ورزش معتبر نیست" };
+    return { error: "Invalid sport type." };
   }
 
   const { supabase, user, role } = await getCurrentUserAndRole();
 
   if (!user) {
-    return { error: "برای این عملیات باید وارد حساب شوید" };
+    return { error: "You must be signed in to do this." };
   }
 
   if (!COACH_ENABLED_ROLES.has(role ?? "")) {
-    return { error: "نقش فعلی شما اجازه ساخت کد مربیگری ندارد" };
+    return { error: "Your current role cannot generate coach invite codes." };
   }
 
   const code = normalizeCode(`COACH-${sportTypeId}-${randomChunk(6)}`);
@@ -90,14 +91,15 @@ export async function generateCoachInviteCodeAction(
   );
 
   if (error) {
-    return { error: `خطا در ساخت کد دعوت: ${error.message}` };
+    return { error: `Failed to generate invite code: ${error.message}` };
   }
 
   revalidatePath("/community");
 
   return {
     success: true,
-    message: `کد دعوت جدید ساخته شد: ${code}`,
+    message: `New invite code generated: ${code}`,
+    status: "success",
   };
 }
 
@@ -109,17 +111,17 @@ export async function connectCoachByCodeAction(
   const code = normalizeCode(String(rawCode ?? ""));
 
   if (!code) {
-    return { error: "کد دعوت را وارد کنید" };
+    return { error: "Please enter an invite code." };
   }
 
   const { supabase, user, role } = await getCurrentUserAndRole();
 
   if (!user) {
-    return { error: "برای این عملیات باید وارد حساب شوید" };
+    return { error: "You must be signed in to do this." };
   }
 
   if (!STUDENT_ENABLED_ROLES.has(role ?? "")) {
-    return { error: "نقش فعلی شما اجازه افزودن مربی ندارد" };
+    return { error: "Your current role cannot add a coach." };
   }
 
   const { data: result, error: rpcError } = await supabase.rpc(
@@ -128,16 +130,38 @@ export async function connectCoachByCodeAction(
   );
 
   if (rpcError) {
-    return { error: `خطا در اتصال مربی: ${rpcError.message}` };
+    return { error: `Failed to connect coach: ${rpcError.message}` };
   }
 
   if (result?.error) {
     return { error: result.error };
   }
 
+  if (result?.status === "already_connected") {
+    return {
+      success: true,
+      message: "You’re already connected to this coach.",
+      status: "info",
+    };
+  }
+
+  if (result?.status === "reactivated") {
+    revalidatePath("/community");
+
+    return {
+      success: true,
+      message: "Coach connection reactivated successfully.",
+      status: "success",
+    };
+  }
+
   revalidatePath("/community");
 
-  return { success: true, message: "مربی با موفقیت اضافه شد" };
+  return {
+    success: true,
+    message: "Coach added successfully.",
+    status: "success",
+  };
 }
 
 export async function joinClubByInviteAction(
@@ -148,13 +172,13 @@ export async function joinClubByInviteAction(
   const inviteCode = normalizeCode(String(rawCode ?? ""));
 
   if (!inviteCode) {
-    return { error: "کد دعوت کلاب را وارد کنید" };
+    return { error: "Please enter a club invite code." };
   }
 
   const { supabase, user } = await getCurrentUserAndRole();
 
   if (!user) {
-    return { error: "برای این عملیات باید وارد حساب شوید" };
+    return { error: "You must be signed in to do this." };
   }
 
   const { data: result, error: rpcError } = await supabase.rpc(
@@ -163,7 +187,7 @@ export async function joinClubByInviteAction(
   );
 
   if (rpcError) {
-    return { error: `خطا در عضویت کلاب: ${rpcError.message}` };
+    return { error: `Failed to join club: ${rpcError.message}` };
   }
 
   if (result?.error) {
@@ -172,7 +196,11 @@ export async function joinClubByInviteAction(
 
   revalidatePath("/community");
 
-  return { success: true, message: "با موفقیت به کلاب پیوستید" };
+  return {
+    success: true,
+    message: "You joined the club successfully.",
+    status: "success",
+  };
 }
 
 export async function createClubAction(
@@ -183,17 +211,17 @@ export async function createClubAction(
   const rawDescription = String(formData.get("club_description") ?? "").trim();
 
   if (!rawName) {
-    return { error: "نام کلاب را وارد کنید" };
+    return { error: "Please enter a club name." };
   }
 
   if (rawName.length < 3) {
-    return { error: "نام کلاب باید حداقل ۳ کاراکتر باشد" };
+    return { error: "Club name must be at least 3 characters." };
   }
 
   const { supabase, user } = await getCurrentUserAndRole();
 
   if (!user) {
-    return { error: "برای این عملیات باید وارد حساب شوید" };
+    return { error: "You must be signed in to do this." };
   }
 
   // Try up to 5 times to create a club with a unique invite code
@@ -210,7 +238,7 @@ export async function createClubAction(
     );
 
     if (rpcError) {
-      return { error: `خطا در ساخت کلاب: ${rpcError.message}` };
+      return { error: `Failed to create club: ${rpcError.message}` };
     }
 
     if (result?.error) {
@@ -226,11 +254,12 @@ export async function createClubAction(
 
     return {
       success: true,
-      message: `کلاب ساخته شد. کد دعوت: ${result.invite_code}`,
+      message: `Club created. Invite code: ${result.invite_code}`,
+      status: "success",
     };
   }
 
-  return { error: "در ساخت کد دعوت یکتا برای کلاب خطا رخ داد" };
+  return { error: "Failed to generate a unique club invite code." };
 }
 
 export async function setPrimaryClubAction(
@@ -240,13 +269,13 @@ export async function setPrimaryClubAction(
   const clubId = String(formData.get("club_id") ?? "").trim();
 
   if (!clubId) {
-    return { error: "کلاب معتبر نیست" };
+    return { error: "Invalid club." };
   }
 
   const { supabase, user } = await getCurrentUserAndRole();
 
   if (!user) {
-    return { error: "برای این عملیات باید وارد حساب شوید" };
+    return { error: "You must be signed in to do this." };
   }
 
   const { data: membership, error: membershipError } = await supabase
@@ -257,7 +286,7 @@ export async function setPrimaryClubAction(
     .maybeSingle();
 
   if (membershipError || !membership?.id) {
-    return { error: "شما عضو این کلاب نیستید" };
+    return { error: "You are not a member of this club." };
   }
 
   const { error: resetError } = await supabase
@@ -267,7 +296,7 @@ export async function setPrimaryClubAction(
     .eq("is_primary", true);
 
   if (resetError) {
-    return { error: `خطا در تنظیم کلاب اصلی: ${resetError.message}` };
+    return { error: `Failed to set primary club: ${resetError.message}` };
   }
 
   const { error: setError } = await supabase
@@ -277,12 +306,16 @@ export async function setPrimaryClubAction(
     .eq("user_id", user.id);
 
   if (setError) {
-    return { error: `خطا در تنظیم کلاب اصلی: ${setError.message}` };
+    return { error: `Failed to set primary club: ${setError.message}` };
   }
 
   revalidatePath("/community");
 
-  return { success: true, message: "کلاب اصلی شما به‌روزرسانی شد" };
+  return {
+    success: true,
+    message: "Your primary club was updated.",
+    status: "success",
+  };
 }
 
 export async function leaveClubAction(
@@ -292,13 +325,13 @@ export async function leaveClubAction(
   const clubId = String(formData.get("club_id") ?? "").trim();
 
   if (!clubId) {
-    return { error: "کلاب معتبر نیست" };
+    return { error: "Invalid club." };
   }
 
   const { supabase, user } = await getCurrentUserAndRole();
 
   if (!user) {
-    return { error: "برای این عملیات باید وارد حساب شوید" };
+    return { error: "You must be signed in to do this." };
   }
 
   const { data: currentMembership } = await supabase
@@ -309,7 +342,7 @@ export async function leaveClubAction(
     .maybeSingle();
 
   if (!currentMembership?.id) {
-    return { error: "شما عضو این کلاب نیستید" };
+    return { error: "You are not a member of this club." };
   }
 
   const { error: deleteError } = await supabase
@@ -319,7 +352,7 @@ export async function leaveClubAction(
     .eq("user_id", user.id);
 
   if (deleteError) {
-    return { error: `خطا در خروج از کلاب: ${deleteError.message}` };
+    return { error: `Failed to leave club: ${deleteError.message}` };
   }
 
   if (currentMembership.is_primary) {
@@ -341,7 +374,7 @@ export async function leaveClubAction(
 
   revalidatePath("/community");
 
-  return { success: true, message: "از کلاب خارج شدید" };
+  return { success: true, message: "You left the club.", status: "success" };
 }
 
 export async function assignCoachWeeklyPlanAction(
@@ -351,17 +384,17 @@ export async function assignCoachWeeklyPlanAction(
   const studentId = String(formData.get("student_id") ?? "").trim();
 
   if (!studentId) {
-    return { error: "شاگرد معتبر نیست" };
+    return { error: "Invalid student." };
   }
 
   const { supabase, user, role } = await getCurrentUserAndRole();
 
   if (!user) {
-    return { error: "برای این عملیات باید وارد حساب شوید" };
+    return { error: "You must be signed in to do this." };
   }
 
   if (!COACH_ENABLED_ROLES.has(role ?? "")) {
-    return { error: "نقش فعلی شما اجازه ارسال برنامه به شاگرد را ندارد" };
+    return { error: "Your current role cannot assign plans to students." };
   }
 
   // Use the atomic RPC function that handles everything in a transaction
@@ -372,7 +405,7 @@ export async function assignCoachWeeklyPlanAction(
 
   if (rpcError) {
     return {
-      error: `خطا در جایگزینی برنامه شاگرد: ${rpcError.message}`,
+      error: `Failed to replace student schedule: ${rpcError.message}`,
     };
   }
 
@@ -385,7 +418,8 @@ export async function assignCoachWeeklyPlanAction(
 
   return {
     success: true,
-    message: "برنامه هفتگی شما برای شاگرد جایگزین شد",
+    message: "Your weekly plan was assigned to the student.",
+    status: "success",
   };
 }
 
@@ -396,17 +430,17 @@ export async function followUserAction(
   const followingId = String(formData.get("following_id") ?? "").trim();
 
   if (!followingId) {
-    return { error: "کاربر معتبر نیست" };
+    return { error: "Invalid user." };
   }
 
   const { supabase, user } = await getCurrentUserAndRole();
 
   if (!user) {
-    return { error: "برای این عملیات باید وارد حساب شوید" };
+    return { error: "You must be signed in to do this." };
   }
 
   if (followingId === user.id) {
-    return { error: "نمی‌توانید خودتان را فالو کنید" };
+    return { error: "You cannot follow yourself." };
   }
 
   const { error } = await supabase.from("social_graph").insert({
@@ -416,15 +450,15 @@ export async function followUserAction(
 
   if (error) {
     if (error.code === "23505") {
-      return { error: "این کاربر قبلاً فالو شده است" };
+      return { error: "You already follow this user." };
     }
 
-    return { error: `خطا در فالو کردن: ${error.message}` };
+    return { error: `Failed to follow user: ${error.message}` };
   }
 
   revalidatePath("/community");
 
-  return { success: true, message: "کاربر با موفقیت فالو شد" };
+  return { success: true, message: "User followed.", status: "success" };
 }
 
 export async function unfollowUserAction(
@@ -434,13 +468,13 @@ export async function unfollowUserAction(
   const followingId = String(formData.get("following_id") ?? "").trim();
 
   if (!followingId) {
-    return { error: "کاربر معتبر نیست" };
+    return { error: "Invalid user." };
   }
 
   const { supabase, user } = await getCurrentUserAndRole();
 
   if (!user) {
-    return { error: "برای این عملیات باید وارد حساب شوید" };
+    return { error: "You must be signed in to do this." };
   }
 
   const { error } = await supabase
@@ -450,10 +484,10 @@ export async function unfollowUserAction(
     .eq("following_id", followingId);
 
   if (error) {
-    return { error: `خطا در آنفالو کردن: ${error.message}` };
+    return { error: `Failed to unfollow user: ${error.message}` };
   }
 
   revalidatePath("/community");
 
-  return { success: true, message: "کاربر آنفالو شد" };
+  return { success: true, message: "User unfollowed.", status: "success" };
 }

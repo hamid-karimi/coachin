@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useActionToast } from "@/components/hooks/use-action-toast";
 import {
   assignCoachWeeklyPlanAction,
   type CommunityActionState,
@@ -17,22 +18,17 @@ export function AssignPlanButton({ studentId }: AssignPlanButtonProps) {
     assignCoachWeeklyPlanAction,
     initialState,
   );
+  useActionToast(state);
 
   return (
-    <form action={formAction} className='flex flex-col items-end gap-1'>
+    <form action={formAction}>
       <input type='hidden' name='student_id' value={studentId} />
       <button
         type='submit'
         disabled={pending}
         className='rounded-lg bg-indigo-600 text-white px-3 py-1.5 text-xs disabled:opacity-60'>
-        {pending ? "در حال ارسال..." : "ارسال برنامه"}
+        {pending ? "Sending..." : "Assign plan"}
       </button>
-      {state.error && (
-        <span className='text-[10px] text-rose-500'>{state.error}</span>
-      )}
-      {state.success && state.message && (
-        <span className='text-[10px] text-emerald-500'>{state.message}</span>
-      )}
     </form>
   );
 }

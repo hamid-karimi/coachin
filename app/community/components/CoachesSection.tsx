@@ -13,7 +13,7 @@ export function CoachesSection({ coaches, canManage }: CoachesSectionProps) {
     <section className='bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700 p-6 shadow-sm'>
       <header className='flex items-center justify-between mb-4'>
         <h2 className='text-lg font-bold text-slate-900 dark:text-white'>
-          مربیان من
+          My Coaches
         </h2>
       </header>
 
@@ -27,7 +27,7 @@ export function CoachesSection({ coaches, canManage }: CoachesSectionProps) {
         <ul className='space-y-3'>
           {coaches.map((relationship) => {
             const { coach } = relationship;
-            const initials = coach.email?.[0]?.toUpperCase() ?? "؟";
+            const initials = coach.email?.[0]?.toUpperCase() ?? "?";
 
             return (
               <li
@@ -38,10 +38,10 @@ export function CoachesSection({ coaches, canManage }: CoachesSectionProps) {
                 </div>
                 <div className='flex-1'>
                   <p className='text-sm font-semibold text-slate-900 dark:text-white'>
-                    {coach.full_name || coach.email || "مربی ناشناس"}
+                    {coach.full_name || coach.email || "Unknown coach"}
                   </p>
                   <p className='text-xs text-slate-500 dark:text-slate-400'>
-                    {relationship.sport_type?.name || "مربی عمومی"}
+                    {relationship.sport_type?.name || "General coaching"}
                   </p>
                 </div>
               </li>
@@ -50,7 +50,7 @@ export function CoachesSection({ coaches, canManage }: CoachesSectionProps) {
         </ul>
       ) : (
         <p className='text-sm text-slate-500 dark:text-slate-400'>
-          هنوز مربی نداری.
+          You don’t have a coach yet.
         </p>
       )}
     </section>
