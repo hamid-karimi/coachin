@@ -6,6 +6,7 @@ import {
   assignCoachWeeklyPlanAction,
   type CommunityActionState,
 } from "../actions";
+import { Button } from "@/components/ui/button";
 
 const initialState: CommunityActionState = {};
 
@@ -23,12 +24,9 @@ export function AssignPlanButton({ studentId }: AssignPlanButtonProps) {
   return (
     <form action={formAction}>
       <input type='hidden' name='student_id' value={studentId} />
-      <button
-        type='submit'
-        disabled={pending}
-        className='rounded-lg bg-indigo-600 text-white px-3 py-1.5 text-xs disabled:opacity-60'>
+      <Button type='submit' size='sm' variant='secondary' disabled={pending}>
         {pending ? "Sending..." : "Assign plan"}
-      </button>
+      </Button>
     </form>
   );
 }

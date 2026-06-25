@@ -6,6 +6,7 @@ import { LeaderboardSection } from "./components/LeaderboardSection";
 import { StudentsSection } from "./components/StudentsSection";
 import { TabNavigation } from "./components/TabNavigation";
 import { getCommunityData } from "./lib/community-data";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -71,9 +72,9 @@ export default async function CommunityPage({
   const displayName = metadata.full_name || metadata.name || user.email;
 
   const leaderboardTitleByBoard: Record<string, string> = {
-    global: "🏆 Global League",
-    club: `🏟️ My Club${primaryClubName ? ` · ${primaryClubName}` : ""}`,
-    circle: "👥 My Circle",
+    global: "Global League",
+    club: `My Club${primaryClubName ? ` · ${primaryClubName}` : ""}`,
+    circle: "My Circle",
   };
 
   const leaderboardDataByBoard = {
@@ -91,13 +92,11 @@ export default async function CommunityPage({
   return (
     <CommunityLayout>
       <header className='space-y-1'>
-        <p className='text-sm text-slate-500 dark:text-slate-400'>
-          Hi, {displayName}!
-        </p>
-        <h1 className='text-3xl font-bold text-slate-900 dark:text-white'>
-          Sports Community 🌍
+        <p className='text-sm text-muted-foreground'>Hi, {displayName}!</p>
+        <h1 className='text-3xl font-bold text-foreground'>
+          Sports Community
         </h1>
-        <p className='text-sm text-slate-500 dark:text-slate-400'>
+        <p className='text-sm text-muted-foreground'>
           Manage leaderboards and coaching space here.
         </p>
       </header>
@@ -146,16 +145,14 @@ export default async function CommunityPage({
                 <LeaderboardSection
                   leaderboard={coachStudentsLeaderboard}
                   currentUserId={user.id}
-                  title='📈 Student Internal Leaderboard'
+                  title='Student Internal Leaderboard'
                   emptyMessage='No students available for ranking yet.'
                 />
 
                 <div className='flex justify-end'>
-                  <Link
-                    href='/dashboard'
-                    className='rounded-xl bg-indigo-600 text-white px-4 py-2 text-sm font-medium'>
-                    Create Workout for Student
-                  </Link>
+                  <Button asChild variant='brand'>
+                    <Link href='/dashboard'>Create Workout for Student</Link>
+                  </Button>
                 </div>
               </div>
             )}
@@ -163,7 +160,7 @@ export default async function CommunityPage({
         )}
 
         {!canCoach && !canStudy && (
-          <p className='text-sm text-amber-600 dark:text-amber-400'>
+          <p className='text-sm text-flame-ink'>
             Your current role has limited access to Coaching.
           </p>
         )}

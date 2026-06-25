@@ -1,5 +1,13 @@
 import type { CoachRelationship } from "../types";
 import { AddCoachByCodeForm } from "./AddCoachByCodeForm";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 interface CoachesSectionProps {
   coaches: CoachRelationship[];
@@ -10,49 +18,51 @@ export function CoachesSection({ coaches, canManage }: CoachesSectionProps) {
   const hasCoaches = coaches.length > 0;
 
   return (
-    <section className='bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700 p-6 shadow-sm'>
-      <header className='flex items-center justify-between mb-4'>
-        <h2 className='text-lg font-bold text-slate-900 dark:text-white'>
-          My Coaches
-        </h2>
-      </header>
+    <Card>
+      <CardHeader>
+        <CardTitle className='text-lg font-bold'>My Coaches</CardTitle>
+      </CardHeader>
 
-      {canManage && (
-        <div className='mb-4'>
-          <AddCoachByCodeForm />
-        </div>
-      )}
+      <CardContent className='space-y-4'>
+        {canManage && <AddCoachByCodeForm />}
 
-      {hasCoaches ? (
-        <ul className='space-y-3'>
-          {coaches.map((relationship) => {
-            const { coach } = relationship;
-            const initials = coach.email?.[0]?.toUpperCase() ?? "?";
+        {hasCoaches ? (
+          <ul className='space-y-3'>
+            {coaches.map((relationship) => {
+              const { coach } = relationship;
+              const initials = coach.email?.[0]?.toUpperCase() ?? "?";
 
-            return (
-              <li
-                key={coach.id}
-                className='flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800'>
-                <div className='w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-sm font-bold text-blue-800 dark:text-white'>
-                  {initials}
-                </div>
-                <div className='flex-1'>
-                  <p className='text-sm font-semibold text-slate-900 dark:text-white'>
-                    {coach.full_name || coach.email || "Unknown coach"}
-                  </p>
-                  <p className='text-xs text-slate-500 dark:text-slate-400'>
-                    {relationship.sport_type?.name || "General coaching"}
-                  </p>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      ) : (
-        <p className='text-sm text-slate-500 dark:text-slate-400'>
-          You don’t have a coach yet.
-        </p>
-      )}
-    </section>
+              return (
+                <li
+                  key={coach.id}
+                  className='flex items-center gap-3 rounded-xl bg-secondary p-3'>
+                  <Avatar className='size-10'>
+                    {coach.avatar_url ? (
+                      <AvatarImage
+                        src={coach.avatar_url}
+                        alt={coach.full_name ?? coach.email ?? "Coach"}
+                      />
+                    ) : null}
+                    <AvatarFallback>{initials}</AvatarFallback>
+                  </Avatar>
+                  <div className='min-w-0 flex-1'>
+                    <p className='truncate text-sm font-semibold text-foreground'>
+                      {coach.full_name || coach.email || "Unknown coach"}
+                    </p>
+                    <Badge variant='secondary' className='mt-1'>
+                      {relationship.sport_type?.name || "General coaching"}
+                    </Badge>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <p className='text-sm text-muted-foreground'>
+            You don’t have a coach yet.
+          </p>
+        )}
+      </CardContent>
+    </Card>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { Star } from "lucide-react";
 import { useActionToast } from "@/components/hooks/use-action-toast";
 import type { ClubMembershipSummary } from "../types";
 import {
@@ -10,6 +11,17 @@ import {
   leaveClubAction,
   setPrimaryClubAction,
 } from "../actions";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 const initialState: CommunityActionState = {};
 
@@ -43,121 +55,117 @@ export function ClubMembershipSection({
   useActionToast(leaveState);
 
   return (
-    <section className='bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700 p-6 shadow-sm space-y-4'>
-      <header className='space-y-1'>
-        <h2 className='text-lg font-bold text-slate-900 dark:text-white'>
-          Club Memberships
-        </h2>
-        <p className='text-xs text-slate-500 dark:text-slate-400'>
+    <Card>
+      <CardHeader>
+        <CardTitle className='text-lg font-bold'>Club Memberships</CardTitle>
+        <CardDescription>
           You can join multiple clubs and choose one as your primary club.
-        </p>
-      </header>
+        </CardDescription>
+      </CardHeader>
 
-      <form action={createAction} className='space-y-3'>
-        <label className='text-xs text-slate-500 dark:text-slate-400 block'>
-          Create a new club
-        </label>
-        <div className='grid gap-2 md:grid-cols-3'>
-          <input
-            name='club_name'
-            type='text'
-            required
-            minLength={3}
-            placeholder='Club name'
-            className='md:col-span-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm'
-          />
-          <input
-            name='club_description'
-            type='text'
-            placeholder='Short description (optional)'
-            className='md:col-span-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm'
-          />
-          <button
-            type='submit'
-            disabled={creating}
-            className='md:col-span-1 rounded-lg bg-indigo-600 text-white px-4 py-2 text-sm disabled:opacity-60'>
-            {creating ? "Creating..." : "Create club"}
-          </button>
-        </div>
-      </form>
+      <CardContent className='space-y-4'>
+        <form action={createAction} className='space-y-2'>
+          <Label htmlFor='club-name' className='text-muted-foreground'>
+            Create a new club
+          </Label>
+          <div className='grid gap-2 md:grid-cols-3'>
+            <Input
+              id='club-name'
+              name='club_name'
+              type='text'
+              required
+              minLength={3}
+              placeholder='Club name'
+            />
+            <Input
+              name='club_description'
+              type='text'
+              placeholder='Short description (optional)'
+            />
+            <Button type='submit' disabled={creating}>
+              {creating ? "Creating..." : "Create club"}
+            </Button>
+          </div>
+        </form>
 
-      <form action={joinAction} className='space-y-3'>
-        <label className='text-xs text-slate-500 dark:text-slate-400 block'>
-          Join with club invite code
-        </label>
-        <div className='flex gap-2'>
-          <input
-            name='club_invite_code'
-            type='text'
-            required
-            placeholder='Example: CLUB-ABC'
-            className='flex-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm'
-          />
-          <button
-            type='submit'
-            disabled={pending}
-            className='rounded-lg bg-blue-600 text-white px-4 py-2 text-sm disabled:opacity-60'>
-            {pending ? "Joining..." : "Join"}
-          </button>
-        </div>
-      </form>
+        <form action={joinAction} className='space-y-2'>
+          <Label htmlFor='club-invite-code' className='text-muted-foreground'>
+            Join with club invite code
+          </Label>
+          <div className='flex gap-2'>
+            <Input
+              id='club-invite-code'
+              name='club_invite_code'
+              type='text'
+              required
+              placeholder='Example: CLUB-ABC'
+            />
+            <Button type='submit' variant='secondary' disabled={pending}>
+              {pending ? "Joining..." : "Join"}
+            </Button>
+          </div>
+        </form>
 
-      {memberships.length === 0 ? (
-        <p className='text-sm text-slate-500 dark:text-slate-400'>
-          You do not have any club memberships yet.
-        </p>
-      ) : (
-        <ul className='space-y-2'>
-          {memberships.map((membership) => (
-            <li
-              key={membership.club_id}
-              className='rounded-xl bg-slate-50 dark:bg-slate-800 p-3 flex items-center justify-between gap-3'>
-              <div>
-                <p className='text-sm font-semibold text-slate-900 dark:text-white'>
-                  {membership.club_name}
-                </p>
-                <p className='text-xs text-slate-500 dark:text-slate-400'>
-                  Invite code: {membership.club_invite_code}
-                </p>
-              </div>
+        {memberships.length === 0 ? (
+          <p className='text-sm text-muted-foreground'>
+            You do not have any club memberships yet.
+          </p>
+        ) : (
+          <ul className='space-y-2'>
+            {memberships.map((membership) => (
+              <li
+                key={membership.club_id}
+                className='flex items-center justify-between gap-3 rounded-xl bg-secondary p-3'>
+                <div className='min-w-0'>
+                  <p className='flex items-center gap-2 truncate text-sm font-semibold text-foreground'>
+                    {membership.is_primary && (
+                      <Star
+                        className='size-4 shrink-0 fill-brand text-brand'
+                        aria-hidden
+                      />
+                    )}
+                    {membership.club_name}
+                  </p>
+                  <p className='text-xs text-muted-foreground'>
+                    Invite code: {membership.club_invite_code}
+                  </p>
+                </div>
 
-              <div className='flex items-center gap-2'>
-                {!membership.is_primary ? (
-                  <form action={setPrimaryAction}>
+                <div className='flex items-center gap-2'>
+                  {!membership.is_primary ? (
+                    <form action={setPrimaryAction}>
+                      <input
+                        type='hidden'
+                        name='club_id'
+                        value={membership.club_id}
+                      />
+                      <Button type='submit' size='sm' variant='secondary'>
+                        Set Primary
+                      </Button>
+                    </form>
+                  ) : (
+                    <Badge variant='brand'>
+                      <Star className='fill-current' aria-hidden />
+                      Primary
+                    </Badge>
+                  )}
+
+                  <form action={leaveAction}>
                     <input
                       type='hidden'
                       name='club_id'
                       value={membership.club_id}
                     />
-                    <button
-                      type='submit'
-                      className='rounded-lg bg-amber-500 text-white px-3 py-1.5 text-xs'>
-                      Set Primary
-                    </button>
+                    <Button type='submit' size='sm' variant='destructive'>
+                      Leave
+                    </Button>
                   </form>
-                ) : (
-                  <span className='text-xs rounded-lg bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 px-2 py-1'>
-                    Primary
-                  </span>
-                )}
-
-                <form action={leaveAction}>
-                  <input
-                    type='hidden'
-                    name='club_id'
-                    value={membership.club_id}
-                  />
-                  <button
-                    type='submit'
-                    className='rounded-lg bg-rose-600 text-white px-3 py-1.5 text-xs'>
-                    Leave
-                  </button>
-                </form>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </section>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </CardContent>
+    </Card>
   );
 }

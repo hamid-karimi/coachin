@@ -2,12 +2,14 @@
 
 import { useActionState } from "react";
 import { useEffect } from "react";
+import { UserPlus, UserMinus } from "lucide-react";
 import { useActionToast } from "@/components/hooks/use-action-toast";
 import {
   type CommunityActionState,
   followUserAction,
   unfollowUserAction,
 } from "../actions";
+import { Button } from "@/components/ui/button";
 
 const initialState: CommunityActionState = {};
 
@@ -35,16 +37,18 @@ export function FollowToggleButton({
   return (
     <form action={formAction}>
       <input type='hidden' name='following_id' value={targetUserId} />
-      <button
+      <Button
         type='submit'
-        disabled={pending}
-        className={`text-xs px-2 py-1 rounded-md ${
-          isFollowing
-            ? "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200"
-            : "bg-indigo-600 text-white"
-        } disabled:opacity-60`}>
+        size='sm'
+        variant={isFollowing ? "secondary" : "brand"}
+        disabled={pending}>
+        {isFollowing ? (
+          <UserMinus aria-hidden />
+        ) : (
+          <UserPlus aria-hidden />
+        )}
         {pending ? "..." : isFollowing ? "Unfollow" : "Follow"}
-      </button>
+      </Button>
     </form>
   );
 }

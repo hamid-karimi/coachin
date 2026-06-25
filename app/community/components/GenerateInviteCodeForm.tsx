@@ -7,6 +7,9 @@ import {
   generateCoachInviteCodeAction,
 } from "../actions";
 import type { CoachInviteCodeSummary, SportTypeSummary } from "../types";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 const initialState: CommunityActionState = {};
 
@@ -27,15 +30,16 @@ export function GenerateInviteCodeForm({
 
   return (
     <div className='space-y-4'>
-      <form action={formAction} className='space-y-3'>
-        <label className='text-xs text-slate-500 dark:text-slate-400 block'>
+      <form action={formAction} className='space-y-2'>
+        <Label htmlFor='sport-type-id' className='text-muted-foreground'>
           Generate invite code for sport
-        </label>
+        </Label>
 
         <div className='flex gap-2'>
           <select
+            id='sport-type-id'
             name='sport_type_id'
-            className='flex-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm'
+            className='flex h-9 w-full min-w-0 flex-1 rounded-md border border-input bg-background px-3 py-1 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50'
             required>
             <option value=''>Select sport type</option>
             {sportTypes.map((sport) => (
@@ -45,40 +49,35 @@ export function GenerateInviteCodeForm({
             ))}
           </select>
 
-          <button
-            type='submit'
-            disabled={pending}
-            className='rounded-lg bg-green-600 text-white px-4 py-2 text-sm disabled:opacity-60'>
+          <Button type='submit' disabled={pending}>
             {pending ? "Generating..." : "Generate code"}
-          </button>
+          </Button>
         </div>
       </form>
 
       <div className='space-y-2'>
-        <p className='text-xs text-slate-500 dark:text-slate-400'>
+        <p className='text-xs text-muted-foreground'>
           Your current invite codes
         </p>
         {inviteCodes.length === 0 ? (
-          <p className='text-xs text-slate-400 dark:text-slate-500'>
-            No invite codes yet.
-          </p>
+          <p className='text-xs text-muted-foreground'>No invite codes yet.</p>
         ) : (
           <ul className='space-y-2'>
             {inviteCodes.map((invite) => (
               <li
                 key={invite.code}
-                className='rounded-lg bg-slate-50 dark:bg-slate-800 px-3 py-2 text-sm flex items-center justify-between gap-3'>
-                <div>
-                  <p className='font-mono text-slate-900 dark:text-white'>
+                className='flex items-center justify-between gap-3 rounded-lg bg-secondary px-3 py-2 text-sm'>
+                <div className='min-w-0'>
+                  <p className='truncate font-mono text-foreground'>
                     {invite.code}
                   </p>
-                  <p className='text-xs text-slate-500 dark:text-slate-400'>
+                  <p className='text-xs text-muted-foreground'>
                     {invite.sport_type?.name ?? "No sport"}
                   </p>
                 </div>
-                <span className='text-xs text-emerald-700 dark:text-emerald-400'>
+                <Badge variant={invite.is_active ? "brand" : "outline"}>
                   {invite.is_active ? "Active" : "Inactive"}
-                </span>
+                </Badge>
               </li>
             ))}
           </ul>
