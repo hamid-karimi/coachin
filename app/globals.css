@@ -1,26 +1,137 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
+  --radius: 0.75rem;
+
+  /* shadcn semantic tokens */
   --background: #ffffff;
   --foreground: #171717;
+  --card: #ffffff;
+  --card-foreground: #171717;
+  --popover: #ffffff;
+  --popover-foreground: #171717;
+  --primary: #1d9e75;
+  --primary-foreground: #ffffff;
+  --secondary: #f1efe8;
+  --secondary-foreground: #2c2c2a;
+  --muted: #f4f4f2;
+  --muted-foreground: #5f5e5a;
+  --accent: #e1f5ee;
+  --accent-foreground: #0f6e56;
+  --destructive: #e24b4a;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 0, 0, 0.1);
+  --input: rgba(0, 0, 0, 0.12);
+  --ring: #1d9e75;
+
+  /* CoachIn brand tokens — Emerald athletic */
+  --brand: #1d9e75;
+  --brand-foreground: #ffffff;
+  --brand-ink: #0f6e56;
+  --brand-tint: #e1f5ee;
+  --xp: #ef9f27;
+  --xp-ink: #854f0b;
+  --xp-tint: #faeeda;
+  --flame: #d85a30;
+  --flame-ink: #993c1d;
+  --flame-tint: #faece7;
+
+  /* league tiers */
+  --tier-bronze: #d85a30;
+  --tier-silver: #888780;
+  --tier-gold: #ef9f27;
+  --tier-platinum: #534ab7;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --card: #171717;
+  --card-foreground: #ededed;
+  --popover: #171717;
+  --popover-foreground: #ededed;
+  --primary: #1d9e75;
+  --primary-foreground: #ffffff;
+  --secondary: #262625;
+  --secondary-foreground: #ededed;
+  --muted: #1f1f1e;
+  --muted-foreground: #b4b2a9;
+  --accent: #0f3a2e;
+  --accent-foreground: #9fe1cb;
+  --destructive: #f09595;
+  --destructive-foreground: #2c2c2a;
+  --border: rgba(255, 255, 255, 0.12);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #1d9e75;
+
+  --brand: #1d9e75;
+  --brand-foreground: #ffffff;
+  --brand-ink: #9fe1cb;
+  --brand-tint: #10342b;
+  --xp: #ef9f27;
+  --xp-ink: #fac775;
+  --xp-tint: #3a2a08;
+  --flame: #e0764a;
+  --flame-ink: #f0997b;
+  --flame-tint: #3a1c10;
+
+  --tier-bronze: #f0997b;
+  --tier-silver: #b4b2a9;
+  --tier-gold: #fac775;
+  --tier-platinum: #afa9ec;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-tint: var(--brand-tint);
+  --color-xp: var(--xp);
+  --color-xp-ink: var(--xp-ink);
+  --color-xp-tint: var(--xp-tint);
+  --color-flame: var(--flame);
+  --color-flame-ink: var(--flame-ink);
+  --color-flame-tint: var(--flame-tint);
+
+  --color-tier-bronze: var(--tier-bronze);
+  --color-tier-silver: var(--tier-silver);
+  --color-tier-gold: var(--tier-gold);
+  --color-tier-platinum: var(--tier-platinum);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
