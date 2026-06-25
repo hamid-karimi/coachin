@@ -4,6 +4,8 @@ import type { ProfileSummary } from "../types";
 import { FollowToggleButton } from "./FollowToggleButton";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import { UserRoundPlus, SearchX } from "lucide-react";
+import { EmptyState } from "@/components/design-system/empty-state";
 import {
   Card,
   CardContent,
@@ -52,16 +54,16 @@ export function FriendsSection({
   }, [followingUserIds, remoteFollowingIds]);
 
   useEffect(() => {
-    const controller = new AbortController();
     const trimmedQuery = query.trim();
 
+    // No query: nothing to fetch. The "enter a search term" empty state is
+    // handled in render, so we avoid synchronously setting state here (which
+    // triggered cascading re-renders on every keystroke and the lint warning).
     if (!trimmedQuery) {
-      setProfiles([]);
-      setRemoteFollowingIds(followingUserIds);
-      setIsLoading(false);
-      return () => controller.abort();
+      return;
     }
 
+    const controller = new AbortController();
     const currentSequence = ++requestSequenceRef.current;
 
     const timeoutId = window.setTimeout(async () => {
@@ -141,9 +143,11 @@ export function FriendsSection({
         <div className='space-y-2'>
           <p className='text-xs text-muted-foreground'>My Following</p>
           {followingProfiles.length === 0 ? (
-            <p className='text-sm text-muted-foreground'>
-              You are not following anyone yet.
-            </p>
+            <EmptyState
+              icon={<UserRoundPlus />}
+              title='No one in your circle yet'
+              description='Search for people by name or email and follow them to build your circle.'
+            />
           ) : (
             <ul className='space-y-2'>
               {followingProfiles.map((profile) => (
@@ -188,7 +192,11 @@ export function FriendsSection({
           ) : isLoading ? (
             <p className='text-sm text-muted-foreground'>Searching...</p>
           ) : profiles.length === 0 ? (
-            <p className='text-sm text-muted-foreground'>No results found.</p>
+            <EmptyState
+              icon={<SearchX />}
+              title='No matches'
+              description={`No users found for “${query.trim()}”. Try a different name or email.`}
+            />
           ) : (
             <ul className='space-y-2'>
               {profiles.map((profile) => {

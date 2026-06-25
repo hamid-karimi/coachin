@@ -16,6 +16,11 @@ const eslintConfig = defineConfig([
     "build/**",
     "storybook-static/**",
     "next-env.d.ts",
+    // Build artifacts can also live inside nested working copies (e.g. agent
+    // worktrees under .claude/), so ignore those + any nested build output.
+    ".claude/**",
+    "**/.next/**",
+    "**/storybook-static/**",
   ]),
   ...storybook.configs["flat/recommended"],
 ]);
