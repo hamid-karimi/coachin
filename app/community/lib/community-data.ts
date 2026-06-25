@@ -80,6 +80,7 @@ const normalizeCoaches = (
         full_name: item.coach.full_name ?? null,
         xp: item.coach.xp ?? null,
         level: item.coach.level ?? null,
+        league_tier: item.coach.league_tier ?? null,
         avatar_url: item.coach.avatar_url ?? null,
       },
       sport_type:
@@ -118,6 +119,7 @@ const normalizeStudents = (
         full_name: item.student.full_name ?? null,
         xp: item.student.xp ?? null,
         level: item.student.level ?? null,
+        league_tier: item.student.league_tier ?? null,
         avatar_url: item.student.avatar_url ?? null,
       },
       sport_type:
@@ -142,7 +144,7 @@ const buildWeeklyLeaderboard = async (
   const buildTotalXpLeaderboard = async (): Promise<ProfileSummary[]> => {
     let query = supabase
       .from("profiles")
-      .select("id, email, full_name, avatar_url, level, xp")
+      .select("id, email, full_name, avatar_url, level, league_tier, xp")
       .order("xp", { ascending: false })
       .limit(50);
 
@@ -159,6 +161,7 @@ const buildWeeklyLeaderboard = async (
         full_name: string | null;
         avatar_url: string | null;
         level: number | null;
+        league_tier: string | null;
         xp: number | null;
       }) => ({
         id: row.id,
@@ -166,6 +169,7 @@ const buildWeeklyLeaderboard = async (
         full_name: row.full_name ?? null,
         avatar_url: row.avatar_url ?? null,
         level: row.level ?? 1,
+        league_tier: row.league_tier ?? null,
         xp: row.xp ?? 0,
       }),
     );
@@ -182,6 +186,7 @@ const buildWeeklyLeaderboard = async (
       full_name: string | null;
       avatar_url: string | null;
       level: number | null;
+      league_tier: string | null;
       weekly_xp: number | null;
     }) => ({
       id: row.id,
@@ -189,6 +194,7 @@ const buildWeeklyLeaderboard = async (
       full_name: row.full_name ?? null,
       avatar_url: row.avatar_url ?? null,
       level: row.level ?? 1,
+      league_tier: row.league_tier ?? null,
       xp: row.weekly_xp ?? 0,
       weekly_xp: row.weekly_xp ?? 0,
     }),
@@ -325,14 +331,14 @@ export async function getCommunityData(
         supabase
           .from("coaching_relationships")
           .select(
-            "coach:profiles(id, email, xp, level, full_name, avatar_url), sport_types(id, name)",
+            "coach:profiles(id, email, xp, level, league_tier, full_name, avatar_url), sport_types(id, name)",
           )
           .eq("student_id", user.id)
           .eq("status", "active"),
         supabase
           .from("coaching_relationships")
           .select(
-            "student:profiles(id, email, xp, level, full_name, avatar_url), sport_types(id, name)",
+            "student:profiles(id, email, xp, level, league_tier, full_name, avatar_url), sport_types(id, name)",
           )
           .eq("coach_id", user.id)
           .eq("status", "active"),
@@ -438,7 +444,7 @@ export async function getCommunityData(
     const { data: rawFollowingProfilesData } = followingIds.length
       ? await supabase
           .from("profiles")
-          .select("id, email, full_name, xp, level, avatar_url")
+          .select("id, email, full_name, xp, level, league_tier, avatar_url")
           .in("id", followingIds)
       : { data: [] as ProfileSummary[] };
 

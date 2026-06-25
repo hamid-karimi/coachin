@@ -5,6 +5,7 @@ export type ProfileSummary = {
   xp?: number | null;
   weekly_xp?: number | null;
   level?: number | null;
+  league_tier?: string | null;
   avatar_url?: string | null;
 };
 

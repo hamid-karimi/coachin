@@ -18,17 +18,15 @@ interface LeaderboardSectionProps {
   followingUserIds?: string[];
 }
 
+const TIERS: readonly Tier[] = ["bronze", "silver", "gold", "platinum"];
+
 /**
- * Map a level into a league `Tier` for the DS `TierBadge`. UI-only
- * derivation — `ProfileSummary` carries no `league_tier` column, so we
- * approximate from level without touching the data layer.
+ * Map the real `profiles.league_tier` string onto the DS `TierBadge`
+ * `Tier` union. Unknown or missing values fall back to `"bronze"`.
  */
-function tierFromLevel(level?: number | null): Tier {
-  const safeLevel = level ?? 1;
-  if (safeLevel >= 30) return "platinum";
-  if (safeLevel >= 15) return "gold";
-  if (safeLevel >= 5) return "silver";
-  return "bronze";
+function tierFromLeague(leagueTier?: string | null): Tier {
+  const normalized = leagueTier?.toLowerCase().trim();
+  return TIERS.find((tier) => tier === normalized) ?? "bronze";
 }
 
 function profileName(profile: ProfileSummary) {
@@ -78,7 +76,7 @@ export function LeaderboardSection({
                     name={profileName(profile)}
                     initials={profileInitials(profile)}
                     xp={profile.xp ?? 0}
-                    tier={tierFromLevel(profile.level)}
+                    tier={tierFromLeague(profile.league_tier)}
                     avatarUrl={profile.avatar_url ?? undefined}
                     highlight={isCurrent}
                   />
