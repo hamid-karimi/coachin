@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { CalendarCheck, Trophy, Users, Zap } from "lucide-react";
+import { ThemeToggle } from "@/components/design-system/theme-toggle";
 
 interface AuthShellProps {
   children: ReactNode;
@@ -30,7 +31,11 @@ const features = [
 
 export function AuthShell({ children }: AuthShellProps) {
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="relative min-h-screen bg-background flex">
+      <div className="absolute right-4 top-4 z-10">
+        <ThemeToggle />
+      </div>
+
       {/* Desktop brand panel */}
       <aside className="hidden md:flex md:w-[46%] flex-col justify-between bg-brand text-brand-foreground p-12">
         <div>
