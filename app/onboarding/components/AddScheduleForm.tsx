@@ -1,17 +1,29 @@
+"use client";
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { SportChip } from "@/components/design-system/sport-chip";
+import { sportFromName } from "@/lib/sports";
+import { cn } from "@/lib/utils";
+
 interface SportType {
   id: string | number;
   name: string;
   [key: string]: unknown;
 }
 
+// day_of_week semantics are 0=Sunday..6=Saturday (matches the DB / actions).
+// UI shows a Monday-first row, but each chip carries its real 0-6 id.
 const DAYS = [
-  { id: 0, name: "Sunday" },
-  { id: 1, name: "Monday" },
-  { id: 2, name: "Tuesday" },
-  { id: 3, name: "Wednesday" },
-  { id: 4, name: "Thursday" },
-  { id: 5, name: "Friday" },
-  { id: 6, name: "Saturday" },
+  { id: 1, short: "Mon" },
+  { id: 2, short: "Tue" },
+  { id: 3, short: "Wed" },
+  { id: 4, short: "Thu" },
+  { id: 5, short: "Fri" },
+  { id: 6, short: "Sat" },
+  { id: 0, short: "Sun" },
 ];
 
 interface AddScheduleFormProps {
@@ -25,64 +37,107 @@ export function AddScheduleForm({
   onSubmit,
   isPending = false,
 }: AddScheduleFormProps) {
+  const [dayOfWeek, setDayOfWeek] = useState<number | null>(null);
+  const [sportId, setSportId] = useState<string>("");
+  const [resetKey, setResetKey] = useState(0);
+
+  const canSubmit = dayOfWeek !== null && sportId !== "";
+
+  function handleSubmit(formData: FormData) {
+    if (!canSubmit) return;
+    onSubmit(formData);
+    setDayOfWeek(null);
+    setSportId("");
+    setResetKey((k) => k + 1);
+  }
+
   return (
-    <div className='bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg mb-10 border border-blue-200 dark:border-blue-800'>
-      <h3 className='font-bold mb-4 text-blue-800 dark:text-blue-300'>
-        ➕ Add new activity
+    <div className='mb-8 rounded-xl border border-border bg-secondary/40 p-5 md:p-6'>
+      <h3 className='mb-4 font-semibold text-card-foreground'>
+        Add a session
       </h3>
 
-      <form action={onSubmit} className='flex flex-wrap gap-4 items-end'>
+      <form action={handleSubmit} className='flex flex-col gap-5'>
+        {/* hidden inputs the action reads by name */}
+        <input
+          type='hidden'
+          name='day_of_week'
+          value={dayOfWeek ?? ""}
+          readOnly
+        />
+        <input type='hidden' name='sport_type_id' value={sportId} readOnly />
+
         <div className='flex flex-col gap-2'>
-          <label className='text-sm font-medium text-slate-700 dark:text-slate-300'>
-            Day of week
-          </label>
-          <select
-            name='day_of_week'
-            className='p-2 border border-slate-300 dark:border-slate-600 rounded-md w-40 bg-white dark:bg-slate-700 text-slate-900 dark:text-white'
-            disabled={isPending}>
-            {DAYS.map((day) => (
-              <option key={day.id} value={day.id}>
-                {day.name}
-              </option>
-            ))}
-          </select>
+          <Label>Day of week</Label>
+          <div className='flex flex-wrap gap-2'>
+            {DAYS.map((day) => {
+              const active = dayOfWeek === day.id;
+              return (
+                <button
+                  key={day.id}
+                  type='button'
+                  onClick={() => setDayOfWeek(day.id)}
+                  disabled={isPending}
+                  aria-pressed={active}
+                  className={cn(
+                    "h-9 min-w-12 rounded-full px-3 text-sm font-medium transition-colors disabled:opacity-50",
+                    active
+                      ? "bg-brand text-brand-foreground"
+                      : "bg-secondary text-muted-foreground hover:bg-secondary/80",
+                  )}>
+                  {day.short}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div className='flex flex-col gap-2'>
-          <label className='text-sm font-medium text-slate-700 dark:text-slate-300'>
-            Sport type
-          </label>
-          <select
-            name='sport_type_id'
-            className='p-2 border border-slate-300 dark:border-slate-600 rounded-md w-40 bg-white dark:bg-slate-700 text-slate-900 dark:text-white'
-            disabled={isPending}>
-            <option value=''>Select</option>
-            {sports?.map((sport: SportType) => (
-              <option key={sport.id} value={sport.id}>
-                {sport.name}
-              </option>
-            ))}
-          </select>
+          <Label>Sport</Label>
+          <div className='flex flex-wrap gap-2'>
+            {sports?.map((sport: SportType) => {
+              const value = String(sport.id);
+              const active = sportId === value;
+              return (
+                <button
+                  key={sport.id}
+                  type='button'
+                  onClick={() => setSportId(value)}
+                  disabled={isPending}
+                  aria-pressed={active}
+                  className={cn(
+                    "rounded-full transition-all disabled:opacity-50",
+                    active
+                      ? "ring-2 ring-brand ring-offset-1 ring-offset-card"
+                      : "opacity-80 hover:opacity-100",
+                  )}>
+                  <SportChip sport={sportFromName(sport.name)} />
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <div className='flex flex-col gap-2'>
-          <label className='text-sm font-medium text-slate-700 dark:text-slate-300'>
-            Time (optional)
-          </label>
-          <input
-            type='time'
-            name='time'
-            className='p-2 border border-slate-300 dark:border-slate-600 rounded-md w-32 bg-white dark:bg-slate-700 text-slate-900 dark:text-white'
-            disabled={isPending}
-          />
-        </div>
+        <div className='flex flex-wrap items-end gap-4'>
+          <div className='flex flex-col gap-2'>
+            <Label htmlFor='schedule-time'>Time (optional)</Label>
+            <Input
+              key={resetKey}
+              id='schedule-time'
+              type='time'
+              name='time'
+              className='w-36'
+              disabled={isPending}
+            />
+          </div>
 
-        <button
-          type='submit'
-          className='bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed'
-          disabled={isPending}>
-          {isPending ? "Adding..." : "Add to schedule"}
-        </button>
+          <Button
+            type='submit'
+            variant='brand'
+            disabled={isPending || !canSubmit}>
+            {isPending ? "Adding..." : "Add session"}
+          </Button>
+        </div>
       </form>
     </div>
   );
