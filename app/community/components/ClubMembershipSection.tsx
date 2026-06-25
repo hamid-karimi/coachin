@@ -1,8 +1,10 @@
 "use client";
 
 import { useActionState } from "react";
-import { Star } from "lucide-react";
+import { Star, UsersRound } from "lucide-react";
 import { useActionToast } from "@/components/hooks/use-action-toast";
+import { ConfirmButton } from "@/components/design-system/confirm-button";
+import { EmptyState } from "@/components/design-system/empty-state";
 import type { ClubMembershipSummary } from "../types";
 import {
   type CommunityActionState,
@@ -107,9 +109,11 @@ export function ClubMembershipSection({
         </form>
 
         {memberships.length === 0 ? (
-          <p className='text-sm text-muted-foreground'>
-            You do not have any club memberships yet.
-          </p>
+          <EmptyState
+            icon={<UsersRound />}
+            title='No clubs yet'
+            description='Create a club or join one with an invite code to compete on the club leaderboard.'
+          />
         ) : (
           <ul className='space-y-2'>
             {memberships.map((membership) => (
@@ -150,16 +154,19 @@ export function ClubMembershipSection({
                     </Badge>
                   )}
 
-                  <form action={leaveAction}>
-                    <input
-                      type='hidden'
-                      name='club_id'
-                      value={membership.club_id}
-                    />
-                    <Button type='submit' size='sm' variant='destructive'>
-                      Leave
-                    </Button>
-                  </form>
+                  <ConfirmButton
+                    size='sm'
+                    variant='destructive'
+                    title={`Leave ${membership.club_name}?`}
+                    description="You'll drop off this club's leaderboard. You can rejoin later with the invite code."
+                    confirmLabel='Leave club'
+                    onConfirm={() => {
+                      const formData = new FormData();
+                      formData.set("club_id", membership.club_id);
+                      leaveAction(formData);
+                    }}>
+                    Leave
+                  </ConfirmButton>
                 </div>
               </li>
             ))}

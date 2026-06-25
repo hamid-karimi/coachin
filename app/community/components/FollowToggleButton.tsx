@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { useEffect } from "react";
-import { UserPlus, UserMinus } from "lucide-react";
+import { UserPlus, UserMinus, Loader2 } from "lucide-react";
 import { useActionToast } from "@/components/hooks/use-action-toast";
 import {
   type CommunityActionState,
@@ -41,13 +41,16 @@ export function FollowToggleButton({
         type='submit'
         size='sm'
         variant={isFollowing ? "secondary" : "brand"}
-        disabled={pending}>
-        {isFollowing ? (
+        disabled={pending}
+        aria-busy={pending}>
+        {pending ? (
+          <Loader2 className='animate-spin' aria-hidden />
+        ) : isFollowing ? (
           <UserMinus aria-hidden />
         ) : (
           <UserPlus aria-hidden />
         )}
-        {pending ? "..." : isFollowing ? "Unfollow" : "Follow"}
+        {isFollowing ? "Unfollow" : "Follow"}
       </Button>
     </form>
   );
