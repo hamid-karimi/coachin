@@ -1,0 +1,5 @@
+# Machine-specific graphify artifacts (absolute paths / local caches)
+.graphify_python
+.graphify_root
+.graphify_*
+cache/
