@@ -44,7 +44,7 @@ export async function fetchDiscoverProfiles(
 
   let discoverQuery = supabase
     .from("profiles")
-    .select("id, email, full_name, xp, level, avatar_url")
+    .select("id, email, full_name, xp, level, league_tier, avatar_url")
     .neq("id", currentUserId)
     .order("xp", { ascending: false });
 
