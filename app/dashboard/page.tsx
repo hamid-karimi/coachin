@@ -1,6 +1,11 @@
 import { createClient, getUser } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { AuthContainer } from "../auth/components/auth-container";
+import { Flame } from "lucide-react";
+
+import { AppShell } from "@/components/design-system/app-shell";
+import { XpBar } from "@/components/design-system/xp-bar";
+import { StatCard } from "@/components/design-system/stat-card";
+import { levelProgress } from "@/lib/xp";
 import { LogoutButton } from "./logout-button";
 import { WorkoutCard } from "./components/workout-card";
 
@@ -15,6 +20,12 @@ const DAY_NAMES = [
   "Friday",
   "Saturday",
 ];
+
+function greeting(hour: number): string {
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+}
 
 type SportTypeSummary = {
   id?: number | null;
@@ -85,95 +96,73 @@ export default async function Dashboard() {
     return todaysLogs?.some((log) => log.sport_type_id === sportId);
   };
 
-  const xpProgress = ((profile?.xp || 0) % 1000) / 10;
+  const name = user.user_metadata.full_name || user.email;
 
   return (
-    <AuthContainer>
-      <div className='w-full max-w-4xl p-8'>
-        <div className='bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-8'>
-          {/* Header with user info and logout */}
-          <div className='flex justify-between items-center mb-8 pb-6 border-b border-slate-200 dark:border-slate-700'>
-            <div>
-              <h1 className='text-3xl font-bold text-slate-900 dark:text-white'>
-                Dashboard
-              </h1>
-              <p className='text-slate-600 dark:text-slate-400 mt-1'>
-                Welcome back, {user.user_metadata.full_name || user.email}!
-              </p>
-              <p className='text-sm text-slate-500 dark:text-slate-400 mt-2'>
-                {DAY_NAMES[dayIndex]}, {dateString}
-              </p>
-            </div>
-            <LogoutButton />
+    <AppShell>
+      <div className="mx-auto w-full max-w-4xl">
+        {/* Header */}
+        <div className="border-border mb-8 flex items-start justify-between gap-4 border-b pb-6">
+          <div>
+            <h1 className="text-foreground text-3xl font-bold">
+              {greeting(today.getHours())}, {name}
+            </h1>
+            <p className="text-muted-foreground mt-2 text-sm">
+              {DAY_NAMES[dayIndex]}, {dateString}
+            </p>
+          </div>
+          <LogoutButton />
+        </div>
+
+        <div className="grid gap-6">
+          {/* XP / Level progress */}
+          <div className="bg-card border-border rounded-2xl border p-6">
+            <XpBar
+              level={profile.level ?? 1}
+              {...levelProgress(profile.xp ?? 0)}
+            />
           </div>
 
-          {/* Content */}
-          <div className='grid gap-6'>
-            <div className='grid gap-4 sm:grid-cols-3'>
-              <div className='rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/40 p-4'>
-                <p className='text-sm text-slate-600 dark:text-slate-300'>
-                  Streak
-                </p>
-                <p className='text-2xl font-bold text-slate-900 dark:text-white'>
-                  {profile?.current_streak || 0}
-                </p>
-              </div>
-              <div className='rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/40 p-4'>
-                <p className='text-sm text-slate-600 dark:text-slate-300'>
-                  Level
-                </p>
-                <p className='text-2xl font-bold text-slate-900 dark:text-white'>
-                  {profile?.level || 1}
-                </p>
-              </div>
-              <div className='rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/40 p-4'>
-                <p className='text-sm text-slate-600 dark:text-slate-300'>
-                  Total XP
-                </p>
-                <p className='text-2xl font-bold text-slate-900 dark:text-white'>
-                  {profile?.xp || 0}
-                </p>
-              </div>
-              <div className='rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 sm:col-span-3'>
-                <div className='flex justify-between text-sm text-slate-600 dark:text-slate-300'>
-                  <span>Progress to next level</span>
-                  <span>{Math.round(xpProgress)}%</span>
-                </div>
-                <div className='mt-3 h-3 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden'>
-                  <div
-                    className='h-full bg-linear-to-r from-blue-500 to-indigo-500 transition-all duration-500'
-                    style={{ width: `${xpProgress}%` }}
-                  />
-                </div>
-              </div>
-            </div>
+          {/* Stat row */}
+          <div className="grid gap-4 sm:grid-cols-3">
+            <StatCard
+              label="Streak"
+              value={profile.current_streak ?? 0}
+              accent="flame"
+              icon={<Flame className="size-5" aria-hidden />}
+            />
+            <StatCard label="Level" value={profile.level ?? 1} />
+            <StatCard label="Total XP" value={profile.xp ?? 0} />
+          </div>
 
-            <div>
-              <h2 className='text-2xl font-bold text-slate-900 dark:text-white mb-6'>
-                Today&apos;s Missions
-              </h2>
+          {/* Today's plan */}
+          <div>
+            <h2 className="text-foreground mb-6 text-2xl font-bold">
+              Today&apos;s plan
+            </h2>
 
-              {!todaysPlan || todaysPlan.length === 0 ? (
-                <div className='text-center p-8'>Rest day</div>
-              ) : (
-                <div className='grid gap-4'>
-                  {todaysPlan.map((item: ScheduleItem) => {
-                    const completed = isCompleted(item.sport_type_id);
+            {!todaysPlan || todaysPlan.length === 0 ? (
+              <div className="bg-secondary text-muted-foreground rounded-2xl p-8 text-center">
+                Rest day — no sessions scheduled.
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {todaysPlan.map((item: ScheduleItem) => {
+                  const completed = isCompleted(item.sport_type_id);
 
-                    return (
-                      <WorkoutCard
-                        key={item.id}
-                        item={item}
-                        completed={completed}
-                      />
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+                  return (
+                    <WorkoutCard
+                      key={item.id}
+                      item={item}
+                      completed={completed}
+                    />
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>
-    </AuthContainer>
+    </AppShell>
   );
 }

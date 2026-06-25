@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { AppShell } from "@/components/design-system/app-shell";
 
 interface CommunityLayoutProps {
   children: ReactNode;
@@ -6,14 +7,10 @@ interface CommunityLayoutProps {
 
 export function CommunityLayout({ children }: CommunityLayoutProps) {
   return (
-    <div
-      className='min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-4'
-      dir='ltr'>
-      <div className='w-full max-w-5xl'>
-        <div className='bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-6 space-y-8'>
-          {children}
-        </div>
+    <AppShell>
+      <div className='mx-auto w-full max-w-5xl space-y-8' dir='ltr'>
+        {children}
       </div>
-    </div>
+    </AppShell>
   );
 }

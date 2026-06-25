@@ -1,24 +1,16 @@
 "use client";
 
 import { useActionState, useEffect, useRef } from "react";
+import { Clock, Flame } from "lucide-react";
+
 import { logWorkout } from "../actions";
 import type { ScheduleItem } from "../page";
 import { useActionToast } from "@/components/hooks/use-action-toast";
-
-// Simple loading button style
-const SubmitButton = ({ isPending }: { isPending: boolean }) => (
-  <button
-    type='submit'
-    disabled={isPending}
-    className={`w-full py-4 rounded-xl font-bold text-lg shadow-lg transition-all transform active:scale-95
-      ${
-        isPending
-          ? "bg-gray-400 cursor-not-allowed"
-          : "bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-500/30"
-      }`}>
-    {isPending ? "⏳ Logging..." : "Done ✅"}
-  </button>
-);
+import { sportFromName } from "@/lib/sports";
+import { SportIcon } from "@/components/design-system/sport-chip";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export function WorkoutCard({
   item,
@@ -87,66 +79,75 @@ export function WorkoutCard({
     }
   }, [justCompleted]);
 
+  const sport = sportFromName(item.sport_types?.name);
+  const time = item.time ? item.time.slice(0, 5) : "Flexible";
+
   // If this workout is already completed or just completed now:
   if (completed || justCompleted) {
     return (
-      <div className='bg-emerald-50 border-2 border-emerald-500 p-6 rounded-2xl animate-in fade-in zoom-in duration-500'>
-        <h3 className='text-xl font-bold text-emerald-800 flex items-center gap-2'>
-          {item.sport_types?.name} <span className='text-2xl'>🔥</span>
-        </h3>
-        <p className='text-emerald-600 mt-2 font-medium'>
-          {justCompleted ? (
-            <>
-              Great job! Streak preserved.
-              <br />
-              <span className='text-sm opacity-75'>
-                +{state.earnedXp} XP earned.
-              </span>
-            </>
-          ) : (
-            "Done ✅"
-          )}
-        </p>
+      <div className="bg-brand-tint text-brand-ink animate-in fade-in zoom-in flex items-center gap-3 rounded-2xl border border-brand/20 p-6 duration-500">
+        <SportIcon sport={sport} />
+        <div>
+          <h3 className="flex items-center gap-2 text-lg font-semibold">
+            {item.sport_types?.name}
+            <Flame className="size-5 text-flame-ink" aria-hidden />
+          </h3>
+          <p className="mt-1 text-sm">
+            {justCompleted ? (
+              <>
+                Great job! Streak preserved.
+                <br />
+                <span className="opacity-75">+{state.earnedXp} XP earned.</span>
+              </>
+            ) : (
+              "Done"
+            )}
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className='bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 rounded-2xl shadow-sm relative overflow-hidden group'>
-      {/* Accent bar */}
-      <div className='absolute right-0 top-0 bottom-0 w-2 bg-blue-500 rounded-l-full'></div>
-
-      <div className='flex justify-between items-start mb-6 pr-4'>
-        <div>
-          <h3 className='text-2xl font-black text-slate-800 dark:text-white'>
-            {item.sport_types?.name}
-          </h3>
-          <p className='text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-2'>
-            <span>⏱️ {item.time ? item.time.slice(0, 5) : "Flexible"}</span>
-            <span className='bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded-full font-bold'>
-              {item.sport_types?.xp_multiplier}x XP
-            </span>
-          </p>
-        </div>
-        <div className='text-5xl opacity-20 grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-500'>
-          🏃‍♂️
+    <div className="bg-card border-border rounded-2xl border p-6 shadow-sm">
+      <div className="mb-6 flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <SportIcon sport={sport} />
+          <div>
+            <h3 className="text-foreground text-xl font-semibold">
+              {item.sport_types?.name}
+            </h3>
+            <p className="text-muted-foreground mt-1 flex items-center gap-2 text-sm">
+              <span className="inline-flex items-center gap-1">
+                <Clock className="size-3.5" aria-hidden />
+                {time}
+              </span>
+              <Badge variant="xp">{item.sport_types?.xp_multiplier}x XP</Badge>
+            </p>
+          </div>
         </div>
       </div>
 
       <form action={action}>
-        <input type='hidden' name='sport_type_id' value={item.sport_type_id} />
+        <input type="hidden" name="sport_type_id" value={item.sport_type_id} />
 
-        {/* Minimal inputs for MVP */}
-        <div className='mb-4'>
-          <input
-            type='text'
-            name='notes'
-            placeholder='Any notes? (optional)'
-            className='w-full bg-slate-50 dark:bg-slate-700/50 border-0 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 transition'
+        <div className="mb-4">
+          <Input
+            type="text"
+            name="notes"
+            placeholder="Any notes? (optional)"
           />
         </div>
 
-        <SubmitButton isPending={isPending} />
+        <Button
+          type="submit"
+          variant="brand"
+          size="lg"
+          className="w-full"
+          disabled={isPending}
+        >
+          {isPending ? "Logging..." : "Done"}
+        </Button>
       </form>
     </div>
   );

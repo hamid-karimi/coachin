@@ -2,11 +2,14 @@
 
 import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { registerAction, type RegisterState } from "./actions";
 import { SubmitButton } from "../components/submit-button";
-import { AuthContainer } from "../components/auth-container";
-import Link from "next/link";
+import { AuthShell } from "../components/auth-shell";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useActionToast } from "@/components/hooks/use-action-toast";
+import { cn } from "@/lib/utils";
 
 const initialState: RegisterState = {};
 
@@ -22,127 +25,122 @@ export default function RegisterPage() {
   }, [state.redirect, router]);
 
   return (
-    <AuthContainer>
-      <div className='w-full max-w-md p-8'>
-        <div className='bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-8'>
-          <div className='text-center mb-8'>
-            <h1 className='text-3xl font-bold text-slate-900 dark:text-white'>
-              Create Account
-            </h1>
-            <p className='text-slate-600 dark:text-slate-400 mt-2'>
-              Join us to start your journey
-            </p>
-          </div>
-
-          <form action={formAction} className='space-y-6'>
-            {state.error && (
-              <div
-                id='register-error'
-                role='alert'
-                aria-live='polite'
-                className='sr-only'>
-                {state.error}
-              </div>
-            )}
-
-            <div>
-              <label
-                htmlFor='fullName'
-                className='block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2'>
-                Full Name
-              </label>
-              <input
-                id='fullName'
-                name='fullName'
-                type='text'
-                autoComplete='name'
-                required
-                aria-describedby={state.error ? "register-error" : undefined}
-                className='w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition'
-                placeholder='John Doe'
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor='email'
-                className='block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2'>
-                Email
-              </label>
-              <input
-                id='email'
-                name='email'
-                type='email'
-                autoComplete='email'
-                required
-                aria-describedby={state.error ? "register-error" : undefined}
-                className='w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition'
-                placeholder='you@example.com'
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor='password'
-                className='block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2'>
-                Password
-              </label>
-              <input
-                id='password'
-                name='password'
-                type='password'
-                autoComplete='new-password'
-                required
-                aria-describedby={
-                  state.error
-                    ? "register-error password-requirements"
-                    : "password-requirements"
-                }
-                className='w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition'
-                placeholder='••••••••'
-              />
-              <p
-                id='password-requirements'
-                className='mt-2 text-xs text-slate-500 dark:text-slate-400'>
-                At least 8 characters with uppercase, lowercase, and number
-              </p>
-            </div>
-
-            <div>
-              <label
-                htmlFor='confirmPassword'
-                className='block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2'>
-                Confirm Password
-              </label>
-              <input
-                id='confirmPassword'
-                name='confirmPassword'
-                type='password'
-                autoComplete='new-password'
-                required
-                aria-describedby={state.error ? "register-error" : undefined}
-                className='w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition'
-                placeholder='••••••••'
-              />
-            </div>
-
-            <SubmitButton pendingText='Creating account...'>
-              Create Account
-            </SubmitButton>
-          </form>
-
-          <div className='mt-6 text-center'>
-            <p className='text-sm text-slate-600 dark:text-slate-400'>
-              Already have an account?{" "}
-              <Link
-                href='/auth/login'
-                className='font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition'>
-                Sign in
-              </Link>
-            </p>
-          </div>
+    <AuthShell>
+      <div className="bg-card text-card-foreground rounded-xl border border-border shadow-sm p-8">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold tracking-tight">Create account</h1>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Join CoachIn to start your journey.
+          </p>
         </div>
+
+        {/* Segmented Log in / Sign up control */}
+        <div className="mb-6 grid grid-cols-2 gap-1 rounded-lg bg-secondary p-1">
+          <Link
+            href="/auth/login"
+            className={cn(
+              "rounded-md py-2 text-center text-sm font-medium transition-colors",
+              "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            Log in
+          </Link>
+          <Link
+            href="/auth/register"
+            aria-current="page"
+            className={cn(
+              "rounded-md py-2 text-center text-sm font-medium transition-colors",
+              "bg-card text-foreground shadow-sm",
+            )}
+          >
+            Sign up
+          </Link>
+        </div>
+
+        <form action={formAction} className="space-y-5">
+          {state.error && (
+            <div id="register-error" role="alert" aria-live="polite" className="sr-only">
+              {state.error}
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label htmlFor="fullName">Full name</Label>
+            <Input
+              id="fullName"
+              name="fullName"
+              type="text"
+              autoComplete="name"
+              required
+              aria-describedby={state.error ? "register-error" : undefined}
+              placeholder="John Doe"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              aria-describedby={state.error ? "register-error" : undefined}
+              placeholder="you@example.com"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              autoComplete="new-password"
+              required
+              aria-describedby={
+                state.error
+                  ? "register-error password-requirements"
+                  : "password-requirements"
+              }
+              placeholder="••••••••"
+            />
+            <p
+              id="password-requirements"
+              className="text-xs text-muted-foreground"
+            >
+              At least 8 characters with uppercase, lowercase, and number
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Confirm password</Label>
+            <Input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              autoComplete="new-password"
+              required
+              aria-describedby={state.error ? "register-error" : undefined}
+              placeholder="••••••••"
+            />
+          </div>
+
+          <SubmitButton pendingText="Creating account...">
+            Create account
+          </SubmitButton>
+        </form>
+
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          Already have an account?{" "}
+          <Link
+            href="/auth/login"
+            className="font-medium text-brand-ink hover:underline"
+          >
+            Sign in
+          </Link>
+        </p>
       </div>
-    </AuthContainer>
+    </AuthShell>
   );
 }

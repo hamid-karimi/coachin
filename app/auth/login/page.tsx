@@ -1,11 +1,14 @@
 "use client";
 
 import { useActionState } from "react";
+import Link from "next/link";
 import { loginAction, type LoginState } from "./actions";
 import { SubmitButton } from "../components/submit-button";
-import { AuthContainer } from "../components/auth-container";
-import Link from "next/link";
+import { AuthShell } from "../components/auth-shell";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useActionToast } from "@/components/hooks/use-action-toast";
+import { cn } from "@/lib/utils";
 
 const initialState: LoginState = {};
 
@@ -14,80 +17,84 @@ export default function LoginPage() {
   useActionToast(state);
 
   return (
-    <AuthContainer>
-      <div className='w-full max-w-md p-8'>
-        <div className='bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-8'>
-          <div className='text-center mb-8'>
-            <h1 className='text-3xl font-bold text-slate-900 dark:text-white'>
-              Welcome Back
-            </h1>
-            <p className='text-slate-600 dark:text-slate-400 mt-2'>
-              Sign in to your account
-            </p>
-          </div>
-
-          <form action={formAction} className='space-y-6'>
-            {state.error && (
-              <div
-                id='login-error'
-                role='alert'
-                aria-live='polite'
-                className='sr-only'>
-                {state.error}
-              </div>
-            )}
-
-            <div>
-              <label
-                htmlFor='email'
-                className='block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2'>
-                Email
-              </label>
-              <input
-                id='email'
-                name='email'
-                type='email'
-                autoComplete='email'
-                required
-                aria-describedby={state.error ? "login-error" : undefined}
-                className='w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition'
-                placeholder='you@example.com'
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor='password'
-                className='block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2'>
-                Password
-              </label>
-              <input
-                id='password'
-                name='password'
-                type='password'
-                autoComplete='current-password'
-                required
-                aria-describedby={state.error ? "login-error" : undefined}
-                className='w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition'
-                placeholder='••••••••'
-              />
-            </div>
-
-            <SubmitButton pendingText='Signing in...'>Sign In</SubmitButton>
-          </form>
-
-          <div className='mt-6 text-center'>
-            <p className='text-sm text-slate-600 dark:text-slate-400'>
-              Dont have an account?{" "}
-              <Link
-                href='/auth/register'
-                className='font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition'>
-                Sign up
-              </Link>
-            </p>
-          </div>
+    <AuthShell>
+      <div className="bg-card text-card-foreground rounded-xl border border-border shadow-sm p-8">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Sign in to continue your training.
+          </p>
         </div>
+
+        {/* Segmented Log in / Sign up control */}
+        <div className="mb-6 grid grid-cols-2 gap-1 rounded-lg bg-secondary p-1">
+          <Link
+            href="/auth/login"
+            aria-current="page"
+            className={cn(
+              "rounded-md py-2 text-center text-sm font-medium transition-colors",
+              "bg-card text-foreground shadow-sm",
+            )}
+          >
+            Log in
+          </Link>
+          <Link
+            href="/auth/register"
+            className={cn(
+              "rounded-md py-2 text-center text-sm font-medium transition-colors",
+              "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            Sign up
+          </Link>
+        </div>
+
+        <form action={formAction} className="space-y-5">
+          {state.error && (
+            <div id="login-error" role="alert" aria-live="polite" className="sr-only">
+              {state.error}
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              aria-describedby={state.error ? "login-error" : undefined}
+              placeholder="you@example.com"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              aria-describedby={state.error ? "login-error" : undefined}
+              placeholder="••••••••"
+            />
+          </div>
+
+          <SubmitButton pendingText="Signing in...">Sign in</SubmitButton>
+        </form>
+
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          Don&apos;t have an account?{" "}
+          <Link
+            href="/auth/register"
+            className="font-medium text-brand-ink hover:underline"
+          >
+            Sign up
+          </Link>
+        </p>
       </div>
-    </AuthContainer>
+    </AuthShell>
   );
 }

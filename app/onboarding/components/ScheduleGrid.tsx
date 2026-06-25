@@ -1,3 +1,9 @@
+"use client";
+
+import { X } from "lucide-react";
+import { SportIcon } from "@/components/design-system/sport-chip";
+import { sportFromName } from "@/lib/sports";
+
 interface Schedule {
   id: string;
   user_id: string;
@@ -10,14 +16,15 @@ interface Schedule {
   [key: string]: unknown;
 }
 
+// 0=Sunday..6=Saturday — render Monday-first columns to match the week builder.
 const DAYS = [
-  { id: 0, name: "Sunday" },
-  { id: 1, name: "Monday" },
-  { id: 2, name: "Tuesday" },
-  { id: 3, name: "Wednesday" },
-  { id: 4, name: "Thursday" },
-  { id: 5, name: "Friday" },
-  { id: 6, name: "Saturday" },
+  { id: 1, short: "Mon", name: "Monday" },
+  { id: 2, short: "Tue", name: "Tuesday" },
+  { id: 3, short: "Wed", name: "Wednesday" },
+  { id: 4, short: "Thu", name: "Thursday" },
+  { id: 5, short: "Fri", name: "Friday" },
+  { id: 6, short: "Sat", name: "Saturday" },
+  { id: 0, short: "Sun", name: "Sunday" },
 ];
 
 interface ScheduleGridProps {
@@ -30,64 +37,111 @@ interface ScheduleGridProps {
   isDeleting?: boolean;
 }
 
+function SessionItem({
+  item,
+  onRemove,
+  isDeleting,
+}: {
+  item: Schedule;
+  onRemove: () => void;
+  isDeleting: boolean;
+}) {
+  return (
+    <div className='flex items-center gap-2 rounded-lg border border-border bg-card p-2'>
+      <SportIcon
+        sport={sportFromName(item.sport_types?.name)}
+        className='size-8 shrink-0'
+      />
+      <div className='min-w-0 flex-1'>
+        <p className='truncate text-xs font-medium text-card-foreground'>
+          {item.sport_types?.name}
+        </p>
+        {item.time && (
+          <p className='text-xs text-muted-foreground'>
+            {item.time.slice(0, 5)}
+          </p>
+        )}
+      </div>
+      <button
+        type='button'
+        onClick={onRemove}
+        disabled={isDeleting}
+        aria-label='Remove session'
+        className='inline-flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-secondary hover:text-card-foreground disabled:opacity-50'>
+        <X className='size-3.5' />
+      </button>
+    </div>
+  );
+}
+
 export function ScheduleGrid({
   schedules,
   onDeleteClick,
   deleteAction,
   isDeleting = false,
 }: ScheduleGridProps) {
+  const itemsFor = (dayId: number) =>
+    schedules?.filter((s: Schedule) => s.day_of_week === dayId) || [];
+
   return (
-    <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-8'>
-      {DAYS.map((day) => {
-        const dayItems: Schedule[] =
-          schedules?.filter((s: Schedule) => s.day_of_week === day.id) || [];
+    <div className='mb-8'>
+      {/* Desktop: 7-column week grid */}
+      <div className='hidden gap-3 md:grid md:grid-cols-7'>
+        {DAYS.map((day) => {
+          const dayItems = itemsFor(day.id);
+          return (
+            <div key={day.id} className='flex flex-col gap-2'>
+              <h3 className='text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
+                {day.short}
+              </h3>
+              {dayItems.length === 0 ? (
+                <p className='rounded-lg border border-dashed border-border py-3 text-center text-xs text-muted-foreground'>
+                  Rest
+                </p>
+              ) : (
+                <div className='flex flex-col gap-2'>
+                  {dayItems.map((item: Schedule) => (
+                    <SessionItem
+                      key={item.id}
+                      item={item}
+                      isDeleting={isDeleting}
+                      onRemove={() => onDeleteClick(item.id, deleteAction)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
 
-        return (
-          <div
-            key={day.id}
-            className='border border-slate-200 dark:border-slate-700 rounded-lg p-4 bg-slate-50 dark:bg-slate-700/50 hover:shadow-md transition'>
-            <h3 className='font-bold text-lg mb-3 border-b border-slate-200 dark:border-slate-600 pb-2 text-slate-800 dark:text-slate-200'>
-              {day.name}
-            </h3>
-
-            {dayItems.length === 0 ? (
-              <p className='text-sm text-slate-500 dark:text-slate-400 italic'>
-                Rest
-              </p>
-            ) : (
-              <ul className='space-y-2'>
-                {dayItems.map((item: Schedule) => (
-                  <li
-                    key={item.id}
-                    className='flex justify-between items-center bg-white dark:bg-slate-600 p-2 rounded border border-slate-200 dark:border-slate-500 text-sm'>
-                    <span className='flex items-center gap-2'>
-                      <span className='font-semibold text-slate-900 dark:text-white'>
-                        {item.sport_types?.name}
-                      </span>
-                      {item.time && (
-                        <span className='text-slate-500 dark:text-slate-400 text-xs'>
-                          ({item.time.slice(0, 5)})
-                        </span>
-                      )}
-                    </span>
-
-                    <button
-                      onClick={() => {
-                        const formData = new FormData();
-                        formData.append("scheduleId", item.id);
-                        onDeleteClick(item.id, deleteAction);
-                      }}
-                      className='text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 px-2 disabled:opacity-50'
-                      disabled={isDeleting}>
-                      ×
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        );
-      })}
+      {/* Mobile: grouped list */}
+      <div className='flex flex-col gap-4 md:hidden'>
+        {DAYS.map((day) => {
+          const dayItems = itemsFor(day.id);
+          return (
+            <div key={day.id}>
+              <h3 className='mb-2 text-sm font-semibold text-card-foreground'>
+                {day.name}
+              </h3>
+              {dayItems.length === 0 ? (
+                <p className='text-sm text-muted-foreground'>Rest</p>
+              ) : (
+                <div className='flex flex-col gap-2'>
+                  {dayItems.map((item: Schedule) => (
+                    <SessionItem
+                      key={item.id}
+                      item={item}
+                      isDeleting={isDeleting}
+                      onRemove={() => onDeleteClick(item.id, deleteAction)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

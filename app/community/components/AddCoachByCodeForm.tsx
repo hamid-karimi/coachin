@@ -6,6 +6,9 @@ import {
   type CommunityActionState,
   connectCoachByCodeAction,
 } from "../actions";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const initialState: CommunityActionState = {};
 
@@ -17,24 +20,21 @@ export function AddCoachByCodeForm() {
   useActionToast(state);
 
   return (
-    <form action={formAction} className='space-y-3'>
-      <label className='text-xs text-slate-500 dark:text-slate-400 block'>
+    <form action={formAction} className='space-y-2'>
+      <Label htmlFor='coach-invite-code' className='text-muted-foreground'>
         Coach invite code
-      </label>
+      </Label>
       <div className='flex gap-2'>
-        <input
+        <Input
+          id='coach-invite-code'
           type='text'
           name='invite_code'
           placeholder='Example: COACH-2-X7H9KD'
-          className='flex-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm'
           required
         />
-        <button
-          type='submit'
-          disabled={pending}
-          className='rounded-lg bg-blue-600 text-white px-4 py-2 text-sm disabled:opacity-60'>
+        <Button type='submit' disabled={pending}>
           {pending ? "Connecting..." : "Add coach"}
-        </button>
+        </Button>
       </div>
     </form>
   );

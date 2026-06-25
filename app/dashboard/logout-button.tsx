@@ -2,6 +2,9 @@
 
 import { logoutAction } from "./actions";
 import { useTransition } from "react";
+import { LogOut } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 
 export function LogoutButton() {
   const [isPending, startTransition] = useTransition();
@@ -13,12 +16,13 @@ export function LogoutButton() {
   };
 
   return (
-    <button
+    <Button
+      variant="outline"
       onClick={handleLogout}
       disabled={isPending}
-      className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-medium rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed"
     >
+      <LogOut aria-hidden />
       {isPending ? "Logging out..." : "Logout"}
-    </button>
+    </Button>
   );
 }

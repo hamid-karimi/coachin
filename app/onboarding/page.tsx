@@ -58,8 +58,8 @@ export default function OnboardingPage() {
   return (
     <PageContainer>
       <PageHeader
-        title='Weekly Planning 📅'
-        description='Choose your sport for each day. This is your recurring weekly routine.'
+        title='Build your week'
+        description='Pick a sport for each training day. This becomes your recurring weekly routine.'
       />
 
       <AddScheduleForm sports={sports} onSubmit={addAction} />

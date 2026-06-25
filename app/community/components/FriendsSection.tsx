@@ -4,6 +4,24 @@ import type { ProfileSummary } from "../types";
 import { FollowToggleButton } from "./FollowToggleButton";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+
+function profileInitials(profile: ProfileSummary) {
+  const name = profile.full_name?.trim();
+  if (name) {
+    return name[0]?.toUpperCase() ?? "?";
+  }
+  return profile.email?.[0]?.toUpperCase() ?? "?";
+}
 
 interface FriendsSectionProps {
   followingProfiles: ProfileSummary[];
@@ -92,120 +110,136 @@ export function FriendsSection({
   }, [query, followingUserIds]);
 
   return (
-    <section className='bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700 p-6 shadow-sm space-y-4'>
-      <header className='space-y-1'>
-        <h2 className='text-lg font-bold text-slate-900 dark:text-white'>
-          Friends & Circle
-        </h2>
-        <p className='text-xs text-slate-500 dark:text-slate-400'>
+    <Card>
+      <CardHeader>
+        <CardTitle className='text-lg font-bold'>Friends &amp; Circle</CardTitle>
+        <CardDescription>
           Search users and manage your Circle independently of leaderboards.
-        </p>
-      </header>
+        </CardDescription>
+      </CardHeader>
 
-      <div className='space-y-3'>
-        <label className='text-xs text-slate-500 dark:text-slate-400 block'>
-          Search users (name or email)
-        </label>
+      <CardContent className='space-y-4'>
         <div className='space-y-2'>
-          <input
+          <Label htmlFor='friends-search' className='text-muted-foreground'>
+            Search users (name or email)
+          </Label>
+          <Input
+            id='friends-search'
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             type='search'
             autoComplete='off'
             placeholder='Example: alex'
-            className='flex-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm'
           />
-          <p className='text-[11px] text-slate-500 dark:text-slate-400'>
+          <p className='text-[11px] text-muted-foreground'>
             {query.trim()
               ? "Results refresh automatically."
               : "Results appear after you enter a search term."}
           </p>
         </div>
-      </div>
 
-      <div className='space-y-2'>
-        <p className='text-xs text-slate-500 dark:text-slate-400'>
-          My Following
-        </p>
-        {followingProfiles.length === 0 ? (
-          <p className='text-sm text-slate-500 dark:text-slate-400'>
-            You are not following anyone yet.
-          </p>
-        ) : (
-          <ul className='space-y-2'>
-            {followingProfiles.map((profile) => (
-              <li
-                key={profile.id}
-                className='rounded-xl bg-slate-50 dark:bg-slate-800 p-3 flex items-center justify-between gap-3'>
-                <div>
-                  <p className='text-sm font-semibold text-slate-900 dark:text-white'>
-                    {displayName(profile)}
-                  </p>
-                  <p className='text-xs text-slate-500 dark:text-slate-400'>
-                    Level {profile.level ?? 1} ·{" "}
-                    {(profile.xp ?? 0).toLocaleString()} XP
-                  </p>
-                </div>
-                <FollowToggleButton targetUserId={profile.id} isFollowing />
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      <div className='space-y-2'>
-        <p className='text-xs text-slate-500 dark:text-slate-400'>
-          Search Results
-        </p>
-        {!query.trim() ? (
-          <p className='text-sm text-slate-500 dark:text-slate-400'>
-            Enter a user name or email to search.
-          </p>
-        ) : isLoading ? (
-          <p className='text-sm text-slate-500 dark:text-slate-400'>
-            Searching...
-          </p>
-        ) : profiles.length === 0 ? (
-          <p className='text-sm text-slate-500 dark:text-slate-400'>
-            No results found.
-          </p>
-        ) : (
-          <ul className='space-y-2'>
-            {profiles.map((profile) => {
-              const isFollowing = mergedFollowingIds.has(profile.id);
-
-              return (
+        <div className='space-y-2'>
+          <p className='text-xs text-muted-foreground'>My Following</p>
+          {followingProfiles.length === 0 ? (
+            <p className='text-sm text-muted-foreground'>
+              You are not following anyone yet.
+            </p>
+          ) : (
+            <ul className='space-y-2'>
+              {followingProfiles.map((profile) => (
                 <li
                   key={profile.id}
-                  className='rounded-xl bg-slate-50 dark:bg-slate-800 p-3 flex items-center justify-between gap-3'>
-                  <div>
-                    <p className='text-sm font-semibold text-slate-900 dark:text-white'>
-                      {displayName(profile)}
-                    </p>
-                    <p className='text-xs text-slate-500 dark:text-slate-400'>
-                      Level {profile.level ?? 1} ·{" "}
-                      {(profile.xp ?? 0).toLocaleString()} XP
-                    </p>
+                  className='flex items-center justify-between gap-3 rounded-xl bg-secondary p-3'>
+                  <div className='flex min-w-0 items-center gap-3'>
+                    <Avatar className='size-9'>
+                      {profile.avatar_url ? (
+                        <AvatarImage
+                          src={profile.avatar_url}
+                          alt={displayName(profile)}
+                        />
+                      ) : null}
+                      <AvatarFallback>
+                        {profileInitials(profile)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className='min-w-0'>
+                      <p className='truncate text-sm font-semibold text-foreground'>
+                        {displayName(profile)}
+                      </p>
+                      <p className='text-xs text-muted-foreground'>
+                        Level {profile.level ?? 1} ·{" "}
+                        {(profile.xp ?? 0).toLocaleString()} XP
+                      </p>
+                    </div>
                   </div>
-                  <FollowToggleButton
-                    targetUserId={profile.id}
-                    isFollowing={isFollowing}
-                    onSuccess={() => {
-                      setRemoteFollowingIds((currentFollowingIds) =>
-                        currentFollowingIds.includes(profile.id)
-                          ? currentFollowingIds.filter(
-                              (id) => id !== profile.id,
-                            )
-                          : [...currentFollowingIds, profile.id],
-                      );
-                    }}
-                  />
+                  <FollowToggleButton targetUserId={profile.id} isFollowing />
                 </li>
-              );
-            })}
-          </ul>
-        )}
-      </div>
-    </section>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div className='space-y-2'>
+          <p className='text-xs text-muted-foreground'>Search Results</p>
+          {!query.trim() ? (
+            <p className='text-sm text-muted-foreground'>
+              Enter a user name or email to search.
+            </p>
+          ) : isLoading ? (
+            <p className='text-sm text-muted-foreground'>Searching...</p>
+          ) : profiles.length === 0 ? (
+            <p className='text-sm text-muted-foreground'>No results found.</p>
+          ) : (
+            <ul className='space-y-2'>
+              {profiles.map((profile) => {
+                const isFollowing = mergedFollowingIds.has(profile.id);
+
+                return (
+                  <li
+                    key={profile.id}
+                    className='flex items-center justify-between gap-3 rounded-xl bg-secondary p-3'>
+                    <div className='flex min-w-0 items-center gap-3'>
+                      <Avatar className='size-9'>
+                        {profile.avatar_url ? (
+                          <AvatarImage
+                            src={profile.avatar_url}
+                            alt={displayName(profile)}
+                          />
+                        ) : null}
+                        <AvatarFallback>
+                          {profileInitials(profile)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className='min-w-0'>
+                        <p className='truncate text-sm font-semibold text-foreground'>
+                          {displayName(profile)}
+                        </p>
+                        <p className='text-xs text-muted-foreground'>
+                          Level {profile.level ?? 1} ·{" "}
+                          {(profile.xp ?? 0).toLocaleString()} XP
+                        </p>
+                      </div>
+                    </div>
+                    <FollowToggleButton
+                      targetUserId={profile.id}
+                      isFollowing={isFollowing}
+                      onSuccess={() => {
+                        setRemoteFollowingIds((currentFollowingIds) =>
+                          currentFollowingIds.includes(profile.id)
+                            ? currentFollowingIds.filter(
+                                (id) => id !== profile.id,
+                              )
+                            : [...currentFollowingIds, profile.id],
+                        );
+                      }}
+                    />
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
