@@ -12,6 +12,11 @@ import { canCoach } from "@/lib/roles";
 import { tierFromLeague } from "@/lib/tiers";
 import { LogoutButton } from "./components/logout-button";
 import { ThemePreference } from "./components/theme-preference";
+import { BodyMetricsForm } from "./components/body-metrics-form";
+import {
+  MeasurementsSection,
+  type Measurement,
+} from "./components/measurements-section";
 
 export const dynamic = "force-dynamic";
 
@@ -50,6 +55,7 @@ export default async function ProfilePage() {
     { data: transactions },
     { data: sportTypes },
     { count: workoutCount },
+    { data: measurements },
   ] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).single(),
     supabase
@@ -64,6 +70,13 @@ export default async function ProfilePage() {
       .select("id", { count: "exact", head: true })
       .eq("user_id", user.id)
       .eq("status", "completed"),
+    supabase
+      .from("body_measurements")
+      .select("id, measured_at, weight_kg, body_fat_pct")
+      .eq("user_id", user.id)
+      .order("measured_at", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(6),
   ]);
 
   if (profileError || !profile) {
@@ -195,6 +208,25 @@ export default async function ProfilePage() {
             A missed training day costs one — at 0, your streak resets.
           </p>
         </div>
+
+        {/* Body profile — feeds the AI program/diet intake (roadmap branch 1) */}
+        <section className="space-y-2.5">
+          <h2 className="text-overline">Body profile</h2>
+          <BodyMetricsForm
+            birthDate={profile.birth_date ?? null}
+            sex={profile.sex ?? null}
+            heightCm={profile.height_cm ?? null}
+            trainingHistory={profile.training_history ?? null}
+          />
+        </section>
+
+        {/* Measurements */}
+        <section className="space-y-2.5">
+          <h2 className="text-overline">Measurements</h2>
+          <MeasurementsSection
+            measurements={(measurements ?? []) as Measurement[]}
+          />
+        </section>
 
         {/* Recent XP */}
         <section className="space-y-2.5">
