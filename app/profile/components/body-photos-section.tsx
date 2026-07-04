@@ -101,9 +101,10 @@ export function BodyPhotosSection({
 
   const addFiles = async (list: FileList | null) => {
     if (!list || list.length === 0) return;
-    if (fileInputRef.current) fileInputRef.current.value = "";
-
+    // Snapshot BEFORE touching the input: FileList is live, and clearing
+    // input.value empties it — copying afterwards yields zero files.
     const files = Array.from(list);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     setPreparing(true);
     try {
       const prepared: PendingFile[] = [];
