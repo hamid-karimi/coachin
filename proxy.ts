@@ -14,9 +14,10 @@ export async function proxy(req: NextRequest) {
   const isCoachingPage = req.nextUrl.pathname.startsWith("/coaching");
 
   // If user is authenticated and tries to access auth pages (login/register)
-  // redirect to dashboard
+  // redirect to "/" — the root page does the role-aware routing (no role
+  // fetch here: one extra DB hit per request is the anti-pattern).
   if (session && isAuthPage && !isDashboardPage) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
   // If user is not authenticated and tries to access dashboard

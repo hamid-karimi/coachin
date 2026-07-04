@@ -61,6 +61,64 @@ function formatLocalDate(date: Date): string {
 }
 
 /**
+ * Current week window, Monday → Sunday, in local time (same local-date
+ * convention as app/dashboard/page.tsx — no UTC shifting).
+ */
+function currentWeekWindow(): { weekStart: string; weekEnd: string } {
+  const today = new Date();
+  const mondayOffset = (today.getDay() + 6) % 7; // getDay(): 0=Sun..6=Sat
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - mondayOffset);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  return { weekStart: formatLocalDate(monday), weekEnd: formatLocalDate(sunday) };
+}
+
+export type CoachingSummary = {
+  /** Active trainees for this coach. */
+  traineeCount: number;
+  /** Trainees with at least one completed log inside the current week. */
+  trainedThisWeek: number;
+};
+
+/**
+ * Lightweight counts for the dashboard coaching card — avoids pulling the full
+ * hub payload (leaderboard RPC, invite codes) onto the dashboard.
+ * Logs SELECT relies on the coach-read policy (logs_policies_coach_read).
+ */
+export async function getCoachingSummary(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  coachId: string,
+): Promise<CoachingSummary> {
+  const { data: relationships } = await supabase
+    .from("coaching_relationships")
+    .select("student_id")
+    .eq("coach_id", coachId)
+    .eq("status", "active");
+
+  const traineeIds = Array.from(
+    new Set((relationships ?? []).map((row) => row.student_id as string)),
+  );
+
+  if (traineeIds.length === 0) {
+    return { traineeCount: 0, trainedThisWeek: 0 };
+  }
+
+  const { weekStart, weekEnd } = currentWeekWindow();
+  const { data: logs } = await supabase
+    .from("logs")
+    .select("user_id")
+    .in("user_id", traineeIds)
+    .eq("status", "completed")
+    .gte("date", weekStart)
+    .lte("date", weekEnd);
+
+  const trainedThisWeek = new Set((logs ?? []).map((row) => row.user_id)).size;
+
+  return { traineeCount: traineeIds.length, trainedThisWeek };
+}
+
+/**
  * Coach-hub data loader. The page owns the auth/role guard; this only fetches.
  * Query shapes are copied from the community loaders (see per-query notes).
  */
@@ -100,16 +158,7 @@ export async function getCoachingHubData(
 
   const traineeIds = students.map((relationship) => relationship.student.id);
 
-  // Current week window, Monday → Sunday, in local time (same local-date
-  // convention as app/dashboard/page.tsx — no UTC shifting).
-  const today = new Date();
-  const mondayOffset = (today.getDay() + 6) % 7; // getDay(): 0=Sun..6=Sat
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - mondayOffset);
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-  const weekStart = formatLocalDate(monday);
-  const weekEnd = formatLocalDate(sunday);
+  const { weekStart, weekEnd } = currentWeekWindow();
 
   // This week's logs + schedules for all trainees. The logs SELECT relies on
   // the coach-read policy in 20260704120000_logs_policies_coach_read.sql;

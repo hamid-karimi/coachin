@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { Heart, MoonStar } from "lucide-react";
+import { ChevronRight, GraduationCap, Heart, MoonStar } from "lucide-react";
 
 import { AppShell } from "@/components/design-system/app-shell";
 import { LevelRing } from "@/components/design-system/level-ring";
@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { levelProgress } from "@/lib/xp";
 import { canCoach } from "@/lib/roles";
 import { tierFromLeague } from "@/lib/tiers";
+import { getCoachingSummary } from "@/app/coaching/lib/coaching-hub-data";
 import { WorkoutCard } from "./components/workout-card";
 
 export const dynamic = "force-dynamic";
@@ -94,6 +95,12 @@ export default async function Dashboard() {
     return todaysLogs?.some((log) => log.sport_type_id === sportId);
   };
 
+  // Coaching card (plan Phase 5): only coach-capable roles with ≥1 trainee.
+  const isCoachCapable = canCoach(profile.role);
+  const coachingSummary = isCoachCapable
+    ? await getCoachingSummary(supabase, user.id)
+    : { traineeCount: 0, trainedThisWeek: 0 };
+
   const name: string = user.user_metadata.full_name || user.email || "athlete";
   const firstName = name.split(" ")[0];
   const initials = name
@@ -148,6 +155,32 @@ export default async function Dashboard() {
             </Link>
           </div>
         </div>
+
+        {/* Coaching card — coach-capable roles with at least one trainee */}
+        {coachingSummary.traineeCount > 0 && (
+          <Link
+            href="/coaching"
+            className="bg-card border-border hover:border-brand/40 group flex items-center gap-3.5 rounded-2xl border p-4 transition-colors"
+          >
+            <span className="bg-brand-tint text-brand-ink grid size-10 shrink-0 place-items-center rounded-xl">
+              <GraduationCap className="size-5" aria-hidden />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="text-foreground block text-sm font-semibold">
+                Coaching
+              </span>
+              <span className="text-muted-foreground block text-[13px]">
+                {coachingSummary.traineeCount}{" "}
+                {coachingSummary.traineeCount === 1 ? "trainee" : "trainees"} ·{" "}
+                {coachingSummary.trainedThisWeek} trained this week
+              </span>
+            </span>
+            <ChevronRight
+              className="text-muted-foreground group-hover:text-foreground size-4 shrink-0 transition-colors"
+              aria-hidden
+            />
+          </Link>
+        )}
 
         {/* Level card */}
         <div className="bg-card border-border flex items-center gap-4 rounded-2xl border p-4 md:p-5">

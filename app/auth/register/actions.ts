@@ -78,7 +78,7 @@ export async function registerAction(
         success: true,
         message: "Account created successfully.",
         status: "success",
-        redirect: "/dashboard",
+        redirect: "/",
       };
     } else {
       // User needs to verify email
