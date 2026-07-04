@@ -17,6 +17,8 @@ import {
   MeasurementsSection,
   type Measurement,
 } from "./components/measurements-section";
+import { GoalsSection } from "./components/goals-section";
+import { getGoalsWithProgress } from "@/lib/goals-data";
 
 export const dynamic = "force-dynamic";
 
@@ -83,6 +85,8 @@ export default async function ProfilePage() {
     console.error("Error fetching profile:", profileError);
     throw new Error("Failed to load profile");
   }
+
+  const goalsData = await getGoalsWithProgress(supabase, user.id);
 
   const sportNames = new Map<number, string>(
     (sportTypes ?? []).map((sport: { id: number; name: string }) => [
@@ -208,6 +212,12 @@ export default async function ProfilePage() {
             A missed training day costs one — at 0, your streak resets.
           </p>
         </div>
+
+        {/* Goals (roadmap branch 2) */}
+        <section className="space-y-2.5">
+          <h2 className="text-overline">Goals</h2>
+          <GoalsSection active={goalsData.active} achieved={goalsData.achieved} />
+        </section>
 
         {/* Body profile — feeds the AI program/diet intake (roadmap branch 1) */}
         <section className="space-y-2.5">

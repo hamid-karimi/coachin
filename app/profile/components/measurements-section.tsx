@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { Loader2, Scale, X } from "lucide-react";
 
 import { useActionToast } from "@/components/hooks/use-action-toast";
@@ -59,6 +59,23 @@ export function MeasurementsSection({ measurements }: MeasurementsSectionProps) 
     initialState,
   );
   useActionToast(state);
+
+  // Goal achieved by this measurement → one celebratory burst
+  // (dynamic import pattern copied from the dashboard workout card).
+  const celebratedRef = useRef("");
+  useEffect(() => {
+    const key = state.achievedGoals?.join("|") ?? "";
+    if (!key || celebratedRef.current === key) return;
+    celebratedRef.current = key;
+    import("canvas-confetti").then((mod) => {
+      mod.default({
+        particleCount: 120,
+        spread: 75,
+        origin: { y: 0.7 },
+        zIndex: 60,
+      });
+    });
+  }, [state.achievedGoals]);
 
   return (
     <div className="space-y-2.5">

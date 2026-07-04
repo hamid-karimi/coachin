@@ -2,12 +2,15 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient, getUser } from "@/lib/supabase/server";
+import { checkGoalAchievements } from "@/lib/goal-achievements";
 
 export type ProfileActionState = {
   error?: string;
   success?: boolean;
   message?: string;
   status?: "success" | "info" | "error";
+  /** Labels of goals achieved by this action (drives celebration UI). */
+  achievedGoals?: string[];
 };
 
 function parseOptionalNumber(
@@ -139,7 +142,24 @@ export async function addMeasurementAction(
     console.error("Error updating profile snapshot:", snapshotError);
   }
 
+  // Settle any weight / body-fat goals this measurement just crossed.
+  const achievedGoals = await checkGoalAchievements(supabase, user.id, {
+    weight_kg: weight.value,
+    body_fat_pct: bodyFat.value,
+  });
+
   revalidatePath("/profile");
+  revalidatePath("/dashboard");
+
+  if (achievedGoals.length > 0) {
+    return {
+      success: true,
+      message: `Goal achieved: ${achievedGoals.join(", ")}! +200 XP`,
+      status: "success",
+      achievedGoals,
+    };
+  }
+
   return { success: true, message: "Measurement logged.", status: "success" };
 }
 

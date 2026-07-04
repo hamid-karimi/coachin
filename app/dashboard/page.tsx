@@ -1,7 +1,13 @@
 import Link from "next/link";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { ChevronRight, GraduationCap, Heart, MoonStar } from "lucide-react";
+import {
+  ChevronRight,
+  GraduationCap,
+  Heart,
+  MoonStar,
+  Target,
+} from "lucide-react";
 
 import { AppShell } from "@/components/design-system/app-shell";
 import { LevelRing } from "@/components/design-system/level-ring";
@@ -15,6 +21,9 @@ import { levelProgress } from "@/lib/xp";
 import { canCoach } from "@/lib/roles";
 import { tierFromLeague } from "@/lib/tiers";
 import { getCoachingSummary } from "@/app/coaching/lib/coaching-hub-data";
+import { getGoalsWithProgress } from "@/lib/goals-data";
+import { GOAL_TYPE_META } from "@/lib/goals";
+import { Progress } from "@/components/ui/progress";
 import { WorkoutCard } from "./components/workout-card";
 
 export const dynamic = "force-dynamic";
@@ -97,9 +106,16 @@ export default async function Dashboard() {
 
   // Coaching card (plan Phase 5): only coach-capable roles with ≥1 trainee.
   const isCoachCapable = canCoach(profile.role);
-  const coachingSummary = isCoachCapable
-    ? await getCoachingSummary(supabase, user.id)
-    : { traineeCount: 0, trainedThisWeek: 0 };
+  const [coachingSummary, goalsData] = await Promise.all([
+    isCoachCapable
+      ? getCoachingSummary(supabase, user.id)
+      : Promise.resolve({ traineeCount: 0, trainedThisWeek: 0 }),
+    getGoalsWithProgress(supabase, user.id),
+  ]);
+  // Compact strip shows the tracked goal closest to completion.
+  const featuredGoal = goalsData.active
+    .filter((goal) => goal.progress !== null)
+    .sort((a, b) => (b.progress?.pct ?? 0) - (a.progress?.pct ?? 0))[0];
 
   const name: string = user.user_metadata.full_name || user.email || "athlete";
   const firstName = name.split(" ")[0];
@@ -234,6 +250,28 @@ export default async function Dashboard() {
             accent="gold"
           />
         </div>
+
+        {/* Active goal strip (roadmap branch 2) */}
+        {featuredGoal && featuredGoal.progress && (
+          <Link
+            href="/profile"
+            className="bg-card border-border hover:border-brand/40 block space-y-2 rounded-2xl border p-4 transition-colors"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-foreground inline-flex items-center gap-2 text-sm font-semibold">
+                <Target className="text-brand size-4" aria-hidden />
+                {GOAL_TYPE_META[featuredGoal.goal_type].label} goal
+              </span>
+              <span className="text-muted-foreground text-[13px]">
+                {featuredGoal.current}
+                {GOAL_TYPE_META[featuredGoal.goal_type].unit} →{" "}
+                {featuredGoal.target_value}
+                {GOAL_TYPE_META[featuredGoal.goal_type].unit}
+              </span>
+            </div>
+            <Progress value={featuredGoal.progress.pct} />
+          </Link>
+        )}
 
         {/* Today's plan */}
         <div className="flex flex-col gap-3">
