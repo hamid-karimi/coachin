@@ -1,4 +1,6 @@
 import type { StudentRelationship } from "@/app/community/types";
+import type { TraineeAdherence } from "../lib/coaching-hub-data";
+import { AdherenceWeekStrip } from "./AdherenceWeekStrip";
 import { AssignPlanButton } from "@/app/community/components/AssignPlanButton";
 import {
   Card,
@@ -13,11 +15,17 @@ interface TraineesSectionProps {
   students: StudentRelationship[];
   /** userId → XP earned this week, from the get_weekly_leaderboard RPC. */
   weeklyXpByUserId?: Map<string, number>;
+  /** userId → this week's schedule adherence (logs + schedules). */
+  adherenceByUserId?: Map<string, TraineeAdherence>;
+  /** Monday of the current week, YYYY-MM-DD (local time). */
+  weekStart?: string;
 }
 
 export function TraineesSection({
   students,
   weeklyXpByUserId,
+  adherenceByUserId,
+  weekStart,
 }: TraineesSectionProps) {
   const hasStudents = students.length > 0;
 
@@ -36,6 +44,7 @@ export function TraineesSection({
               const { student } = relationship;
               const initials = student.email?.[0]?.toUpperCase() ?? "?";
               const weeklyXp = weeklyXpByUserId?.get(student.id);
+              const adherence = adherenceByUserId?.get(student.id);
 
               return (
                 <li
@@ -64,6 +73,20 @@ export function TraineesSection({
                           ? ` · ${weeklyXp.toLocaleString()} XP this week`
                           : ""}
                       </p>
+                      {adherence && weekStart ? (
+                        <div className='mt-1.5 flex items-center gap-2.5'>
+                          <AdherenceWeekStrip
+                            scheduledDays={adherence.scheduledDays}
+                            loggedDates={adherence.loggedDates}
+                            weekStart={weekStart}
+                          />
+                          <span className='text-xs text-muted-foreground'>
+                            {adherence.scheduledCount === 0
+                              ? "No plan assigned yet"
+                              : `${adherence.doneCount} of ${adherence.scheduledCount} this week`}
+                          </span>
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                   <div className='flex flex-col items-end gap-1'>

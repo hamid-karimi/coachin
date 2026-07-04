@@ -40,6 +40,8 @@ export default async function CoachingHubPage() {
     inviteCodes,
     weeklyLeaderboard,
     weeklyXpByUserId,
+    adherenceByUserId,
+    weekStart,
   } = await getCoachingHubData(supabase, user.id);
 
   const traineeCount = students.length;
@@ -59,15 +61,16 @@ export default async function CoachingHubPage() {
           </p>
         </header>
 
-        {/* Trainee roster */}
+        {/* Trainee roster, with per-trainee "Trained this week" adherence.
+            The logs data relies on the coach-read RLS policy migration
+            (20260704120000); before it's applied the strip simply shows
+            zero completed sessions. */}
         <TraineesSection
           students={students}
           weeklyXpByUserId={weeklyXpByUserId}
+          adherenceByUserId={adherenceByUserId}
+          weekStart={weekStart}
         />
-
-        {/* TODO(Phase 4): insert the "This week" adherence section here —
-            per-trainee "X of Y sessions done" from trainees' logs + schedules,
-            once the logs coach-read RLS migration has been applied. */}
 
         {/* Invite codes */}
         <Card>
