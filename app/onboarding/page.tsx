@@ -51,6 +51,22 @@ export default function OnboardingPage() {
         ? refreshedSchedulesFromDelete
         : initialSchedules;
 
+  const plannedDays = [...new Set(schedules.map((s) => s.day_of_week))];
+
+  // Rough weekly XP estimate: 60 XP per session × the sport's multiplier.
+  const multiplierBySportId = new Map(
+    sports.map((sport) => [
+      Number(sport.id),
+      Number(sport.xp_multiplier ?? 1) || 1,
+    ]),
+  );
+  const estimatedWeeklyXp = Math.round(
+    schedules.reduce(
+      (total, s) => total + 60 * (multiplierBySportId.get(s.sport_type_id) ?? 1),
+      0,
+    ),
+  );
+
   if (isLoading) {
     return <LoadingScreen />;
   }
@@ -58,11 +74,15 @@ export default function OnboardingPage() {
   return (
     <PageContainer>
       <PageHeader
-        title='Build your week'
-        description='Pick a sport for each training day. This becomes your recurring weekly routine.'
+        title='Plan your week'
+        description='Pick a day, pick a sport, add it. Aim for 3+ days.'
       />
 
-      <AddScheduleForm sports={sports} onSubmit={addAction} />
+      <AddScheduleForm
+        sports={sports}
+        onSubmit={addAction}
+        plannedDays={plannedDays}
+      />
 
       <ScheduleGrid
         schedules={schedules}
@@ -74,7 +94,11 @@ export default function OnboardingPage() {
         }}
       />
 
-      <CompleteOnboardingButton onSubmit={completeAction} />
+      <CompleteOnboardingButton
+        onSubmit={completeAction}
+        plannedDayCount={plannedDays.length}
+        estimatedWeeklyXp={estimatedWeeklyXp}
+      />
     </PageContainer>
   );
 }

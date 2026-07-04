@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Home, CalendarDays, Users, User } from "lucide-react";
+import { Home, CalendarDays, Users, CircleUser } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -12,10 +12,10 @@ const ITEMS: {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
 }[] = [
-  { key: "home", label: "Home", icon: Home },
+  { key: "home", label: "Today", icon: Home },
   { key: "plan", label: "Plan", icon: CalendarDays },
   { key: "community", label: "Community", icon: Users },
-  { key: "profile", label: "Profile", icon: User },
+  { key: "profile", label: "Profile", icon: CircleUser },
 ];
 
 interface BottomNavProps {
@@ -32,7 +32,7 @@ export function BottomNav({
   return (
     <nav
       className={cn(
-        "flex items-center justify-around border-t border-border bg-card p-2.5",
+        "border-border bg-card/95 flex items-center justify-around border-t px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur",
         className,
       )}
       aria-label="Primary"
@@ -46,8 +46,10 @@ export function BottomNav({
             onClick={() => onNavigate?.(key)}
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              "flex flex-col items-center gap-0.5 rounded-md px-3 py-1 text-[11px] transition-colors",
-              isActive ? "text-brand" : "text-muted-foreground",
+              "flex min-w-16 flex-col items-center gap-0.5 rounded-md px-3 py-1 text-[11px] transition-colors",
+              isActive
+                ? "text-brand-ink font-bold"
+                : "text-muted-foreground font-semibold",
             )}
           >
             <Icon className="size-5.5" aria-hidden />

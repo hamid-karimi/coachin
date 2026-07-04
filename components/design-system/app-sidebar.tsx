@@ -3,9 +3,10 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Flame, Home, CalendarDays, Users, User } from "lucide-react";
+import { Home, CalendarDays, Users, CircleUser } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "./theme-toggle";
 import type { NavKey } from "./bottom-nav";
 
 /** Route map shared between the sidebar and the mobile bottom nav. */
@@ -18,8 +19,7 @@ export function routeFor(key: NavKey): string {
     case "community":
       return "/community";
     case "profile":
-      // TODO: profile route — no dedicated profile page yet, fall back to dashboard.
-      return "/dashboard";
+      return "/profile";
   }
 }
 
@@ -27,7 +27,7 @@ export function routeFor(key: NavKey): string {
 export function keyFromPath(pathname: string | null): NavKey {
   if (pathname?.startsWith("/onboarding")) return "plan";
   if (pathname?.startsWith("/community")) return "community";
-  // /dashboard (and the unrouted profile) both resolve to home for now.
+  if (pathname?.startsWith("/profile")) return "profile";
   return "home";
 }
 
@@ -36,10 +36,10 @@ const ITEMS: {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
 }[] = [
-  { key: "home", label: "Home", icon: Home },
+  { key: "home", label: "Today", icon: Home },
   { key: "plan", label: "Plan", icon: CalendarDays },
   { key: "community", label: "Community", icon: Users },
-  { key: "profile", label: "Profile", icon: User },
+  { key: "profile", label: "Profile", icon: CircleUser },
 ];
 
 interface AppSidebarProps {
@@ -53,16 +53,20 @@ export function AppSidebar({ className }: AppSidebarProps) {
   return (
     <aside
       className={cn(
-        "hidden md:flex md:w-[180px] md:shrink-0 md:flex-col gap-1 border-r border-border bg-card p-4",
+        "border-border bg-card hidden md:flex md:w-[220px] md:shrink-0 md:flex-col gap-1.5 border-r p-4",
         className,
       )}
     >
       <Link
         href="/dashboard"
-        className="mb-6 flex items-center gap-2 px-2 text-lg font-bold text-brand"
+        className="mb-5 flex items-center gap-2.5 px-2 pt-1"
       >
-        <Flame className="size-5" aria-hidden />
-        CoachIn
+        <span className="bg-brand text-brand-foreground grid size-8 place-items-center rounded-sm text-lg font-bold text-stat">
+          C
+        </span>
+        <span className="text-foreground font-display text-base font-bold">
+          CoachIn
+        </span>
       </Link>
 
       <nav className="flex flex-col gap-1" aria-label="Primary">
@@ -74,10 +78,10 @@ export function AppSidebar({ className }: AppSidebarProps) {
               href={routeFor(key)}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+                "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
                 isActive
-                  ? "bg-brand-tint text-brand-ink font-medium"
-                  : "text-muted-foreground hover:bg-secondary",
+                  ? "bg-brand-tint text-brand-ink font-bold"
+                  : "text-muted-foreground hover:bg-secondary hover:text-foreground font-semibold",
               )}
             >
               <Icon className="size-5" aria-hidden />
@@ -86,6 +90,11 @@ export function AppSidebar({ className }: AppSidebarProps) {
           );
         })}
       </nav>
+
+      <div className="mt-auto flex items-center justify-between px-2 pb-1">
+        <span className="text-muted-foreground text-xs">Theme</span>
+        <ThemeToggle />
+      </div>
     </aside>
   );
 }

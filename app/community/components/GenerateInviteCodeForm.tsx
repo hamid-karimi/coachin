@@ -39,7 +39,7 @@ export function GenerateInviteCodeForm({
           <select
             id='sport-type-id'
             name='sport_type_id'
-            className='flex h-9 w-full min-w-0 flex-1 rounded-md border border-input bg-background px-3 py-1 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50'
+            className='border-input bg-background focus-visible:border-ring focus-visible:ring-ring/25 flex h-11 w-full min-w-0 flex-1 rounded-md border px-3 py-1 text-sm transition-colors outline-none focus-visible:ring-[3px]'
             required>
             <option value=''>Select sport type</option>
             {sportTypes.map((sport) => (
@@ -49,29 +49,28 @@ export function GenerateInviteCodeForm({
             ))}
           </select>
 
-          <Button type='submit' disabled={pending}>
-            {pending ? "Generating..." : "Generate code"}
+          <Button type='submit' variant='secondary' disabled={pending}>
+            {pending ? "Generating…" : "New invite code"}
           </Button>
         </div>
       </form>
 
       <div className='space-y-2'>
-        <p className='text-xs text-muted-foreground'>
-          Your current invite codes
-        </p>
         {inviteCodes.length === 0 ? (
-          <p className='text-xs text-muted-foreground'>No invite codes yet.</p>
+          <p className='text-muted-foreground text-xs'>
+            No invite codes yet — generate one and share it with a student.
+          </p>
         ) : (
           <ul className='space-y-2'>
             {inviteCodes.map((invite) => (
               <li
                 key={invite.code}
-                className='flex items-center justify-between gap-3 rounded-lg bg-secondary px-3 py-2 text-sm'>
+                className='border-brand/40 bg-brand-tint flex items-center justify-between gap-3 rounded-lg border border-dashed px-3.5 py-2.5 text-sm'>
                 <div className='min-w-0'>
-                  <p className='truncate font-mono text-foreground'>
+                  <p className='text-brand-ink truncate font-mono font-bold tracking-[0.08em]'>
                     {invite.code}
                   </p>
-                  <p className='text-xs text-muted-foreground'>
+                  <p className='text-muted-foreground text-xs'>
                     {invite.sport_type?.name ?? "No sport"}
                   </p>
                 </div>

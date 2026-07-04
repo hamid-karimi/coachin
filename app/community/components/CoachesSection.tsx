@@ -20,14 +20,14 @@ export function CoachesSection({ coaches, canManage }: CoachesSectionProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className='text-lg font-bold'>My Coaches</CardTitle>
+        <CardTitle className='text-[15px] font-bold'>My coaches</CardTitle>
       </CardHeader>
 
       <CardContent className='space-y-4'>
         {canManage && <AddCoachByCodeForm />}
 
         {hasCoaches ? (
-          <ul className='space-y-3'>
+          <ul className='space-y-2'>
             {coaches.map((relationship) => {
               const { coach } = relationship;
               const initials = coach.email?.[0]?.toUpperCase() ?? "?";
@@ -35,7 +35,7 @@ export function CoachesSection({ coaches, canManage }: CoachesSectionProps) {
               return (
                 <li
                   key={coach.id}
-                  className='flex items-center gap-3 rounded-xl bg-secondary p-3'>
+                  className='bg-secondary flex items-center gap-3 rounded-lg p-3'>
                   <Avatar className='size-10'>
                     {coach.avatar_url ? (
                       <AvatarImage
@@ -46,10 +46,10 @@ export function CoachesSection({ coaches, canManage }: CoachesSectionProps) {
                     <AvatarFallback>{initials}</AvatarFallback>
                   </Avatar>
                   <div className='min-w-0 flex-1'>
-                    <p className='truncate text-sm font-semibold text-foreground'>
+                    <p className='text-foreground truncate text-sm font-semibold'>
                       {coach.full_name || coach.email || "Unknown coach"}
                     </p>
-                    <Badge variant='secondary' className='mt-1'>
+                    <Badge variant='outline' className='mt-1'>
                       {relationship.sport_type?.name || "General coaching"}
                     </Badge>
                   </div>
@@ -58,8 +58,8 @@ export function CoachesSection({ coaches, canManage }: CoachesSectionProps) {
             })}
           </ul>
         ) : (
-          <p className='text-sm text-muted-foreground'>
-            You don’t have a coach yet.
+          <p className='text-muted-foreground text-sm'>
+            No coach yet — got a code? Connect above.
           </p>
         )}
       </CardContent>

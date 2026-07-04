@@ -3,85 +3,114 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * CoachIn "Volt Ember" design system.
+ * Graphite base, one loud color per job:
+ *   volt lime  = act & progress (the single primary action per screen)
+ *   ember heat = streaks & celebration (the only gradient in the system)
+ * Dark is the default look; light is a warm off-white twin.
+ */
+
 :root {
-  --radius: 0.75rem;
+  --radius: 1rem;
 
-  /* shadcn semantic tokens */
-  --background: #ffffff;
-  --foreground: #171717;
+  /* shadcn semantic tokens — light (warm paper) */
+  --background: #f4f3ef;
+  --foreground: #17161a;
   --card: #ffffff;
-  --card-foreground: #171717;
+  --card-foreground: #17161a;
   --popover: #ffffff;
-  --popover-foreground: #171717;
-  --primary: #1d9e75;
-  --primary-foreground: #ffffff;
-  --secondary: #f1efe8;
-  --secondary-foreground: #2c2c2a;
-  --muted: #f4f4f2;
-  --muted-foreground: #5f5e5a;
-  --accent: #e1f5ee;
-  --accent-foreground: #0f6e56;
-  --destructive: #e24b4a;
+  --popover-foreground: #17161a;
+  --primary: #c3e51e;
+  --primary-foreground: #17161a;
+  --secondary: #eceae3;
+  --secondary-foreground: #17161a;
+  --muted: #eceae3;
+  --muted-foreground: #6c6a72;
+  --accent: rgba(195, 229, 30, 0.16);
+  --accent-foreground: #5a6b08;
+  --destructive: #e23d3d;
   --destructive-foreground: #ffffff;
-  --border: rgba(0, 0, 0, 0.1);
-  --input: rgba(0, 0, 0, 0.12);
-  --ring: #1d9e75;
+  --border: #e2e0d8;
+  --input: #e2e0d8;
+  --ring: #94b20a;
 
-  /* CoachIn brand tokens — Emerald athletic */
-  --brand: #1d9e75;
-  --brand-foreground: #ffffff;
-  --brand-ink: #0f6e56;
-  --brand-tint: #e1f5ee;
-  --xp: #ef9f27;
-  --xp-ink: #854f0b;
-  --xp-tint: #faeeda;
-  --flame: #d85a30;
-  --flame-ink: #993c1d;
-  --flame-tint: #faece7;
+  /* CoachIn brand tokens — volt (act & progress) */
+  --brand: #c3e51e;
+  --brand-foreground: #17161a;
+  --brand-ink: #5a6b08;
+  --brand-tint: rgba(195, 229, 30, 0.16);
+  /* xp = volt on stats/progress; darker fill for contrast on paper */
+  --xp: #94b20a;
+  --xp-ink: #5a6b08;
+  --xp-tint: rgba(195, 229, 30, 0.2);
+  /* flame = ember (streaks & celebration) */
+  --flame: #f2510f;
+  --flame-ink: #c2410c;
+  --flame-tint: rgba(242, 81, 15, 0.1);
+  --ember-from: #f2510f;
+  --ember-to: #f59e1b;
+
+  --success: #16a34a;
+  --success-tint: rgba(22, 163, 74, 0.1);
 
   /* league tiers */
-  --tier-bronze: #d85a30;
-  --tier-silver: #888780;
-  --tier-gold: #ef9f27;
-  --tier-platinum: #534ab7;
+  --tier-bronze: #a9622f;
+  --tier-bronze-tint: rgba(169, 98, 47, 0.14);
+  --tier-silver: #6e6e78;
+  --tier-silver-tint: rgba(110, 110, 120, 0.14);
+  --tier-gold: #a66e0a;
+  --tier-gold-tint: rgba(217, 151, 30, 0.16);
+  --tier-platinum: #6d5bd0;
+  --tier-platinum-tint: rgba(109, 91, 208, 0.12);
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --card: #171717;
-  --card-foreground: #ededed;
-  --popover: #171717;
-  --popover-foreground: #ededed;
-  --primary: #1d9e75;
-  --primary-foreground: #ffffff;
-  --secondary: #262625;
-  --secondary-foreground: #ededed;
-  --muted: #1f1f1e;
-  --muted-foreground: #b4b2a9;
-  --accent: #0f3a2e;
-  --accent-foreground: #9fe1cb;
-  --destructive: #f09595;
-  --destructive-foreground: #2c2c2a;
-  --border: rgba(255, 255, 255, 0.12);
-  --input: rgba(255, 255, 255, 0.15);
-  --ring: #1d9e75;
+  /* shadcn semantic tokens — dark (graphite, default look) */
+  --background: #0e0e11;
+  --foreground: #f5f4f0;
+  --card: #17171b;
+  --card-foreground: #f5f4f0;
+  --popover: #1f1f25;
+  --popover-foreground: #f5f4f0;
+  --primary: #d4f531;
+  --primary-foreground: #0b0b0d;
+  --secondary: #1f1f25;
+  --secondary-foreground: #f5f4f0;
+  --muted: #1f1f25;
+  --muted-foreground: #9a98a0;
+  --accent: rgba(212, 245, 49, 0.1);
+  --accent-foreground: #d4f531;
+  --destructive: #ff6b6b;
+  --destructive-foreground: #17070a;
+  --border: #2a2a31;
+  --input: #2a2a31;
+  --ring: #d4f531;
 
-  --brand: #1d9e75;
-  --brand-foreground: #ffffff;
-  --brand-ink: #9fe1cb;
-  --brand-tint: #10342b;
-  --xp: #ef9f27;
-  --xp-ink: #fac775;
-  --xp-tint: #3a2a08;
-  --flame: #e0764a;
-  --flame-ink: #f0997b;
-  --flame-tint: #3a1c10;
+  --brand: #d4f531;
+  --brand-foreground: #0b0b0d;
+  --brand-ink: #d4f531;
+  --brand-tint: rgba(212, 245, 49, 0.08);
+  --xp: #d4f531;
+  --xp-ink: #d4f531;
+  --xp-tint: rgba(212, 245, 49, 0.12);
+  --flame: #ff7a3d;
+  --flame-ink: #ffb03a;
+  --flame-tint: rgba(255, 92, 31, 0.16);
+  --ember-from: #ff5c1f;
+  --ember-to: #ffb03a;
 
-  --tier-bronze: #f0997b;
-  --tier-silver: #b4b2a9;
-  --tier-gold: #fac775;
-  --tier-platinum: #afa9ec;
+  --success: #4ade80;
+  --success-tint: rgba(74, 222, 128, 0.08);
+
+  --tier-bronze: #d08b5b;
+  --tier-bronze-tint: rgba(208, 139, 91, 0.16);
+  --tier-silver: #c8cdd6;
+  --tier-silver-tint: rgba(200, 205, 214, 0.14);
+  --tier-gold: #ffc14d;
+  --tier-gold-tint: rgba(255, 193, 77, 0.16);
+  --tier-platinum: #b7a8ff;
+  --tier-platinum-tint: rgba(183, 168, 255, 0.14);
 }
 
 @theme inline {
@@ -115,18 +144,31 @@
   --color-flame: var(--flame);
   --color-flame-ink: var(--flame-ink);
   --color-flame-tint: var(--flame-tint);
+  --color-ember-from: var(--ember-from);
+  --color-ember-to: var(--ember-to);
+
+  --color-success: var(--success);
+  --color-success-tint: var(--success-tint);
 
   --color-tier-bronze: var(--tier-bronze);
+  --color-tier-bronze-tint: var(--tier-bronze-tint);
   --color-tier-silver: var(--tier-silver);
+  --color-tier-silver-tint: var(--tier-silver-tint);
   --color-tier-gold: var(--tier-gold);
+  --color-tier-gold-tint: var(--tier-gold-tint);
   --color-tier-platinum: var(--tier-platinum);
+  --color-tier-platinum-tint: var(--tier-platinum-tint);
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  /* controls 12 · cards 16 · sheets 20 · pills 999 */
+  --radius-sm: 0.625rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.5rem;
 
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-instrument-sans);
+  --font-display: var(--font-space-grotesk);
   --font-mono: var(--font-geist-mono);
 }
 
@@ -134,4 +176,30 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Stat numerals: Grotesk, tabular, everywhere stats live. */
+@utility text-stat {
+  font-family: var(--font-display), var(--font-sans), sans-serif;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Overline labels above stats and sections. */
+@utility text-overline {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+/* Ember heat — the only gradient in the system (streaks & celebration). */
+@utility bg-ember {
+  background-image: linear-gradient(
+    135deg,
+    var(--ember-from),
+    var(--ember-to)
+  );
 }

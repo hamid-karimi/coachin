@@ -12,8 +12,12 @@ interface LeaderboardRowProps {
   tier?: Tier;
   avatarUrl?: string;
   highlight?: boolean;
+  /** Context line under the name, e.g. "↑ 2 since last week". */
+  subtitle?: string;
   className?: string;
 }
+
+const MEDALS: Record<number, string> = { 1: "🥇", 2: "🥈", 3: "🥉" };
 
 export function LeaderboardRow({
   rank,
@@ -23,53 +27,57 @@ export function LeaderboardRow({
   tier,
   avatarUrl,
   highlight = false,
+  subtitle,
   className,
 }: LeaderboardRowProps) {
+  const medal = MEDALS[rank];
+
   return (
     <div
       className={cn(
         "flex items-center gap-3 px-4 py-3",
-        highlight && "bg-brand-tint",
+        highlight &&
+          "bg-brand-tint border-brand/35 rounded-lg border",
         className,
       )}
     >
       <span
         className={cn(
-          "w-5 text-sm font-medium",
-          rank === 1 ? "text-xp-ink" : "text-muted-foreground",
-          highlight && "text-brand-ink",
+          "w-6 shrink-0 text-center text-stat text-sm",
+          highlight ? "text-brand-ink" : "text-muted-foreground",
         )}
+        aria-label={`Rank ${rank}`}
       >
-        {rank}
+        {medal ?? rank}
       </span>
       <Avatar
-        className={cn("size-8", highlight && "ring-2 ring-brand ring-offset-1")}
+        className={cn("size-9", highlight && "ring-brand ring-2 ring-offset-1 ring-offset-background")}
       >
         {avatarUrl ? <AvatarImage src={avatarUrl} alt={name} /> : null}
-        <AvatarFallback>{initials}</AvatarFallback>
-      </Avatar>
-      <div className="min-w-0 flex-1">
-        <p
+        <AvatarFallback
           className={cn(
-            "truncate text-sm font-medium",
-            highlight && "text-brand-ink",
+            highlight && "bg-brand text-brand-foreground font-bold",
           )}
         >
+          {initials}
+        </AvatarFallback>
+      </Avatar>
+      <div className="min-w-0 flex-1">
+        <p className="text-foreground truncate text-sm font-semibold">
           {name}
+          {highlight && (
+            <span className="text-brand-ink ml-1.5 text-[11px] font-bold tracking-wide">
+              YOU
+            </span>
+          )}
         </p>
-        {tier ? (
-          <div className="mt-0.5">
-            <TierBadge tier={tier} className="px-0 bg-transparent" />
-          </div>
+        {subtitle ? (
+          <p className="text-muted-foreground truncate text-xs">{subtitle}</p>
         ) : null}
       </div>
-      <span
-        className={cn(
-          "text-sm font-medium",
-          highlight ? "text-brand-ink" : "text-foreground",
-        )}
-      >
-        {xp.toLocaleString()} XP
+      {tier ? <TierBadge tier={tier} className="shrink-0" /> : null}
+      <span className="text-foreground shrink-0 text-stat text-sm">
+        {xp.toLocaleString()}
       </span>
     </div>
   );

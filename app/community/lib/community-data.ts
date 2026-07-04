@@ -31,7 +31,7 @@ export type CommunityData = {
   discoverHasNextPage: boolean;
 };
 
-type CommunityTab = "leaderboards" | "coaching";
+type CommunityTab = "boards" | "coaching" | "clubs" | "circle";
 type CommunityBoard = "global" | "club" | "circle";
 
 type CommunityDataOptions = {
@@ -284,10 +284,15 @@ export async function getCommunityData(
   const discoverPageSize = 10;
   const discoverFrom = (discoverPage - 1) * discoverPageSize;
   const discoverTo = discoverFrom + discoverPageSize;
-  const activeTab = options.activeTab ?? "leaderboards";
+  const activeTab = options.activeTab ?? "boards";
   const activeBoard = options.activeBoard ?? "global";
   const isCoachingTab = activeTab === "coaching";
-  const isLeaderboardsTab = activeTab === "leaderboards";
+  const isBoardsTab = activeTab === "boards";
+  // Clubs power both the Clubs tab and the "My Club" board.
+  const needsClubs = isBoardsTab || activeTab === "clubs";
+  // The social graph powers both the Circle tab and the "My Circle" board.
+  const needsFollowing = isBoardsTab || activeTab === "circle";
+  const isCircleTab = activeTab === "circle";
 
   const supabase = await createClient();
   const {
@@ -395,17 +400,21 @@ export async function getCommunityData(
   }> | null = null;
   let followingRows: Array<{ following_id: string | null }> | null = null;
 
-  if (isLeaderboardsTab) {
+  if (needsClubs || needsFollowing) {
     const [{ data: rawClubMembershipsData }, { data: rawFollowingRows }] =
       await Promise.all([
-        supabase
-          .from("club_members")
-          .select("club_id, is_primary, clubs(id, name, invite_code)")
-          .eq("user_id", user.id),
-        supabase
-          .from("social_graph")
-          .select("following_id")
-          .eq("follower_id", user.id),
+        needsClubs
+          ? supabase
+              .from("club_members")
+              .select("club_id, is_primary, clubs(id, name, invite_code)")
+              .eq("user_id", user.id)
+          : Promise.resolve({ data: null }),
+        needsFollowing
+          ? supabase
+              .from("social_graph")
+              .select("following_id")
+              .eq("follower_id", user.id)
+          : Promise.resolve({ data: null }),
       ]);
 
     clubMembershipsData =
@@ -440,7 +449,7 @@ export async function getCommunityData(
 
   let followingProfilesData: ProfileSummary[] = [];
 
-  if (isLeaderboardsTab) {
+  if (isCircleTab) {
     const { data: rawFollowingProfilesData } = followingIds.length
       ? await supabase
           .from("profiles")
@@ -451,7 +460,7 @@ export async function getCommunityData(
     followingProfilesData = rawFollowingProfilesData ?? [];
   }
 
-  const discoverProfiles = isLeaderboardsTab
+  const discoverProfiles = isCircleTab
     ? (
         await fetchDiscoverProfiles(supabase, {
           currentUserId: user.id,
@@ -469,7 +478,7 @@ export async function getCommunityData(
   let myClubLeaderboard: ProfileSummary[] = [];
   let myCircleLeaderboard: ProfileSummary[] = [];
 
-  if (isLeaderboardsTab) {
+  if (isBoardsTab) {
     if (activeBoard === "global") {
       globalLeaderboard = await buildWeeklyLeaderboard(supabase);
     }

@@ -1,31 +1,28 @@
+import Link from "next/link";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { Flame } from "lucide-react";
+import { Heart, MoonStar } from "lucide-react";
 
 import { AppShell } from "@/components/design-system/app-shell";
-import { XpBar } from "@/components/design-system/xp-bar";
+import { LevelRing } from "@/components/design-system/level-ring";
 import { StatCard } from "@/components/design-system/stat-card";
+import { StreakBadge } from "@/components/design-system/streak-badge";
+import { XpBar } from "@/components/design-system/xp-bar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { levelProgress } from "@/lib/xp";
-import { LogoutButton } from "./logout-button";
+import { tierFromLeague } from "@/lib/tiers";
 import { WorkoutCard } from "./components/workout-card";
 
 export const dynamic = "force-dynamic";
 
-const DAY_NAMES = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
-
-function greeting(hour: number): string {
-  if (hour < 12) return "Good morning";
-  if (hour < 18) return "Good afternoon";
-  return "Good evening";
-}
+const TIER_LABELS: Record<string, string> = {
+  bronze: "Bronze",
+  silver: "Silver",
+  gold: "Gold",
+  platinum: "Platinum",
+};
 
 type SportTypeSummary = {
   id?: number | null;
@@ -96,71 +93,158 @@ export default async function Dashboard() {
     return todaysLogs?.some((log) => log.sport_type_id === sportId);
   };
 
-  const name = user.user_metadata.full_name || user.email;
+  const name: string = user.user_metadata.full_name || user.email || "athlete";
+  const firstName = name.split(" ")[0];
+  const initials = name
+    .split(" ")
+    .map((part: string) => part[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
+  const xp = profile.xp ?? 0;
+  const level = profile.level ?? 1;
+  const streak = profile.current_streak ?? 0;
+  const bestStreak = profile.best_streak ?? 0;
+  const hearts = Math.max(0, Math.min(3, profile.hearts ?? 3));
+  const tier = tierFromLeague(profile.league_tier);
+  const progress = levelProgress(xp);
+  const progressPct = Math.round(
+    (progress.currentXp / progress.nextLevelXp) * 100,
+  );
+
+  const doneCount = (todaysPlan ?? []).filter((item: ScheduleItem) =>
+    isCompleted(item.sport_type_id),
+  ).length;
+  const totalCount = todaysPlan?.length ?? 0;
+
+  const dateLabel = today.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
 
   return (
     <AppShell>
-      <div className="mx-auto w-full max-w-4xl">
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
         {/* Header */}
-        <div className="border-border mb-8 flex items-start justify-between gap-4 border-b pb-6">
+        <div className="flex items-center justify-between gap-4">
           <div>
-            <h1 className="text-foreground text-3xl font-bold">
-              {greeting(today.getHours())}, {name}
+            <p className="text-muted-foreground text-[13px]">{dateLabel}</p>
+            <h1 className="text-foreground font-display text-2xl font-bold tracking-tight md:text-[28px]">
+              Hi, {firstName}
             </h1>
-            <p className="text-muted-foreground mt-2 text-sm">
-              {DAY_NAMES[dayIndex]}, {dateString}
-            </p>
           </div>
-          <LogoutButton />
+          <div className="flex items-center gap-2.5">
+            <StreakBadge days={streak} compact />
+            <Link href="/profile" aria-label="Open profile">
+              <Avatar className="size-10">
+                <AvatarFallback className="font-semibold">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+            </Link>
+          </div>
         </div>
 
-        <div className="grid gap-6">
-          {/* XP / Level progress */}
-          <div className="bg-card border-border rounded-2xl border p-6">
+        {/* Level card */}
+        <div className="bg-card border-border flex items-center gap-4 rounded-2xl border p-4 md:p-5">
+          <LevelRing level={level} progress={progressPct} size="lg" />
+          <div className="min-w-0 flex-1">
             <XpBar
-              level={profile.level ?? 1}
-              {...levelProgress(profile.xp ?? 0)}
+              level={level}
+              currentXp={progress.currentXp}
+              nextLevelXp={progress.nextLevelXp}
+              totalXp={xp}
             />
           </div>
+        </div>
 
-          {/* Stat row */}
-          <div className="grid gap-4 sm:grid-cols-3">
-            <StatCard
-              label="Streak"
-              value={profile.current_streak ?? 0}
-              accent="flame"
-              icon={<Flame className="size-5" aria-hidden />}
+        {/* Hearts strip */}
+        <div className="flex items-center gap-1.5 px-0.5">
+          {[0, 1, 2].map((index) => (
+            <Heart
+              key={index}
+              className={cn(
+                "size-4",
+                index < hearts
+                  ? "fill-destructive text-destructive"
+                  : "text-muted-foreground/40",
+              )}
+              aria-hidden
             />
-            <StatCard label="Level" value={profile.level ?? 1} />
-            <StatCard label="Total XP" value={profile.xp ?? 0} />
-          </div>
+          ))}
+          <span className="text-muted-foreground ml-1 text-xs">
+            {hearts} {hearts === 1 ? "heart" : "hearts"} · a missed day costs
+            one
+          </span>
+        </div>
 
-          {/* Today's plan */}
-          <div>
-            <h2 className="text-foreground mb-6 text-2xl font-bold">
+        {/* Desktop stat row */}
+        <div className="hidden gap-3 sm:grid sm:grid-cols-4">
+          <StatCard label="Level" value={level} accent="brand" />
+          <StatCard
+            label="Streak"
+            value={
+              <>
+                {streak}
+                <span className="text-flame text-base">🔥</span>
+              </>
+            }
+          />
+          <StatCard label="Total XP" value={xp.toLocaleString()} />
+          <StatCard
+            label="League"
+            value={TIER_LABELS[tier]}
+            accent="gold"
+          />
+        </div>
+
+        {/* Today's plan */}
+        <div className="flex flex-col gap-3">
+          <div className="flex items-baseline justify-between">
+            <h2 className="text-foreground text-[17px] font-bold">
               Today&apos;s plan
             </h2>
-
-            {!todaysPlan || todaysPlan.length === 0 ? (
-              <div className="bg-secondary text-muted-foreground rounded-2xl p-8 text-center">
-                Rest day — no sessions scheduled.
-              </div>
-            ) : (
-              <div className="grid gap-4">
-                {todaysPlan.map((item: ScheduleItem) => {
-                  const completed = isCompleted(item.sport_type_id);
-
-                  return (
-                    <WorkoutCard
-                      key={item.id}
-                      item={item}
-                      completed={completed}
-                    />
-                  );
-                })}
-              </div>
+            {totalCount > 0 && (
+              <span className="text-muted-foreground text-[13px]">
+                {doneCount} of {totalCount} done
+              </span>
             )}
           </div>
+
+          {!todaysPlan || todaysPlan.length === 0 ? (
+            <div className="border-border flex flex-col items-center gap-2.5 rounded-xl border border-dashed px-5 py-8 text-center">
+              <span className="bg-secondary text-muted-foreground grid size-12 place-items-center rounded-full">
+                <MoonStar className="size-5" aria-hidden />
+              </span>
+              <p className="text-foreground font-semibold">Rest day</p>
+              <p className="text-muted-foreground max-w-70 text-sm leading-relaxed">
+                Nothing scheduled — recovery counts. Your streak is safe on
+                rest days.
+              </p>
+              <Button asChild variant="secondary" size="sm" className="mt-1">
+                <Link href="/onboarding">Edit plan</Link>
+              </Button>
+            </div>
+          ) : (
+            <div className="grid gap-3">
+              {todaysPlan.map((item: ScheduleItem) => {
+                const completed = isCompleted(item.sport_type_id);
+
+                return (
+                  <WorkoutCard
+                    key={item.id}
+                    item={item}
+                    completed={completed}
+                    streak={streak}
+                    bestStreak={bestStreak}
+                  />
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </AppShell>

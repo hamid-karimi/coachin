@@ -11,8 +11,9 @@ const badgeVariants = cva(
       variant: {
         default: "border-transparent bg-primary text-primary-foreground",
         brand: "border-transparent bg-brand-tint text-brand-ink",
-        xp: "border-transparent bg-xp-tint text-xp-ink",
-        flame: "border-transparent bg-flame-tint text-flame-ink",
+        xp: "border-transparent bg-xp-tint text-xp-ink font-bold text-stat",
+        flame: "border-flame/30 bg-flame-tint text-flame-ink",
+        success: "border-transparent bg-success-tint text-success",
         secondary:
           "border-transparent bg-secondary text-secondary-foreground",
         outline: "text-foreground border-border",

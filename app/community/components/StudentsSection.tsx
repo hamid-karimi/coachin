@@ -29,7 +29,9 @@ export function StudentsSection({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className='text-lg font-bold'>My Students</CardTitle>
+        <CardTitle className='text-[15px] font-bold'>
+          My students{hasStudents ? ` · ${students.length}` : ""}
+        </CardTitle>
       </CardHeader>
 
       <CardContent className='space-y-4'>
@@ -41,7 +43,7 @@ export function StudentsSection({
         )}
 
         {hasStudents ? (
-          <ul className='space-y-3'>
+          <ul className='space-y-2'>
             {students.map((relationship) => {
               const { student } = relationship;
               const initials = student.email?.[0]?.toUpperCase() ?? "?";
@@ -49,7 +51,7 @@ export function StudentsSection({
               return (
                 <li
                   key={student.id}
-                  className='flex items-center justify-between gap-3 rounded-xl bg-secondary p-3'>
+                  className='bg-secondary flex items-center justify-between gap-3 rounded-lg p-3'>
                   <div className='flex min-w-0 items-center gap-3'>
                     <Avatar className='size-10'>
                       {student.avatar_url ? (
@@ -83,8 +85,8 @@ export function StudentsSection({
             })}
           </ul>
         ) : (
-          <p className='text-sm text-muted-foreground'>
-            You don’t have students yet. Share your invite code.
+          <p className='text-muted-foreground text-sm'>
+            No students yet — share an invite code to connect.
           </p>
         )}
       </CardContent>

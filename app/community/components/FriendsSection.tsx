@@ -4,16 +4,11 @@ import type { ProfileSummary } from "../types";
 import { FollowToggleButton } from "./FollowToggleButton";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import { Search, UsersRound } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { TierBadge } from "@/components/design-system/tier-badge";
+import { tierFromLeague } from "@/lib/tiers";
 
 function profileInitials(profile: ProfileSummary) {
   const name = profile.full_name?.trim();
@@ -32,6 +27,38 @@ interface FriendsSectionProps {
 
 function displayName(profile: ProfileSummary) {
   return profile.full_name || profile.email?.split("@")[0] || "User";
+}
+
+function PersonRow({
+  profile,
+  action,
+}: {
+  profile: ProfileSummary;
+  action: React.ReactNode;
+}) {
+  return (
+    <li className='bg-card border-border flex items-center gap-3 rounded-xl border p-3'>
+      <Avatar className='size-10'>
+        {profile.avatar_url ? (
+          <AvatarImage src={profile.avatar_url} alt={displayName(profile)} />
+        ) : null}
+        <AvatarFallback>{profileInitials(profile)}</AvatarFallback>
+      </Avatar>
+      <div className='min-w-0 flex-1'>
+        <p className='text-foreground truncate text-sm font-semibold'>
+          {displayName(profile)}
+        </p>
+        <p className='text-muted-foreground flex items-center gap-1.5 text-xs'>
+          Lv {profile.level ?? 1} · {(profile.xp ?? 0).toLocaleString()} XP
+          <TierBadge
+            tier={tierFromLeague(profile.league_tier)}
+            className='px-1.5 py-0 text-[10px]'
+          />
+        </p>
+      </div>
+      {action}
+    </li>
+  );
 }
 
 export function FriendsSection({
@@ -109,117 +136,65 @@ export function FriendsSection({
     };
   }, [query, followingUserIds]);
 
+  const trimmedQuery = query.trim();
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className='text-lg font-bold'>Friends &amp; Circle</CardTitle>
-        <CardDescription>
-          Search users and manage your Circle independently of leaderboards.
-        </CardDescription>
-      </CardHeader>
+    <section className='space-y-4'>
+      <div>
+        <h2 className='text-foreground text-[17px] font-bold'>Circle</h2>
+        <p className='text-muted-foreground mt-0.5 text-sm'>
+          Follow people to build your Circle board.
+        </p>
+      </div>
 
-      <CardContent className='space-y-4'>
-        <div className='space-y-2'>
-          <Label htmlFor='friends-search' className='text-muted-foreground'>
-            Search users (name or email)
-          </Label>
-          <Input
-            id='friends-search'
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            type='search'
-            autoComplete='off'
-            placeholder='Example: alex'
-          />
-          <p className='text-[11px] text-muted-foreground'>
-            {query.trim()
-              ? "Results refresh automatically."
-              : "Results appear after you enter a search term."}
-          </p>
-        </div>
+      {/* Search */}
+      <div className='relative'>
+        <Search
+          className='text-muted-foreground absolute top-1/2 left-3.5 size-4 -translate-y-1/2'
+          aria-hidden
+        />
+        <Input
+          id='friends-search'
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          type='search'
+          autoComplete='off'
+          aria-label='Search by name or email'
+          placeholder='Search by name or email'
+          className='pl-10'
+        />
+      </div>
 
-        <div className='space-y-2'>
-          <p className='text-xs text-muted-foreground'>My Following</p>
-          {followingProfiles.length === 0 ? (
-            <p className='text-sm text-muted-foreground'>
-              You are not following anyone yet.
-            </p>
-          ) : (
-            <ul className='space-y-2'>
-              {followingProfiles.map((profile) => (
-                <li
+      {/* Search results */}
+      {trimmedQuery ? (
+        isLoading ? (
+          <ul className='animate-pulse space-y-2'>
+            {[0, 1, 2].map((index) => (
+              <li key={index} className='bg-secondary h-16 rounded-xl' />
+            ))}
+          </ul>
+        ) : profiles.length === 0 ? (
+          <div className='border-border flex items-center gap-3 rounded-xl border border-dashed p-4'>
+            <Search className='text-muted-foreground size-5 shrink-0' aria-hidden />
+            <div>
+              <p className='text-foreground text-sm font-semibold'>
+                No one matches &ldquo;{trimmedQuery}&rdquo;
+              </p>
+              <p className='text-muted-foreground text-[13px]'>
+                Check the spelling or invite them to CoachIn.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <ul className='space-y-2'>
+            {profiles.map((profile) => {
+              const isFollowing = mergedFollowingIds.has(profile.id);
+
+              return (
+                <PersonRow
                   key={profile.id}
-                  className='flex items-center justify-between gap-3 rounded-xl bg-secondary p-3'>
-                  <div className='flex min-w-0 items-center gap-3'>
-                    <Avatar className='size-9'>
-                      {profile.avatar_url ? (
-                        <AvatarImage
-                          src={profile.avatar_url}
-                          alt={displayName(profile)}
-                        />
-                      ) : null}
-                      <AvatarFallback>
-                        {profileInitials(profile)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className='min-w-0'>
-                      <p className='truncate text-sm font-semibold text-foreground'>
-                        {displayName(profile)}
-                      </p>
-                      <p className='text-xs text-muted-foreground'>
-                        Level {profile.level ?? 1} ·{" "}
-                        {(profile.xp ?? 0).toLocaleString()} XP
-                      </p>
-                    </div>
-                  </div>
-                  <FollowToggleButton targetUserId={profile.id} isFollowing />
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div className='space-y-2'>
-          <p className='text-xs text-muted-foreground'>Search Results</p>
-          {!query.trim() ? (
-            <p className='text-sm text-muted-foreground'>
-              Enter a user name or email to search.
-            </p>
-          ) : isLoading ? (
-            <p className='text-sm text-muted-foreground'>Searching...</p>
-          ) : profiles.length === 0 ? (
-            <p className='text-sm text-muted-foreground'>No results found.</p>
-          ) : (
-            <ul className='space-y-2'>
-              {profiles.map((profile) => {
-                const isFollowing = mergedFollowingIds.has(profile.id);
-
-                return (
-                  <li
-                    key={profile.id}
-                    className='flex items-center justify-between gap-3 rounded-xl bg-secondary p-3'>
-                    <div className='flex min-w-0 items-center gap-3'>
-                      <Avatar className='size-9'>
-                        {profile.avatar_url ? (
-                          <AvatarImage
-                            src={profile.avatar_url}
-                            alt={displayName(profile)}
-                          />
-                        ) : null}
-                        <AvatarFallback>
-                          {profileInitials(profile)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className='min-w-0'>
-                        <p className='truncate text-sm font-semibold text-foreground'>
-                          {displayName(profile)}
-                        </p>
-                        <p className='text-xs text-muted-foreground'>
-                          Level {profile.level ?? 1} ·{" "}
-                          {(profile.xp ?? 0).toLocaleString()} XP
-                        </p>
-                      </div>
-                    </div>
+                  profile={profile}
+                  action={
                     <FollowToggleButton
                       targetUserId={profile.id}
                       isFollowing={isFollowing}
@@ -233,13 +208,46 @@ export function FriendsSection({
                         );
                       }}
                     />
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+                  }
+                />
+              );
+            })}
+          </ul>
+        )
+      ) : null}
+
+      {/* Following */}
+      <div className='space-y-2'>
+        <p className='text-overline'>
+          Following · {followingProfiles.length}
+        </p>
+        {followingProfiles.length === 0 ? (
+          <div className='border-border flex flex-col items-center gap-2.5 rounded-xl border border-dashed px-5 py-8 text-center'>
+            <span className='bg-secondary text-muted-foreground grid size-12 place-items-center rounded-full'>
+              <UsersRound className='size-5' aria-hidden />
+            </span>
+            <p className='text-foreground font-semibold'>
+              Your Circle is empty
+            </p>
+            <p className='text-muted-foreground max-w-75 text-sm leading-relaxed'>
+              Follow a few people to unlock the Circle board — friendly rivalry
+              works. Search above to find them.
+            </p>
+          </div>
+        ) : (
+          <ul className='space-y-2'>
+            {followingProfiles.map((profile) => (
+              <PersonRow
+                key={profile.id}
+                profile={profile}
+                action={
+                  <FollowToggleButton targetUserId={profile.id} isFollowing />
+                }
+              />
+            ))}
+          </ul>
+        )}
+      </div>
+    </section>
   );
 }

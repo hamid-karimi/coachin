@@ -6,8 +6,6 @@ import { LeaderboardSection } from "./components/LeaderboardSection";
 import { StudentsSection } from "./components/StudentsSection";
 import { TabNavigation } from "./components/TabNavigation";
 import { getCommunityData } from "./lib/community-data";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -20,19 +18,24 @@ type CommunityPageProps = {
   }>;
 };
 
-type ActiveTab = "leaderboards" | "coaching";
+type ActiveTab = "boards" | "coaching" | "clubs" | "circle";
 type ActiveBoard = "global" | "club" | "circle";
 
 const COACH_ENABLED_ROLES = new Set(["coach", "both", "admin"]);
 const STUDENT_ENABLED_ROLES = new Set(["student", "both", "admin"]);
+
+function parseTab(tab?: string): ActiveTab {
+  if (tab === "coaching" || tab === "clubs" || tab === "circle") return tab;
+  // "leaderboards" is the legacy name for the boards tab.
+  return "boards";
+}
 
 export default async function CommunityPage({
   searchParams,
 }: CommunityPageProps) {
   const resolvedSearchParams = await searchParams;
 
-  const activeTab: ActiveTab =
-    resolvedSearchParams?.tab === "coaching" ? "coaching" : "leaderboards";
+  const activeTab = parseTab(resolvedSearchParams?.tab);
   const activeBoard: ActiveBoard =
     resolvedSearchParams?.board === "club" ||
     resolvedSearchParams?.board === "circle"
@@ -67,61 +70,56 @@ export default async function CommunityPage({
   const canCoach = COACH_ENABLED_ROLES.has(profileRole);
   const canStudy = STUDENT_ENABLED_ROLES.has(profileRole);
 
-  const metadata =
-    (user.user_metadata as { full_name?: string; name?: string }) ?? {};
-  const displayName = metadata.full_name || metadata.name || user.email;
-
-  const leaderboardTitleByBoard: Record<string, string> = {
-    global: "Global League",
-    club: `My Club${primaryClubName ? ` · ${primaryClubName}` : ""}`,
+  const leaderboardTitleByBoard: Record<ActiveBoard, string> = {
+    global: "Global",
+    club: primaryClubName ? `My Club · ${primaryClubName}` : "My Club",
     circle: "My Circle",
   };
 
-  const leaderboardDataByBoard = {
-    global: globalLeaderboard,
-    club: myClubLeaderboard,
-    circle: myCircleLeaderboard,
+  const leaderboardDataByBoard: Record<ActiveBoard, typeof globalLeaderboard> =
+    {
+      global: globalLeaderboard,
+      club: myClubLeaderboard,
+      circle: myCircleLeaderboard,
+    };
+
+  // "What counts" — make each board's rules explicit.
+  const whatCountsByBoard: Record<ActiveBoard, string> = {
+    global: "everyone on CoachIn",
+    club: primaryClubName
+      ? `members of ${primaryClubName} (your primary club)`
+      : "members of your primary club",
+    circle: "people you follow",
   };
 
-  const leaderboardEmptyByBoard: Record<string, string> = {
-    global: "No records were logged this week yet.",
-    club: "No records for your primary club yet.",
-    circle: "No data in My Circle yet.",
+  const leaderboardEmptyByBoard: Record<ActiveBoard, string> = {
+    global: "No XP logged this week yet — log a workout to open the board.",
+    club: primaryClubName
+      ? "No club XP this week yet. Log a session to put your club on the board."
+      : "Join a club to compete on a smaller board with people you know.",
+    circle:
+      "Follow a few people to unlock the Circle board — friendly rivalry works.",
   };
 
   return (
     <CommunityLayout>
-      <header className='space-y-1'>
-        <p className='text-sm text-muted-foreground'>Hi, {displayName}!</p>
-        <h1 className='text-3xl font-bold text-foreground'>
-          Sports Community
+      <header>
+        <h1 className='text-foreground font-display text-2xl font-bold tracking-tight md:text-[28px]'>
+          Community
         </h1>
-        <p className='text-sm text-muted-foreground'>
-          Manage leaderboards and coaching space here.
-        </p>
       </header>
 
       <TabNavigation activeTab={activeTab} activeBoard={activeBoard}>
-        {activeTab === "leaderboards" && (
-          <section className='space-y-4'>
-            <LeaderboardSection
-              leaderboard={leaderboardDataByBoard[activeBoard]}
-              currentUserId={user.id}
-              title={leaderboardTitleByBoard[activeBoard]}
-              emptyMessage={leaderboardEmptyByBoard[activeBoard]}
-              enableFollowActions
-              followingUserIds={followingUserIds}
-            />
-
-            <ClubMembershipSection memberships={clubMemberships} />
-
-            <FriendsSection
-              followingProfiles={followingProfiles}
-              discoverProfiles={discoverProfiles}
-              followingUserIds={followingUserIds}
-              searchTerm={resolvedSearchParams?.q ?? ""}
-            />
-          </section>
+        {activeTab === "boards" && (
+          <LeaderboardSection
+            leaderboard={leaderboardDataByBoard[activeBoard]}
+            currentUserId={user.id}
+            title={leaderboardTitleByBoard[activeBoard]}
+            whatCounts={whatCountsByBoard[activeBoard]}
+            emptyMessage={leaderboardEmptyByBoard[activeBoard]}
+            enableFollowActions
+            followingUserIds={followingUserIds}
+          />
         )}
 
         {activeTab === "coaching" && (
@@ -141,28 +139,34 @@ export default async function CommunityPage({
             </div>
 
             {(canCoach || profileRole === "coach") && (
-              <div className='space-y-4'>
-                <LeaderboardSection
-                  leaderboard={coachStudentsLeaderboard}
-                  currentUserId={user.id}
-                  title='Student Internal Leaderboard'
-                  emptyMessage='No students available for ranking yet.'
-                />
+              <LeaderboardSection
+                leaderboard={coachStudentsLeaderboard}
+                currentUserId={user.id}
+                title='My students'
+                whatCounts='your students, ranked by total XP'
+                emptyMessage='No students yet — share an invite code to connect.'
+              />
+            )}
 
-                <div className='flex justify-end'>
-                  <Button asChild variant='brand'>
-                    <Link href='/dashboard'>Create Workout for Student</Link>
-                  </Button>
-                </div>
-              </div>
+            {!canCoach && !canStudy && (
+              <p className='text-muted-foreground text-sm'>
+                Your current role has limited access to Coaching.
+              </p>
             )}
           </section>
         )}
 
-        {!canCoach && !canStudy && (
-          <p className='text-sm text-flame-ink'>
-            Your current role has limited access to Coaching.
-          </p>
+        {activeTab === "clubs" && (
+          <ClubMembershipSection memberships={clubMemberships} />
+        )}
+
+        {activeTab === "circle" && (
+          <FriendsSection
+            followingProfiles={followingProfiles}
+            discoverProfiles={discoverProfiles}
+            followingUserIds={followingUserIds}
+            searchTerm={resolvedSearchParams?.q ?? ""}
+          />
         )}
       </TabNavigation>
     </CommunityLayout>
