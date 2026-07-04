@@ -1,7 +1,7 @@
-import type { StudentRelationship } from "../types";
-import type { CoachInviteCodeSummary, SportTypeSummary } from "../types";
-import { GenerateInviteCodeForm } from "./GenerateInviteCodeForm";
-import { AssignPlanButton } from "./AssignPlanButton";
+import type { StudentRelationship } from "@/app/community/types";
+import type { TraineeAdherence } from "../lib/coaching-hub-data";
+import { AdherenceWeekStrip } from "./AdherenceWeekStrip";
+import { AssignPlanButton } from "@/app/community/components/AssignPlanButton";
 import {
   Card,
   CardContent,
@@ -11,42 +11,40 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
-interface StudentsSectionProps {
+interface TraineesSectionProps {
   students: StudentRelationship[];
-  sportTypes: SportTypeSummary[];
-  inviteCodes: CoachInviteCodeSummary[];
-  canManage: boolean;
+  /** userId → XP earned this week, from the get_weekly_leaderboard RPC. */
+  weeklyXpByUserId?: Map<string, number>;
+  /** userId → this week's schedule adherence (logs + schedules). */
+  adherenceByUserId?: Map<string, TraineeAdherence>;
+  /** Monday of the current week, YYYY-MM-DD (local time). */
+  weekStart?: string;
 }
 
-export function StudentsSection({
+export function TraineesSection({
   students,
-  sportTypes,
-  inviteCodes,
-  canManage,
-}: StudentsSectionProps) {
+  weeklyXpByUserId,
+  adherenceByUserId,
+  weekStart,
+}: TraineesSectionProps) {
   const hasStudents = students.length > 0;
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className='text-[15px] font-bold'>
-          My students{hasStudents ? ` · ${students.length}` : ""}
+          My trainees{hasStudents ? ` · ${students.length}` : ""}
         </CardTitle>
       </CardHeader>
 
       <CardContent className='space-y-4'>
-        {canManage && (
-          <GenerateInviteCodeForm
-            sportTypes={sportTypes}
-            inviteCodes={inviteCodes}
-          />
-        )}
-
         {hasStudents ? (
           <ul className='space-y-2'>
             {students.map((relationship) => {
               const { student } = relationship;
               const initials = student.email?.[0]?.toUpperCase() ?? "?";
+              const weeklyXp = weeklyXpByUserId?.get(student.id);
+              const adherence = adherenceByUserId?.get(student.id);
 
               return (
                 <li
@@ -57,7 +55,7 @@ export function StudentsSection({
                       {student.avatar_url ? (
                         <AvatarImage
                           src={student.avatar_url}
-                          alt={student.full_name ?? student.email ?? "Student"}
+                          alt={student.full_name ?? student.email ?? "Trainee"}
                         />
                       ) : null}
                       <AvatarFallback>{initials}</AvatarFallback>
@@ -66,19 +64,36 @@ export function StudentsSection({
                       <p className='truncate text-sm font-semibold text-foreground'>
                         {student.full_name ||
                           student.email ||
-                          "Unknown student"}
+                          "Unknown trainee"}
                       </p>
                       <p className='text-xs text-muted-foreground'>
                         {relationship.sport_type?.name || "General coaching"} ·
                         Level {student.level ?? 1}
+                        {typeof weeklyXp === "number"
+                          ? ` · ${weeklyXp.toLocaleString()} XP this week`
+                          : ""}
                       </p>
+                      {adherence && weekStart ? (
+                        <div className='mt-1.5 flex items-center gap-2.5'>
+                          <AdherenceWeekStrip
+                            scheduledDays={adherence.scheduledDays}
+                            loggedDates={adherence.loggedDates}
+                            weekStart={weekStart}
+                          />
+                          <span className='text-xs text-muted-foreground'>
+                            {adherence.scheduledCount === 0
+                              ? "No plan assigned yet"
+                              : `${adherence.doneCount} of ${adherence.scheduledCount} this week`}
+                          </span>
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                   <div className='flex flex-col items-end gap-1'>
                     <Badge variant='xp'>
                       {student.xp?.toLocaleString() ?? 0} XP
                     </Badge>
-                    {canManage && <AssignPlanButton studentId={student.id} />}
+                    <AssignPlanButton studentId={student.id} />
                   </div>
                 </li>
               );
@@ -86,7 +101,7 @@ export function StudentsSection({
           </ul>
         ) : (
           <p className='text-muted-foreground text-sm'>
-            No students yet — share an invite code to connect.
+            No trainees yet — share an invite code to connect.
           </p>
         )}
       </CardContent>

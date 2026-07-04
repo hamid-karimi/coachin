@@ -8,6 +8,7 @@ import { TierBadge } from "@/components/design-system/tier-badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { levelProgress } from "@/lib/xp";
+import { canCoach } from "@/lib/roles";
 import { tierFromLeague } from "@/lib/tiers";
 import { LogoutButton } from "./components/logout-button";
 import { ThemePreference } from "./components/theme-preference";
@@ -106,7 +107,7 @@ export default async function ProfilePage() {
     : null;
 
   return (
-    <AppShell>
+    <AppShell coachNav={canCoach(profile.role)}>
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
         {/* Identity */}
         <div className="flex items-center gap-4 md:gap-5">

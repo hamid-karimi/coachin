@@ -79,16 +79,16 @@ export function FriendsSection({
   }, [followingUserIds, remoteFollowingIds]);
 
   useEffect(() => {
-    const controller = new AbortController();
     const trimmedQuery = query.trim();
 
+    // Empty query: nothing to fetch. The render already gates the results list
+    // on `query.trim()`, so stale state stays invisible — no synchronous
+    // setState here (it caused cascading re-renders on every cleared input).
     if (!trimmedQuery) {
-      setProfiles([]);
-      setRemoteFollowingIds(followingUserIds);
-      setIsLoading(false);
-      return () => controller.abort();
+      return;
     }
 
+    const controller = new AbortController();
     const currentSequence = ++requestSequenceRef.current;
 
     const timeoutId = window.setTimeout(async () => {

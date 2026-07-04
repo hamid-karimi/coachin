@@ -3,7 +3,13 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, CalendarDays, Users, CircleUser } from "lucide-react";
+import {
+  Home,
+  CalendarDays,
+  Users,
+  GraduationCap,
+  CircleUser,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
@@ -18,6 +24,8 @@ export function routeFor(key: NavKey): string {
       return "/onboarding";
     case "community":
       return "/community";
+    case "coaching":
+      return "/coaching";
     case "profile":
       return "/profile";
   }
@@ -27,6 +35,7 @@ export function routeFor(key: NavKey): string {
 export function keyFromPath(pathname: string | null): NavKey {
   if (pathname?.startsWith("/onboarding")) return "plan";
   if (pathname?.startsWith("/community")) return "community";
+  if (pathname?.startsWith("/coaching")) return "coaching";
   if (pathname?.startsWith("/profile")) return "profile";
   return "home";
 }
@@ -39,16 +48,23 @@ const ITEMS: {
   { key: "home", label: "Today", icon: Home },
   { key: "plan", label: "Plan", icon: CalendarDays },
   { key: "community", label: "Community", icon: Users },
+  { key: "coaching", label: "Coaching", icon: GraduationCap },
   { key: "profile", label: "Profile", icon: CircleUser },
 ];
 
 interface AppSidebarProps {
+  /** Server pages set this from the viewer's role — no client role checks. */
+  coachNav?: boolean;
   className?: string;
 }
 
-export function AppSidebar({ className }: AppSidebarProps) {
+export function AppSidebar({ coachNav = false, className }: AppSidebarProps) {
   const pathname = usePathname();
   const active = keyFromPath(pathname);
+
+  const items = coachNav
+    ? ITEMS
+    : ITEMS.filter((item) => item.key !== "coaching");
 
   return (
     <aside
@@ -70,7 +86,7 @@ export function AppSidebar({ className }: AppSidebarProps) {
       </Link>
 
       <nav className="flex flex-col gap-1" aria-label="Primary">
-        {ITEMS.map(({ key, label, icon: Icon }) => {
+        {items.map(({ key, label, icon: Icon }) => {
           const isActive = key === active;
           return (
             <Link

@@ -5,8 +5,11 @@ import { useActionToast } from "@/components/hooks/use-action-toast";
 import {
   type CommunityActionState,
   generateCoachInviteCodeAction,
-} from "../actions";
-import type { CoachInviteCodeSummary, SportTypeSummary } from "../types";
+} from "@/app/community/actions";
+import type {
+  CoachInviteCodeSummary,
+  SportTypeSummary,
+} from "@/app/community/types";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -58,7 +61,7 @@ export function GenerateInviteCodeForm({
       <div className='space-y-2'>
         {inviteCodes.length === 0 ? (
           <p className='text-muted-foreground text-xs'>
-            No invite codes yet — generate one and share it with a student.
+            No invite codes yet — generate one and share it with a trainee.
           </p>
         ) : (
           <ul className='space-y-2'>

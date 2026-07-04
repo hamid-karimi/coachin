@@ -11,16 +11,18 @@ export async function proxy(req: NextRequest) {
   const isAuthPage = req.nextUrl.pathname.startsWith("/auth");
   const isDashboardPage = req.nextUrl.pathname.startsWith("/dashboard");
   const isCommunityPage = req.nextUrl.pathname.startsWith("/community");
+  const isCoachingPage = req.nextUrl.pathname.startsWith("/coaching");
 
   // If user is authenticated and tries to access auth pages (login/register)
-  // redirect to dashboard
+  // redirect to "/" — the root page does the role-aware routing (no role
+  // fetch here: one extra DB hit per request is the anti-pattern).
   if (session && isAuthPage && !isDashboardPage) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
   // If user is not authenticated and tries to access dashboard
   // redirect to login
-  if (!session && (isDashboardPage || isCommunityPage)) {
+  if (!session && (isDashboardPage || isCommunityPage || isCoachingPage)) {
     return NextResponse.redirect(new URL("/auth/login", req.url));
   }
 
@@ -28,5 +30,10 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/auth/:path*", "/dashboard/:path*", "/community/:path*"],
+  matcher: [
+    "/auth/:path*",
+    "/dashboard/:path*",
+    "/community/:path*",
+    "/coaching/:path*",
+  ],
 };

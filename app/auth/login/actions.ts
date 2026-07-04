@@ -50,7 +50,7 @@ export async function loginAction(
     };
   }
 
-  // Redirect after successful login
+  // Redirect after successful login — "/" is the role-aware router
   // This must be outside the try-catch as redirect() throws
-  redirect("/dashboard");
+  redirect("/");
 }

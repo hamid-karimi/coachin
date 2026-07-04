@@ -34,6 +34,26 @@ export const Default: Story = {
   ),
 };
 
+export const CoachNav: Story = {
+  parameters: {
+    nextjs: {
+      appDirectory: true,
+      navigation: { pathname: "/coaching" },
+    },
+  },
+  render: () => (
+    <AppShell coachNav>
+      <div className="space-y-4">
+        <h1 className="text-2xl font-bold text-brand-ink">Coaching</h1>
+        <p className="text-muted-foreground">
+          Coach-enabled viewers get a fifth Coaching nav item on both
+          breakpoints.
+        </p>
+      </div>
+    </AppShell>
+  ),
+};
+
 export const CommunityActive: Story = {
   parameters: {
     nextjs: {

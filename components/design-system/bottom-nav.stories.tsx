@@ -11,7 +11,7 @@ const meta: Meta<typeof BottomNav> = {
   argTypes: {
     active: {
       control: "inline-radio",
-      options: ["home", "plan", "community", "profile"],
+      options: ["home", "plan", "community", "coaching", "profile"],
     },
   },
 };
@@ -31,6 +31,14 @@ export const CommunityActive: Story = {
   render: () => (
     <div className="mx-auto w-80 overflow-hidden rounded-xl border border-border">
       <BottomNav active="community" onNavigate={fn()} />
+    </div>
+  ),
+};
+
+export const CoachNav: Story = {
+  render: () => (
+    <div className="mx-auto w-80 overflow-hidden rounded-xl border border-border">
+      <BottomNav active="coaching" coachNav onNavigate={fn()} />
     </div>
   ),
 };

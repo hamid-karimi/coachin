@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -9,23 +8,20 @@ import { Button } from "@/components/ui/button";
 
 export function ThemeToggle({ className }: { className?: string }) {
   const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = React.useState(false);
-
-  // Avoid hydration mismatch: render a neutral icon until mounted.
-  React.useEffect(() => setMounted(true), []);
-
-  const isDark = mounted && resolvedTheme === "dark";
 
   return (
     <Button
       type="button"
       variant="outline"
       size="icon"
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label="Toggle light/dark mode"
+      title="Toggle light/dark mode"
       className={cn(className)}
-      onClick={() => setTheme(isDark ? "light" : "dark")}
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
     >
-      {isDark ? <Sun /> : <Moon />}
+      {/* CSS swaps the icon via the .dark class — stateless, no hydration flash. */}
+      <Sun className="hidden dark:block" aria-hidden />
+      <Moon className="block dark:hidden" aria-hidden />
     </Button>
   );
 }

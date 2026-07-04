@@ -3,6 +3,7 @@
 import { randomInt } from "crypto";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { COACH_ENABLED_ROLES, STUDENT_ENABLED_ROLES } from "@/lib/roles";
 
 export type CommunityActionState = {
   error?: string;
@@ -10,9 +11,6 @@ export type CommunityActionState = {
   message?: string;
   status?: "success" | "info" | "error";
 };
-
-const COACH_ENABLED_ROLES = new Set(["coach", "both", "admin"]);
-const STUDENT_ENABLED_ROLES = new Set(["student", "both", "admin"]);
 
 function normalizeCode(raw: string) {
   return raw.trim().toUpperCase();
@@ -94,7 +92,8 @@ export async function generateCoachInviteCodeAction(
     return { error: `Failed to generate invite code: ${error.message}` };
   }
 
-  revalidatePath("/community");
+  revalidatePath("/community", "layout");
+  revalidatePath("/coaching");
 
   return {
     success: true,
@@ -146,7 +145,7 @@ export async function connectCoachByCodeAction(
   }
 
   if (result?.status === "reactivated") {
-    revalidatePath("/community");
+    revalidatePath("/community", "layout");
 
     return {
       success: true,
@@ -155,7 +154,7 @@ export async function connectCoachByCodeAction(
     };
   }
 
-  revalidatePath("/community");
+  revalidatePath("/community", "layout");
 
   return {
     success: true,
@@ -194,7 +193,7 @@ export async function joinClubByInviteAction(
     return { error: result.error };
   }
 
-  revalidatePath("/community");
+  revalidatePath("/community", "layout");
 
   return {
     success: true,
@@ -250,7 +249,7 @@ export async function createClubAction(
     }
 
     // Success!
-    revalidatePath("/community");
+    revalidatePath("/community", "layout");
 
     return {
       success: true,
@@ -309,7 +308,7 @@ export async function setPrimaryClubAction(
     return { error: `Failed to set primary club: ${setError.message}` };
   }
 
-  revalidatePath("/community");
+  revalidatePath("/community", "layout");
 
   return {
     success: true,
@@ -372,7 +371,7 @@ export async function leaveClubAction(
     }
   }
 
-  revalidatePath("/community");
+  revalidatePath("/community", "layout");
 
   return { success: true, message: "You left the club.", status: "success" };
 }
@@ -384,7 +383,7 @@ export async function assignCoachWeeklyPlanAction(
   const studentId = String(formData.get("student_id") ?? "").trim();
 
   if (!studentId) {
-    return { error: "Invalid student." };
+    return { error: "Invalid trainee." };
   }
 
   const { supabase, user, role } = await getCurrentUserAndRole();
@@ -394,7 +393,7 @@ export async function assignCoachWeeklyPlanAction(
   }
 
   if (!COACH_ENABLED_ROLES.has(role ?? "")) {
-    return { error: "Your current role cannot assign plans to students." };
+    return { error: "Your current role cannot assign plans to trainees." };
   }
 
   // Use the atomic RPC function that handles everything in a transaction
@@ -405,7 +404,7 @@ export async function assignCoachWeeklyPlanAction(
 
   if (rpcError) {
     return {
-      error: `Failed to replace student schedule: ${rpcError.message}`,
+      error: `Failed to replace trainee schedule: ${rpcError.message}`,
     };
   }
 
@@ -413,12 +412,13 @@ export async function assignCoachWeeklyPlanAction(
     return { error: result.error };
   }
 
-  revalidatePath("/community");
+  revalidatePath("/community", "layout");
+  revalidatePath("/coaching");
   revalidatePath("/dashboard");
 
   return {
     success: true,
-    message: "Your weekly plan was assigned to the student.",
+    message: "Your weekly plan was assigned to the trainee.",
     status: "success",
   };
 }
@@ -456,7 +456,7 @@ export async function followUserAction(
     return { error: `Failed to follow user: ${error.message}` };
   }
 
-  revalidatePath("/community");
+  revalidatePath("/community", "layout");
 
   return { success: true, message: "User followed.", status: "success" };
 }
@@ -487,7 +487,7 @@ export async function unfollowUserAction(
     return { error: `Failed to unfollow user: ${error.message}` };
   }
 
-  revalidatePath("/community");
+  revalidatePath("/community", "layout");
 
   return { success: true, message: "User unfollowed.", status: "success" };
 }
