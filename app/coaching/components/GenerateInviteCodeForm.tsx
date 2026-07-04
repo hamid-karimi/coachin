@@ -5,8 +5,11 @@ import { useActionToast } from "@/components/hooks/use-action-toast";
 import {
   type CommunityActionState,
   generateCoachInviteCodeAction,
-} from "../actions";
-import type { CoachInviteCodeSummary, SportTypeSummary } from "../types";
+} from "@/app/community/actions";
+import type {
+  CoachInviteCodeSummary,
+  SportTypeSummary,
+} from "@/app/community/types";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

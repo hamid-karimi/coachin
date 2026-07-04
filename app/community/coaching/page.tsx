@@ -1,54 +1,39 @@
+import Link from "next/link";
+import { ArrowRight, GraduationCap } from "lucide-react";
+
+import { canCoach, canStudy } from "@/lib/roles";
 import { CoachesSection } from "../components/CoachesSection";
-import { LeaderboardSection } from "../components/LeaderboardSection";
-import { StudentsSection } from "../components/StudentsSection";
 import { getCoachingData } from "../lib/coaching-data";
 
 export const dynamic = "force-dynamic";
 
-const COACH_ENABLED_ROLES = new Set(["coach", "both", "admin"]);
-const STUDENT_ENABLED_ROLES = new Set(["student", "both", "admin"]);
-
 export default async function CoachingPage() {
-  const {
-    user,
-    profileRole,
-    coaches,
-    students,
-    coachStudentsLeaderboard,
-    sportTypes,
-    coachInviteCodes,
-  } = await getCoachingData();
+  const { profileRole, coaches } = await getCoachingData();
 
-  const canCoach = COACH_ENABLED_ROLES.has(profileRole);
-  const canStudy = STUDENT_ENABLED_ROLES.has(profileRole);
+  const viewerCanStudy = canStudy(profileRole);
+  const viewerCanCoach = canCoach(profileRole);
 
   return (
     <section className='space-y-5'>
-      <div className='grid gap-5 lg:grid-cols-2'>
-        {(canStudy || profileRole === "student") && (
-          <CoachesSection coaches={coaches} canManage={canStudy} />
-        )}
-        {(canCoach || profileRole === "coach") && (
-          <StudentsSection
-            students={students}
-            sportTypes={sportTypes}
-            inviteCodes={coachInviteCodes}
-            canManage={canCoach}
-          />
-        )}
-      </div>
-
-      {(canCoach || profileRole === "coach") && (
-        <LeaderboardSection
-          leaderboard={coachStudentsLeaderboard}
-          currentUserId={user.id}
-          title='My trainees'
-          whatCounts='your trainees, ranked by total XP'
-          emptyMessage='No trainees yet — share an invite code to connect.'
-        />
+      {viewerCanStudy && (
+        <CoachesSection coaches={coaches} canManage={viewerCanStudy} />
       )}
 
-      {!canCoach && !canStudy && (
+      {viewerCanCoach && (
+        <Link
+          href='/coaching'
+          className='bg-card border-border hover:bg-secondary flex items-center gap-3 rounded-xl border p-4 transition-colors'>
+          <span className='bg-brand-tint text-brand-ink grid size-10 shrink-0 place-items-center rounded-full'>
+            <GraduationCap className='size-5' aria-hidden />
+          </span>
+          <span className='text-foreground min-w-0 flex-1 text-sm font-semibold'>
+            Coaching tools live in your Coaching hub
+          </span>
+          <ArrowRight className='text-muted-foreground size-4 shrink-0' aria-hidden />
+        </Link>
+      )}
+
+      {!viewerCanCoach && !viewerCanStudy && (
         <p className='text-muted-foreground text-sm'>
           Your current role has limited access to Coaching.
         </p>

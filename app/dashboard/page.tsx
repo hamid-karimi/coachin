@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { levelProgress } from "@/lib/xp";
+import { canCoach } from "@/lib/roles";
 import { tierFromLeague } from "@/lib/tiers";
 import { WorkoutCard } from "./components/workout-card";
 
@@ -126,7 +127,7 @@ export default async function Dashboard() {
   });
 
   return (
-    <AppShell>
+    <AppShell coachNav={canCoach(profile.role)}>
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
         {/* Header */}
         <div className="flex items-center justify-between gap-4">

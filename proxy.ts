@@ -11,6 +11,7 @@ export async function proxy(req: NextRequest) {
   const isAuthPage = req.nextUrl.pathname.startsWith("/auth");
   const isDashboardPage = req.nextUrl.pathname.startsWith("/dashboard");
   const isCommunityPage = req.nextUrl.pathname.startsWith("/community");
+  const isCoachingPage = req.nextUrl.pathname.startsWith("/coaching");
 
   // If user is authenticated and tries to access auth pages (login/register)
   // redirect to dashboard
@@ -20,7 +21,7 @@ export async function proxy(req: NextRequest) {
 
   // If user is not authenticated and tries to access dashboard
   // redirect to login
-  if (!session && (isDashboardPage || isCommunityPage)) {
+  if (!session && (isDashboardPage || isCommunityPage || isCoachingPage)) {
     return NextResponse.redirect(new URL("/auth/login", req.url));
   }
 
@@ -28,5 +29,10 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/auth/:path*", "/dashboard/:path*", "/community/:path*"],
+  matcher: [
+    "/auth/:path*",
+    "/dashboard/:path*",
+    "/community/:path*",
+    "/coaching/:path*",
+  ],
 };

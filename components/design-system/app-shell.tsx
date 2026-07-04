@@ -8,6 +8,11 @@ import { BottomNav } from "./bottom-nav";
 
 interface AppShellProps {
   children: React.ReactNode;
+  /**
+   * Adds the Coaching nav item. Server pages compute this from the viewer's
+   * role (lib/roles.ts canCoach) and pass it down — never checked client-side.
+   */
+  coachNav?: boolean;
 }
 
 /**
@@ -15,14 +20,14 @@ interface AppShellProps {
  * The theme toggle lives in the sidebar (desktop) and on the Profile screen
  * (mobile), so page headers stay clean.
  */
-export function AppShell({ children }: AppShellProps) {
+export function AppShell({ children, coachNav = false }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const active = keyFromPath(pathname);
 
   return (
     <div className="flex min-h-screen">
-      <AppSidebar />
+      <AppSidebar coachNav={coachNav} />
 
       <main className="flex-1 px-4 py-6 pb-24 md:px-8 md:py-8 md:pb-8">
         {children}
@@ -31,6 +36,7 @@ export function AppShell({ children }: AppShellProps) {
       <div className="fixed inset-x-0 bottom-0 z-40 md:hidden">
         <BottomNav
           active={active}
+          coachNav={coachNav}
           onNavigate={(key) => router.push(routeFor(key))}
         />
       </div>

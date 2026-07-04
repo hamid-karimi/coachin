@@ -1,11 +1,17 @@
 "use client";
 
 import * as React from "react";
-import { Home, CalendarDays, Users, CircleUser } from "lucide-react";
+import {
+  Home,
+  CalendarDays,
+  Users,
+  GraduationCap,
+  CircleUser,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-export type NavKey = "home" | "plan" | "community" | "profile";
+export type NavKey = "home" | "plan" | "community" | "coaching" | "profile";
 
 const ITEMS: {
   key: NavKey;
@@ -15,20 +21,28 @@ const ITEMS: {
   { key: "home", label: "Today", icon: Home },
   { key: "plan", label: "Plan", icon: CalendarDays },
   { key: "community", label: "Community", icon: Users },
+  { key: "coaching", label: "Coaching", icon: GraduationCap },
   { key: "profile", label: "Profile", icon: CircleUser },
 ];
 
 interface BottomNavProps {
   active?: NavKey;
   onNavigate?: (key: NavKey) => void;
+  /** Server pages set this from the viewer's role — no client role checks. */
+  coachNav?: boolean;
   className?: string;
 }
 
 export function BottomNav({
   active = "home",
   onNavigate,
+  coachNav = false,
   className,
 }: BottomNavProps) {
+  const items = coachNav
+    ? ITEMS
+    : ITEMS.filter((item) => item.key !== "coaching");
+
   return (
     <nav
       className={cn(
@@ -37,7 +51,7 @@ export function BottomNav({
       )}
       aria-label="Primary"
     >
-      {ITEMS.map(({ key, label, icon: Icon }) => {
+      {items.map(({ key, label, icon: Icon }) => {
         const isActive = key === active;
         return (
           <button

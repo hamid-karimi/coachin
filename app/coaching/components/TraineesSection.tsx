@@ -1,7 +1,5 @@
-import type { StudentRelationship } from "../types";
-import type { CoachInviteCodeSummary, SportTypeSummary } from "../types";
-import { GenerateInviteCodeForm } from "./GenerateInviteCodeForm";
-import { AssignPlanButton } from "./AssignPlanButton";
+import type { StudentRelationship } from "@/app/community/types";
+import { AssignPlanButton } from "@/app/community/components/AssignPlanButton";
 import {
   Card,
   CardContent,
@@ -11,19 +9,16 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
-interface StudentsSectionProps {
+interface TraineesSectionProps {
   students: StudentRelationship[];
-  sportTypes: SportTypeSummary[];
-  inviteCodes: CoachInviteCodeSummary[];
-  canManage: boolean;
+  /** userId → XP earned this week, from the get_weekly_leaderboard RPC. */
+  weeklyXpByUserId?: Map<string, number>;
 }
 
-export function StudentsSection({
+export function TraineesSection({
   students,
-  sportTypes,
-  inviteCodes,
-  canManage,
-}: StudentsSectionProps) {
+  weeklyXpByUserId,
+}: TraineesSectionProps) {
   const hasStudents = students.length > 0;
 
   return (
@@ -35,18 +30,12 @@ export function StudentsSection({
       </CardHeader>
 
       <CardContent className='space-y-4'>
-        {canManage && (
-          <GenerateInviteCodeForm
-            sportTypes={sportTypes}
-            inviteCodes={inviteCodes}
-          />
-        )}
-
         {hasStudents ? (
           <ul className='space-y-2'>
             {students.map((relationship) => {
               const { student } = relationship;
               const initials = student.email?.[0]?.toUpperCase() ?? "?";
+              const weeklyXp = weeklyXpByUserId?.get(student.id);
 
               return (
                 <li
@@ -71,6 +60,9 @@ export function StudentsSection({
                       <p className='text-xs text-muted-foreground'>
                         {relationship.sport_type?.name || "General coaching"} ·
                         Level {student.level ?? 1}
+                        {typeof weeklyXp === "number"
+                          ? ` · ${weeklyXp.toLocaleString()} XP this week`
+                          : ""}
                       </p>
                     </div>
                   </div>
@@ -78,7 +70,7 @@ export function StudentsSection({
                     <Badge variant='xp'>
                       {student.xp?.toLocaleString() ?? 0} XP
                     </Badge>
-                    {canManage && <AssignPlanButton studentId={student.id} />}
+                    <AssignPlanButton studentId={student.id} />
                   </div>
                 </li>
               );

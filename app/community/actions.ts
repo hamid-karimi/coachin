@@ -3,6 +3,7 @@
 import { randomInt } from "crypto";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { COACH_ENABLED_ROLES, STUDENT_ENABLED_ROLES } from "@/lib/roles";
 
 export type CommunityActionState = {
   error?: string;
@@ -10,9 +11,6 @@ export type CommunityActionState = {
   message?: string;
   status?: "success" | "info" | "error";
 };
-
-const COACH_ENABLED_ROLES = new Set(["coach", "both", "admin"]);
-const STUDENT_ENABLED_ROLES = new Set(["student", "both", "admin"]);
 
 function normalizeCode(raw: string) {
   return raw.trim().toUpperCase();
@@ -95,6 +93,7 @@ export async function generateCoachInviteCodeAction(
   }
 
   revalidatePath("/community", "layout");
+  revalidatePath("/coaching");
 
   return {
     success: true,
@@ -414,6 +413,7 @@ export async function assignCoachWeeklyPlanAction(
   }
 
   revalidatePath("/community", "layout");
+  revalidatePath("/coaching");
   revalidatePath("/dashboard");
 
   return {
