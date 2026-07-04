@@ -3,8 +3,14 @@
 /* eslint-disable @next/next/no-img-element -- signed, short-lived storage URLs;
    next/image can't optimize them and they expire anyway. */
 
-import { useState, useActionState } from "react";
-import { Camera, FileScan, Loader2, Sparkles, X } from "lucide-react";
+import {
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
+import { Camera, FileScan, ImagePlus, Loader2, Sparkles, X } from "lucide-react";
 
 import { useActionToast } from "@/components/hooks/use-action-toast";
 import { ConfirmDialog } from "@/components/design-system/confirm-dialog";
@@ -17,9 +23,13 @@ import {
   analyzePhotosAction,
   deleteBodyPhotoAction,
   extractReportAction,
-  uploadBodyPhotoAction,
+  uploadBodyPhotosAction,
   type BodyPhotosActionState,
 } from "../body-photos-actions";
+
+const MAX_BATCH = 5;
+
+type PendingFile = { file: File; url: string };
 
 const initialState: BodyPhotosActionState = {};
 
@@ -41,10 +51,55 @@ export function BodyPhotosSection({
   consented,
   analysis,
 }: BodyPhotosSectionProps) {
-  const [uploadState, uploadAction, uploading] = useActionState(
-    uploadBodyPhotoAction,
+  const [uploadState, uploadAction, uploadPending] = useActionState(
+    uploadBodyPhotosAction,
     initialState,
   );
+  const [isSubmitting, startUpload] = useTransition();
+  const uploading = uploadPending || isSubmitting;
+
+  // Client-side selection: preview + remove BEFORE anything hits the server.
+  const [pending, setPending] = useState<PendingFile[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const addFiles = (list: FileList | null) => {
+    if (!list) return;
+    setPending((current) => {
+      const room = MAX_BATCH - current.length;
+      const additions = Array.from(list)
+        .slice(0, Math.max(0, room))
+        .map((file) => ({ file, url: URL.createObjectURL(file) }));
+      return [...current, ...additions];
+    });
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removePending = (url: string) => {
+    setPending((current) => {
+      const target = current.find((item) => item.url === url);
+      if (target) URL.revokeObjectURL(target.url);
+      return current.filter((item) => item.url !== url);
+    });
+  };
+
+  const submitPending = () => {
+    if (pending.length === 0 || uploading) return;
+    const formData = new FormData();
+    pending.forEach((item) => formData.append("photos", item.file));
+    startUpload(() => uploadAction(formData));
+  };
+
+  // Clear the selection once an upload round-trip succeeds.
+  const lastUploadRef = useRef<BodyPhotosActionState>(initialState);
+  useEffect(() => {
+    if (uploadState !== lastUploadRef.current && uploadState.success) {
+      setPending((current) => {
+        current.forEach((item) => URL.revokeObjectURL(item.url));
+        return [];
+      });
+    }
+    lastUploadRef.current = uploadState;
+  }, [uploadState]);
   const [deleteState, deleteAction, deleting] = useActionState(
     deleteBodyPhotoAction,
     initialState,
@@ -75,39 +130,85 @@ export function BodyPhotosSection({
 
   return (
     <div className="space-y-2.5">
-      {/* Upload */}
-      <form
-        action={uploadAction}
-        className="bg-card border-border space-y-2.5 rounded-xl border p-4"
-      >
-        <div className="flex flex-wrap items-end gap-3">
-          <div className="min-w-52 flex-1 space-y-1.5">
-            <Label htmlFor="photo">
-              Add a progress photo or body-analysis report
-            </Label>
-            <Input
-              id="photo"
-              name="photo"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              required
-            />
-          </div>
-          <Button type="submit" variant="brand" disabled={uploading}>
+      {/* Upload: pick several, preview, remove, then send */}
+      <div className="bg-card border-border space-y-3 rounded-xl border p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Label htmlFor="photos">
+            Add progress photos or a body-analysis report
+          </Label>
+          <span className="text-muted-foreground text-xs">
+            {pending.length} of {MAX_BATCH} selected
+          </span>
+        </div>
+
+        <input
+          ref={fileInputRef}
+          id="photos"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          multiple
+          className="sr-only"
+          onChange={(event) => addFiles(event.target.files)}
+        />
+
+        <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-5">
+          {pending.map((item) => (
+            <div
+              key={item.url}
+              className="border-border relative aspect-3/4 overflow-hidden rounded-xl border"
+            >
+              <img
+                src={item.url}
+                alt={`Selected: ${item.file.name}`}
+                className="size-full object-cover"
+              />
+              <button
+                type="button"
+                aria-label={`Remove ${item.file.name}`}
+                onClick={() => removePending(item.url)}
+                disabled={uploading}
+                className="bg-background/80 text-foreground absolute top-1.5 right-1.5 grid size-6 place-items-center rounded-full backdrop-blur-sm"
+              >
+                <X className="size-3.5" aria-hidden />
+              </button>
+            </div>
+          ))}
+          {pending.length < MAX_BATCH && (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="border-border text-muted-foreground hover:border-brand/40 hover:text-foreground flex aspect-3/4 flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed text-xs transition-colors"
+            >
+              <ImagePlus className="size-5" aria-hidden />
+              Add images
+            </button>
+          )}
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-muted-foreground max-w-sm text-xs">
+            Up to 5 photos. Images are checked automatically for appropriate
+            content before saving, and location metadata is stripped. Sports
+            attire is fine; explicit photos are rejected.
+          </p>
+          <Button
+            type="button"
+            variant="brand"
+            disabled={uploading || pending.length === 0}
+            onClick={submitPending}
+          >
             {uploading ? (
               <Loader2 className="animate-spin" aria-hidden />
             ) : (
               <Camera aria-hidden />
             )}
-            {uploading ? "Checking…" : "Upload"}
+            {uploading
+              ? "Checking…"
+              : `Upload ${pending.length > 0 ? pending.length : ""}`.trim()}
           </Button>
         </div>
-        <p className="text-muted-foreground text-xs">
-          Up to 5 photos. Images are checked automatically for appropriate
-          content before saving, and location metadata is stripped. Sports
-          attire is fine; explicit photos are rejected.
-        </p>
-      </form>
+      </div>
 
       {/* Photo grid */}
       {bodyPhotos.length > 0 && (
