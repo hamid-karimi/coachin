@@ -10,7 +10,16 @@ const meta: Meta<typeof Badge> = {
   argTypes: {
     variant: {
       control: "select",
-      options: ["default", "brand", "xp", "flame", "secondary", "outline", "destructive"],
+      options: [
+        "default",
+        "brand",
+        "xp",
+        "flame",
+        "success",
+        "secondary",
+        "outline",
+        "destructive",
+      ],
     },
   },
 };
@@ -24,14 +33,16 @@ export const Brand: Story = { args: { variant: "brand", children: "Gold league" 
 export const AllVariants: Story = {
   render: () => (
     <div className="flex flex-wrap gap-2">
-      <Badge variant="xp">
-        <Trophy /> Gold league
-      </Badge>
+      <Badge variant="xp">+120 XP</Badge>
+      <Badge variant="xp">1.5×</Badge>
       <Badge variant="flame">
         <Flame /> 12-day streak
       </Badge>
       <Badge variant="brand">
         <Footprints /> Running
+      </Badge>
+      <Badge variant="success">
+        <Trophy /> Done
       </Badge>
       <Badge variant="secondary">Silver</Badge>
       <Badge variant="outline">Outline</Badge>

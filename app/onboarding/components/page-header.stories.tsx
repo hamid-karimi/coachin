@@ -5,8 +5,8 @@ const meta: Meta<typeof PageHeader> = {
   title: "Onboarding/PageHeader",
   component: PageHeader,
   args: {
-    title: "Weekly Planning 📅",
-    description: "Set your recurring workout routine for each day of the week.",
+    title: "Plan your week",
+    description: "Pick a day, pick a sport, add it. Aim for 3+ days.",
   },
 };
 

@@ -8,9 +8,9 @@ const meta: Meta<typeof LeaderboardRow> = {
   parameters: { layout: "centered" },
   args: {
     rank: 1,
-    name: "Maya K.",
-    initials: "MK",
-    xp: 980,
+    name: "Jonas T.",
+    initials: "JT",
+    xp: 2180,
     tier: "gold",
   },
 };
@@ -20,26 +20,46 @@ type Story = StoryObj<typeof LeaderboardRow>;
 
 export const Default: Story = {
   render: (args) => (
-    <div className="w-96 overflow-hidden rounded-lg border border-border">
+    <div className="border-border w-100 overflow-hidden rounded-lg border">
       <LeaderboardRow {...args} />
     </div>
   ),
 };
 
+/** Ranks 1–3 get medals; the current user gets the volt YOU treatment. */
 export const FullBoard: Story = {
   render: () => (
-    <div className="w-96 divide-y divide-border overflow-hidden rounded-lg border border-border">
-      <LeaderboardRow rank={1} name="Maya K." initials="MK" xp={980} tier="gold" />
-      <LeaderboardRow rank={2} name="Jonas D." initials="JD" xp={870} tier="gold" />
+    <div className="flex w-100 flex-col gap-1">
+      <LeaderboardRow rank={1} name="Jonas T." initials="JT" xp={2180} tier="gold" />
+      <LeaderboardRow rank={2} name="Ana S." initials="AS" xp={1940} tier="silver" />
+      <LeaderboardRow rank={3} name="Ravi D." initials="RD" xp={1610} tier="gold" />
       <LeaderboardRow
-        rank={14}
-        name="You"
-        initials="SR"
-        xp={640}
-        tier="silver"
+        rank={4}
+        name="Maya K."
+        initials="MK"
+        xp={1240}
+        tier="gold"
         highlight
+        subtitle="↑ 2 since last week · 370 XP to #3"
       />
-      <LeaderboardRow rank={15} name="Aino L." initials="AL" xp={610} tier="silver" />
+      <LeaderboardRow rank={5} name="Lena B." initials="LB" xp={1105} tier="bronze" />
+    </div>
+  ),
+};
+
+export const YouRow: Story = {
+  args: {
+    rank: 14,
+    name: "Maya K.",
+    initials: "MK",
+    xp: 640,
+    tier: "silver",
+    highlight: true,
+    subtitle: "↑ 2 since last week",
+  },
+  render: (args) => (
+    <div className="w-100">
+      <LeaderboardRow {...args} />
     </div>
   ),
 };
