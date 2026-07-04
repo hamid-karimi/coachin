@@ -19,6 +19,11 @@ import {
 } from "./components/measurements-section";
 import { GoalsSection } from "./components/goals-section";
 import { getGoalsWithProgress } from "@/lib/goals-data";
+import {
+  BodyPhotosSection,
+  type BodyPhotoItem,
+} from "./components/body-photos-section";
+import type { BodyAnalysis } from "@/lib/ai/gemini";
 
 export const dynamic = "force-dynamic";
 
@@ -87,6 +92,32 @@ export default async function ProfilePage() {
   }
 
   const goalsData = await getGoalsWithProgress(supabase, user.id);
+
+  // Body photos: metadata + short-lived signed URLs (bucket is private).
+  const { data: photoRows } = await supabase
+    .from("body_photos")
+    .select("id, kind, storage_path, analysis, analyzed_at, created_at")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+
+  const bodyPhotos: BodyPhotoItem[] = await Promise.all(
+    (photoRows ?? []).map(async (row) => {
+      const { data: signed } = await supabase.storage
+        .from("body-photos")
+        .createSignedUrl(row.storage_path, 3600);
+      return {
+        id: row.id as string,
+        kind: row.kind as BodyPhotoItem["kind"],
+        url: signed?.signedUrl ?? null,
+        created_at: row.created_at as string,
+      };
+    }),
+  );
+
+  const latestAnalysis =
+    ((photoRows ?? []).find(
+      (row) => row.kind === "body_photo" && row.analysis,
+    )?.analysis as BodyAnalysis | undefined) ?? null;
 
   const sportNames = new Map<number, string>(
     (sportTypes ?? []).map((sport: { id: number; name: string }) => [
@@ -235,6 +266,16 @@ export default async function ProfilePage() {
           <h2 className="text-overline">Measurements</h2>
           <MeasurementsSection
             measurements={(measurements ?? []) as Measurement[]}
+          />
+        </section>
+
+        {/* Body photos (roadmap branch 3) */}
+        <section className="space-y-2.5">
+          <h2 className="text-overline">Body photos</h2>
+          <BodyPhotosSection
+            photos={bodyPhotos}
+            consented={Boolean(profile.ai_photo_consent_at)}
+            analysis={latestAnalysis}
           />
         </section>
 
