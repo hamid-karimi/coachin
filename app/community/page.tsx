@@ -142,9 +142,9 @@ export default async function CommunityPage({
               <LeaderboardSection
                 leaderboard={coachStudentsLeaderboard}
                 currentUserId={user.id}
-                title='My students'
-                whatCounts='your students, ranked by total XP'
-                emptyMessage='No students yet — share an invite code to connect.'
+                title='My trainees'
+                whatCounts='your trainees, ranked by total XP'
+                emptyMessage='No trainees yet — share an invite code to connect.'
               />
             )}
 

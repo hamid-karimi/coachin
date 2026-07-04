@@ -30,7 +30,7 @@ export function StudentsSection({
     <Card>
       <CardHeader>
         <CardTitle className='text-[15px] font-bold'>
-          My students{hasStudents ? ` · ${students.length}` : ""}
+          My trainees{hasStudents ? ` · ${students.length}` : ""}
         </CardTitle>
       </CardHeader>
 
@@ -57,7 +57,7 @@ export function StudentsSection({
                       {student.avatar_url ? (
                         <AvatarImage
                           src={student.avatar_url}
-                          alt={student.full_name ?? student.email ?? "Student"}
+                          alt={student.full_name ?? student.email ?? "Trainee"}
                         />
                       ) : null}
                       <AvatarFallback>{initials}</AvatarFallback>
@@ -66,7 +66,7 @@ export function StudentsSection({
                       <p className='truncate text-sm font-semibold text-foreground'>
                         {student.full_name ||
                           student.email ||
-                          "Unknown student"}
+                          "Unknown trainee"}
                       </p>
                       <p className='text-xs text-muted-foreground'>
                         {relationship.sport_type?.name || "General coaching"} ·
@@ -86,7 +86,7 @@ export function StudentsSection({
           </ul>
         ) : (
           <p className='text-muted-foreground text-sm'>
-            No students yet — share an invite code to connect.
+            No trainees yet — share an invite code to connect.
           </p>
         )}
       </CardContent>

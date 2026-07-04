@@ -24,7 +24,7 @@ export const Community: Story = {
         Global, club and circle rankings.
       </TabsContent>
       <TabsContent value="coaching" className="text-muted-foreground py-4 text-sm">
-        Your coaches and students.
+        Your coaches and trainees.
       </TabsContent>
       <TabsContent value="clubs" className="text-muted-foreground py-4 text-sm">
         Create, join, and manage clubs.

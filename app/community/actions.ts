@@ -384,7 +384,7 @@ export async function assignCoachWeeklyPlanAction(
   const studentId = String(formData.get("student_id") ?? "").trim();
 
   if (!studentId) {
-    return { error: "Invalid student." };
+    return { error: "Invalid trainee." };
   }
 
   const { supabase, user, role } = await getCurrentUserAndRole();
@@ -394,7 +394,7 @@ export async function assignCoachWeeklyPlanAction(
   }
 
   if (!COACH_ENABLED_ROLES.has(role ?? "")) {
-    return { error: "Your current role cannot assign plans to students." };
+    return { error: "Your current role cannot assign plans to trainees." };
   }
 
   // Use the atomic RPC function that handles everything in a transaction
@@ -405,7 +405,7 @@ export async function assignCoachWeeklyPlanAction(
 
   if (rpcError) {
     return {
-      error: `Failed to replace student schedule: ${rpcError.message}`,
+      error: `Failed to replace trainee schedule: ${rpcError.message}`,
     };
   }
 
@@ -418,7 +418,7 @@ export async function assignCoachWeeklyPlanAction(
 
   return {
     success: true,
-    message: "Your weekly plan was assigned to the student.",
+    message: "Your weekly plan was assigned to the trainee.",
     status: "success",
   };
 }

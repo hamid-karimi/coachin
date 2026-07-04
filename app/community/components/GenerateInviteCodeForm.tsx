@@ -58,7 +58,7 @@ export function GenerateInviteCodeForm({
       <div className='space-y-2'>
         {inviteCodes.length === 0 ? (
           <p className='text-muted-foreground text-xs'>
-            No invite codes yet — generate one and share it with a student.
+            No invite codes yet — generate one and share it with a trainee.
           </p>
         ) : (
           <ul className='space-y-2'>
