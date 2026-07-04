@@ -94,7 +94,7 @@ export async function generateCoachInviteCodeAction(
     return { error: `Failed to generate invite code: ${error.message}` };
   }
 
-  revalidatePath("/community");
+  revalidatePath("/community", "layout");
 
   return {
     success: true,
@@ -146,7 +146,7 @@ export async function connectCoachByCodeAction(
   }
 
   if (result?.status === "reactivated") {
-    revalidatePath("/community");
+    revalidatePath("/community", "layout");
 
     return {
       success: true,
@@ -155,7 +155,7 @@ export async function connectCoachByCodeAction(
     };
   }
 
-  revalidatePath("/community");
+  revalidatePath("/community", "layout");
 
   return {
     success: true,
@@ -194,7 +194,7 @@ export async function joinClubByInviteAction(
     return { error: result.error };
   }
 
-  revalidatePath("/community");
+  revalidatePath("/community", "layout");
 
   return {
     success: true,
@@ -250,7 +250,7 @@ export async function createClubAction(
     }
 
     // Success!
-    revalidatePath("/community");
+    revalidatePath("/community", "layout");
 
     return {
       success: true,
@@ -309,7 +309,7 @@ export async function setPrimaryClubAction(
     return { error: `Failed to set primary club: ${setError.message}` };
   }
 
-  revalidatePath("/community");
+  revalidatePath("/community", "layout");
 
   return {
     success: true,
@@ -372,7 +372,7 @@ export async function leaveClubAction(
     }
   }
 
-  revalidatePath("/community");
+  revalidatePath("/community", "layout");
 
   return { success: true, message: "You left the club.", status: "success" };
 }
@@ -413,7 +413,7 @@ export async function assignCoachWeeklyPlanAction(
     return { error: result.error };
   }
 
-  revalidatePath("/community");
+  revalidatePath("/community", "layout");
   revalidatePath("/dashboard");
 
   return {
@@ -456,7 +456,7 @@ export async function followUserAction(
     return { error: `Failed to follow user: ${error.message}` };
   }
 
-  revalidatePath("/community");
+  revalidatePath("/community", "layout");
 
   return { success: true, message: "User followed.", status: "success" };
 }
@@ -487,7 +487,7 @@ export async function unfollowUserAction(
     return { error: `Failed to unfollow user: ${error.message}` };
   }
 
-  revalidatePath("/community");
+  revalidatePath("/community", "layout");
 
   return { success: true, message: "User unfollowed.", status: "success" };
 }
