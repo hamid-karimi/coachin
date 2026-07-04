@@ -1,9 +1,10 @@
-# Features Roadmap — Profile · Goals · Marathon AI · Nutrition · Group Boards
+# Features Roadmap — Profile · Goals · Body Photos · Marathon AI · Nutrition · Group Boards
 
-Five features, five branches, shipped in dependency order. Each branch comes off
+Six features, six branches, shipped in dependency order. Each branch comes off
 `develop` and PRs back to `develop`. Decisions already locked with the user:
 
-- **Order:** Profile → Goals → Marathon AI → Nutrition/Calories → Group boards,
+- **Order:** Profile → Goals → Body photos → Marathon AI → Nutrition/Calories →
+  Group boards,
   **one branch per feature**.
 - **Group XP mechanic:** streak-freeze + growing bonus (no collective punishment).
   Everyone always keeps their own XP; the group shares a streak that grows and
@@ -19,30 +20,42 @@ Five features, five branches, shipped in dependency order. Each branch comes off
   `gemini-3-flash-preview` via `GEMINI_API_KEY`. NVIDIA NIM rejected: free
   credits expire, vision coverage weaker, no advantage.
 
-## Cross-cutting Phase 0 — verification gates (run on EACH branch before coding)
+## Cross-cutting Phase 0 — external tooling (VERIFIED 2026-07-04 against live docs)
 
-External facts MUST be re-verified against live docs at build time (research
-agents were cut off; treat the following as high-confidence but unverified):
-
-1. **Gemini** (branches 3 & 4): verify at https://ai.google.dev/gemini-api/docs
-   - Current free-tier model id (expect `gemini-3-flash-preview` or
-     `gemini-2.5-flash`) and rate limits (RPM/RPD) on the pricing page.
-   - SDK package is `@google/genai` (the older `@google/generative-ai` is
-     deprecated — do NOT install it).
-   - Structured output params: `responseMimeType: "application/json"` +
-     `responseSchema` in `generationConfig` — confirm exact names.
-   - Vision: image passed as `inlineData: { mimeType, data(base64) }` part.
+1. **Gemini** (branches 3, 4 & 5) — ✅ verified:
+   - Free tier exists: `gemini-2.5-flash` ≈ 10 RPM / 250k TPM / 250 requests
+     per day (sources: https://ai.google.dev/gemini-api/docs/pricing,
+     https://ai.google.dev/gemini-api/docs/rate-limits — re-check exact numbers
+     on branch day; newer flash models may supersede).
+   - SDK is `@google/genai` (npm, official; `ai.models.generateContent()`).
+     The older `@google/generative-ai` is deprecated — do NOT install it.
+   - Vision: image parts as `inlineData: { mimeType, data(base64) }`.
+   - Moderation hooks: `safetySettings` (HarmCategory / HarmBlockThreshold,
+     incl. sexually-explicit category) on the request and per-candidate
+     `safetyRatings` + `promptFeedback.blockReason` on the response
+     (https://ai.google.dev/api/generate-content).
+   - Structured output: `responseMimeType: "application/json"` +
+     `responseSchema` — confirm exact param spelling in the SDK types on
+     branch day (only remaining unverified detail).
    - Key stored as `GEMINI_API_KEY` (server-only env; never NEXT_PUBLIC).
-2. **Food database** (branch 4): verify USDA FoodData Central
-   (https://fdc.nal.usda.gov/api-guide) — free API key, ~1000 req/hr,
-   `/v1/foods/search`. Fallback/alternative: Open Food Facts (no key).
-   Strategy: seed a local `foods` table for fast autocomplete; live API only to
-   backfill misses.
-3. **FIT parsing** (branch 3): verify npm `@garmin/fitsdk` (official Garmin FIT
-   JS SDK) name + decode usage; GPX is plain XML (parse with `fast-xml-parser`).
+   - Budget note: 250 req/day free cap is fine for MVP but is a REAL ceiling —
+     count 1 call per plan generation, 1 per meal photo, 1–2 per body-photo
+     moderation+analysis. Add a graceful "AI quota reached, try later" path.
+2. **Food database** (branch 5) — ✅ verified: USDA FoodData Central, free API
+   key, 1,000 requests/hour per IP (exceeding blocks the key for 1h) —
+   https://fdc.nal.usda.gov/api-guide/. Strategy unchanged: seed a local
+   `foods` table for autocomplete; live API only to backfill misses.
+3. **FIT parsing** (branch 4) — ✅ verified: `@garmin/fitsdk` is the official
+   Garmin FIT JS SDK on npm (`Decoder` + `Stream`, `decoder.read()` →
+   `{ messages, errors }`) — https://github.com/garmin/fit-javascript-sdk.
+   GPX is plain XML (parse with `fast-xml-parser`).
 4. **Strava** (fast-follow only, NOT v1): before building, re-read Strava API
    terms — they added AI/data-use restrictions; sending Strava data to Gemini
    may be prohibited. This is a legal gate, not just technical.
+5. **Body-photo storage** (branch 3): Supabase Storage private bucket +
+   owner-only storage RLS policies + short-lived signed URLs for display.
+   Re-encode uploads with `sharp` (drops EXIF/GPS metadata). Verify current
+   `createSignedUrl` API in the installed `@supabase/supabase-js` on branch day.
 
 Codebase facts (verified this session, `develop` @ post-#21):
 - `profiles` has NO body metrics (no age/sex/weight/height) — branch 1 adds them.
@@ -118,8 +131,8 @@ reload; measurement insert updates both table and snapshot; nav highlights.
   counts DOWN — handle target < start); current values come from:
   weight/body-fat → latest `body_measurements`; run-km → sum of `logs` joined
   to running sport this week/month (distance not tracked yet → v1 counts
-  sessions×planned; note as limitation); calories → branch 4 data (goal types
-  exist now, progress wiring lands with branch 4).
+  sessions×planned; note as limitation); calories → branch 5 data (goal types
+  exist now, progress wiring lands with branch 5).
 - `app/goals/` or profile section (recommend: goals card on `/profile` + a
   compact "active goal" strip on the dashboard): create/edit/abandon goal
   (ConfirmButton for abandon), progress bar per goal (`Progress` + StatCard).
@@ -132,7 +145,75 @@ down-direction goals; achieving awards XP exactly once (idempotent RPC).
 
 ---
 
-## Branch 3 — `feat/marathon-ai`
+## Branch 3 — `feat/body-photos`
+
+User uploads up to **5 body photos** (progress/physique shots) and/or a **body
+analysis report photo** (e.g. an InBody scan). Photos are moderated before
+storage, optionally AI-analyzed with explicit consent, and the analysis feeds
+the marathon program (branch 4) and diet guidance (branch 5) as optional
+context. This is sensitive personal data — privacy is a feature requirement,
+not polish.
+
+**Storage & migration** `body_photos.sql`
+- Supabase Storage bucket `body-photos`, **private**; storage RLS policies:
+  path convention `{user_id}/{uuid}.jpg`, owner-only read/write/delete
+  (`(storage.foldername(name))[1] = auth.uid()::text`).
+- Table `body_photos`: id, user_id FK, `storage_path text`, `kind text CHECK
+  (kind IN ('body_photo','analysis_report'))`, `status text CHECK (status IN
+  ('approved','rejected')) `, `analysis jsonb?` (AI output), `analyzed_at`,
+  timestamps. RLS self-only. Enforce the 5-photo cap in the server action
+  (count existing `kind='body_photo'` rows) AND a DB trigger as backstop.
+
+**Upload pipeline (server action / route handler)**
+1. Accept jpeg/png/webp ≤ 5MB; re-encode with `sharp` to strip EXIF/GPS and
+   normalize size (max ~1600px long edge — smaller Gemini payloads too).
+2. **Moderation gate BEFORE persisting**: send the image to Gemini with strict
+   `safetySettings` and a classification prompt returning
+   `{ category: 'fitness_body_photo' | 'analysis_report' | 'rejected',
+   reason }`. Reject when (a) the response is safety-blocked
+   (`promptFeedback.blockReason` / sexually-explicit `safetyRatings` above
+   threshold) or (b) the model classifies it as explicit nudity or unrelated
+   content. Acceptance policy: sports attire / athletic shirtless photos are
+   ALLOWED (standard fitness progress shots); explicit nudity, underwear-only
+   or genital/nipple-exposed content is REJECTED with a friendly message
+   telling the user what is acceptable. Rejected images are NEVER written to
+   storage.
+3. On approval: upload to the bucket, insert the `body_photos` row.
+
+**Consent & analysis**
+- AI analysis runs only after an explicit consent checkbox ("Analyze my photos
+  with AI to personalize my program and diet") — store consent timestamp on
+  the profile.
+- Body photos → Gemini vision (structured JSON): rough physique observations
+  (build, visible posture notes), NO body-fat % guesses presented as fact, and
+  a fixed "not medical advice" disclaimer in the UI.
+- Analysis-report photos → OCR-style extraction: `{ weight_kg?, body_fat_pct?,
+  muscle_mass_kg?, ... }` shown to the user for CONFIRMATION, then written to
+  `body_measurements` (branch 1) — the report photo becomes real data.
+- Store the validated JSON in `body_photos.analysis`; branches 4/5 read the
+  latest approved analyses as optional prompt context.
+
+**UI** (profile section "Body photos")
+- Grid of up to 5 slots + report upload card; signed-URL thumbnails
+  (short-lived); per-photo delete (ConfirmButton — deletes storage object AND
+  row); "Analyze" CTA gated on consent; rejected-upload error state with the
+  acceptance policy; EmptyState explaining why photos help.
+
+**Anti-patterns:** never store an image that failed moderation; never expose a
+public URL (signed URLs only); never auto-write report metrics without user
+confirmation; never send photos to Gemini before the user consents to
+analysis (moderation at upload is the one exception — disclose it in the
+upload UI); don't put photo bytes in Postgres (storage bucket only).
+
+**Verify:** cap enforced at 5 (6th upload → friendly error); a clearly explicit
+test image is rejected and nothing lands in storage; delete removes both
+object and row; signed URL expires; report OCR round-trips into
+`body_measurements` after confirmation; RLS blocks cross-user reads (2-account
+test); `pnpm build` green.
+
+---
+
+## Branch 4 — `feat/marathon-ai`
 
 **Phase 0 gate:** verify Gemini SDK/model/limits (see cross-cutting gates).
 Env: `GEMINI_API_KEY` in `.env.local` + Vercel/host env. `pnpm add @google/genai`.
@@ -191,10 +272,10 @@ sample files parse; wizard resumable (draft intake in `training_plans.intake`).
 
 ---
 
-## Branch 4 — `feat/nutrition` (calories + food XP)
+## Branch 5 — `feat/nutrition` (calories + food XP)
 
 **Phase 0 gate:** verify USDA FDC key/endpoints; verify Gemini vision request
-shape (same client as branch 3).
+shape (same client as branch 4).
 
 **Migration** `nutrition.sql`
 - `foods`: id, `name text`, `brand text?`, `kcal_per_100g numeric`,
@@ -242,7 +323,7 @@ photo flow works with a test image; all tables have RLS policies.
 
 ---
 
-## Branch 5 — `feat/group-boards`
+## Branch 6 — `feat/group-boards`
 
 **Migration** `training_groups.sql`
 - `training_groups`: id, `name`, `invite_code text UNIQUE` (copy generation
