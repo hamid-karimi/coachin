@@ -4,6 +4,7 @@ import * as React from "react";
 import { useTheme } from "next-themes";
 
 import { cn } from "@/lib/utils";
+import { useMounted } from "@/components/hooks/use-mounted";
 
 const OPTIONS = [
   { value: "light", label: "Light" },
@@ -14,10 +15,9 @@ const OPTIONS = [
 /** Segmented Light / Dark / Auto control for the Profile settings card. */
 export function ThemePreference() {
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = React.useState(false);
-
-  // Avoid hydration mismatch: theme is only known on the client.
-  React.useEffect(() => setMounted(true), []);
+  // Theme is only known on the client; false during SSR avoids a
+  // hydration mismatch on the active radio.
+  const mounted = useMounted();
 
   return (
     <div
