@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Check, Circle, CircleAlert } from "lucide-react";
 import { registerAction, type RegisterState } from "./actions";
 import { SubmitButton } from "../components/submit-button";
 import { AuthShell } from "../components/auth-shell";
@@ -13,10 +14,28 @@ import { cn } from "@/lib/utils";
 
 const initialState: RegisterState = {};
 
+const RULES = [
+  { key: "length", label: "8+ characters", test: (v: string) => v.length >= 8 },
+  {
+    key: "case",
+    label: "Upper & lowercase",
+    test: (v: string) => /[A-Z]/.test(v) && /[a-z]/.test(v),
+  },
+  { key: "number", label: "A number", test: (v: string) => /[0-9]/.test(v) },
+] as const;
+
+const BONUS_RULE = {
+  label: "A symbol (optional, +1 strength)",
+  test: (v: string) => /[^A-Za-z0-9]/.test(v),
+};
+
 export default function RegisterPage() {
   const router = useRouter();
   const [state, formAction] = useActionState(registerAction, initialState);
-  useActionToast(state);
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  // Success with email verification still surfaces via toast.
+  useActionToast({ ...state, error: undefined });
 
   useEffect(() => {
     if (state.redirect) {
@@ -24,46 +43,24 @@ export default function RegisterPage() {
     }
   }, [state.redirect, router]);
 
+  const passed = RULES.filter((rule) => rule.test(password)).length;
+  const bonusPassed = BONUS_RULE.test(password);
+  const strength = password ? passed + (bonusPassed ? 1 : 0) : 0;
+  const mismatch = confirm.length > 0 && confirm !== password;
+
   return (
     <AuthShell>
-      <div className="bg-card text-card-foreground rounded-xl border border-border shadow-sm p-8">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold tracking-tight">Create account</h1>
-          <p className="text-muted-foreground mt-1 text-sm">
-            Join CoachIn to start your journey.
+      <div className="flex flex-col gap-6">
+        <div>
+          <h1 className="text-foreground font-display text-3xl font-bold tracking-tight">
+            Create account
+          </h1>
+          <p className="text-muted-foreground mt-1.5">
+            Free forever. Level 1 starts today.
           </p>
         </div>
 
-        {/* Segmented Log in / Sign up control */}
-        <div className="mb-6 grid grid-cols-2 gap-1 rounded-lg bg-secondary p-1">
-          <Link
-            href="/auth/login"
-            className={cn(
-              "rounded-md py-2 text-center text-sm font-medium transition-colors",
-              "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            Log in
-          </Link>
-          <Link
-            href="/auth/register"
-            aria-current="page"
-            className={cn(
-              "rounded-md py-2 text-center text-sm font-medium transition-colors",
-              "bg-card text-foreground shadow-sm",
-            )}
-          >
-            Sign up
-          </Link>
-        </div>
-
         <form action={formAction} className="space-y-5">
-          {state.error && (
-            <div id="register-error" role="alert" aria-live="polite" className="sr-only">
-              {state.error}
-            </div>
-          )}
-
           <div className="space-y-2">
             <Label htmlFor="fullName">Full name</Label>
             <Input
@@ -72,8 +69,7 @@ export default function RegisterPage() {
               type="text"
               autoComplete="name"
               required
-              aria-describedby={state.error ? "register-error" : undefined}
-              placeholder="John Doe"
+              placeholder="Maya Kim"
             />
           </div>
 
@@ -85,7 +81,6 @@ export default function RegisterPage() {
               type="email"
               autoComplete="email"
               required
-              aria-describedby={state.error ? "register-error" : undefined}
               placeholder="you@example.com"
             />
           </div>
@@ -98,19 +93,61 @@ export default function RegisterPage() {
               type="password"
               autoComplete="new-password"
               required
-              aria-describedby={
-                state.error
-                  ? "register-error password-requirements"
-                  : "password-requirements"
-              }
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              aria-describedby="password-requirements"
               placeholder="••••••••"
             />
-            <p
+            {/* strength segments */}
+            <div className="flex gap-1" aria-hidden>
+              {[0, 1, 2, 3].map((index) => (
+                <span
+                  key={index}
+                  className={cn(
+                    "h-1 flex-1 rounded-full transition-colors",
+                    index < strength ? "bg-success" : "bg-border",
+                  )}
+                />
+              ))}
+            </div>
+            <ul
               id="password-requirements"
-              className="text-xs text-muted-foreground"
+              className="space-y-0.5 text-xs"
+              aria-live="polite"
             >
-              At least 8 characters with uppercase, lowercase, and number
-            </p>
+              {RULES.map((rule) => {
+                const ok = rule.test(password);
+                return (
+                  <li
+                    key={rule.key}
+                    className={cn(
+                      "flex items-center gap-1.5",
+                      ok ? "text-success" : "text-muted-foreground",
+                    )}
+                  >
+                    {ok ? (
+                      <Check className="size-3" aria-hidden />
+                    ) : (
+                      <Circle className="size-3" aria-hidden />
+                    )}
+                    {rule.label}
+                  </li>
+                );
+              })}
+              <li
+                className={cn(
+                  "flex items-center gap-1.5",
+                  bonusPassed ? "text-success" : "text-muted-foreground/70",
+                )}
+              >
+                {bonusPassed ? (
+                  <Check className="size-3" aria-hidden />
+                ) : (
+                  <Circle className="size-3" aria-hidden />
+                )}
+                {BONUS_RULE.label}
+              </li>
+            </ul>
           </div>
 
           <div className="space-y-2">
@@ -121,21 +158,40 @@ export default function RegisterPage() {
               type="password"
               autoComplete="new-password"
               required
-              aria-describedby={state.error ? "register-error" : undefined}
-              placeholder="••••••••"
+              value={confirm}
+              onChange={(event) => setConfirm(event.target.value)}
+              aria-invalid={mismatch ? true : undefined}
+              aria-describedby={mismatch ? "confirm-error" : undefined}
+              placeholder="Repeat password"
             />
+            {mismatch && (
+              <p id="confirm-error" className="text-destructive text-[13px]">
+                Passwords don&apos;t match
+              </p>
+            )}
           </div>
 
-          <SubmitButton pendingText="Creating account...">
+          {state.error && (
+            <p
+              role="alert"
+              aria-live="polite"
+              className="text-destructive flex items-center gap-1.5 text-[13px]"
+            >
+              <CircleAlert className="size-3.5 shrink-0" aria-hidden />
+              {state.error}
+            </p>
+          )}
+
+          <SubmitButton pendingText="Creating account…">
             Create account
           </SubmitButton>
         </form>
 
-        <p className="mt-6 text-center text-sm text-muted-foreground">
-          Already have an account?{" "}
+        <p className="text-muted-foreground text-center text-sm">
+          Have an account?{" "}
           <Link
             href="/auth/login"
-            className="font-medium text-brand-ink hover:underline"
+            className="text-brand-ink font-semibold hover:underline"
           >
             Sign in
           </Link>

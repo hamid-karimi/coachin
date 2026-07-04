@@ -17,6 +17,7 @@ const meta: Meta<typeof Button> = {
         "outline",
         "ghost",
         "destructive",
+        "destructive-outline",
         "link",
       ],
     },
@@ -37,6 +38,11 @@ export const Outline: Story = {
 export const Ghost: Story = { args: { variant: "ghost", children: "Cancel" } };
 export const Destructive: Story = {
   args: { variant: "destructive", children: "Delete session" },
+};
+
+/** Destructive stays outline until the confirm dialog; solid red lives there. */
+export const DestructiveOutline: Story = {
+  args: { variant: "destructive-outline", children: "Leave club" },
 };
 
 export const WithIcon: Story = {

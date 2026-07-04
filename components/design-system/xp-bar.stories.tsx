@@ -6,7 +6,7 @@ const meta: Meta<typeof XpBar> = {
   title: "CoachIn/XP Bar",
   component: XpBar,
   parameters: { layout: "centered" },
-  args: { level: 7, currentXp: 1840, nextLevelXp: 2200 },
+  args: { level: 7, currentXp: 680, nextLevelXp: 1000 },
 };
 
 export default meta;
@@ -20,10 +20,19 @@ export const Default: Story = {
   ),
 };
 
+/** With lifetime XP shown top-right — the dashboard level card layout. */
+export const WithTotalXp: Story = {
+  render: () => (
+    <div className="w-80">
+      <XpBar level={7} currentXp={680} nextLevelXp={1000} totalXp={6680} />
+    </div>
+  ),
+};
+
 export const NearLevelUp: Story = {
   render: () => (
     <div className="w-80">
-      <XpBar level={9} currentXp={2980} nextLevelXp={3000} />
+      <XpBar level={9} currentXp={980} nextLevelXp={1000} />
     </div>
   ),
 };
@@ -31,7 +40,7 @@ export const NearLevelUp: Story = {
 export const FreshLevel: Story = {
   render: () => (
     <div className="w-80">
-      <XpBar level={1} currentXp={40} nextLevelXp={500} />
+      <XpBar level={1} currentXp={40} nextLevelXp={1000} />
     </div>
   ),
 };

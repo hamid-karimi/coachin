@@ -24,3 +24,13 @@ export const Range: Story = {
     </div>
   ),
 };
+
+/** Count-only pill for tight headers (dashboard top-right). */
+export const Compact: Story = {
+  args: { days: 12, compact: true },
+};
+
+/** A dead streak renders quiet and gray — never celebratory. */
+export const NoStreak: Story = {
+  args: { days: 0 },
+};

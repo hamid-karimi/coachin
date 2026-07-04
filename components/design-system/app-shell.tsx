@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 
 import { AppSidebar, routeFor, keyFromPath } from "./app-sidebar";
 import { BottomNav } from "./bottom-nav";
-import { ThemeToggle } from "./theme-toggle";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -13,7 +12,8 @@ interface AppShellProps {
 
 /**
  * Shared authenticated chrome: desktop sidebar + main content + mobile bottom nav.
- * Reuses the presentational `BottomNav` as-is, wiring its `onNavigate` to the router.
+ * The theme toggle lives in the sidebar (desktop) and on the Profile screen
+ * (mobile), so page headers stay clean.
  */
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
@@ -24,10 +24,7 @@ export function AppShell({ children }: AppShellProps) {
     <div className="flex min-h-screen">
       <AppSidebar />
 
-      <main className="flex-1 px-4 py-6 pb-20 md:px-8 md:pb-6">
-        <div className="mb-4 flex justify-end">
-          <ThemeToggle />
-        </div>
+      <main className="flex-1 px-4 py-6 pb-24 md:px-8 md:py-8 md:pb-8">
         {children}
       </main>
 

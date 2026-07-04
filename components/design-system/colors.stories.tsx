@@ -11,21 +11,28 @@ type Story = StoryObj;
 function Swatch({
   name,
   varName,
-  text = "#fff",
+  background,
+  onLoud = false,
 }: {
   name: string;
-  varName: string;
-  text?: string;
+  varName?: string;
+  /** Explicit background (e.g. the ember gradient); defaults to var(varName). */
+  background?: string;
+  /** Loud fills (volt, ember) take dark text; quiet ones inherit foreground. */
+  onLoud?: boolean;
 }) {
   return (
-    <div className="overflow-hidden rounded-lg border border-border">
+    <div className="border-border overflow-hidden rounded-lg border">
       <div
-        className="flex h-16 items-end p-2 text-[11px]"
-        style={{ background: `var(${varName})`, color: text }}
+        className="flex h-16 items-end p-2 text-[11px] font-medium"
+        style={{
+          background: background ?? `var(${varName})`,
+          color: onLoud ? "#17161A" : "var(--foreground)",
+        }}
       >
-        {varName}
+        {varName ?? name}
       </div>
-      <div className="bg-card px-2 py-1.5 text-xs text-card-foreground">
+      <div className="bg-card text-card-foreground px-2 py-1.5 text-xs">
         {name}
       </div>
     </div>
@@ -33,31 +40,52 @@ function Swatch({
 }
 
 export const Brand: Story = {
+  name: "Volt & Ember",
   render: () => (
     <div className="grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
-      <Swatch name="Primary / active" varName="--brand" />
-      <Swatch name="XP / energy" varName="--xp" text="#412402" />
-      <Swatch name="Streak / flame" varName="--flame" />
-      <Swatch name="Platinum tier" varName="--tier-platinum" />
-      <Swatch name="Brand tint" varName="--brand-tint" text="#0f6e56" />
-      <Swatch name="XP tint" varName="--xp-tint" text="#854f0b" />
-      <Swatch name="Flame tint" varName="--flame-tint" text="#993c1d" />
-      <Swatch name="Secondary surface" varName="--secondary" text="#2c2c2a" />
+      <Swatch name="Volt — act & progress" varName="--brand" onLoud />
+      <Swatch
+        name="Ember — streaks & celebration"
+        background="linear-gradient(135deg, var(--ember-from), var(--ember-to))"
+        onLoud
+      />
+      <Swatch name="Flame" varName="--flame" onLoud />
+      <Swatch name="Success" varName="--success" onLoud />
+      <Swatch name="Volt tint" varName="--brand-tint" />
+      <Swatch name="XP tint" varName="--xp-tint" />
+      <Swatch name="Flame tint" varName="--flame-tint" />
+      <Swatch name="Destructive" varName="--destructive" onLoud />
     </div>
   ),
 };
 
-export const Semantic: Story = {
+export const Surfaces: Story = {
   render: () => (
     <div className="grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
-      <Swatch name="Background" varName="--background" text="#171717" />
-      <Swatch name="Card" varName="--card" text="#171717" />
-      <Swatch name="Muted" varName="--muted" text="#5f5e5a" />
-      <Swatch name="Primary" varName="--primary" />
-      <Swatch name="Accent" varName="--accent" text="#0f6e56" />
-      <Swatch name="Destructive" varName="--destructive" />
-      <Swatch name="Ring" varName="--ring" />
-      <Swatch name="Tier gold" varName="--tier-gold" text="#412402" />
+      <Swatch name="Background" varName="--background" />
+      <Swatch name="Card / surface" varName="--card" />
+      <Swatch name="Raised / secondary" varName="--secondary" />
+      <Swatch name="Border" varName="--border" />
+      <Swatch name="Foreground" varName="--foreground" onLoud />
+      <Swatch name="Muted foreground" varName="--muted-foreground" onLoud />
+      <Swatch name="Popover" varName="--popover" />
+      <Swatch name="Ring (focus)" varName="--ring" onLoud />
+    </div>
+  ),
+};
+
+export const Tiers: Story = {
+  name: "League tiers",
+  render: () => (
+    <div className="grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
+      <Swatch name="Bronze" varName="--tier-bronze" onLoud />
+      <Swatch name="Silver" varName="--tier-silver" onLoud />
+      <Swatch name="Gold" varName="--tier-gold" onLoud />
+      <Swatch name="Platinum" varName="--tier-platinum" onLoud />
+      <Swatch name="Bronze tint" varName="--tier-bronze-tint" />
+      <Swatch name="Silver tint" varName="--tier-silver-tint" />
+      <Swatch name="Gold tint" varName="--tier-gold-tint" />
+      <Swatch name="Platinum tint" varName="--tier-platinum-tint" />
     </div>
   ),
 };

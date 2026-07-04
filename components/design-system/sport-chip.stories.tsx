@@ -32,6 +32,28 @@ export const AllSports: Story = {
   ),
 };
 
+/** The XP multiplier lives on the chip so the math is legible. Boosted sports read volt. */
+export const WithMultiplier: Story = {
+  render: () => (
+    <div className="flex flex-wrap gap-2">
+      <SportChip sport="running" multiplier={1.2} />
+      <SportChip sport="strength" multiplier={1.0} />
+      <SportChip sport="swimming" multiplier={1.5} />
+      <SportChip sport="cycling" multiplier={1.2} />
+      <SportChip sport="mobility" multiplier={0.8} />
+    </div>
+  ),
+};
+
+export const Selected: Story = {
+  render: () => (
+    <div className="flex flex-wrap gap-2">
+      <SportChip sport="swimming" multiplier={1.5} selected />
+      <SportChip sport="running" multiplier={1.2} />
+    </div>
+  ),
+};
+
 export const Icons: Story = {
   render: () => (
     <div className="flex flex-wrap gap-3">
