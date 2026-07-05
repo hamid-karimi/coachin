@@ -60,13 +60,32 @@ export async function getGoalsWithProgress(
     profile?.body_fat_pct ??
     null;
 
+  const all = (goals ?? []) as Goal[];
+
+  // Calorie-intake goals track today's logged kcal (landed with nutrition).
+  let todayKcal: number | null = null;
+  if (
+    all.some(
+      (goal) =>
+        goal.status === "active" && goal.goal_type === "calorie_intake",
+    )
+  ) {
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    const { data: meals } = await supabase
+      .from("meal_logs")
+      .select("kcal")
+      .eq("user_id", userId)
+      .eq("date", today);
+    todayKcal = (meals ?? []).reduce((sum, row) => sum + Number(row.kcal), 0);
+  }
+
   const currentFor = (type: GoalType): number | null => {
     if (type === "weight") return latestWeight;
     if (type === "body_fat_pct") return latestBodyFat;
+    if (type === "calorie_intake") return todayKcal;
     return null;
   };
-
-  const all = (goals ?? []) as Goal[];
   const active = all
     .filter((goal) => goal.status === "active")
     .map((goal) => {

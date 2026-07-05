@@ -14,6 +14,7 @@ export async function proxy(req: NextRequest) {
   const isCoachingPage = req.nextUrl.pathname.startsWith("/coaching");
   const isProfilePage = req.nextUrl.pathname.startsWith("/profile");
   const isMarathonPage = req.nextUrl.pathname.startsWith("/marathon");
+  const isNutritionPage = req.nextUrl.pathname.startsWith("/nutrition");
 
   // If user is authenticated and tries to access auth pages (login/register)
   // redirect to "/" — the root page does the role-aware routing (no role
@@ -30,7 +31,8 @@ export async function proxy(req: NextRequest) {
       isCommunityPage ||
       isCoachingPage ||
       isProfilePage ||
-      isMarathonPage)
+      isMarathonPage ||
+      isNutritionPage)
   ) {
     return NextResponse.redirect(new URL("/auth/login", req.url));
   }
@@ -46,5 +48,6 @@ export const config = {
     "/coaching/:path*",
     "/profile/:path*",
     "/marathon/:path*",
+    "/nutrition/:path*",
   ],
 };
