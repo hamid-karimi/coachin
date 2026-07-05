@@ -433,9 +433,14 @@ export function MealLogger({ hasUsda }: { hasUsda: boolean }) {
                     key={index}
                     className="flex flex-wrap items-center gap-2 px-3 py-2"
                   >
-                    <span className="min-w-0 flex-1 truncate text-sm font-medium">
-                      {item.name}
-                    </span>
+                    <Input
+                      value={item.name}
+                      placeholder="Food name"
+                      onChange={(event) =>
+                        updateReviewItem(index, { name: event.target.value })
+                      }
+                      className="h-8 min-w-32 flex-1 text-sm font-medium"
+                    />
                     <label className="text-muted-foreground flex items-center gap-1 text-xs">
                       <Input
                         type="number"
@@ -446,7 +451,7 @@ export function MealLogger({ hasUsda }: { hasUsda: boolean }) {
                             est_quantity_g: Number(event.target.value),
                           })
                         }
-                        className="h-8 w-20"
+                        className="h-8 w-16"
                       />
                       g
                     </label>
@@ -461,13 +466,13 @@ export function MealLogger({ hasUsda }: { hasUsda: boolean }) {
                             est_kcal: Number(event.target.value),
                           })
                         }
-                        className="h-8 w-20"
+                        className="h-8 w-16"
                       />
                       kcal
                     </label>
                     <button
                       type="button"
-                      aria-label={`Remove ${item.name}`}
+                      aria-label={`Remove ${item.name || "item"}`}
                       onClick={() =>
                         setReviewItems((current) =>
                           current
@@ -481,6 +486,36 @@ export function MealLogger({ hasUsda }: { hasUsda: boolean }) {
                     </button>
                   </div>
                 ))}
+                <div className="flex items-center justify-between px-3 py-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setReviewItems((current) => [
+                        ...(current ?? []),
+                        {
+                          name: "",
+                          est_quantity_g: 100,
+                          est_kcal: 0,
+                          protein_g: 0,
+                          carbs_g: 0,
+                          fat_g: 0,
+                        },
+                      ])
+                    }
+                    className="text-brand-ink inline-flex items-center gap-1 text-xs font-medium hover:underline"
+                  >
+                    <Plus className="size-3.5" aria-hidden />
+                    Add item
+                  </button>
+                  <span className="text-foreground text-sm font-semibold">
+                    Total{" "}
+                    {reviewItems.reduce(
+                      (sum, item) => sum + (Number(item.est_kcal) || 0),
+                      0,
+                    )}{" "}
+                    kcal
+                  </span>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <Button

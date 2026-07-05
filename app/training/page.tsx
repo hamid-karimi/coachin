@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   CalendarHeart,
+  CalendarPlus,
   ChevronLeft,
   ChevronRight,
   ClipboardCheck,
@@ -10,7 +11,13 @@ import {
 
 import { createClient, getUser } from "@/lib/supabase/server";
 import { canCoach } from "@/lib/roles";
-import { daysUntil, lastElapsedPlanWeek, planWeekOf } from "@/lib/dates";
+import {
+  daysUntil,
+  lastElapsedPlanWeek,
+  planItemDate,
+  planWeekOf,
+  toLocalYMD,
+} from "@/lib/dates";
 import { AppShell } from "@/components/design-system/app-shell";
 import { Button } from "@/components/ui/button";
 import { PlanItemRow, type PlanItem } from "./components/plan-item-row";
@@ -147,7 +154,15 @@ export default async function MarathonPage({
               {isHypertrophy ? " · progressive overload" : ""}
             </p>
           </div>
-          <ArchivePlanButton planId={plan.id} />
+          <div className="flex items-center gap-2">
+            <Button asChild variant="outline" size="sm">
+              <a href="/training/calendar.ics" download>
+                <CalendarPlus aria-hidden />
+                Add to calendar
+              </a>
+            </Button>
+            <ArchivePlanButton planId={plan.id} />
+          </div>
         </div>
 
         {checkinDue && (
@@ -189,12 +204,25 @@ export default async function MarathonPage({
               Week {week - 1}
             </Link>
           </Button>
-          <p className="text-foreground text-sm font-semibold">
-            Week {week} of {plan.weeks_total}
-            {week === currentWeek ? (
-              <span className="text-brand-ink"> · current</span>
-            ) : null}
-          </p>
+          <div className="text-center">
+            <p className="text-foreground text-sm font-semibold">
+              Week {week} of {plan.weeks_total}
+              {week === currentWeek ? (
+                <span className="text-brand-ink"> · current</span>
+              ) : null}
+            </p>
+            <p className="text-muted-foreground text-xs">
+              {planItemDate(plan.created_at, week, 1).toLocaleDateString(
+                "en-US",
+                { month: "short", day: "numeric" },
+              )}{" "}
+              –{" "}
+              {planItemDate(plan.created_at, week, 0).toLocaleDateString(
+                "en-US",
+                { month: "short", day: "numeric" },
+              )}
+            </p>
+          </div>
           <Button
             asChild
             variant="outline"
@@ -215,12 +243,28 @@ export default async function MarathonPage({
           {DAYS.map((day) => {
             const dayItems = byDay.get(day.id) ?? [];
             if (dayItems.length === 0) return null;
+            const dayDate = planItemDate(plan.created_at, week, day.id);
+            const dayYmd = toLocalYMD(dayDate);
+            const isToday = dayYmd === toLocalYMD(new Date());
             return (
               <section key={day.id} className="space-y-2">
-                <h2 className="text-overline">{day.name}</h2>
+                <h2 className="text-overline flex items-center gap-2">
+                  <span>{day.name}</span>
+                  <span className="text-muted-foreground/70 normal-case">
+                    {dayDate.toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </span>
+                  {isToday && (
+                    <span className="bg-brand-tint text-brand-ink rounded-full px-2 py-0.5 text-[10px] font-bold normal-case">
+                      Today
+                    </span>
+                  )}
+                </h2>
                 <div className="flex flex-col gap-2">
                   {dayItems.map((item) => (
-                    <PlanItemRow key={item.id} item={item} />
+                    <PlanItemRow key={item.id} item={item} date={dayYmd} />
                   ))}
                 </div>
               </section>

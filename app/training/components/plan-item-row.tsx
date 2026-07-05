@@ -31,8 +31,22 @@ const TYPE_META: Record<
   stretch: { icon: Activity, tone: "bg-xp-tint text-xp-ink" },
   mobility: { icon: PersonStanding, tone: "bg-xp-tint text-xp-ink" },
   recovery: { icon: BedDouble, tone: "bg-secondary text-muted-foreground" },
+  // Active recovery (a light walk etc.) reads better as footsteps than a bed.
+  recovery_active: {
+    icon: Footprints,
+    tone: "bg-secondary text-muted-foreground",
+  },
   meal_note: { icon: UtensilsCrossed, tone: "bg-flame-tint text-flame-ink" },
 };
+
+const RECOVERY_WALK = /walk|jog|hike|stroll|spin|swim|bike|cycle/i;
+
+function metaKeyFor(item: PlanItem): string {
+  if (item.item_type === "recovery" && RECOVERY_WALK.test(item.title)) {
+    return "recovery_active";
+  }
+  return item.item_type;
+}
 
 export type PlanItem = {
   id: string;
@@ -50,15 +64,44 @@ export type PlanItem = {
   is_completed: boolean;
 };
 
-export function PlanItemRow({ item }: { item: PlanItem }) {
+/** True when today is the item's day or the day after (the log window). */
+function withinLogWindow(date: string | undefined): boolean {
+  if (!date) return true;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const itemDay = new Date(`${date}T00:00:00`);
+  const dayAfter = new Date(itemDay);
+  dayAfter.setDate(itemDay.getDate() + 1);
+  return today >= itemDay && today <= dayAfter;
+}
+
+export function PlanItemRow({
+  item,
+  date,
+}: {
+  item: PlanItem;
+  /** The item's calendar date (YYYY-MM-DD), for gating the "done" toggle. */
+  date?: string;
+}) {
   const [state, formAction, pending] = useActionState(
     togglePlanItemAction,
     initialState,
   );
   useActionToast(state);
 
-  const meta = TYPE_META[item.item_type] ?? TYPE_META.recovery;
+  const meta = TYPE_META[metaKeyFor(item)] ?? TYPE_META.recovery;
   const Icon = meta.icon;
+  // You can only tick something done on its day or the day after; undoing a
+  // completed item is always allowed so mistakes are fixable.
+  const canMarkDone = item.is_completed || withinLogWindow(date);
+  const opensLabel =
+    !canMarkDone && date
+      ? `Opens ${new Date(`${date}T00:00:00`).toLocaleDateString("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+        })}`
+      : undefined;
   const detailBits = [
     item.details?.distance_km ? `${item.details.distance_km}km` : null,
     item.details?.pace_min_km ? `@ ${item.details.pace_min_km}/km` : null,
@@ -122,15 +165,19 @@ export function PlanItemRow({ item }: { item: PlanItem }) {
             />
             <button
               type="submit"
-              disabled={pending}
+              disabled={pending || !canMarkDone}
+              title={opensLabel}
               aria-label={
-                item.is_completed ? "Mark as not done" : "Mark as done"
+                item.is_completed
+                  ? "Mark as not done"
+                  : (opensLabel ?? "Mark as done")
               }
               className={cn(
                 "grid size-7 shrink-0 place-items-center rounded-full border transition-colors",
                 item.is_completed
                   ? "bg-brand border-brand text-brand-foreground"
                   : "border-border text-muted-foreground hover:border-brand/50",
+                !canMarkDone && "cursor-not-allowed opacity-40 hover:border-border",
               )}
             >
               {pending ? (

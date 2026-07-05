@@ -43,3 +43,36 @@ export function daysUntil(date: string): number {
     Math.ceil((new Date(`${date}T00:00:00`).getTime() - Date.now()) / DAY_MS),
   );
 }
+
+/** YYYY-MM-DD in local time. */
+export function toLocalYMD(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+/**
+ * Local calendar date of a plan item. Week 1 is the (Monday-anchored) week
+ * containing the plan's creation date; days render Monday-first, but
+ * `dayOfWeek` carries the real 0=Sun..6=Sat id.
+ */
+export function planItemDate(
+  createdAt: string,
+  week: number,
+  dayOfWeek: number,
+): Date {
+  const created = new Date(createdAt);
+  const week1Monday = new Date(
+    created.getFullYear(),
+    created.getMonth(),
+    created.getDate(),
+  );
+  const mondayOffset = (created.getDay() + 6) % 7; // Mon=0..Sun=6
+  week1Monday.setDate(week1Monday.getDate() - mondayOffset);
+
+  const dayOffset = (dayOfWeek + 6) % 7; // Monday-first position in the week
+  const date = new Date(week1Monday);
+  date.setDate(week1Monday.getDate() + (week - 1) * 7 + dayOffset);
+  return date;
+}
