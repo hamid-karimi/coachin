@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useTransition } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,7 @@ interface ConfirmDialogProps {
   cancelLabel?: string;
   /** Solid red is for destructive confirms only — pass "brand" for
    *  reversible actions like archiving. */
-  confirmVariant?: "destructive" | "brand";
+  confirmVariant?: "destructive" | "brand" | "success";
   pending?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
@@ -37,6 +38,9 @@ export function ConfirmDialog({
   onCancel,
   className,
 }: ConfirmDialogProps) {
+  // useActionState dispatches must run inside a transition; every caller
+  // fires one from onConfirm, so the dialog owns the wrapping.
+  const [, startConfirm] = useTransition();
   React.useEffect(() => {
     if (!open) return;
     const onKey = (event: KeyboardEvent) => {
@@ -84,7 +88,7 @@ export function ConfirmDialog({
             type="button"
             variant={confirmVariant}
             size="sm"
-            onClick={onConfirm}
+            onClick={() => startConfirm(() => onConfirm())}
             disabled={pending}
           >
             {pending ? "Working…" : confirmLabel}

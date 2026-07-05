@@ -32,7 +32,7 @@ export function ArchivePlanButton({ planId }: { planId: string }) {
         title="Archive this plan?"
         description="Progress is kept, but the plan stops showing on your dashboard. You can generate a new one anytime."
         confirmLabel="Archive"
-        confirmVariant="brand"
+        confirmVariant="success"
         pending={pending}
         onCancel={() => setOpen(false)}
         onConfirm={() => {
