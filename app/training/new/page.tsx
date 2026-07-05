@@ -90,7 +90,7 @@ export default async function NewTrainingPlanPage({
         </div>
 
         <Link
-          href="/marathon/new?kind=race"
+          href="/training/new?kind=race"
           className="bg-card border-border hover:border-brand/40 group flex items-center gap-4 rounded-2xl border p-5 transition-colors"
         >
           <span className="bg-brand-tint text-brand-ink grid size-12 shrink-0 place-items-center rounded-xl">
@@ -112,7 +112,7 @@ export default async function NewTrainingPlanPage({
         </Link>
 
         <Link
-          href="/marathon/new?kind=hypertrophy"
+          href="/training/new?kind=hypertrophy"
           className="bg-card border-border hover:border-brand/40 group flex items-center gap-4 rounded-2xl border p-5 transition-colors"
         >
           <span className="bg-xp-tint text-xp-ink grid size-12 shrink-0 place-items-center rounded-xl">

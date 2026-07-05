@@ -304,7 +304,7 @@ export default async function Dashboard() {
         {/* Marathon discovery — no plan yet, point at the generator */}
         {!activePlan && (
           <Link
-            href="/marathon"
+            href="/training"
             className="bg-card border-border hover:border-brand/40 group flex items-center gap-3.5 rounded-2xl border p-4 transition-colors"
           >
             <span className="bg-brand-tint text-brand-ink grid size-10 shrink-0 place-items-center rounded-xl">
@@ -328,7 +328,7 @@ export default async function Dashboard() {
         {/* Marathon plan card (roadmap branch 4) */}
         {activePlan && (
           <Link
-            href="/marathon"
+            href="/training"
             className="bg-card border-border hover:border-brand/40 group flex items-center gap-3.5 rounded-2xl border p-4 transition-colors"
           >
             <span className="bg-brand-tint text-brand-ink grid size-10 shrink-0 place-items-center rounded-xl">

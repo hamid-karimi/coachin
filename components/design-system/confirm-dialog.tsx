@@ -11,6 +11,9 @@ interface ConfirmDialogProps {
   description?: string;
   confirmLabel: string;
   cancelLabel?: string;
+  /** Solid red is for destructive confirms only — pass "brand" for
+   *  reversible actions like archiving. */
+  confirmVariant?: "destructive" | "brand";
   pending?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
@@ -28,6 +31,7 @@ export function ConfirmDialog({
   description,
   confirmLabel,
   cancelLabel = "Cancel",
+  confirmVariant = "destructive",
   pending = false,
   onConfirm,
   onCancel,
@@ -78,7 +82,7 @@ export function ConfirmDialog({
           </Button>
           <Button
             type="button"
-            variant="destructive"
+            variant={confirmVariant}
             size="sm"
             onClick={onConfirm}
             disabled={pending}

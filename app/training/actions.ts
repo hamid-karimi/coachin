@@ -241,9 +241,9 @@ export async function generatePlanAction(
     return { error: data?.error ?? "Failed to save the plan" };
   }
 
-  revalidatePath("/marathon");
+  revalidatePath("/training");
   revalidatePath("/dashboard");
-  redirect("/marathon");
+  redirect("/training");
 }
 
 const HYPERTROPHY_GOALS = new Set(["muscle_gain", "recomp"]);
@@ -353,9 +353,9 @@ export async function generateHypertrophyPlanAction(
     return { error: data?.error ?? "Failed to save the plan" };
   }
 
-  revalidatePath("/marathon");
+  revalidatePath("/training");
   revalidatePath("/dashboard");
-  redirect("/marathon");
+  redirect("/training");
 }
 
 export async function togglePlanItemAction(
@@ -381,7 +381,7 @@ export async function togglePlanItemAction(
     return { error: "Failed to update the item" };
   }
 
-  revalidatePath("/marathon");
+  revalidatePath("/training");
   return { success: true };
 }
 
@@ -563,7 +563,7 @@ export async function logSessionAction(
     console.error("session feedback failed:", feedbackException);
   }
 
-  revalidatePath("/marathon");
+  revalidatePath("/training");
   const baseMessage =
     awardedXp > 0 ? `Session logged · +${awardedXp} XP` : "Session logged.";
   return {
@@ -671,9 +671,9 @@ export async function applyCheckinAction(
     return { error: data?.error ?? "Failed to apply the check-in" };
   }
 
-  revalidatePath("/marathon");
+  revalidatePath("/training");
   revalidatePath("/dashboard");
-  redirect("/marathon");
+  redirect("/training");
 }
 
 export async function archivePlanAction(
@@ -699,7 +699,7 @@ export async function archivePlanAction(
     return { error: "Failed to archive the plan" };
   }
 
-  revalidatePath("/marathon");
+  revalidatePath("/training");
   revalidatePath("/dashboard");
   return { success: true, message: "Plan archived.", status: "info" };
 }

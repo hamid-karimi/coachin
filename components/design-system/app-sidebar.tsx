@@ -25,7 +25,7 @@ export function routeFor(key: NavKey): string {
     case "plan":
       return "/onboarding";
     case "training":
-      return "/marathon";
+      return "/training";
     case "nutrition":
       return "/nutrition";
     case "community":
@@ -40,7 +40,7 @@ export function routeFor(key: NavKey): string {
 /** Derive the active NavKey from the current pathname. */
 export function keyFromPath(pathname: string | null): NavKey {
   if (pathname?.startsWith("/onboarding")) return "plan";
-  if (pathname?.startsWith("/marathon")) return "training";
+  if (pathname?.startsWith("/training")) return "training";
   if (pathname?.startsWith("/nutrition")) return "nutrition";
   if (pathname?.startsWith("/community")) return "community";
   if (pathname?.startsWith("/coaching")) return "coaching";

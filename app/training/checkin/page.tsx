@@ -64,11 +64,11 @@ export default async function CheckinPage() {
       .eq("status", "active")
       .maybeSingle(),
   ]);
-  if (!plan) redirect("/marathon");
+  if (!plan) redirect("/training");
 
   // The reviewed week is the last fully-elapsed one; a next week must exist.
   const reviewWeek = lastElapsedPlanWeek(plan.created_at, plan.weeks_total);
-  if (reviewWeek < 1 || reviewWeek >= plan.weeks_total) redirect("/marathon");
+  if (reviewWeek < 1 || reviewWeek >= plan.weeks_total) redirect("/training");
   const targetWeek = reviewWeek + 1;
 
   const [{ data: existingCheckin }, { data: reviewItems }, { data: nextItems }] =
@@ -92,11 +92,11 @@ export default async function CheckinPage() {
         .eq("week", targetWeek)
         .order("day_of_week"),
     ]);
-  if (existingCheckin) redirect("/marathon");
+  if (existingCheckin) redirect("/training");
 
   const items = (reviewItems ?? []) as ItemRow[];
   const upcoming = (nextItems ?? []) as ItemRow[];
-  if (upcoming.length === 0) redirect("/marathon");
+  if (upcoming.length === 0) redirect("/training");
 
   // Session logs for the reviewed week's items, index-aligned with `items`.
   const { data: logRows } =

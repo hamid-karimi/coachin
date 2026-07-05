@@ -69,7 +69,7 @@ export default async function MarathonPage({
             recovery, and fueling notes.
           </p>
           <Button asChild variant="brand" size="lg">
-            <Link href="/marathon/new">
+            <Link href="/training/new">
               <Sparkles aria-hidden />
               Build my plan
             </Link>
@@ -162,7 +162,7 @@ export default async function MarathonPage({
               </p>
             </div>
             <Button asChild variant="brand" size="sm">
-              <Link href="/marathon/checkin">
+              <Link href="/training/checkin">
                 <ClipboardCheck aria-hidden />
                 Start check-in
               </Link>
@@ -184,7 +184,7 @@ export default async function MarathonPage({
             size="sm"
             className={week <= 1 ? "pointer-events-none opacity-40" : ""}
           >
-            <Link href={`/marathon?week=${week - 1}`}>
+            <Link href={`/training?week=${week - 1}`}>
               <ChevronLeft aria-hidden />
               Week {week - 1}
             </Link>
@@ -203,7 +203,7 @@ export default async function MarathonPage({
               week >= plan.weeks_total ? "pointer-events-none opacity-40" : ""
             }
           >
-            <Link href={`/marathon?week=${week + 1}`}>
+            <Link href={`/training?week=${week + 1}`}>
               Week {week + 1}
               <ChevronRight aria-hidden />
             </Link>
