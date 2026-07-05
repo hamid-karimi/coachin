@@ -7,11 +7,18 @@ import {
   Users,
   GraduationCap,
   CircleUser,
+  UtensilsCrossed,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-export type NavKey = "home" | "plan" | "community" | "coaching" | "profile";
+export type NavKey =
+  | "home"
+  | "plan"
+  | "nutrition"
+  | "community"
+  | "coaching"
+  | "profile";
 
 const ITEMS: {
   key: NavKey;
@@ -20,6 +27,7 @@ const ITEMS: {
 }[] = [
   { key: "home", label: "Today", icon: Home },
   { key: "plan", label: "Plan", icon: CalendarDays },
+  { key: "nutrition", label: "Meals", icon: UtensilsCrossed },
   { key: "community", label: "Community", icon: Users },
   { key: "coaching", label: "Coaching", icon: GraduationCap },
   { key: "profile", label: "Profile", icon: CircleUser },

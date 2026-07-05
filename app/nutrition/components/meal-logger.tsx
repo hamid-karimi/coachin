@@ -142,7 +142,11 @@ export function MealLogger({ hasUsda }: { hasUsda: boolean }) {
   }, [logState]);
 
   // --- photo mode state ---
-  const [isPreparing, startPreparing] = useTransition();
+  // Compression happens in a plain async handler; the action dispatch must
+  // be synchronous inside startTransition (dispatching after an `await`
+  // loses the transition context and isPending breaks).
+  const [isPreparing, setIsPreparing] = useState(false);
+  const [, startDispatch] = useTransition();
   const photoInputRef = useRef<HTMLInputElement>(null);
   const [reviewItems, setReviewItems] = useState<MealEstimateItem[] | null>(
     null,
@@ -166,20 +170,21 @@ export function MealLogger({ hasUsda }: { hasUsda: boolean }) {
     lastConfirmRef.current = confirmState;
   }, [confirmState]);
 
-  const onPhotoPicked = (list: FileList | null) => {
+  const onPhotoPicked = async (list: FileList | null) => {
     const file = list?.[0];
     if (photoInputRef.current) photoInputRef.current.value = "";
     if (!file) return;
-    startPreparing(async () => {
-      try {
-        const compressed = await compressImage(file);
-        const formData = new FormData();
-        formData.set("photo", compressed);
-        estimateAction(formData);
-      } catch {
-        toast.error("Could not read that image");
-      }
-    });
+    setIsPreparing(true);
+    try {
+      const compressed = await compressImage(file);
+      const formData = new FormData();
+      formData.set("photo", compressed);
+      startDispatch(() => estimateAction(formData));
+    } catch {
+      toast.error("Could not read that image");
+    } finally {
+      setIsPreparing(false);
+    }
   };
 
   const updateReviewItem = (

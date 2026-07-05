@@ -9,6 +9,7 @@ import {
   Users,
   GraduationCap,
   CircleUser,
+  UtensilsCrossed,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -22,6 +23,8 @@ export function routeFor(key: NavKey): string {
       return "/dashboard";
     case "plan":
       return "/onboarding";
+    case "nutrition":
+      return "/nutrition";
     case "community":
       return "/community";
     case "coaching":
@@ -34,6 +37,7 @@ export function routeFor(key: NavKey): string {
 /** Derive the active NavKey from the current pathname. */
 export function keyFromPath(pathname: string | null): NavKey {
   if (pathname?.startsWith("/onboarding")) return "plan";
+  if (pathname?.startsWith("/nutrition")) return "nutrition";
   if (pathname?.startsWith("/community")) return "community";
   if (pathname?.startsWith("/coaching")) return "coaching";
   if (pathname?.startsWith("/profile")) return "profile";
@@ -47,6 +51,7 @@ const ITEMS: {
 }[] = [
   { key: "home", label: "Today", icon: Home },
   { key: "plan", label: "Plan", icon: CalendarDays },
+  { key: "nutrition", label: "Nutrition", icon: UtensilsCrossed },
   { key: "community", label: "Community", icon: Users },
   { key: "coaching", label: "Coaching", icon: GraduationCap },
   { key: "profile", label: "Profile", icon: CircleUser },
