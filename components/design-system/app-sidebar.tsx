@@ -7,6 +7,7 @@ import {
   Home,
   CalendarDays,
   CalendarHeart,
+  CalendarRange,
   Users,
   GraduationCap,
   CircleUser,
@@ -34,6 +35,8 @@ export function routeFor(key: NavKey): string {
       return "/coaching";
     case "profile":
       return "/profile";
+    default:
+      return "/dashboard";
   }
 }
 
@@ -56,6 +59,7 @@ const ITEMS: {
   { key: "home", label: "Today", icon: Home },
   { key: "plan", label: "Plan", icon: CalendarDays },
   { key: "training", label: "Training", icon: CalendarHeart },
+  { key: "calendar", label: "Calendar", icon: CalendarRange },
   { key: "nutrition", label: "Nutrition", icon: UtensilsCrossed },
   { key: "community", label: "Community", icon: Users },
   { key: "coaching", label: "Coaching", icon: GraduationCap },

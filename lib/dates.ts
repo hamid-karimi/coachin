@@ -52,6 +52,24 @@ export function toLocalYMD(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
+/** Monday (local, midnight) of the week containing `date`. */
+export function mondayOf(date: Date): Date {
+  const monday = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const offset = (date.getDay() + 6) % 7; // Mon=0..Sun=6
+  monday.setDate(monday.getDate() - offset);
+  return monday;
+}
+
+/** Which plan week a calendar date falls in (1-based; may be out of range). */
+export function planWeekForDate(createdAt: string, date: Date): number {
+  const week1Monday = mondayOf(new Date(createdAt));
+  const targetMonday = mondayOf(date);
+  const diffWeeks = Math.round(
+    (targetMonday.getTime() - week1Monday.getTime()) / WEEK_MS,
+  );
+  return diffWeeks + 1;
+}
+
 /**
  * Local calendar date of a plan item. Week 1 is the (Monday-anchored) week
  * containing the plan's creation date; days render Monday-first, but

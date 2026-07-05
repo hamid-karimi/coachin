@@ -3,6 +3,7 @@ import { createClient, getUser } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import {
   CalendarHeart,
+  CalendarRange,
   ChevronRight,
   Flame,
   GraduationCap,
@@ -82,7 +83,11 @@ export default async function Dashboard() {
     .from("schedules")
     .select("*, sport_types(name, xp_multiplier, id)")
     .eq("user_id", user.id)
-    .eq("day_of_week", dayIndex);
+    .eq("day_of_week", dayIndex)
+    // Respect the recurring window: hide routines that haven't started or
+    // have already ended.
+    .or(`starts_on.is.null,starts_on.lte.${dateString}`)
+    .or(`ends_on.is.null,ends_on.gte.${dateString}`);
 
   if (todaysPlanError) {
     console.error("Error fetching today's plan:", todaysPlanError);
@@ -376,6 +381,28 @@ export default async function Dashboard() {
             />
           </Link>
         )}
+
+        {/* Weekly calendar entry */}
+        <Link
+          href="/calendar"
+          className="bg-card border-border hover:border-brand/40 group flex items-center gap-3.5 rounded-2xl border p-4 transition-colors"
+        >
+          <span className="bg-brand-tint text-brand-ink grid size-10 shrink-0 place-items-center rounded-xl">
+            <CalendarRange className="size-5" aria-hidden />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="text-foreground block text-sm font-semibold">
+              This week
+            </span>
+            <span className="text-muted-foreground block text-[13px]">
+              Routine, plan, and logged workouts on real dates
+            </span>
+          </span>
+          <ChevronRight
+            className="text-muted-foreground group-hover:text-foreground size-4 shrink-0 transition-colors"
+            aria-hidden
+          />
+        </Link>
 
         {/* Nutrition entry (roadmap branch 5) */}
         <Link

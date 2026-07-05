@@ -16,6 +16,7 @@ export type NavKey =
   | "home"
   | "plan"
   | "training"
+  | "calendar"
   | "nutrition"
   | "community"
   | "coaching"

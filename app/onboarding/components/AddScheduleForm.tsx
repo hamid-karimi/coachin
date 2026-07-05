@@ -138,11 +138,23 @@ export function AddScheduleForm({
         <div className='flex flex-col gap-2'>
           <Label htmlFor='schedule-time'>Time (optional)</Label>
           <Input
-            key={resetKey}
+            key={`time-${resetKey}`}
             id='schedule-time'
             type='time'
             name='time'
             className='w-36'
+            disabled={isPending}
+          />
+        </div>
+
+        <div className='flex flex-col gap-2'>
+          <Label htmlFor='schedule-ends'>Repeat until (optional)</Label>
+          <Input
+            key={`ends-${resetKey}`}
+            id='schedule-ends'
+            type='date'
+            name='ends_on'
+            className='w-44'
             disabled={isPending}
           />
         </div>
