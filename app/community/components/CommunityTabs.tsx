@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Trophy, GraduationCap, Shield, UserPlus, UsersRound } from "lucide-react";
+import { Trophy, Shield, UserPlus, UsersRound } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -12,7 +12,6 @@ const TAB_ITEMS: {
   icon: typeof Trophy;
 }[] = [
   { href: "/community/boards", label: "Boards", icon: Trophy },
-  { href: "/community/coaching", label: "Coaching", icon: GraduationCap },
   { href: "/community/clubs", label: "Clubs", icon: Shield },
   { href: "/community/circle", label: "Circle", icon: UserPlus },
   { href: "/community/groups", label: "Groups", icon: UsersRound },

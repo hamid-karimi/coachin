@@ -23,11 +23,12 @@ const MAX_REPORTS = 3;
 const BUCKET = "body-photos";
 
 /**
- * Upload pipeline: validate → sharp re-encode (strips EXIF/GPS, caps size)
- * → Gemini moderation gate → storage + metadata row. Rejected images are
- * never written to storage.
+ * Batch upload pipeline: per file — validate → sharp re-encode (strips
+ * EXIF/GPS, caps size) → Gemini moderation gate → storage + metadata row.
+ * Rejected images are never written to storage; the rest of the batch
+ * still proceeds (partial success is reported per file).
  */
-export async function uploadBodyPhotoAction(
+export async function uploadBodyPhotosAction(
   _prevState: BodyPhotosActionState,
   formData: FormData,
 ): Promise<BodyPhotosActionState> {
@@ -36,20 +37,19 @@ export async function uploadBodyPhotoAction(
     return { error: "You must be signed in" };
   }
 
-  const file = formData.get("photo");
-  if (!(file instanceof File) || file.size === 0) {
-    return { error: "Choose an image to upload" };
+  const files = formData
+    .getAll("photos")
+    .filter((entry): entry is File => entry instanceof File && entry.size > 0);
+  if (files.length === 0) {
+    return { error: "Choose at least one image to upload" };
   }
-  if (!ACCEPTED_TYPES.has(file.type)) {
-    return { error: "Use a JPEG, PNG, or WebP image" };
-  }
-  if (file.size > MAX_UPLOAD_BYTES) {
-    return { error: "Image must be 5MB or smaller" };
+  if (files.length > MAX_BODY_PHOTOS) {
+    return { error: `Upload at most ${MAX_BODY_PHOTOS} images at a time` };
   }
 
   const supabase = await createClient();
 
-  // Cheap cap check BEFORE spending an AI call.
+  // Current usage, tracked across the batch so caps hold within it too.
   const { count: photoCount } = await supabase
     .from("body_photos")
     .select("id", { count: "exact", head: true })
@@ -60,75 +60,116 @@ export async function uploadBodyPhotoAction(
     .select("id", { count: "exact", head: true })
     .eq("user_id", user.id)
     .eq("kind", "analysis_report");
+  let photosUsed = photoCount ?? 0;
+  let reportsUsed = reportCount ?? 0;
 
-  if ((photoCount ?? 0) >= MAX_BODY_PHOTOS && (reportCount ?? 0) >= MAX_REPORTS) {
-    return { error: `Limit reached: ${MAX_BODY_PHOTOS} photos and ${MAX_REPORTS} reports` };
-  }
+  let uploaded = 0;
+  let uploadedReports = 0;
+  const rejected: string[] = [];
 
-  // Re-encode: drops EXIF/GPS metadata, normalizes orientation and size.
-  let jpeg: Buffer;
-  try {
-    const original = Buffer.from(await file.arrayBuffer());
-    jpeg = await sharp(original)
-      .rotate()
-      .resize({ width: 1600, height: 1600, fit: "inside", withoutEnlargement: true })
-      .jpeg({ quality: 82 })
-      .toBuffer();
-  } catch (error) {
-    console.error("Image re-encode failed:", error);
-    return { error: "Could not read that image — try a different file" };
-  }
+  for (const file of files) {
+    const label = file.name || "image";
 
-  // Moderation gate (disclosed in the upload UI).
-  const moderation = await moderateBodyImage(
-    jpeg.toString("base64"),
-    "image/jpeg",
-  );
-  if (!moderation.ok) {
-    return { error: moderation.reason };
-  }
+    if (!ACCEPTED_TYPES.has(file.type)) {
+      rejected.push(`${label}: use JPEG, PNG, or WebP`);
+      continue;
+    }
+    if (file.size > MAX_UPLOAD_BYTES) {
+      rejected.push(`${label}: must be 5MB or smaller`);
+      continue;
+    }
+    if (photosUsed >= MAX_BODY_PHOTOS && reportsUsed >= MAX_REPORTS) {
+      rejected.push(`${label}: photo and report limits reached`);
+      continue;
+    }
 
-  const kind = moderation.category === "analysis_report"
-    ? "analysis_report"
-    : "body_photo";
-  if (kind === "body_photo" && (photoCount ?? 0) >= MAX_BODY_PHOTOS) {
-    return { error: `You already have ${MAX_BODY_PHOTOS} photos — delete one first` };
-  }
-  if (kind === "analysis_report" && (reportCount ?? 0) >= MAX_REPORTS) {
-    return { error: `You already have ${MAX_REPORTS} reports — delete one first` };
-  }
+    // Re-encode: drops EXIF/GPS metadata, normalizes orientation and size.
+    let jpeg: Buffer;
+    try {
+      const original = Buffer.from(await file.arrayBuffer());
+      jpeg = await sharp(original)
+        .rotate()
+        .resize({ width: 1600, height: 1600, fit: "inside", withoutEnlargement: true })
+        .jpeg({ quality: 82 })
+        .toBuffer();
+    } catch (error) {
+      console.error("Image re-encode failed:", error);
+      rejected.push(`${label}: could not read the image`);
+      continue;
+    }
 
-  const storagePath = `${user.id}/${crypto.randomUUID()}.jpg`;
-  const { error: uploadError } = await supabase.storage
-    .from(BUCKET)
-    .upload(storagePath, jpeg, { contentType: "image/jpeg" });
+    // Moderation gate (disclosed in the upload UI) — one AI call per file.
+    const moderation = await moderateBodyImage(
+      jpeg.toString("base64"),
+      "image/jpeg",
+    );
+    if (!moderation.ok) {
+      rejected.push(`${label}: ${moderation.reason}`);
+      if ("unavailable" in moderation) break; // no point burning the batch
+      continue;
+    }
 
-  if (uploadError) {
-    console.error("Storage upload failed:", uploadError);
-    return { error: "Failed to store the image" };
-  }
+    const kind =
+      moderation.category === "analysis_report"
+        ? "analysis_report"
+        : "body_photo";
+    if (kind === "body_photo" && photosUsed >= MAX_BODY_PHOTOS) {
+      rejected.push(`${label}: you already have ${MAX_BODY_PHOTOS} photos`);
+      continue;
+    }
+    if (kind === "analysis_report" && reportsUsed >= MAX_REPORTS) {
+      rejected.push(`${label}: you already have ${MAX_REPORTS} reports`);
+      continue;
+    }
 
-  const { error: insertError } = await supabase.from("body_photos").insert({
-    user_id: user.id,
-    storage_path: storagePath,
-    kind,
-  });
+    const storagePath = `${user.id}/${crypto.randomUUID()}.jpg`;
+    const { error: uploadError } = await supabase.storage
+      .from(BUCKET)
+      .upload(storagePath, jpeg, { contentType: "image/jpeg" });
+    if (uploadError) {
+      console.error("Storage upload failed:", uploadError);
+      rejected.push(`${label}: failed to store`);
+      continue;
+    }
 
-  if (insertError) {
-    // Keep storage consistent with metadata.
-    await supabase.storage.from(BUCKET).remove([storagePath]);
-    console.error("body_photos insert failed:", insertError);
-    return { error: "Failed to save the photo" };
+    const { error: insertError } = await supabase.from("body_photos").insert({
+      user_id: user.id,
+      storage_path: storagePath,
+      kind,
+    });
+    if (insertError) {
+      // Keep storage consistent with metadata.
+      await supabase.storage.from(BUCKET).remove([storagePath]);
+      console.error("body_photos insert failed:", insertError);
+      rejected.push(`${label}: failed to save`);
+      continue;
+    }
+
+    if (kind === "analysis_report") {
+      reportsUsed += 1;
+      uploadedReports += 1;
+    } else {
+      photosUsed += 1;
+    }
+    uploaded += 1;
   }
 
   revalidatePath("/profile");
+
+  if (uploaded === 0) {
+    return { error: rejected.join(" · ") || "Nothing was uploaded" };
+  }
+
+  const parts = [
+    `${uploaded} ${uploaded === 1 ? "image" : "images"} uploaded`,
+    uploadedReports > 0 ? "report metrics can be extracted below" : null,
+    rejected.length > 0 ? `rejected — ${rejected.join(" · ")}` : null,
+  ].filter(Boolean);
+
   return {
     success: true,
-    message:
-      kind === "analysis_report"
-        ? "Report uploaded — extract its metrics below."
-        : "Photo uploaded.",
-    status: "success",
+    message: `${parts.join("; ")}.`,
+    status: rejected.length > 0 ? "info" : "success",
   };
 }
 

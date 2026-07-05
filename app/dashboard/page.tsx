@@ -301,6 +301,30 @@ export default async function Dashboard() {
           />
         </div>
 
+        {/* Marathon discovery — no plan yet, point at the generator */}
+        {!activePlan && (
+          <Link
+            href="/marathon"
+            className="bg-card border-border hover:border-brand/40 group flex items-center gap-3.5 rounded-2xl border p-4 transition-colors"
+          >
+            <span className="bg-brand-tint text-brand-ink grid size-10 shrink-0 place-items-center rounded-xl">
+              <CalendarHeart className="size-5" aria-hidden />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="text-foreground block text-sm font-semibold">
+                Train for a marathon
+              </span>
+              <span className="text-muted-foreground block text-[13px]">
+                Get an AI week-by-week program built around your running
+              </span>
+            </span>
+            <ChevronRight
+              className="text-muted-foreground group-hover:text-foreground size-4 shrink-0 transition-colors"
+              aria-hidden
+            />
+          </Link>
+        )}
+
         {/* Marathon plan card (roadmap branch 4) */}
         {activePlan && (
           <Link
