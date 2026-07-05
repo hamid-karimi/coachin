@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import {
+  CalendarHeart,
   ChevronRight,
   GraduationCap,
   Heart,
@@ -22,6 +23,7 @@ import { canCoach } from "@/lib/roles";
 import { tierFromLeague } from "@/lib/tiers";
 import { getCoachingSummary } from "@/app/coaching/lib/coaching-hub-data";
 import { getGoalsWithProgress } from "@/lib/goals-data";
+import { weeksSince } from "@/lib/dates";
 import { GOAL_TYPE_META } from "@/lib/goals";
 import { Progress } from "@/components/ui/progress";
 import { WorkoutCard } from "./components/workout-card";
@@ -106,12 +108,35 @@ export default async function Dashboard() {
 
   // Coaching card (plan Phase 5): only coach-capable roles with ≥1 trainee.
   const isCoachCapable = canCoach(profile.role);
-  const [coachingSummary, goalsData] = await Promise.all([
+  const [coachingSummary, goalsData, { data: activePlan }] = await Promise.all([
     isCoachCapable
       ? getCoachingSummary(supabase, user.id)
       : Promise.resolve({ traineeCount: 0, trainedThisWeek: 0 }),
     getGoalsWithProgress(supabase, user.id),
+    supabase
+      .from("training_plans")
+      .select("id, weeks_total, created_at, race_date")
+      .eq("user_id", user.id)
+      .eq("status", "active")
+      .maybeSingle(),
   ]);
+
+  // Marathon card: today's items in the current plan week.
+  let marathonToday = 0;
+  let marathonWeek = 0;
+  if (activePlan) {
+    marathonWeek = Math.min(
+      Math.max(weeksSince(activePlan.created_at) + 1, 1),
+      activePlan.weeks_total,
+    );
+    const { count } = await supabase
+      .from("plan_items")
+      .select("id", { count: "exact", head: true })
+      .eq("plan_id", activePlan.id)
+      .eq("week", marathonWeek)
+      .eq("day_of_week", dayIndex);
+    marathonToday = count ?? 0;
+  }
   // Compact strip shows the tracked goal closest to completion.
   const featuredGoal = goalsData.active
     .filter((goal) => goal.progress !== null)
@@ -250,6 +275,33 @@ export default async function Dashboard() {
             accent="gold"
           />
         </div>
+
+        {/* Marathon plan card (roadmap branch 4) */}
+        {activePlan && (
+          <Link
+            href="/marathon"
+            className="bg-card border-border hover:border-brand/40 group flex items-center gap-3.5 rounded-2xl border p-4 transition-colors"
+          >
+            <span className="bg-brand-tint text-brand-ink grid size-10 shrink-0 place-items-center rounded-xl">
+              <CalendarHeart className="size-5" aria-hidden />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="text-foreground block text-sm font-semibold">
+                Marathon plan
+              </span>
+              <span className="text-muted-foreground block text-[13px]">
+                Week {marathonWeek} of {activePlan.weeks_total} ·{" "}
+                {marathonToday > 0
+                  ? `${marathonToday} ${marathonToday === 1 ? "item" : "items"} today`
+                  : "rest day"}
+              </span>
+            </span>
+            <ChevronRight
+              className="text-muted-foreground group-hover:text-foreground size-4 shrink-0 transition-colors"
+              aria-hidden
+            />
+          </Link>
+        )}
 
         {/* Active goal strip (roadmap branch 2) */}
         {featuredGoal && featuredGoal.progress && (
