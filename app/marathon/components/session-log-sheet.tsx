@@ -68,9 +68,25 @@ export function SessionLogSheet({
 
   if (state.success) {
     return (
-      <p className="text-muted-foreground pl-11 text-xs">
-        Session logged — nice work.
-      </p>
+      <div className="space-y-1 pl-11">
+        <p className="text-muted-foreground text-xs">
+          Session logged — nice work.
+        </p>
+        {state.feedback && (
+          <p
+            className={cn(
+              "text-xs",
+              state.feedback.flag === "red"
+                ? "text-destructive"
+                : state.feedback.flag === "caution"
+                  ? "text-flame-ink"
+                  : "text-muted-foreground",
+            )}
+          >
+            {state.feedback.message}
+          </p>
+        )}
+      </div>
     );
   }
 

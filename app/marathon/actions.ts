@@ -15,6 +15,10 @@ import {
   generateMarathonPlan,
   type MarathonIntake,
 } from "@/lib/ai/marathon";
+import {
+  generateSessionFeedback,
+  redFlagPrecheck,
+} from "@/lib/ai/session-feedback";
 
 export type MarathonActionState = {
   error?: string;
@@ -23,6 +27,8 @@ export type MarathonActionState = {
   status?: "success" | "info" | "error";
   /** Parsed watch-file summaries, held client-side until generation. */
   activities?: ActivitySummary[];
+  /** AI feedback on a logged session (validated, non-fatal on failure). */
+  feedback?: { message: string; flag: string };
 };
 
 const MAX_FILES = 3;
@@ -352,7 +358,7 @@ export async function logSessionAction(
   // RLS scopes plan_items to the user's own plans — a foreign item returns null.
   const { data: item } = await supabase
     .from("plan_items")
-    .select("id, item_type")
+    .select("id, item_type, title, details")
     .eq("id", planItemId)
     .maybeSingle();
   if (!item) return { error: "Plan item not found" };
@@ -395,10 +401,55 @@ export async function logSessionAction(
   });
   const awardedXp = Number(xp?.awarded_xp ?? 0);
 
+  // AI feedback is NON-FATAL — the session save + XP above already succeeded,
+  // and any error here is swallowed.
+  let feedback: { message: string; flag: string } | undefined;
+  try {
+    const result = await generateSessionFeedback({
+      itemTitle: String(item.title ?? ""),
+      itemType: item.item_type,
+      planned:
+        typeof item.details === "object" && item.details !== null
+          ? (item.details as Record<string, unknown>)
+          : null,
+      actual,
+      rpe,
+      note,
+    });
+    if ("error" in result) {
+      console.error("session feedback unavailable:", result.error);
+      // Persist the deterministic flag anyway — the weekly scorecard reads
+      // ai_feedback.flag, and a pain note must survive an AI outage.
+      const flag = redFlagPrecheck(note, rpe, item.item_type);
+      if (flag !== "ok") {
+        feedback = {
+          message: "Your note was flagged — take it easy and monitor how it feels.",
+          flag,
+        };
+      }
+    } else {
+      feedback = result;
+    }
+    if (feedback) {
+      const { error: feedbackError } = await supabase
+        .from("session_logs")
+        .update({ ai_feedback: feedback })
+        .eq("id", log.id);
+      if (feedbackError) {
+        console.error("session feedback save failed:", feedbackError);
+      }
+    }
+  } catch (feedbackException) {
+    console.error("session feedback failed:", feedbackException);
+  }
+
   revalidatePath("/marathon");
+  const baseMessage =
+    awardedXp > 0 ? `Session logged · +${awardedXp} XP` : "Session logged.";
   return {
     success: true,
-    message: awardedXp > 0 ? `Session logged · +${awardedXp} XP` : "Session logged.",
+    message: feedback ? `${baseMessage} 🏃 ${feedback.message}` : baseMessage,
+    feedback,
   };
 }
 
