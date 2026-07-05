@@ -8,6 +8,8 @@ import {
   Dumbbell,
   Footprints,
   Loader2,
+  PersonStanding,
+  Play,
   UtensilsCrossed,
 } from "lucide-react";
 
@@ -27,6 +29,7 @@ const TYPE_META: Record<
   run: { icon: Footprints, tone: "bg-brand-tint text-brand-ink" },
   strength: { icon: Dumbbell, tone: "bg-secondary text-foreground" },
   stretch: { icon: Activity, tone: "bg-xp-tint text-xp-ink" },
+  mobility: { icon: PersonStanding, tone: "bg-xp-tint text-xp-ink" },
   recovery: { icon: BedDouble, tone: "bg-secondary text-muted-foreground" },
   meal_note: { icon: UtensilsCrossed, tone: "bg-flame-tint text-flame-ink" },
 };
@@ -42,6 +45,7 @@ export type PlanItem = {
     pace_min_km?: string;
     duration_min?: number;
     notes?: string;
+    video_query?: string;
   } | null;
   is_completed: boolean;
 };
@@ -95,6 +99,17 @@ export function PlanItemRow({ item }: { item: PlanItem }) {
             <p className="text-muted-foreground mt-0.5 text-xs">
               {item.details.notes}
             </p>
+          )}
+          {item.details?.video_query && (
+            <a
+              href={`https://www.youtube.com/results?search_query=${encodeURIComponent(item.details.video_query)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-brand-ink mt-1 inline-flex items-center gap-1 text-xs font-medium hover:underline"
+            >
+              <Play className="size-3" aria-hidden />
+              Watch how
+            </a>
           )}
         </div>
         {item.item_type !== "meal_note" && (
