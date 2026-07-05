@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import {
   CalendarHeart,
   ChevronRight,
+  Flame,
   GraduationCap,
   Heart,
   MoonStar,
@@ -138,6 +139,29 @@ export default async function Dashboard() {
       .eq("day_of_week", dayIndex);
     marathonToday = count ?? 0;
   }
+  // Group-streak nudge: only when the user hasn't logged anything today.
+  let groupAtRisk: { name: string; streak_count: number } | null = null;
+  if ((todaysLogs ?? []).length === 0) {
+    const { data: myGroups } = await supabase
+      .from("group_members")
+      .select("training_groups(name, streak_count)")
+      .eq("user_id", user.id);
+    const candidates = (myGroups ?? [])
+      .map(
+        (row) =>
+          row.training_groups as unknown as {
+            name: string;
+            streak_count: number;
+          } | null,
+      )
+      .filter(
+        (group): group is { name: string; streak_count: number } =>
+          Boolean(group) && Number(group?.streak_count) > 0,
+      )
+      .sort((a, b) => b.streak_count - a.streak_count);
+    groupAtRisk = candidates[0] ?? null;
+  }
+
   // Compact strip shows the tracked goal closest to completion.
   const featuredGoal = goalsData.active
     .filter((goal) => goal.progress !== null)
@@ -299,6 +323,31 @@ export default async function Dashboard() {
             </span>
             <ChevronRight
               className="text-muted-foreground group-hover:text-foreground size-4 shrink-0 transition-colors"
+              aria-hidden
+            />
+          </Link>
+        )}
+
+        {/* Group-streak nudge (roadmap branch 6) */}
+        {groupAtRisk && (
+          <Link
+            href="/community/groups"
+            className="bg-flame-tint border-flame/30 flex items-center gap-3.5 rounded-2xl border p-4"
+          >
+            <span className="text-flame-ink grid size-10 shrink-0 place-items-center">
+              <Flame className="size-6" aria-hidden />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="text-flame-ink block text-sm font-bold">
+                {groupAtRisk.name}&apos;s {groupAtRisk.streak_count}-day streak
+                needs you
+              </span>
+              <span className="text-flame-ink/80 block text-[13px]">
+                Log a workout today so nobody&apos;s streak freezes.
+              </span>
+            </span>
+            <ChevronRight
+              className="text-flame-ink size-4 shrink-0"
               aria-hidden
             />
           </Link>
