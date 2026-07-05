@@ -15,15 +15,18 @@ import {
 
 const DEFAULT_MODEL = "gemini-2.5-flash";
 
-function getModel(): string {
+export function getGeminiModel(): string {
   return process.env.GEMINI_MODEL || DEFAULT_MODEL;
 }
 
-function getClient(): GoogleGenAI | null {
+export function getGeminiClient(): GoogleGenAI | null {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return null;
   return new GoogleGenAI({ apiKey });
 }
+
+const getModel = getGeminiModel;
+const getClient = getGeminiClient;
 
 /** Strict thresholds for anything that handles user photos. */
 const STRICT_SAFETY = [
