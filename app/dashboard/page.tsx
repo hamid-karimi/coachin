@@ -8,6 +8,7 @@ import {
   Heart,
   MoonStar,
   Target,
+  UtensilsCrossed,
 } from "lucide-react";
 
 import { AppShell } from "@/components/design-system/app-shell";
@@ -302,6 +303,28 @@ export default async function Dashboard() {
             />
           </Link>
         )}
+
+        {/* Nutrition entry (roadmap branch 5) */}
+        <Link
+          href="/nutrition"
+          className="bg-card border-border hover:border-brand/40 group flex items-center gap-3.5 rounded-2xl border p-4 transition-colors"
+        >
+          <span className="bg-flame-tint text-flame-ink grid size-10 shrink-0 place-items-center rounded-xl">
+            <UtensilsCrossed className="size-5" aria-hidden />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="text-foreground block text-sm font-semibold">
+              Nutrition
+            </span>
+            <span className="text-muted-foreground block text-[13px]">
+              Log meals by search or photo · +5 XP each (first 3 daily)
+            </span>
+          </span>
+          <ChevronRight
+            className="text-muted-foreground group-hover:text-foreground size-4 shrink-0 transition-colors"
+            aria-hidden
+          />
+        </Link>
 
         {/* Active goal strip (roadmap branch 2) */}
         {featuredGoal && featuredGoal.progress && (
