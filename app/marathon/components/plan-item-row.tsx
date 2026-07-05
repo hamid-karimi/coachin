@@ -14,8 +14,11 @@ import {
 import { cn } from "@/lib/utils";
 import { useActionToast } from "@/components/hooks/use-action-toast";
 import { togglePlanItemAction, type MarathonActionState } from "../actions";
+import { SessionLogSheet } from "./session-log-sheet";
 
 const initialState: MarathonActionState = {};
+
+const LOGGABLE_TYPES = new Set(["run", "strength"]);
 
 const TYPE_META: Record<
   string,
@@ -59,68 +62,77 @@ export function PlanItemRow({ item }: { item: PlanItem }) {
   ].filter(Boolean);
 
   return (
-    <div
-      className={cn(
-        "border-border flex items-start gap-3 rounded-xl border p-3",
-        item.is_completed && "opacity-70",
-      )}
-    >
-      <span
+    <div className="space-y-1.5">
+      <div
         className={cn(
-          "grid size-8 shrink-0 place-items-center rounded-lg",
-          meta.tone,
+          "border-border flex items-start gap-3 rounded-xl border p-3",
+          item.is_completed && "opacity-70",
         )}
       >
-        <Icon className="size-4" aria-hidden />
-      </span>
-      <div className="min-w-0 flex-1">
-        <p
+        <span
           className={cn(
-            "text-sm font-medium",
-            item.is_completed && "line-through",
+            "grid size-8 shrink-0 place-items-center rounded-lg",
+            meta.tone,
           )}
         >
-          {item.title}
-        </p>
-        {detailBits.length > 0 && (
-          <p className="text-muted-foreground text-xs">
-            {detailBits.join(" · ")}
-          </p>
-        )}
-        {item.details?.notes && (
-          <p className="text-muted-foreground mt-0.5 text-xs">
-            {item.details.notes}
-          </p>
-        )}
-      </div>
-      {item.item_type !== "meal_note" && (
-        <form action={formAction}>
-          <input type="hidden" name="item_id" value={item.id} />
-          <input
-            type="hidden"
-            name="completed"
-            value={item.is_completed ? "false" : "true"}
-          />
-          <button
-            type="submit"
-            disabled={pending}
-            aria-label={
-              item.is_completed ? "Mark as not done" : "Mark as done"
-            }
+          <Icon className="size-4" aria-hidden />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p
             className={cn(
-              "grid size-7 shrink-0 place-items-center rounded-full border transition-colors",
-              item.is_completed
-                ? "bg-brand border-brand text-brand-foreground"
-                : "border-border text-muted-foreground hover:border-brand/50",
+              "text-sm font-medium",
+              item.is_completed && "line-through",
             )}
           >
-            {pending ? (
-              <Loader2 className="size-3.5 animate-spin" aria-hidden />
-            ) : (
-              <Check className="size-3.5" aria-hidden />
-            )}
-          </button>
-        </form>
+            {item.title}
+          </p>
+          {detailBits.length > 0 && (
+            <p className="text-muted-foreground text-xs">
+              {detailBits.join(" · ")}
+            </p>
+          )}
+          {item.details?.notes && (
+            <p className="text-muted-foreground mt-0.5 text-xs">
+              {item.details.notes}
+            </p>
+          )}
+        </div>
+        {item.item_type !== "meal_note" && (
+          <form action={formAction}>
+            <input type="hidden" name="item_id" value={item.id} />
+            <input
+              type="hidden"
+              name="completed"
+              value={item.is_completed ? "false" : "true"}
+            />
+            <button
+              type="submit"
+              disabled={pending}
+              aria-label={
+                item.is_completed ? "Mark as not done" : "Mark as done"
+              }
+              className={cn(
+                "grid size-7 shrink-0 place-items-center rounded-full border transition-colors",
+                item.is_completed
+                  ? "bg-brand border-brand text-brand-foreground"
+                  : "border-border text-muted-foreground hover:border-brand/50",
+              )}
+            >
+              {pending ? (
+                <Loader2 className="size-3.5 animate-spin" aria-hidden />
+              ) : (
+                <Check className="size-3.5" aria-hidden />
+              )}
+            </button>
+          </form>
+        )}
+      </div>
+      {LOGGABLE_TYPES.has(item.item_type) && item.is_completed && (
+        <SessionLogSheet
+          itemId={item.id}
+          itemType={item.item_type}
+          itemTitle={item.title}
+        />
       )}
     </div>
   );
