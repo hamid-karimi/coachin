@@ -12,6 +12,7 @@ import { canCoach } from "@/lib/roles";
 import { lastElapsedPlanWeek } from "@/lib/dates";
 import {
   computeWeekScorecard,
+  detectStalledLifts,
   decideWeek,
   type ScorecardSessionLog,
   type WeekScorecard,
@@ -130,6 +131,40 @@ export default async function CheckinPage() {
       .maybeSingle();
     if (previousCheckin?.scorecard) {
       previous = previousCheckin.scorecard as WeekScorecard;
+    }
+  }
+
+  // Hypertrophy stall check: strength logs from the last 3 reviewed weeks.
+  if (reviewWeek >= 3) {
+    const { data: strengthItems } = await supabase
+      .from("plan_items")
+      .select("id, week")
+      .eq("plan_id", plan.id)
+      .eq("item_type", "strength")
+      .gte("week", reviewWeek - 2)
+      .lte("week", reviewWeek);
+    const strengthIds = (strengthItems ?? []).map((item) => item.id);
+    if (strengthIds.length > 0) {
+      const { data: strengthLogs } = await supabase
+        .from("session_logs")
+        .select("plan_item_id, actual, ai_feedback, note")
+        .in("plan_item_id", strengthIds);
+      const weekOfItem = new Map(
+        (strengthItems ?? []).map((item) => [item.id, item.week as number]),
+      );
+      const byWeek: ScorecardSessionLog[][] = [[], [], []];
+      for (const log of (strengthLogs ?? []) as (ScorecardSessionLog & {
+        plan_item_id: string;
+      })[]) {
+        const week = weekOfItem.get(log.plan_item_id);
+        if (week === undefined) continue;
+        byWeek[week - (reviewWeek - 2)]?.push(log);
+      }
+      for (const name of detectStalledLifts(byWeek)) {
+        scorecard.caution_flags.push(
+          `${name}: same load 3 weeks running — consider a deload or variation`,
+        );
+      }
     }
   }
 

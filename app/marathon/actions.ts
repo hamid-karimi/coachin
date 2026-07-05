@@ -16,6 +16,11 @@ import {
   validateItems,
   type MarathonIntake,
 } from "@/lib/ai/marathon";
+import {
+  generateHypertrophyPlan,
+  type HypertrophyIntake,
+} from "@/lib/ai/hypertrophy";
+import { yearsSince } from "@/lib/dates";
 import type { WeekScorecard } from "@/lib/scorecard";
 import {
   generateSessionFeedback,
@@ -191,6 +196,7 @@ export async function generatePlanAction(
   const firstTimeAtDistance = longestPbKm < distanceKm - 0.01;
 
   const intake: MarathonIntake = {
+    plan_kind: "race",
     race_date: raceDateRaw,
     race_target: raceTarget,
     race_distance_km: distanceKm,
@@ -232,6 +238,118 @@ export async function generatePlanAction(
 
   if (error || !data?.success) {
     console.error("create_training_plan failed:", error ?? data);
+    return { error: data?.error ?? "Failed to save the plan" };
+  }
+
+  revalidatePath("/marathon");
+  revalidatePath("/dashboard");
+  redirect("/marathon");
+}
+
+const HYPERTROPHY_GOALS = new Set(["muscle_gain", "recomp"]);
+const EQUIPMENT_OPTIONS = new Set(["gym", "home", "bodyweight"]);
+
+export async function generateHypertrophyPlanAction(
+  _prevState: MarathonActionState,
+  formData: FormData,
+): Promise<MarathonActionState> {
+  const user = await getUser();
+  if (!user) return { error: "You must be signed in" };
+
+  const goal = String(formData.get("goal") ?? "").trim();
+  if (!HYPERTROPHY_GOALS.has(goal)) return { error: "Pick a goal" };
+
+  const equipment = String(formData.get("equipment") ?? "").trim();
+  if (!EQUIPMENT_OPTIONS.has(equipment)) return { error: "Pick your equipment" };
+
+  const daysPerWeek = Number(formData.get("days_per_week"));
+  if (!Number.isInteger(daysPerWeek) || daysPerWeek < 2 || daysPerWeek > 6) {
+    return { error: "Pick 2-6 training days per week" };
+  }
+
+  const weeksTotal = Number(formData.get("weeks_total"));
+  if (![8, 10, 12].includes(weeksTotal)) {
+    return { error: "Pick a plan length" };
+  }
+
+  const experienceLevel =
+    String(formData.get("experience_level") ?? "").trim() || null;
+
+  const supabase = await createClient();
+  const [{ data: profile }, { data: calorieGoal }, { data: analyzedPhoto }] =
+    await Promise.all([
+      supabase
+        .from("profiles")
+        .select("birth_date, sex, height_cm, weight_kg, training_history")
+        .eq("id", user.id)
+        .single(),
+      supabase
+        .from("goals")
+        .select("target_value")
+        .eq("user_id", user.id)
+        .eq("goal_type", "calorie_intake")
+        .eq("status", "active")
+        .maybeSingle(),
+      supabase
+        .from("body_photos")
+        .select("analysis")
+        .eq("user_id", user.id)
+        .not("analysis", "is", null)
+        .order("analyzed_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+    ]);
+
+  const analysis = analyzedPhoto?.analysis as {
+    build_notes?: string;
+    posture_notes?: string;
+  } | null;
+  const bodyAnalysis = analysis
+    ? [analysis.build_notes, analysis.posture_notes]
+        .filter(Boolean)
+        .join(" ")
+        .slice(0, 500) || null
+    : null;
+
+  const intake: HypertrophyIntake = {
+    goal,
+    experience_level: experienceLevel,
+    equipment,
+    days_per_week: daysPerWeek,
+    weeks_total: weeksTotal,
+    injuries: String(formData.get("injuries") ?? "").trim() || null,
+    calorie_target: calorieGoal?.target_value
+      ? Number(calorieGoal.target_value)
+      : null,
+    body_analysis: bodyAnalysis,
+    age: yearsSince(profile?.birth_date),
+    sex: profile?.sex ?? null,
+    height_cm: profile?.height_cm ?? null,
+    weight_kg: profile?.weight_kg ?? null,
+    training_history: profile?.training_history ?? null,
+  };
+
+  const plan = await generateHypertrophyPlan(intake);
+  if ("error" in plan) {
+    return { error: plan.error };
+  }
+
+  const { data, error } = await supabase.rpc("create_training_plan", {
+    p_race_date: null,
+    p_goal_time: null,
+    p_weeks_total: weeksTotal,
+    p_summary: plan.summary,
+    p_intake: { plan_kind: "hypertrophy", ...intake } as unknown as Record<
+      string,
+      unknown
+    >,
+    p_raw: plan.raw as Record<string, unknown>,
+    p_model: plan.model,
+    p_items: plan.items as unknown as Record<string, unknown>[],
+  });
+
+  if (error || !data?.success) {
+    console.error("create_training_plan (hypertrophy) failed:", error ?? data);
     return { error: data?.error ?? "Failed to save the plan" };
   }
 

@@ -114,20 +114,23 @@ export default async function MarathonPage({
     byDay.set(item.day_of_week, list);
   }
 
-  const daysUntilRace = daysUntil(plan.race_date);
   const intake = (plan.intake ?? {}) as {
+    plan_kind?: string;
     race_target?: string;
     race_distance_km?: number;
   };
-  const planTitle =
-    {
-      "5k": "5k plan",
-      "10k": "10k plan",
-      half: "Half marathon plan",
-      full: "Marathon plan",
-      ultra: `Ultra plan${intake.race_distance_km ? ` (${intake.race_distance_km}km)` : ""}`,
-      other: `${intake.race_distance_km ?? "?"}km race plan`,
-    }[intake.race_target ?? "full"] ?? "Marathon plan";
+  const isHypertrophy = intake.plan_kind === "hypertrophy";
+  const daysUntilRace = plan.race_date ? daysUntil(plan.race_date) : null;
+  const planTitle = isHypertrophy
+    ? "Muscle building plan"
+    : ({
+        "5k": "5k plan",
+        "10k": "10k plan",
+        half: "Half marathon plan",
+        full: "Marathon plan",
+        ultra: `Ultra plan${intake.race_distance_km ? ` (${intake.race_distance_km}km)` : ""}`,
+        other: `${intake.race_distance_km ?? "?"}km race plan`,
+      }[intake.race_target ?? "full"] ?? "Marathon plan");
 
   return (
     <AppShell coachNav={coachNav}>
@@ -138,9 +141,10 @@ export default async function MarathonPage({
               {planTitle}
             </h1>
             <p className="text-muted-foreground text-sm">
-              Race in {daysUntilRace} days
-              {plan.goal_time ? ` · goal ${plan.goal_time}` : ""} ·{" "}
+              {daysUntilRace !== null ? `Race in ${daysUntilRace} days · ` : ""}
+              {plan.goal_time ? `goal ${plan.goal_time} · ` : ""}
               {plan.weeks_total} weeks
+              {isHypertrophy ? " · progressive overload" : ""}
             </p>
           </div>
           <ArchivePlanButton planId={plan.id} />

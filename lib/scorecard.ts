@@ -99,6 +99,52 @@ export function computeWeekScorecard(
   };
 }
 
+type ExerciseSet = { name?: unknown; reps?: unknown; weight_kg?: unknown };
+
+/**
+ * Hypertrophy stall detection (adaptive plan Phase 5): an exercise logged in
+ * each of the last 3 weeks with no weight OR rep increase from first to last
+ * is stalled — surface at check-in to suggest a deload or variation.
+ * Pass per-week strength logs oldest → newest; needs ≥3 weeks of data.
+ */
+export function detectStalledLifts(
+  weeklyStrengthLogs: (ScorecardSessionLog | null | undefined)[][],
+): string[] {
+  if (weeklyStrengthLogs.length < 3) return [];
+  const lastThree = weeklyStrengthLogs.slice(-3);
+
+  // Per week: exercise name → best (weight, reps) seen that week.
+  const weekMaps = lastThree.map((logs) => {
+    const map = new Map<string, { weight: number; reps: number }>();
+    for (const log of logs) {
+      const exercises = log?.actual?.exercises;
+      if (!Array.isArray(exercises)) continue;
+      for (const raw of exercises as ExerciseSet[]) {
+        const name = String(raw?.name ?? "").trim().toLowerCase();
+        if (!name) continue;
+        const weight = numberOrNull(raw?.weight_kg) ?? 0;
+        const reps = numberOrNull(raw?.reps) ?? 0;
+        const best = map.get(name);
+        if (!best || weight > best.weight || (weight === best.weight && reps > best.reps)) {
+          map.set(name, { weight, reps });
+        }
+      }
+    }
+    return map;
+  });
+
+  const stalled: string[] = [];
+  for (const [name, first] of weekMaps[0]) {
+    const mid = weekMaps[1].get(name);
+    const last = weekMaps[2].get(name);
+    if (!mid || !last) continue;
+    if (last.weight <= first.weight && last.reps <= first.reps) {
+      stalled.push(name);
+    }
+  }
+  return stalled;
+}
+
 /**
  * Rules-first check-in decision (notes Decision 2): red flag → deload;
  * two consecutive weeks under 50% adherence → deload; one week under 50%

@@ -8,6 +8,8 @@ import { getGeminiClient, getGeminiModel } from "./gemini";
 import type { ActivitySummary } from "@/lib/activity-parse";
 
 export type MarathonIntake = {
+  /** Discriminates plan flavors inside training_plans.intake. */
+  plan_kind: "race";
   race_date: string;
   /** "5k" | "10k" | "half" | "full" | "ultra" | "other" */
   race_target: string;

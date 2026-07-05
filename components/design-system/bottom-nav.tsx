@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 export type NavKey =
   | "home"
   | "plan"
+  | "training"
   | "nutrition"
   | "community"
   | "coaching"
