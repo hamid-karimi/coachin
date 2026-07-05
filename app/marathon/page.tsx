@@ -43,7 +43,7 @@ export default async function MarathonPage({
     supabase.from("profiles").select("role").eq("id", user.id).single(),
     supabase
       .from("training_plans")
-      .select("id, race_date, goal_time, weeks_total, summary, created_at")
+      .select("id, race_date, goal_time, weeks_total, summary, created_at, intake")
       .eq("user_id", user.id)
       .eq("status", "active")
       .maybeSingle(),
@@ -59,11 +59,11 @@ export default async function MarathonPage({
             <CalendarHeart className="size-7" aria-hidden />
           </span>
           <h1 className="text-foreground font-display text-2xl font-bold tracking-tight">
-            Train for a marathon
+            Train for your race
           </h1>
           <p className="text-muted-foreground max-w-md text-sm">
-            Answer a few questions about your running and get an AI-generated
-            week-by-week program — runs with paces, strength, mobility,
+            First 5k or full marathon — answer a few questions about your
+            running and get an AI-generated week-by-week program — runs with paces, strength, mobility,
             recovery, and fueling notes.
           </p>
           <Button asChild variant="brand" size="lg">
@@ -99,6 +99,19 @@ export default async function MarathonPage({
   }
 
   const daysUntilRace = daysUntil(plan.race_date);
+  const intake = (plan.intake ?? {}) as {
+    race_target?: string;
+    race_distance_km?: number;
+  };
+  const planTitle =
+    {
+      "5k": "5k plan",
+      "10k": "10k plan",
+      half: "Half marathon plan",
+      full: "Marathon plan",
+      ultra: `Ultra plan${intake.race_distance_km ? ` (${intake.race_distance_km}km)` : ""}`,
+      other: `${intake.race_distance_km ?? "?"}km race plan`,
+    }[intake.race_target ?? "full"] ?? "Marathon plan";
 
   return (
     <AppShell coachNav={coachNav}>
@@ -106,7 +119,7 @@ export default async function MarathonPage({
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h1 className="text-foreground font-display text-2xl font-bold tracking-tight md:text-[28px]">
-              Marathon plan
+              {planTitle}
             </h1>
             <p className="text-muted-foreground text-sm">
               Race in {daysUntilRace} days

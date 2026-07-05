@@ -39,11 +39,12 @@ export default async function NewMarathonPlanPage() {
       <div className="mx-auto flex w-full max-w-2xl flex-col gap-5">
         <div>
           <h1 className="text-foreground font-display text-2xl font-bold tracking-tight md:text-[28px]">
-            Marathon plan
+            Race plan
           </h1>
           <p className="text-muted-foreground text-sm">
-            Answer a few questions and get a week-by-week program: running,
-            strength, mobility, recovery, and fueling notes.
+            From your first 5k to a full marathon and beyond — answer a few
+            questions and get a week-by-week program: running, strength,
+            mobility, recovery, and fueling notes.
           </p>
         </div>
         <IntakeWizard

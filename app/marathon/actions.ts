@@ -4,7 +4,13 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { parseFit, parseGpx, type ActivitySummary } from "@/lib/activity-parse";
-import { parseTimeToSeconds } from "@/lib/running";
+import {
+  parseTimeToSeconds,
+  raceDistanceKm,
+  RACE_DISTANCES_KM,
+  RACE_TARGETS,
+  type RaceTarget,
+} from "@/lib/running";
 import {
   generateMarathonPlan,
   type MarathonIntake,
@@ -97,6 +103,26 @@ export async function generatePlanAction(
   const user = await getUser();
   if (!user) return { error: "You must be signed in" };
 
+  const raceTargetRaw = String(formData.get("race_target") ?? "").trim();
+  const raceTarget = RACE_TARGETS.find(
+    (entry) => entry.value === raceTargetRaw,
+  )?.value as RaceTarget | undefined;
+  if (!raceTarget) {
+    return { error: "Pick your race distance" };
+  }
+  const customKm = optionalNumber(formData.get("custom_distance_km"));
+  const distanceKm = raceDistanceKm(raceTarget, customKm);
+  if (!distanceKm || distanceKm < 1 || distanceKm > 500) {
+    return { error: "Enter the race distance in km (1-500)" };
+  }
+
+  const experienceRaw = String(formData.get("experience_level") ?? "").trim();
+  const experienceLevel = ["new", "recreational", "regular", "competitive"].includes(
+    experienceRaw,
+  )
+    ? experienceRaw
+    : null;
+
   const raceDateRaw = String(formData.get("race_date") ?? "").trim();
   const raceDate = new Date(`${raceDateRaw}T00:00:00`);
   if (!raceDateRaw || Number.isNaN(raceDate.getTime())) {
@@ -140,15 +166,35 @@ export async function generatePlanAction(
       )
     : null;
 
+  const pb5k = optionalTime(formData.get("pb_5k"));
+  const pb10k = optionalTime(formData.get("pb_10k"));
+  const pbHalf = optionalTime(formData.get("pb_half"));
+  const pbFull = optionalTime(formData.get("pb_full"));
+  // First time at this distance = no PB at or beyond the target.
+  const longestPbKm = pbFull
+    ? RACE_DISTANCES_KM.pb_full
+    : pbHalf
+      ? RACE_DISTANCES_KM.pb_half
+      : pb10k
+        ? RACE_DISTANCES_KM.pb_10k
+        : pb5k
+          ? RACE_DISTANCES_KM.pb_5k
+          : 0;
+  const firstTimeAtDistance = longestPbKm < distanceKm - 0.01;
+
   const intake: MarathonIntake = {
     race_date: raceDateRaw,
+    race_target: raceTarget,
+    race_distance_km: distanceKm,
+    experience_level: experienceLevel,
+    first_time_at_distance: firstTimeAtDistance,
     goal_time: optionalTime(formData.get("goal_time")),
     weeks_total: weeksTotal,
     days_per_week: daysPerWeek,
-    pb_5k: optionalTime(formData.get("pb_5k")),
-    pb_10k: optionalTime(formData.get("pb_10k")),
-    pb_half: optionalTime(formData.get("pb_half")),
-    pb_full: optionalTime(formData.get("pb_full")),
+    pb_5k: pb5k,
+    pb_10k: pb10k,
+    pb_half: pbHalf,
+    pb_full: pbFull,
     weekly_km: optionalNumber(formData.get("weekly_km")),
     longest_run_km: optionalNumber(formData.get("longest_run_km")),
     injuries: String(formData.get("injuries") ?? "").trim() || null,
