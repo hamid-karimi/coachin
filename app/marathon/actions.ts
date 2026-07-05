@@ -13,8 +13,10 @@ import {
 } from "@/lib/running";
 import {
   generateMarathonPlan,
+  validateItems,
   type MarathonIntake,
 } from "@/lib/ai/marathon";
+import type { WeekScorecard } from "@/lib/scorecard";
 import {
   generateSessionFeedback,
   redFlagPrecheck,
@@ -451,6 +453,109 @@ export async function logSessionAction(
     message: feedback ? `${baseMessage} 🏃 ${feedback.message}` : baseMessage,
     feedback,
   };
+}
+
+const CHECKIN_DECISIONS = new Set(["advance", "repeat", "deload"]);
+
+/** Rebuild a scorecard from a client-posted JSON string — never trust the
+ *  posted shape; only known numeric/string-array fields survive. */
+function sanitizeScorecard(raw: unknown): WeekScorecard | null {
+  if (typeof raw !== "object" || raw === null) return null;
+  const record = raw as Record<string, unknown>;
+  const num = (value: unknown) =>
+    typeof value === "number" && Number.isFinite(value) ? value : 0;
+  const strings = (value: unknown) =>
+    Array.isArray(value)
+      ? value
+          .filter((entry): entry is string => typeof entry === "string")
+          .map((entry) => entry.slice(0, 500))
+          .slice(0, 20)
+      : [];
+  return {
+    adherence_pct: Math.min(Math.max(num(record.adherence_pct), 0), 100),
+    planned_items: num(record.planned_items),
+    completed_items: num(record.completed_items),
+    planned_km: num(record.planned_km),
+    actual_km: num(record.actual_km),
+    red_flags: strings(record.red_flags),
+    caution_flags: strings(record.caution_flags),
+  };
+}
+
+/** Confirm a weekly check-in: records the scorecard + decision and rewrites
+ *  ONLY the target week via the apply_week_adjustment RPC (which also awards
+ *  +20 XP idempotently). Everything is re-validated server-side. */
+export async function applyCheckinAction(
+  _prevState: MarathonActionState,
+  formData: FormData,
+): Promise<MarathonActionState> {
+  const user = await getUser();
+  if (!user) return { error: "You must be signed in" };
+
+  const planId = String(formData.get("plan_id") ?? "").trim();
+  if (!planId) return { error: "Missing plan id" };
+
+  const checkinWeek = Number(formData.get("checkin_week"));
+  const targetWeek = Number(formData.get("target_week"));
+  if (
+    !Number.isInteger(checkinWeek) ||
+    !Number.isInteger(targetWeek) ||
+    checkinWeek < 1 ||
+    targetWeek !== checkinWeek + 1
+  ) {
+    return { error: "Invalid check-in week" };
+  }
+
+  const decision = String(formData.get("decision") ?? "").trim();
+  if (!CHECKIN_DECISIONS.has(decision)) {
+    return { error: "Invalid decision" };
+  }
+
+  const summary = String(formData.get("summary") ?? "").trim().slice(0, 500);
+
+  let scorecard: WeekScorecard | null = null;
+  try {
+    scorecard = sanitizeScorecard(
+      JSON.parse(String(formData.get("scorecard_json") ?? "")),
+    );
+  } catch {
+    // handled below
+  }
+  if (!scorecard) return { error: "Invalid scorecard" };
+
+  // Re-run the same field-by-field validation as plan generation on the
+  // posted items, then force every item onto the target week.
+  let items: ReturnType<typeof validateItems> = [];
+  try {
+    items = validateItems(
+      JSON.parse(String(formData.get("items_json") ?? "")),
+    ).map((item) => ({ ...item, week: targetWeek }));
+  } catch {
+    // handled below
+  }
+  if (items.length === 0) {
+    return { error: "The adjusted week has no valid items" };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("apply_week_adjustment", {
+    p_plan_id: planId,
+    p_checkin_week: checkinWeek,
+    p_scorecard: scorecard as unknown as Record<string, unknown>,
+    p_decision: decision,
+    p_summary: summary || null,
+    p_target_week: targetWeek,
+    p_items: items as unknown as Record<string, unknown>[],
+  });
+
+  if (error || !data?.success) {
+    console.error("apply_week_adjustment failed:", error ?? data);
+    return { error: data?.error ?? "Failed to apply the check-in" };
+  }
+
+  revalidatePath("/marathon");
+  revalidatePath("/dashboard");
+  redirect("/marathon");
 }
 
 export async function archivePlanAction(

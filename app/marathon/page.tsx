@@ -1,10 +1,16 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CalendarHeart, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import {
+  CalendarHeart,
+  ChevronLeft,
+  ChevronRight,
+  ClipboardCheck,
+  Sparkles,
+} from "lucide-react";
 
 import { createClient, getUser } from "@/lib/supabase/server";
 import { canCoach } from "@/lib/roles";
-import { daysUntil, weeksSince } from "@/lib/dates";
+import { daysUntil, lastElapsedPlanWeek, planWeekOf } from "@/lib/dates";
 import { AppShell } from "@/components/design-system/app-shell";
 import { Button } from "@/components/ui/button";
 import { PlanItemRow, type PlanItem } from "./components/plan-item-row";
@@ -23,10 +29,6 @@ const DAYS = [
   { id: 6, name: "Saturday" },
   { id: 0, name: "Sunday" },
 ];
-
-function planWeekOf(createdAt: string, weeksTotal: number): number {
-  return Math.min(Math.max(weeksSince(createdAt) + 1, 1), weeksTotal);
-}
 
 export default async function MarathonPage({
   searchParams,
@@ -84,6 +86,20 @@ export default async function MarathonPage({
     plan.weeks_total,
   );
 
+  // Weekly check-in banner: due when a plan week fully elapsed, a next week
+  // exists to adjust, and no weekly_checkins row reviews it yet.
+  const reviewWeek = lastElapsedPlanWeek(plan.created_at, plan.weeks_total);
+  let checkinDue = false;
+  if (reviewWeek >= 1 && reviewWeek < plan.weeks_total) {
+    const { data: existingCheckin } = await supabase
+      .from("weekly_checkins")
+      .select("id")
+      .eq("plan_id", plan.id)
+      .eq("week", reviewWeek)
+      .maybeSingle();
+    checkinDue = !existingCheckin;
+  }
+
   const { data: items } = await supabase
     .from("plan_items")
     .select("id, week, day_of_week, item_type, title, details, is_completed")
@@ -129,6 +145,26 @@ export default async function MarathonPage({
           </div>
           <ArchivePlanButton planId={plan.id} />
         </div>
+
+        {checkinDue && (
+          <div className="bg-brand-tint border-brand-ink/20 flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4">
+            <div>
+              <p className="text-brand-ink text-sm font-semibold">
+                Week {reviewWeek} review ready — see your scorecard
+              </p>
+              <p className="text-muted-foreground text-xs">
+                Review how the week went and confirm the adjustment for week{" "}
+                {reviewWeek + 1}.
+              </p>
+            </div>
+            <Button asChild variant="brand" size="sm">
+              <Link href="/marathon/checkin">
+                <ClipboardCheck aria-hidden />
+                Start check-in
+              </Link>
+            </Button>
+          </div>
+        )}
 
         {plan.summary && (
           <p className="bg-card border-border text-muted-foreground rounded-xl border p-4 text-sm">

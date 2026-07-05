@@ -20,6 +20,22 @@ export function weeksSince(timestamp: string): number {
   return Math.floor((Date.now() - new Date(timestamp).getTime()) / WEEK_MS);
 }
 
+/** 1-based current plan week from the plan's creation timestamp, clamped. */
+export function planWeekOf(createdAt: string, weeksTotal: number): number {
+  return Math.min(Math.max(weeksSince(createdAt) + 1, 1), weeksTotal);
+}
+
+/**
+ * Last fully-elapsed plan week (0 while still inside week 1), clamped to the
+ * plan length — the week a check-in reviews.
+ */
+export function lastElapsedPlanWeek(
+  createdAt: string,
+  weeksTotal: number,
+): number {
+  return Math.min(Math.max(weeksSince(createdAt), 0), weeksTotal);
+}
+
 /** Days from today until a YYYY-MM-DD date, floored at 0. */
 export function daysUntil(date: string): number {
   return Math.max(

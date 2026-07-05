@@ -63,7 +63,7 @@ const ITEM_TYPES = new Set([
   "meal_note",
 ]);
 
-function validateItems(raw: unknown): PlanItemInput[] {
+export function validateItems(raw: unknown): PlanItemInput[] {
   if (!Array.isArray(raw)) return [];
   const items: PlanItemInput[] = [];
   for (const entry of raw.slice(0, 400)) {
