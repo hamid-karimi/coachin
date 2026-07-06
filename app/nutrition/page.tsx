@@ -5,8 +5,10 @@ import { createClient, getUser } from "@/lib/supabase/server";
 import { canCoach } from "@/lib/roles";
 import { AppShell } from "@/components/design-system/app-shell";
 import { Progress } from "@/components/ui/progress";
+import { summarizePeriod, type DatedNutrients } from "@/lib/nutrition-trends";
 import { MealLogger } from "./components/meal-logger";
 import { MealRow, type MealLog } from "./components/meal-row";
+import { NutritionTrends } from "./components/nutrition-trends";
 
 export const dynamic = "force-dynamic";
 
@@ -34,26 +36,46 @@ export default async function NutritionPage() {
 
   const supabase = await createClient();
   const today = localToday();
+  // 30-day window (inclusive) for the weekly/monthly trend rollups.
+  const since = (() => {
+    const date = new Date();
+    date.setDate(date.getDate() - 29);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  })();
 
-  const [{ data: profile }, { data: logs }, { data: calorieGoal }] =
-    await Promise.all([
-      supabase.from("profiles").select("role").eq("id", user.id).single(),
-      supabase
-        .from("meal_logs")
-        .select(
-          "id, meal_type, free_text, quantity_g, kcal, protein_g, carbs_g, fat_g, sugar_g, fiber_g, sodium_mg, entry_method",
-        )
-        .eq("user_id", user.id)
-        .eq("date", today)
-        .order("created_at"),
-      supabase
-        .from("goals")
-        .select("target_value")
-        .eq("user_id", user.id)
-        .eq("goal_type", "calorie_intake")
-        .eq("status", "active")
-        .maybeSingle(),
-    ]);
+  const [
+    { data: profile },
+    { data: logs },
+    { data: calorieGoal },
+    { data: rangeLogs },
+  ] = await Promise.all([
+    supabase.from("profiles").select("role").eq("id", user.id).single(),
+    supabase
+      .from("meal_logs")
+      .select(
+        "id, meal_type, free_text, quantity_g, kcal, protein_g, carbs_g, fat_g, sugar_g, fiber_g, sodium_mg, entry_method",
+      )
+      .eq("user_id", user.id)
+      .eq("date", today)
+      .order("created_at"),
+    supabase
+      .from("goals")
+      .select("target_value")
+      .eq("user_id", user.id)
+      .eq("goal_type", "calorie_intake")
+      .eq("status", "active")
+      .maybeSingle(),
+    supabase
+      .from("meal_logs")
+      .select(
+        "date, kcal, protein_g, carbs_g, fat_g, sugar_g, fiber_g, sodium_mg",
+      )
+      .eq("user_id", user.id)
+      .gte("date", since),
+  ]);
 
   const meals = (logs ?? []) as MealLog[];
   const totals = meals.reduce(
@@ -74,6 +96,10 @@ export default async function NutritionPage() {
   const pct = target
     ? Math.min(100, Math.round((totals.kcal / target) * 100))
     : null;
+
+  const trendRows = (rangeLogs ?? []) as DatedNutrients[];
+  const weekSummary = summarizePeriod(trendRows, 7, today);
+  const monthSummary = summarizePeriod(trendRows, 30, today);
 
   return (
     <AppShell coachNav={canCoach(profile?.role)}>
@@ -159,6 +185,12 @@ export default async function NutritionPage() {
             );
           })
         )}
+
+        <NutritionTrends
+          week={weekSummary}
+          month={monthSummary}
+          target={target}
+        />
       </div>
     </AppShell>
   );
