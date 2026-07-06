@@ -20,20 +20,29 @@ export function weeksSince(timestamp: string): number {
   return Math.floor((Date.now() - new Date(timestamp).getTime()) / WEEK_MS);
 }
 
-/** 1-based current plan week from the plan's creation timestamp, clamped. */
+/**
+ * 1-based current plan week, clamped. Monday-anchored (via `planWeekForDate`)
+ * so it agrees with `planItemDate` — the function that gives each item its real
+ * calendar date. A rolling `weeksSince`-based count disagreed near the week
+ * boundary whenever a plan wasn't created on a Monday, so different surfaces
+ * (dashboard vs training/onboarding) resolved "today" to different weeks and
+ * showed different sessions.
+ */
 export function planWeekOf(createdAt: string, weeksTotal: number): number {
-  return Math.min(Math.max(weeksSince(createdAt) + 1, 1), weeksTotal);
+  return Math.min(Math.max(planWeekForDate(createdAt, new Date()), 1), weeksTotal);
 }
 
 /**
  * Last fully-elapsed plan week (0 while still inside week 1), clamped to the
- * plan length — the week a check-in reviews.
+ * plan length — the week a check-in reviews. Monday-anchored to match
+ * `planWeekOf`.
  */
 export function lastElapsedPlanWeek(
   createdAt: string,
   weeksTotal: number,
 ): number {
-  return Math.min(Math.max(weeksSince(createdAt), 0), weeksTotal);
+  const elapsed = planWeekForDate(createdAt, new Date()) - 1;
+  return Math.min(Math.max(elapsed, 0), weeksTotal);
 }
 
 /** Days from today until a YYYY-MM-DD date, floored at 0. */

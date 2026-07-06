@@ -10,7 +10,7 @@ import {
   LoadingScreen,
   PageHeader,
   AddScheduleForm,
-  ScheduleGrid,
+  WeekAgenda,
   CompleteOnboardingButton,
   PageContainer,
 } from "./components";
@@ -19,7 +19,12 @@ import { useActionToast } from "@/components/hooks/use-action-toast";
 
 export default function OnboardingPage() {
   // Load initial data
-  const { sports, schedules: initialSchedules, isLoading } = useLoadData();
+  const {
+    sports,
+    schedules: initialSchedules,
+    planItems,
+    isLoading,
+  } = useLoadData();
 
   // Form states
   const [addState, addAction] = useActionState(addScheduleItem, {});
@@ -84,8 +89,9 @@ export default function OnboardingPage() {
         plannedDays={plannedDays}
       />
 
-      <ScheduleGrid
+      <WeekAgenda
         schedules={schedules}
+        planItems={planItems}
         deleteAction={deleteAction}
         onDeleteClick={(scheduleId, action) => {
           const formData = new FormData();

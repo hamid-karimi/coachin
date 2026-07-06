@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { getSportTypes, getUserSchedules } from "../actions";
+import {
+  getSportTypes,
+  getUserSchedules,
+  getCurrentPlanWeekItems,
+  type PlanWeekItem,
+} from "../actions";
 
 interface SportType {
   id: string | number;
@@ -22,6 +27,7 @@ interface Schedule {
 interface UseLoadDataState {
   sports: SportType[];
   schedules: Schedule[];
+  planItems: PlanWeekItem[];
   isLoading: boolean;
   error: string | null;
 }
@@ -29,18 +35,21 @@ interface UseLoadDataState {
 export function useLoadData(): UseLoadDataState {
   const [sports, setSports] = useState<SportType[]>([]);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [planItems, setPlanItems] = useState<PlanWeekItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [sportsData, schedulesData] = await Promise.all([
+        const [sportsData, schedulesData, planItemsData] = await Promise.all([
           getSportTypes(),
           getUserSchedules(),
+          getCurrentPlanWeekItems(),
         ]);
         setSports(sportsData || []);
         setSchedules(schedulesData || []);
+        setPlanItems(planItemsData || []);
       } catch (err) {
         console.error("Failed to load data:", err);
         setError(err instanceof Error ? err.message : "Failed to load data");
@@ -52,5 +61,5 @@ export function useLoadData(): UseLoadDataState {
     loadData();
   }, []);
 
-  return { sports, schedules, isLoading, error };
+  return { sports, schedules, planItems, isLoading, error };
 }

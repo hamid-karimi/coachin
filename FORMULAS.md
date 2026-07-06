@@ -225,8 +225,13 @@ t2 = t1 × (d2 / d1) ^ 1.06
   Monday-first; `day_of_week` still carries the real id (`0=Sun … 6=Sat`).
 - `planWeekForDate(createdAt, date)` = `round((mondayOf(date) − mondayOf(createdAt)) / 7weeks) + 1`
   (1-based; `< 1` or `> weeks_total` means out of range).
-- **Current week:** `planWeekOf = clamp(weeksSince(createdAt) + 1, 1, weeksTotal)`.
-- **Check-in review week:** `lastElapsedPlanWeek = clamp(weeksSince(createdAt), 0, weeksTotal)`.
+- **Current week:** `planWeekOf = clamp(planWeekForDate(createdAt, today), 1, weeksTotal)`
+  — Monday-anchored, so every surface (dashboard, calendar, training, onboarding,
+  coaching) resolves "today" to the **same** week and shows the same sessions. (A
+  rolling `weeksSince(createdAt) + 1` count disagreed whenever a plan wasn't
+  created on a Monday.)
+- **Check-in review week:** `lastElapsedPlanWeek = clamp(planWeekForDate(createdAt, today) − 1, 0, weeksTotal)`
+  — the last fully-elapsed Monday-anchored week.
 - `weeksSince` / `daysUntil` use whole (floored) weeks / ceil'd days.
 
 ---

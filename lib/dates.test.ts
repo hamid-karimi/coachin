@@ -55,11 +55,30 @@ describe("yearsSince", () => {
   });
 });
 
-describe("weeksSince / planWeekOf / lastElapsedPlanWeek", () => {
-  it("is week 1 during the first plan week", () => {
+describe("weeksSince", () => {
+  it("counts whole elapsed weeks from a timestamp", () => {
     expect(weeksSince("2026-07-05T09:00:00")).toBe(0);
-    expect(planWeekOf("2026-07-05T09:00:00", 12)).toBe(1);
-    expect(lastElapsedPlanWeek("2026-07-05T09:00:00", 12)).toBe(0);
+    expect(weeksSince("2026-06-28T09:00:00")).toBe(1);
+  });
+});
+
+describe("planWeekOf / lastElapsedPlanWeek (Monday-anchored)", () => {
+  // Created Wed 2026-07-01 → week 1 is Mon Jun 29 – Sun Jul 5. NOW is Mon Jul 6.
+  const createdAt = "2026-07-01T12:00:00";
+
+  it("is week 1 while today is still inside the creation week", () => {
+    vi.setSystemTime(new Date("2026-07-03T10:00:00")); // Fri of week 1
+    expect(planWeekOf(createdAt, 12)).toBe(1);
+    expect(lastElapsedPlanWeek(createdAt, 12)).toBe(0);
+  });
+
+  it("advances at the Monday boundary, matching planWeekForDate", () => {
+    // NOW = Mon Jul 6 → week 2; week 1 has fully elapsed.
+    expect(planWeekOf(createdAt, 12)).toBe(2);
+    expect(lastElapsedPlanWeek(createdAt, 12)).toBe(1);
+    expect(planWeekOf(createdAt, 12)).toBe(
+      planWeekForDate(createdAt, new Date()),
+    );
   });
 
   it("clamps the current week to the plan length", () => {
