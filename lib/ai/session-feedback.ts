@@ -5,7 +5,7 @@
  * Every AI output field is validated before persisting.
  */
 import { Type } from "@google/genai";
-import { getGeminiClient, getGeminiModel } from "./gemini";
+import { generateJsonText } from "./text-json";
 
 export type SessionFeedback = {
   message: string;
@@ -52,12 +52,6 @@ export async function generateSessionFeedback(input: {
   rpe: number | null;
   note: string | null;
 }): Promise<SessionFeedback | { error: string }> {
-  const client = getGeminiClient();
-  if (!client) {
-    return { error: "AI is not configured (missing GEMINI_API_KEY)" };
-  }
-  const model = getGeminiModel();
-
   const precheck = redFlagPrecheck(input.note, input.rpe, input.itemType);
 
   const prompt = [
@@ -72,24 +66,25 @@ export async function generateSessionFeedback(input: {
     `- If pain or injury is mentioned, advise easing off and seeing a professional. NEVER diagnose or prescribe medical treatment.`,
   ].join("\n");
 
-  try {
-    const response = await client.models.generateContent({
-      model,
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            message: { type: Type.STRING },
-            flag: { type: Type.STRING, enum: ["ok", "caution", "red"] },
-          },
-          required: ["message", "flag"],
-        },
+  const result = await generateJsonText({
+    prompt,
+    maxTokens: 1024,
+    schema: {
+      type: Type.OBJECT,
+      properties: {
+        message: { type: Type.STRING },
+        flag: { type: Type.STRING, enum: ["ok", "caution", "red"] },
       },
-    });
+      required: ["message", "flag"],
+    },
+  });
 
-    const raw = JSON.parse(response.text ?? "{}") as {
+  if (!result) {
+    return { error: "AI feedback is temporarily unavailable — try again later" };
+  }
+
+  try {
+    const raw = JSON.parse(result.text) as {
       message?: unknown;
       flag?: unknown;
     };
@@ -105,7 +100,7 @@ export async function generateSessionFeedback(input: {
     // The AI can never downgrade the deterministic pre-check.
     return { message, flag: maxFlag(precheck, aiFlag) };
   } catch (error) {
-    console.error("Session feedback generation failed:", error);
+    console.error("Session feedback parse failed:", error);
     return {
       error: "AI feedback is temporarily unavailable — try again later",
     };

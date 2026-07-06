@@ -6,7 +6,7 @@
  * item's week is forced to the target week afterwards.
  */
 import { Type } from "@google/genai";
-import { getGeminiClient, getGeminiModel } from "./gemini";
+import { generateJsonText } from "./text-json";
 import { validateItems, type PlanItemInput } from "./marathon";
 import type { CheckinDecision, WeekScorecard } from "@/lib/scorecard";
 
@@ -32,12 +32,6 @@ export async function generateWeekAdjustment(input: {
   targetWeek: number;
   intakeSummary: string;
 }): Promise<WeekAdjustment | { error: string }> {
-  const client = getGeminiClient();
-  if (!client) {
-    return { error: "AI is not configured (missing GEMINI_API_KEY)" };
-  }
-  const model = getGeminiModel();
-
   const prompt = [
     `You are adjusting ONE week of an existing training plan after a weekly review.`,
     `Plan context: ${input.intakeSummary || "unknown"}.`,
@@ -53,54 +47,50 @@ export async function generateWeekAdjustment(input: {
     `- summary: at most 2 sentences explaining what changed and why, in plain language.`,
   ].join("\n");
 
-  try {
-    const response = await client.models.generateContent({
-      model,
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            summary: { type: Type.STRING },
-            items: {
-              type: Type.ARRAY,
-              items: {
+  const result = await generateJsonText({
+    prompt,
+    schema: {
+      type: Type.OBJECT,
+      properties: {
+        summary: { type: Type.STRING },
+        items: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              week: { type: Type.INTEGER },
+              day_of_week: { type: Type.INTEGER },
+              item_type: {
+                type: Type.STRING,
+                enum: ["run", "strength", "stretch", "recovery", "meal_note"],
+              },
+              title: { type: Type.STRING },
+              details: {
                 type: Type.OBJECT,
                 properties: {
-                  week: { type: Type.INTEGER },
-                  day_of_week: { type: Type.INTEGER },
-                  item_type: {
-                    type: Type.STRING,
-                    enum: [
-                      "run",
-                      "strength",
-                      "stretch",
-                      "recovery",
-                      "meal_note",
-                    ],
-                  },
-                  title: { type: Type.STRING },
-                  details: {
-                    type: Type.OBJECT,
-                    properties: {
-                      distance_km: { type: Type.NUMBER, nullable: true },
-                      pace_min_km: { type: Type.STRING, nullable: true },
-                      duration_min: { type: Type.NUMBER, nullable: true },
-                      notes: { type: Type.STRING, nullable: true },
-                    },
-                  },
+                  distance_km: { type: Type.NUMBER, nullable: true },
+                  pace_min_km: { type: Type.STRING, nullable: true },
+                  duration_min: { type: Type.NUMBER, nullable: true },
+                  notes: { type: Type.STRING, nullable: true },
                 },
-                required: ["week", "day_of_week", "item_type", "title"],
               },
             },
+            required: ["week", "day_of_week", "item_type", "title"],
           },
-          required: ["summary", "items"],
         },
       },
-    });
+      required: ["summary", "items"],
+    },
+  });
 
-    const raw = JSON.parse(response.text ?? "{}") as {
+  if (!result) {
+    return {
+      error: "AI adjustment is temporarily unavailable — try again later",
+    };
+  }
+
+  try {
+    const raw = JSON.parse(result.text) as {
       summary?: unknown;
       items?: unknown;
     };
@@ -119,7 +109,7 @@ export async function generateWeekAdjustment(input: {
     }
     return { items, summary };
   } catch (error) {
-    console.error("Week adjustment generation failed:", error);
+    console.error("Week adjustment parse failed:", error);
     return {
       error: "AI adjustment is temporarily unavailable — try again later",
     };
