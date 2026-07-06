@@ -19,6 +19,7 @@ import {
 } from "./components/measurements-section";
 import { GoalsSection } from "./components/goals-section";
 import { getGoalsWithProgress } from "@/lib/goals-data";
+import { settleUserStreak } from "@/lib/streak-data";
 import {
   BodyPhotosSection,
   type BodyPhotoItem,
@@ -56,6 +57,8 @@ export default async function ProfilePage() {
   }
 
   const supabase = await createClient();
+  // Settle any un-evaluated past days (streak/hearts) before reading profile.
+  await settleUserStreak(supabase);
 
   const [
     { data: profile, error: profileError },

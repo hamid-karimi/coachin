@@ -26,6 +26,7 @@ import { canCoach } from "@/lib/roles";
 import { tierFromLeague } from "@/lib/tiers";
 import { getCoachingSummary } from "@/app/coaching/lib/coaching-hub-data";
 import { getGoalsWithProgress } from "@/lib/goals-data";
+import { settleUserStreak } from "@/lib/streak-data";
 import { weeksSince } from "@/lib/dates";
 import { GOAL_TYPE_META } from "@/lib/goals";
 import { Progress } from "@/components/ui/progress";
@@ -61,6 +62,8 @@ export default async function Dashboard() {
   }
 
   const supabase = await createClient();
+  // Settle any un-evaluated past days (streak/hearts) before reading profile.
+  await settleUserStreak(supabase);
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("*")

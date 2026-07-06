@@ -15,6 +15,10 @@ The dashboard is the daily execution surface where users see today's plan and lo
 - Prevents duplicate completion by checking existing logs for today.
 - Updates XP and level after successful workout logging.
 - Uses confetti on successful completion.
+- On load, settles the personal streak/hearts up to yesterday via
+  `settleUserStreak` → `evaluate_user_streak` RPC (rules in `FORMULAS.md` §2).
+  The profile page settles the same way. League tier is derived from XP by a DB
+  trigger (`FORMULAS.md` §3), so `profiles.league_tier` is always current.
 
 ## Notifications and Language
 
