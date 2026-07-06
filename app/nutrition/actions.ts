@@ -289,8 +289,10 @@ export async function confirmPhotoMealsAction(
         sugar_g: Math.max(0, Number(item.sugar_g) || 0),
         fiber_g: Math.max(0, Number(item.fiber_g) || 0),
         sodium_mg: Math.max(0, Number(item.sodium_mg) || 0),
-        entry_method: "photo",
-        photo_estimate: item,
+        // Items added via food search in the review step are search-logged, not
+        // photo-detected; only true photo estimates keep the photo snapshot.
+        entry_method: item.source === "search" ? "search" : "photo",
+        photo_estimate: item.source === "search" ? null : item,
       })
       .select("id")
       .single();

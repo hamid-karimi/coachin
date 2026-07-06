@@ -16,6 +16,12 @@ export type MealEstimateItem = {
   sugar_g: number;
   fiber_g: number;
   sodium_mg: number;
+  /**
+   * Where the review item came from. AI photo estimates omit it (treated as
+   * "photo" on save); items the user adds via food search in the review step
+   * carry "search" so they aren't mislabeled as photo-detected.
+   */
+  source?: "photo" | "search";
 };
 
 export async function estimateMealFromPhoto(
