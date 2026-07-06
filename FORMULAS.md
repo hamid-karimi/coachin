@@ -52,9 +52,29 @@ level = floor(totalXp / 1000) + 1
 
 ## 2. Streaks
 
-### Personal streak
-Stored on `profiles.current_streak` / `best_streak`. (Daily evaluation not yet a formula
-here — logged for completeness; update this section when the scheduled job lands.)
+### Personal streak + hearts
+**Source of truth:** `lib/streak.ts` (`nextStreakState`, unit-tested in `lib/streak.test.ts`),
+mirrored by `evaluate_user_streak` in `supabase/migrations/20260706110000_streak_and_league.sql`.
+
+Stored on `profiles.current_streak` / `best_streak` / `hearts` (0–**3**), settled lazily up
+to **yesterday** on dashboard/profile load (`streak_evaluated_date` tracks progress; first
+run settles only yesterday, so history before the mechanic isn't punished). Today's
+completion extends the streak at the next day's settle.
+
+Per settled day, given whether the user **trained** (a completed log that day) and whether
+it was a **required day** (a routine scheduled that weekday *or* a non-`meal_note` plan item
+on that date):
+
+| Day | Effect |
+|---|---|
+| Trained | `streak += 1`; `best = max(best, streak)`; `hearts = min(hearts + 1, 3)` |
+| Rest day (not required, not trained) | nothing changes — **streak safe** |
+| Missed a required day, `hearts > 0` | `hearts -= 1` — streak **frozen** (not reset) |
+| Missed a required day, `hearts == 0` | `streak = 0`; `hearts = 3` (reset + refill) |
+
+- **Max hearts = 3.** A trained day regains one (capped). Logging on a rest day still
+  counts as trained (extends the streak).
+- It takes **3 misses to empty hearts, a 4th to reset** the streak.
 
 ### Group streak
 **Source of truth:** `evaluate_group_streak` in `supabase/migrations/20260705140000_training_groups.sql`.
@@ -74,12 +94,23 @@ here — logged for completeness; update this section when the scheduled job lan
 
 ## 3. Leagues / Tiers
 
-**Source of truth:** `lib/tiers.ts` (display mapping), `profiles.league_tier` (stored value).
+**Source of truth:** `lib/tiers.ts` (`leagueTierFromXp` + `LEAGUE_TIER_MIN_XP`, unit-tested),
+mirrored by `league_tier_for_xp` in `supabase/migrations/20260706110000_streak_and_league.sql`.
 
 - Tiers, low→high: `bronze → silver → gold → platinum`.
-- `tierFromLeague()` normalizes the stored string; unknown/missing → **`bronze`**.
-- Tier *assignment* is a stored column, not yet a computed formula. When tier promotion
-  rules are implemented, document the thresholds here.
+- **Tier from lifetime XP (cumulative thresholds — only ever goes up):**
+
+  | Tier | Min lifetime XP |
+  |---|---|
+  | bronze | **0** |
+  | silver | **5,000** |
+  | gold | **20,000** |
+  | platinum | **50,000** |
+
+- `profiles.league_tier` is kept in lockstep with `xp` by a DB trigger (`sync_league_tier`,
+  fires on `xp` change), so the leaderboard — which reads the stored column — is always
+  correct. `tierFromLeague()` maps that stored string to the badge union; unknown/missing
+  → **`bronze`**.
 
 ---
 
