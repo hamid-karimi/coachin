@@ -58,6 +58,8 @@ function foodToReviewItem(food: FoodResult, grams: number): MealEstimateItem {
     sugar_g: Math.round((food.sugar_g ?? 0) * factor),
     fiber_g: Math.round((food.fiber_g ?? 0) * factor),
     sodium_mg: Math.round((food.sodium_mg ?? 0) * factor),
+    // Added by hand from food search — not detected from the photo.
+    source: "search",
   };
 }
 
