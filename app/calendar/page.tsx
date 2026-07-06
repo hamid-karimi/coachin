@@ -7,6 +7,7 @@ import {
   ChevronRight,
   Dumbbell,
   Footprints,
+  Pencil,
   Repeat,
   Sparkles,
 } from "lucide-react";
@@ -15,6 +16,7 @@ import { createClient, getUser } from "@/lib/supabase/server";
 import { canCoach } from "@/lib/roles";
 import { mondayOf, planWeekForDate, toLocalYMD } from "@/lib/dates";
 import { AppShell } from "@/components/design-system/app-shell";
+import { Button } from "@/components/ui/button";
 import { SportIcon } from "@/components/design-system/sport-chip";
 import { sportFromName } from "@/lib/sports";
 import { cn } from "@/lib/utils";
@@ -146,14 +148,32 @@ export default async function CalendarPage({
   return (
     <AppShell coachNav={coachNav}>
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
-        <div>
-          <h1 className="text-foreground font-display text-2xl font-bold tracking-tight md:text-[28px]">
-            Calendar
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            Your recurring routine, active plan, and logged workouts on real
-            dates.
-          </p>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h1 className="text-foreground font-display text-2xl font-bold tracking-tight md:text-[28px]">
+              Calendar
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              Your recurring routine, active plan, and logged workouts on real
+              dates.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button asChild variant="outline" size="sm">
+              <Link href="/onboarding">
+                <Pencil aria-hidden />
+                Edit routine
+              </Link>
+            </Button>
+            {plan && (
+              <Button asChild variant="outline" size="sm">
+                <Link href="/training">
+                  <Sparkles aria-hidden />
+                  Plan
+                </Link>
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Week navigation */}

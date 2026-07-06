@@ -3,7 +3,7 @@
 import * as React from "react";
 import {
   Home,
-  CalendarDays,
+  CalendarRange,
   Users,
   GraduationCap,
   CircleUser,
@@ -27,8 +27,11 @@ const ITEMS: {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
 }[] = [
+  // Mobile bottom bar: the daily-use surfaces. "Calendar" is the gateway to
+  // the training plan + routine; the routine editor (/onboarding) is reached
+  // from there and from the desktop sidebar's "Plan" item.
   { key: "home", label: "Today", icon: Home },
-  { key: "plan", label: "Plan", icon: CalendarDays },
+  { key: "calendar", label: "Calendar", icon: CalendarRange },
   { key: "nutrition", label: "Meals", icon: UtensilsCrossed },
   { key: "community", label: "Community", icon: Users },
   { key: "coaching", label: "Coaching", icon: GraduationCap },
