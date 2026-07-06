@@ -9,7 +9,6 @@ import {
 } from "react";
 import {
   Camera,
-  Globe,
   Loader2,
   PencilLine,
   Plus,
@@ -23,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { compressImage } from "@/lib/client-image";
+import { toGrams, type FoodUnit } from "@/lib/food-units";
 import type { MealEstimateItem } from "@/lib/ai/nutrition";
 import type { FoodResult } from "../api/foods/route";
 import {
@@ -31,6 +31,8 @@ import {
   logMealAction,
   type NutritionActionState,
 } from "../actions";
+import { FoodSearchField } from "./food-search-field";
+import { UnitSelect } from "./unit-select";
 
 const initialState: NutritionActionState = {};
 
@@ -42,6 +44,19 @@ const MEAL_TYPES = [
 ] as const;
 
 type Mode = "search" | "manual" | "photo";
+
+/** Scale a per-100g food into a review item at the given gram amount. */
+function foodToReviewItem(food: FoodResult, grams: number): MealEstimateItem {
+  const factor = grams / 100;
+  return {
+    name: food.name,
+    est_quantity_g: Math.round(grams),
+    est_kcal: Math.round(food.kcal_per_100g * factor),
+    protein_g: Math.round((food.protein_g ?? 0) * factor),
+    carbs_g: Math.round((food.carbs_g ?? 0) * factor),
+    fat_g: Math.round((food.fat_g ?? 0) * factor),
+  };
+}
 
 export function MealLogger({ hasUsda }: { hasUsda: boolean }) {
   const [mode, setMode] = useState<Mode>("search");
@@ -64,79 +79,18 @@ export function MealLogger({ hasUsda }: { hasUsda: boolean }) {
   useActionToast(confirmState);
 
   // --- search mode state ---
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState<FoodResult[]>([]);
-  const [searching, setSearching] = useState(false);
   const [picked, setPicked] = useState<FoodResult | null>(null);
-  const sequenceRef = useRef(0);
-
-  useEffect(() => {
-    const trimmed = query.trim();
-    if (trimmed.length < 2 || picked) {
-      return;
-    }
-    const controller = new AbortController();
-    const sequence = ++sequenceRef.current;
-    const timeout = window.setTimeout(async () => {
-      try {
-        setSearching(true);
-        const response = await fetch(
-          `/nutrition/api/foods?q=${encodeURIComponent(trimmed)}`,
-          { signal: controller.signal, cache: "no-store" },
-        );
-        if (!response.ok) throw new Error("search failed");
-        const payload = (await response.json()) as { foods?: FoodResult[] };
-        if (sequence === sequenceRef.current) {
-          setResults(payload.foods ?? []);
-        }
-      } catch (error) {
-        if ((error as Error).name !== "AbortError") {
-          toast.error("Food search failed — try again");
-        }
-      } finally {
-        setSearching(false);
-      }
-    }, 250);
-    return () => {
-      controller.abort();
-      window.clearTimeout(timeout);
-    };
-  }, [query, picked]);
-
-  const searchUsda = async () => {
-    const trimmed = query.trim();
-    if (trimmed.length < 2) return;
-    try {
-      setSearching(true);
-      const response = await fetch(
-        `/nutrition/api/foods?q=${encodeURIComponent(trimmed)}&remote=1`,
-        { cache: "no-store" },
-      );
-      const payload = (await response.json()) as {
-        foods?: FoodResult[];
-        error?: string;
-      };
-      if (!response.ok) {
-        toast.error(payload.error ?? "USDA search failed");
-        return;
-      }
-      if (!payload.foods || payload.foods.length === 0) {
-        toast.info("No USDA matches either — add it manually");
-        return;
-      }
-      setResults(payload.foods);
-    } finally {
-      setSearching(false);
-    }
-  };
+  const [amount, setAmount] = useState(100);
+  const [unit, setUnit] = useState<FoodUnit>("g");
+  const grams = toGrams(amount, unit);
 
   // Clear picked food after a successful log.
   const lastLogRef = useRef<NutritionActionState>(initialState);
   useEffect(() => {
     if (logState !== lastLogRef.current && logState.success) {
       setPicked(null);
-      setQuery("");
-      setResults([]);
+      setAmount(100);
+      setUnit("g");
     }
     lastLogRef.current = logState;
   }, [logState]);
@@ -198,6 +152,9 @@ export function MealLogger({ hasUsda }: { hasUsda: boolean }) {
     );
   };
 
+  const appendReviewItem = (item: MealEstimateItem) =>
+    setReviewItems((current) => [...(current ?? []), item]);
+
   const busy = logging || estimating || confirming || isPreparing;
 
   return (
@@ -249,47 +206,7 @@ export function MealLogger({ hasUsda }: { hasUsda: boolean }) {
       {mode === "search" && (
         <div className="space-y-3">
           {!picked ? (
-            <div className="space-y-2">
-              <Input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search foods — e.g. chicken breast"
-                type="search"
-                autoComplete="off"
-              />
-              {searching && (
-                <p className="text-muted-foreground text-xs">Searching…</p>
-              )}
-              {results.length > 0 && (
-                <ul className="border-border divide-border divide-y rounded-lg border">
-                  {results.map((food, index) => (
-                    <li key={food.id ?? `usda-${index}`}>
-                      <button
-                        type="button"
-                        onClick={() => setPicked(food)}
-                        className="hover:bg-secondary flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm transition-colors"
-                      >
-                        <span className="min-w-0 truncate">{food.name}</span>
-                        <span className="text-muted-foreground shrink-0 text-xs">
-                          {Math.round(food.kcal_per_100g)} kcal/100g
-                        </span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {query.trim().length >= 2 && !searching && hasUsda && (
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={searchUsda}
-                >
-                  <Globe aria-hidden />
-                  Search USDA database
-                </Button>
-              )}
-            </div>
+            <FoodSearchField onPick={setPicked} hasUsda={hasUsda} />
           ) : (
             <form action={logAction} className="flex flex-wrap items-end gap-3">
               <input type="hidden" name="meal_type" value={mealType} />
@@ -302,25 +219,30 @@ export function MealLogger({ hasUsda }: { hasUsda: boolean }) {
                   value={JSON.stringify(picked)}
                 />
               )}
+              <input type="hidden" name="quantity_g" value={grams} />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">{picked.name}</p>
                 <p className="text-muted-foreground text-xs">
-                  {Math.round(picked.kcal_per_100g)} kcal/100g
+                  {Math.round(picked.kcal_per_100g)} kcal/100g · {grams}g
                 </p>
               </div>
-              <div className="w-28 space-y-1.5">
-                <Label htmlFor="quantity_g">Grams</Label>
-                <Input
-                  id="quantity_g"
-                  name="quantity_g"
-                  type="number"
-                  min={1}
-                  max={5000}
-                  defaultValue={100}
-                  required
-                />
+              <div className="space-y-1.5">
+                <Label htmlFor="amount">Amount</Label>
+                <div className="flex items-center gap-1.5">
+                  <Input
+                    id="amount"
+                    type="number"
+                    min={0.1}
+                    step="any"
+                    value={amount}
+                    onChange={(event) => setAmount(Number(event.target.value))}
+                    className="w-24"
+                    required
+                  />
+                  <UnitSelect value={unit} onChange={setUnit} />
+                </div>
               </div>
-              <Button type="submit" variant="brand" disabled={busy}>
+              <Button type="submit" variant="brand" disabled={busy || grams <= 0}>
                 {logging ? (
                   <Loader2 className="animate-spin" aria-hidden />
                 ) : (
@@ -420,129 +342,234 @@ export function MealLogger({ hasUsda }: { hasUsda: boolean }) {
               </p>
             </div>
           ) : (
-            <form action={confirmAction} className="space-y-3">
-              <input type="hidden" name="meal_type" value={mealType} />
-              <input
-                type="hidden"
-                name="items_json"
-                value={JSON.stringify(reviewItems)}
-              />
-              <div className="border-border divide-border divide-y rounded-lg border">
-                {reviewItems.map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex flex-wrap items-center gap-2 px-3 py-2"
-                  >
-                    <Input
-                      value={item.name}
-                      placeholder="Food name"
-                      onChange={(event) =>
-                        updateReviewItem(index, { name: event.target.value })
-                      }
-                      className="h-8 min-w-32 flex-1 text-sm font-medium"
-                    />
-                    <label className="text-muted-foreground flex items-center gap-1 text-xs">
-                      <Input
-                        type="number"
-                        min={1}
-                        value={item.est_quantity_g}
-                        onChange={(event) =>
-                          updateReviewItem(index, {
-                            est_quantity_g: Number(event.target.value),
-                          })
-                        }
-                        className="h-8 w-16"
-                      />
-                      g
-                    </label>
-                    <label className="text-muted-foreground flex items-center gap-1 text-xs">
-                      <Input
-                        type="number"
-                        min={0}
-                        max={5000}
-                        value={item.est_kcal}
-                        onChange={(event) =>
-                          updateReviewItem(index, {
-                            est_kcal: Number(event.target.value),
-                          })
-                        }
-                        className="h-8 w-16"
-                      />
-                      kcal
-                    </label>
-                    <button
-                      type="button"
-                      aria-label={`Remove ${item.name || "item"}`}
-                      onClick={() =>
-                        setReviewItems((current) =>
-                          current
-                            ? current.filter((_, i) => i !== index)
-                            : current,
-                        )
-                      }
-                      className="text-muted-foreground hover:text-foreground grid size-7 place-items-center"
-                    >
-                      <X className="size-3.5" aria-hidden />
-                    </button>
-                  </div>
-                ))}
-                <div className="flex items-center justify-between px-3 py-2">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setReviewItems((current) => [
-                        ...(current ?? []),
-                        {
-                          name: "",
-                          est_quantity_g: 100,
-                          est_kcal: 0,
-                          protein_g: 0,
-                          carbs_g: 0,
-                          fat_g: 0,
-                        },
-                      ])
-                    }
-                    className="text-brand-ink inline-flex items-center gap-1 text-xs font-medium hover:underline"
-                  >
-                    <Plus className="size-3.5" aria-hidden />
-                    Add item
-                  </button>
-                  <span className="text-foreground text-sm font-semibold">
-                    Total{" "}
-                    {reviewItems.reduce(
-                      (sum, item) => sum + (Number(item.est_kcal) || 0),
-                      0,
-                    )}{" "}
-                    kcal
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  type="submit"
-                  variant="brand"
-                  disabled={busy || reviewItems.length === 0}
-                >
-                  {confirming ? (
-                    <Loader2 className="animate-spin" aria-hidden />
-                  ) : (
-                    <Plus aria-hidden />
-                  )}
-                  Save {reviewItems.length}{" "}
-                  {reviewItems.length === 1 ? "item" : "items"}
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => setReviewItems(null)}
-                >
-                  Discard
-                </Button>
-              </div>
-            </form>
+            <ReviewForm
+              mealType={mealType}
+              items={reviewItems}
+              hasUsda={hasUsda}
+              busy={busy}
+              confirming={confirming}
+              confirmAction={confirmAction}
+              onUpdate={updateReviewItem}
+              onAppend={appendReviewItem}
+              onRemove={(index) =>
+                setReviewItems((current) =>
+                  current ? current.filter((_, i) => i !== index) : current,
+                )
+              }
+              onDiscard={() => setReviewItems(null)}
+            />
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+/** Photo-estimate review + edit, with searchable add-item. */
+function ReviewForm({
+  mealType,
+  items,
+  hasUsda,
+  busy,
+  confirming,
+  confirmAction,
+  onUpdate,
+  onAppend,
+  onRemove,
+  onDiscard,
+}: {
+  mealType: string;
+  items: MealEstimateItem[];
+  hasUsda: boolean;
+  busy: boolean;
+  confirming: boolean;
+  confirmAction: (formData: FormData) => void;
+  onUpdate: (index: number, patch: Partial<MealEstimateItem>) => void;
+  onAppend: (item: MealEstimateItem) => void;
+  onRemove: (index: number) => void;
+  onDiscard: () => void;
+}) {
+  const [adding, setAdding] = useState(false);
+
+  return (
+    <form action={confirmAction} className="space-y-3">
+      <input type="hidden" name="meal_type" value={mealType} />
+      <input type="hidden" name="items_json" value={JSON.stringify(items)} />
+      <div className="border-border divide-border divide-y rounded-lg border">
+        {items.map((item, index) => (
+          <div
+            key={index}
+            className="flex flex-wrap items-center gap-2 px-3 py-2"
+          >
+            <Input
+              value={item.name}
+              placeholder="Food name"
+              onChange={(event) => onUpdate(index, { name: event.target.value })}
+              className="h-9 min-w-32 flex-1 text-sm font-medium"
+            />
+            <label className="text-muted-foreground flex items-center gap-1 text-xs">
+              <Input
+                type="number"
+                min={1}
+                value={item.est_quantity_g}
+                onChange={(event) =>
+                  onUpdate(index, {
+                    est_quantity_g: Number(event.target.value),
+                  })
+                }
+                className="h-9 w-20 min-w-16 text-right"
+              />
+              g
+            </label>
+            <label className="text-muted-foreground flex items-center gap-1 text-xs">
+              <Input
+                type="number"
+                min={0}
+                max={5000}
+                value={item.est_kcal}
+                onChange={(event) =>
+                  onUpdate(index, { est_kcal: Number(event.target.value) })
+                }
+                className="h-9 w-20 min-w-16 text-right"
+              />
+              kcal
+            </label>
+            <button
+              type="button"
+              aria-label={`Remove ${item.name || "item"}`}
+              onClick={() => onRemove(index)}
+              className="text-muted-foreground hover:text-foreground grid size-7 place-items-center"
+            >
+              <X className="size-3.5" aria-hidden />
+            </button>
+          </div>
+        ))}
+
+        {/* Searchable add-item */}
+        <div className="space-y-2 px-3 py-2">
+          {adding ? (
+            <AddItemSearch
+              hasUsda={hasUsda}
+              onAdd={(item) => {
+                onAppend(item);
+                setAdding(false);
+              }}
+              onCancel={() => setAdding(false)}
+            />
+          ) : (
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setAdding(true)}
+                className="text-brand-ink inline-flex items-center gap-1 text-xs font-medium hover:underline"
+              >
+                <Plus className="size-3.5" aria-hidden />
+                Add item
+              </button>
+              <span className="text-foreground text-sm font-semibold">
+                Total{" "}
+                {items.reduce(
+                  (sum, item) => sum + (Number(item.est_kcal) || 0),
+                  0,
+                )}{" "}
+                kcal
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <Button
+          type="submit"
+          variant="brand"
+          disabled={busy || items.length === 0}
+        >
+          {confirming ? (
+            <Loader2 className="animate-spin" aria-hidden />
+          ) : (
+            <Plus aria-hidden />
+          )}
+          Save {items.length} {items.length === 1 ? "item" : "items"}
+        </Button>
+        <Button type="button" variant="ghost" onClick={onDiscard}>
+          Discard
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+/** Search a food, choose an amount + unit, and append it as a review item. */
+function AddItemSearch({
+  hasUsda,
+  onAdd,
+  onCancel,
+}: {
+  hasUsda: boolean;
+  onAdd: (item: MealEstimateItem) => void;
+  onCancel: () => void;
+}) {
+  const [food, setFood] = useState<FoodResult | null>(null);
+  const [amount, setAmount] = useState(100);
+  const [unit, setUnit] = useState<FoodUnit>("g");
+  const grams = toGrams(amount, unit);
+
+  if (!food) {
+    return (
+      <div className="space-y-2">
+        <FoodSearchField
+          onPick={setFood}
+          hasUsda={hasUsda}
+          autoFocus
+          placeholder="Search to add — e.g. olive oil"
+        />
+        <button
+          type="button"
+          onClick={onCancel}
+          className="text-muted-foreground hover:text-foreground text-xs"
+        >
+          Cancel
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-wrap items-end gap-2">
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium">{food.name}</p>
+        <p className="text-muted-foreground text-xs">
+          {Math.round(food.kcal_per_100g)} kcal/100g · {grams}g
+        </p>
+      </div>
+      <Input
+        type="number"
+        min={0.1}
+        step="any"
+        value={amount}
+        onChange={(event) => setAmount(Number(event.target.value))}
+        aria-label="Amount"
+        className="h-9 w-20"
+      />
+      <UnitSelect value={unit} onChange={setUnit} className="h-9" />
+      <Button
+        type="button"
+        size="sm"
+        variant="brand"
+        disabled={grams <= 0}
+        onClick={() => onAdd(foodToReviewItem(food, grams))}
+      >
+        <Plus aria-hidden />
+        Add
+      </Button>
+      <button
+        type="button"
+        aria-label="Clear"
+        onClick={() => setFood(null)}
+        className="text-muted-foreground hover:text-foreground grid size-8 place-items-center"
+      >
+        <X className="size-4" aria-hidden />
+      </button>
     </div>
   );
 }
