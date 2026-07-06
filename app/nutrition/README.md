@@ -34,5 +34,11 @@ photo-review sheet before it becomes `meal_logs` rows.
 ## Data
 
 `meal_logs`: `meal_type`, `free_text`, `quantity_g`, `kcal`, `protein_g`,
-`carbs_g`, `fat_g`, `entry_method`, `date`. A `calorie_intake` goal (set on the
-profile) drives the daily progress bar and the +30 XP adherence bonus.
+`carbs_g`, `fat_g`, `sugar_g`, `fiber_g`, `sodium_mg`, `entry_method`, `date`. A
+`calorie_intake` goal (set on the profile) drives the daily progress bar and the
++30 XP adherence bonus.
+
+Nutrients tracked: calories, protein, carbs, fat (macros) plus sugar, fiber, and
+sodium. `foods` carries per-100g values (sugar/fiber/sodium nullable — USDA
+nutrient numbers 269 / 291 / 307); `meal_logs` stores the per-portion amount.
+Photo estimation and USDA/local search all populate them.

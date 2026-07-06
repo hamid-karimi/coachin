@@ -91,7 +91,9 @@ export async function logMealAction(
     }
     const { data: food } = await supabase
       .from("foods")
-      .select("id, name, kcal_per_100g, protein_g, carbs_g, fat_g")
+      .select(
+        "id, name, kcal_per_100g, protein_g, carbs_g, fat_g, sugar_g, fiber_g, sodium_mg",
+      )
       .eq("id", foodId)
       .single();
     if (!food) return { error: "Food not found" };
@@ -104,6 +106,9 @@ export async function logMealAction(
       protein_g: Math.round(food.protein_g * factor * 10) / 10,
       carbs_g: Math.round(food.carbs_g * factor * 10) / 10,
       fat_g: Math.round(food.fat_g * factor * 10) / 10,
+      sugar_g: Math.round((Number(food.sugar_g) || 0) * factor * 10) / 10,
+      fiber_g: Math.round((Number(food.fiber_g) || 0) * factor * 10) / 10,
+      sodium_mg: Math.round((Number(food.sodium_mg) || 0) * factor),
       entry_method: "search",
     };
   } else if (usdaJson) {
@@ -116,6 +121,9 @@ export async function logMealAction(
       protein_g?: number;
       carbs_g?: number;
       fat_g?: number;
+      sugar_g?: number;
+      fiber_g?: number;
+      sodium_mg?: number;
     };
     try {
       candidate = JSON.parse(usdaJson);
@@ -135,10 +143,15 @@ export async function logMealAction(
         protein_g: Math.max(0, Number(candidate.protein_g) || 0),
         carbs_g: Math.max(0, Number(candidate.carbs_g) || 0),
         fat_g: Math.max(0, Number(candidate.fat_g) || 0),
+        sugar_g: Math.max(0, Number(candidate.sugar_g) || 0),
+        fiber_g: Math.max(0, Number(candidate.fiber_g) || 0),
+        sodium_mg: Math.max(0, Number(candidate.sodium_mg) || 0),
         source: "usda",
         created_by: user.id,
       })
-      .select("id, name, kcal_per_100g, protein_g, carbs_g, fat_g")
+      .select(
+        "id, name, kcal_per_100g, protein_g, carbs_g, fat_g, sugar_g, fiber_g, sodium_mg",
+      )
       .single();
     if (foodError || !food) {
       console.error("USDA food insert failed:", foodError);
@@ -153,6 +166,9 @@ export async function logMealAction(
       protein_g: Math.round(food.protein_g * factor * 10) / 10,
       carbs_g: Math.round(food.carbs_g * factor * 10) / 10,
       fat_g: Math.round(food.fat_g * factor * 10) / 10,
+      sugar_g: Math.round((Number(food.sugar_g) || 0) * factor * 10) / 10,
+      fiber_g: Math.round((Number(food.fiber_g) || 0) * factor * 10) / 10,
+      sodium_mg: Math.round((Number(food.sodium_mg) || 0) * factor),
       entry_method: "search",
     };
   } else {
@@ -270,6 +286,9 @@ export async function confirmPhotoMealsAction(
         protein_g: Math.max(0, Number(item.protein_g) || 0),
         carbs_g: Math.max(0, Number(item.carbs_g) || 0),
         fat_g: Math.max(0, Number(item.fat_g) || 0),
+        sugar_g: Math.max(0, Number(item.sugar_g) || 0),
+        fiber_g: Math.max(0, Number(item.fiber_g) || 0),
+        sodium_mg: Math.max(0, Number(item.sodium_mg) || 0),
         entry_method: "photo",
         photo_estimate: item,
       })
