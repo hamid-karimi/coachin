@@ -8,7 +8,16 @@ import { getGeminiClient, getGeminiModel } from "./gemini";
 import type { ActivitySummary } from "@/lib/activity-parse";
 
 export type MarathonIntake = {
+  /** Discriminates plan flavors inside training_plans.intake. */
+  plan_kind: "race";
   race_date: string;
+  /** "5k" | "10k" | "half" | "full" | "ultra" | "other" */
+  race_target: string;
+  race_distance_km: number;
+  /** "new" | "recreational" | "regular" | "competitive" */
+  experience_level: string | null;
+  /** True when the runner has no PB at (or beyond) the target distance. */
+  first_time_at_distance: boolean;
   goal_time: string | null;
   weeks_total: number;
   days_per_week: number;
@@ -31,13 +40,21 @@ export type MarathonIntake = {
 export type PlanItemInput = {
   week: number;
   day_of_week: number;
-  item_type: "run" | "strength" | "stretch" | "recovery" | "meal_note";
+  item_type:
+    | "run"
+    | "strength"
+    | "stretch"
+    | "mobility"
+    | "recovery"
+    | "meal_note";
   title: string;
   details: {
     distance_km?: number;
     pace_min_km?: string;
     duration_min?: number;
     notes?: string;
+    /** YouTube SEARCH query for form videos — never a direct video URL. */
+    video_query?: string;
   };
 };
 
@@ -52,11 +69,12 @@ const ITEM_TYPES = new Set([
   "run",
   "strength",
   "stretch",
+  "mobility",
   "recovery",
   "meal_note",
 ]);
 
-function validateItems(raw: unknown): PlanItemInput[] {
+export function validateItems(raw: unknown): PlanItemInput[] {
   if (!Array.isArray(raw)) return [];
   const items: PlanItemInput[] = [];
   for (const entry of raw.slice(0, 400)) {
@@ -95,6 +113,11 @@ function validateItems(raw: unknown): PlanItemInput[] {
         notes:
           typeof details.notes === "string"
             ? details.notes.slice(0, 500)
+            : undefined,
+        video_query:
+          typeof details.video_query === "string" &&
+          details.video_query.trim() !== ""
+            ? details.video_query.trim().slice(0, 80)
             : undefined,
       },
     });
@@ -141,22 +164,38 @@ export async function generateMarathonPlan(
           .join("; ")
       : "none provided";
 
+  const experience =
+    {
+      new: "new to structured running (build from walk/run basics, prioritize consistency over speed)",
+      recreational: "recreational runner (runs casually, little structured training)",
+      regular: "regular racer (trains consistently, has raced before)",
+      competitive: "competitive runner (high volume, structured training background)",
+    }[intake.experience_level ?? ""] ?? "unknown experience level";
+
   const prompt = [
-    `Create a ${intake.weeks_total}-week marathon training plan.`,
-    `Athlete: ${athlete || "unknown"}. Training history: ${intake.training_history || "unknown"}.`,
+    `Create a ${intake.weeks_total}-week training plan for a ${intake.race_distance_km}km race (${intake.race_target}).`,
+    `Athlete: ${athlete || "unknown"}. Experience: ${experience}. Training history: ${intake.training_history || "unknown"}.`,
+    intake.first_time_at_distance
+      ? `This is the athlete's FIRST race at this distance — no PB at or beyond ${intake.race_distance_km}km. Prioritize finishing healthy over time goals; be conservative with volume and pace targets.`
+      : null,
     `PBs: ${pbs || "none"}. Current weekly volume: ${intake.weekly_km ?? "unknown"}km, longest recent run ${intake.longest_run_km ?? "unknown"}km.`,
     `Recent uploaded runs: ${recent}.`,
     `Race date: ${intake.race_date}. Goal time: ${intake.goal_time ?? "finish comfortably"}.`,
     `Injuries/limitations: ${intake.injuries || "none reported"}.`,
     `Rules:`,
     `- Exactly ${intake.days_per_week} training days per week (day_of_week: 0=Sunday..6=Saturday); remaining days get ONE recovery item.`,
-    `- Weekly structure: quality run(s), easy runs, one long run (progressing, stepback every 4th week, taper the last 2-3 weeks), strength 1-2x, stretch/mobility 1x.`,
+    `- Weekly structure: quality run(s), easy runs, one long run (progressing, stepback every 4th week, taper appropriately for the race distance), strength 1-2x, stretch 1x, and ONE mobility item (item_type "mobility": hip/ankle mobility or yoga-for-runners).`,
+    `- Scale everything to the ${intake.race_distance_km}km target: long-run peaks, interval distances, and taper length must fit the race distance and the athlete's experience level.`,
     `- Every run item: details.distance_km, details.pace_min_km (like "5:40"), short details.notes.`,
     `- Add ONE meal_note item per week (day_of_week of the long run) with practical fueling guidance in details.notes.`,
     `- Titles short and concrete ("Easy run 8k", "Intervals 6x800m", "Long run 26k").`,
+    `- Strength items must be RUNNER-SPECIFIC — hips, glutes, calves, core, with a single-leg bias — and name concrete exercises in the title (e.g. "Strength: single-leg RDL + calf raises + side plank").${intake.experience_level === "new" ? " The athlete is new: bodyweight-first strength, no barbell work." : ""}`,
+    `- Every strength, stretch and mobility item (and run items with drills) gets details.video_query: a concise English YouTube SEARCH query for exercise form (e.g. "single leg romanian deadlift form"), max 80 chars. NEVER produce a youtube.com URL or a video id — only the search words.`,
     `- Respect the athlete's current volume: never jump weekly km more than ~10%.`,
     `- summary: 2-3 sentences describing the plan's approach.`,
-  ].join("\n");
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   try {
     const response = await client.models.generateContent({
@@ -181,6 +220,7 @@ export async function generateMarathonPlan(
                       "run",
                       "strength",
                       "stretch",
+                      "mobility",
                       "recovery",
                       "meal_note",
                     ],
@@ -193,6 +233,7 @@ export async function generateMarathonPlan(
                       pace_min_km: { type: Type.STRING, nullable: true },
                       duration_min: { type: Type.NUMBER, nullable: true },
                       notes: { type: Type.STRING, nullable: true },
+                      video_query: { type: Type.STRING, nullable: true },
                     },
                   },
                 },

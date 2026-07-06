@@ -5,6 +5,8 @@ import type {
   SportTypeSummary,
   StudentRelationship,
 } from "@/app/community/types";
+import { planWeekOf } from "@/lib/dates";
+import { computeWeekScorecard } from "@/lib/scorecard";
 import {
   buildWeeklyLeaderboard,
   normalizeInviteCodes,
@@ -37,6 +39,8 @@ export type CoachingHubData = {
   weeklyXpByUserId: Map<string, number>;
   /** userId → this week's schedule adherence (logs + schedules). */
   adherenceByUserId: Map<string, TraineeAdherence>;
+  /** userId → current-week training-plan adherence % (active plans only). */
+  planAdherenceByUserId: Map<string, number>;
   /** Monday of the current week, YYYY-MM-DD (local time). */
   weekStart: string;
 };
@@ -215,6 +219,57 @@ export async function getCoachingHubData(
     });
   }
 
+  // Current-week training-plan adherence per trainee (adaptive plan Phase 3).
+  // Readable via the coach SELECT policies in 20260705160000_weekly_checkins;
+  // before that migration applies, RLS silently returns nothing and no chip
+  // renders. Uses the same deterministic math as the athlete's check-in.
+  const planAdherenceByUserId = new Map<string, number>();
+  if (traineeIds.length > 0) {
+    const { data: rawPlans } = await supabase
+      .from("training_plans")
+      .select("id, user_id, created_at, weeks_total")
+      .in("user_id", traineeIds)
+      .eq("status", "active");
+    const plans = (rawPlans ?? []) as {
+      id: string;
+      user_id: string;
+      created_at: string;
+      weeks_total: number;
+    }[];
+    if (plans.length > 0) {
+      const weekByPlanId = new Map(
+        plans.map((plan) => [
+          plan.id,
+          planWeekOf(plan.created_at, plan.weeks_total),
+        ]),
+      );
+      const { data: rawItems } = await supabase
+        .from("plan_items")
+        .select("plan_id, week, item_type, is_completed, details")
+        .in(
+          "plan_id",
+          plans.map((plan) => plan.id),
+        )
+        .in("week", Array.from(new Set(weekByPlanId.values())));
+      const itemRows = (rawItems ?? []) as {
+        plan_id: string;
+        week: number;
+        item_type: string;
+        is_completed: boolean;
+        details: Record<string, unknown> | null;
+      }[];
+      for (const plan of plans) {
+        const weekItems = itemRows.filter(
+          (row) =>
+            row.plan_id === plan.id && row.week === weekByPlanId.get(plan.id),
+        );
+        if (weekItems.length === 0) continue;
+        const scorecard = computeWeekScorecard(weekItems, []);
+        planAdherenceByUserId.set(plan.user_id, scorecard.adherence_pct);
+      }
+    }
+  }
+
   // Weekly XP only via the get_weekly_leaderboard RPC (xp_transactions is
   // RLS-blocked for other users). Skip entirely with zero trainees so the
   // total-XP fallback inside buildWeeklyLeaderboard can never widen to
@@ -241,6 +296,7 @@ export async function getCoachingHubData(
     weeklyLeaderboard,
     weeklyXpByUserId,
     adherenceByUserId,
+    planAdherenceByUserId,
     weekStart,
   };
 }

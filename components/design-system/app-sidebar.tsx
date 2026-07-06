@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 import {
   Home,
   CalendarDays,
+  CalendarHeart,
+  CalendarRange,
   Users,
   GraduationCap,
   CircleUser,
@@ -23,6 +25,8 @@ export function routeFor(key: NavKey): string {
       return "/dashboard";
     case "plan":
       return "/onboarding";
+    case "training":
+      return "/training";
     case "nutrition":
       return "/nutrition";
     case "community":
@@ -31,12 +35,15 @@ export function routeFor(key: NavKey): string {
       return "/coaching";
     case "profile":
       return "/profile";
+    default:
+      return "/dashboard";
   }
 }
 
 /** Derive the active NavKey from the current pathname. */
 export function keyFromPath(pathname: string | null): NavKey {
   if (pathname?.startsWith("/onboarding")) return "plan";
+  if (pathname?.startsWith("/training")) return "training";
   if (pathname?.startsWith("/nutrition")) return "nutrition";
   if (pathname?.startsWith("/community")) return "community";
   if (pathname?.startsWith("/coaching")) return "coaching";
@@ -51,6 +58,8 @@ const ITEMS: {
 }[] = [
   { key: "home", label: "Today", icon: Home },
   { key: "plan", label: "Plan", icon: CalendarDays },
+  { key: "training", label: "Training", icon: CalendarHeart },
+  { key: "calendar", label: "Calendar", icon: CalendarRange },
   { key: "nutrition", label: "Nutrition", icon: UtensilsCrossed },
   { key: "community", label: "Community", icon: Users },
   { key: "coaching", label: "Coaching", icon: GraduationCap },

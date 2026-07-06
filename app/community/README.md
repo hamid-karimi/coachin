@@ -8,27 +8,30 @@ The `community` module contains social features, coaching workflows, and leaderb
   - `Global League`: weekly app-wide ranking from `xp_transactions`
   - `My Club`: ranking for members of the user's primary club
   - `My Circle`: ranking for followed users (`social_graph`)
-- **Coaching (trainee side only)**
-  - List my coaches
-  - Connect to a coach via invite code
-  - Coach-side tools (trainee roster, invite codes, plan assignment) live in
-    the dedicated hub at `app/coaching` — see its README
 - **Club Management**
   - Create club
   - Join by invite code
   - Leave club
   - Set primary club
-- **Friends Management**
-  - Following list
-  - User search + follow/unfollow
+- **Circle (friends + my coaches)**
+  - Following list, user search + follow/unfollow
+  - Trainee-side coaching: list my coaches, connect via invite code
+    (the dedicated Coaching tab was removed; coach-side tools live in
+    the `app/coaching` hub — see its README)
+- **Group Streaks**
+  - Create a group / join by invite code (2–10 members, RPC-only writes)
+  - Shared streak: grows and pays every member bonus XP on days when
+    everyone logged a workout; a skipper freezes (never resets) it
+  - Member roster with trained-today dots + weekly XP ranking
 
 ## Main Files
 
 - `app/community/layout.tsx`: shared shell, header, and tab bar for all segments
-- `app/community/{boards,coaching,clubs,circle}/page.tsx`: per-segment pages
-- `app/community/page.tsx`: legacy redirector mapping old `?tab=` URLs to segments
-- `app/community/actions.ts`: server actions for social/coaching operations
-- `app/community/lib/{boards,coaching,clubs,circle}-data.ts`: per-segment data loading
+- `app/community/{boards,clubs,circle,groups}/page.tsx`: per-segment pages
+- `app/community/page.tsx` + `coaching/page.tsx`: legacy redirectors
+  (old `?tab=` URLs and the removed Coaching tab → Circle)
+- `app/community/actions.ts` + `groups/actions.ts`: server actions
+- `app/community/lib/{boards,coaching,clubs,circle,groups}-data.ts`: per-segment data loading
 - `app/community/lib/normalizers.ts`: shared query normalizers and leaderboard builder
 - `app/community/components/*`: UI components
 - `app/community/api/discover/route.ts`: discover search endpoint

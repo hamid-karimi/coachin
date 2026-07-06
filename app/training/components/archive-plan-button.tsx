@@ -22,7 +22,7 @@ export function ArchivePlanButton({ planId }: { planId: string }) {
       <Button
         type="button"
         size="sm"
-        variant="destructive-outline"
+        variant="outline"
         onClick={() => setOpen(true)}
       >
         Archive plan
@@ -32,6 +32,7 @@ export function ArchivePlanButton({ planId }: { planId: string }) {
         title="Archive this plan?"
         description="Progress is kept, but the plan stops showing on your dashboard. You can generate a new one anytime."
         confirmLabel="Archive"
+        confirmVariant="success"
         pending={pending}
         onCancel={() => setOpen(false)}
         onConfirm={() => {

@@ -72,9 +72,19 @@ export async function addScheduleItem(
     const sportId = formData.get("sport_type_id");
     const dayOfWeek = formData.get("day_of_week");
     const time = formData.get("time"); // HH:MM
+    const endsOnRaw = String(formData.get("ends_on") ?? "").trim();
 
     if (!sportId || !dayOfWeek) {
       return { error: "Please fill in all required fields." };
+    }
+
+    let endsOn: string | null = null;
+    if (endsOnRaw) {
+      const parsed = new Date(`${endsOnRaw}T00:00:00`);
+      if (Number.isNaN(parsed.getTime())) {
+        return { error: "Enter a valid 'repeat until' date." };
+      }
+      endsOn = endsOnRaw;
     }
 
     const insertData = {
@@ -82,6 +92,7 @@ export async function addScheduleItem(
       sport_type_id: Number(sportId),
       day_of_week: Number(dayOfWeek),
       time: time ? String(time) : null,
+      ends_on: endsOn,
     };
 
     console.log("📝 Attempting to insert:", insertData);

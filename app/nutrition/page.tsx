@@ -134,9 +134,18 @@ export default async function NutritionPage() {
           MEAL_ORDER.map((type) => {
             const typeLogs = meals.filter((log) => log.meal_type === type);
             if (typeLogs.length === 0) return null;
+            const typeKcal = typeLogs.reduce(
+              (sum, log) => sum + Number(log.kcal),
+              0,
+            );
             return (
               <section key={type} className="space-y-2">
-                <h2 className="text-overline">{MEAL_LABELS[type]}</h2>
+                <h2 className="text-overline flex items-center justify-between">
+                  <span>{MEAL_LABELS[type]}</span>
+                  <span className="text-muted-foreground normal-case">
+                    {Math.round(typeKcal).toLocaleString()} kcal
+                  </span>
+                </h2>
                 <div className="bg-card border-border divide-border divide-y rounded-xl border px-4">
                   {typeLogs.map((log) => (
                     <MealRow key={log.id} log={log} />

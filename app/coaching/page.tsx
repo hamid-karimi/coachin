@@ -41,6 +41,7 @@ export default async function CoachingHubPage() {
     weeklyLeaderboard,
     weeklyXpByUserId,
     adherenceByUserId,
+    planAdherenceByUserId,
     weekStart,
   } = await getCoachingHubData(supabase, user.id);
 
@@ -69,6 +70,7 @@ export default async function CoachingHubPage() {
           students={students}
           weeklyXpByUserId={weeklyXpByUserId}
           adherenceByUserId={adherenceByUserId}
+          planAdherenceByUserId={planAdherenceByUserId}
           weekStart={weekStart}
         />
 
