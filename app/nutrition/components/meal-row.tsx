@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { Loader2, X } from "lucide-react";
+import { Camera, Loader2, X } from "lucide-react";
 
 import { useActionToast } from "@/components/hooks/use-action-toast";
 import { deleteMealLogAction, type NutritionActionState } from "../actions";
@@ -33,16 +33,19 @@ export function MealRow({ log }: { log: MealLog }) {
   return (
     <div className="flex items-center justify-between gap-3 py-2.5">
       <div className="min-w-0">
-        <p className="text-foreground truncate text-sm font-medium">
-          {log.free_text ?? "Meal"}
+        <p className="text-foreground flex items-center gap-1.5 text-sm font-medium">
+          <span className="truncate">{log.free_text ?? "Meal"}</span>
           {log.entry_method === "photo" && (
-            <span className="text-muted-foreground text-xs"> · photo</span>
+            <Camera
+              className="text-muted-foreground size-3.5 shrink-0"
+              aria-label="Logged from a photo"
+            />
           )}
         </p>
         <p className="text-muted-foreground text-xs">
           {log.quantity_g ? `${Math.round(log.quantity_g)}g · ` : ""}
-          {Math.round(log.protein_g)}P · {Math.round(log.carbs_g)}C ·{" "}
-          {Math.round(log.fat_g)}F
+          {Math.round(log.protein_g)}g protein · {Math.round(log.carbs_g)}g
+          carbs · {Math.round(log.fat_g)}g fat
           {Number(log.sugar_g) > 0
             ? ` · ${Math.round(log.sugar_g)}g sugar`
             : ""}

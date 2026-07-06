@@ -28,7 +28,10 @@ export default function OnboardingPage() {
 
   // Form states
   const [addState, addAction] = useActionState(addScheduleItem, {});
-  const [deleteState, deleteAction] = useActionState(deleteScheduleItem, {});
+  const [deleteState, deleteAction, deletePending] = useActionState(
+    deleteScheduleItem,
+    {},
+  );
   const [completeState, completeAction] = useActionState(
     completeOnboarding,
     {},
@@ -93,11 +96,7 @@ export default function OnboardingPage() {
         schedules={schedules}
         planItems={planItems}
         deleteAction={deleteAction}
-        onDeleteClick={(scheduleId, action) => {
-          const formData = new FormData();
-          formData.append("scheduleId", scheduleId);
-          action(formData);
-        }}
+        isDeleting={deletePending}
       />
 
       <CompleteOnboardingButton

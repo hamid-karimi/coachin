@@ -29,7 +29,9 @@ The onboarding flow helps users build their recurring weekly workout schedule.
    day; tapping an AI plan card opens `PlanSessionSheet` (a bottom sheet on
    mobile, a centered dialog on desktop). The plan is read-only here — it is
    edited in `/training`.
-5. Completion redirects to dashboard.
+5. Removing a routine session opens a `ConfirmDialog` first; confirming runs the
+   delete inside its transition (required for the `useActionState` dispatch).
+6. Completion redirects to dashboard.
 
 Shared helpers: `lib/week-days.ts` (Monday-first day list, used by the form and
 the agenda) and `lib/plan-items.ts` (`item_type` → human label).
