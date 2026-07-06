@@ -17,6 +17,7 @@ goal, and earn XP for the habit.
     search mode and the photo-review "add item")
   - `unit-select.tsx`: household amount-unit dropdown
   - `meal-row.tsx`: a single logged meal
+  - `nutrition-trends.tsx`: weekly + monthly rollup cards (week kcal bar chart)
 
 ## Units
 
@@ -42,3 +43,11 @@ Nutrients tracked: calories, protein, carbs, fat (macros) plus sugar, fiber, and
 sodium. `foods` carries per-100g values (sugar/fiber/sodium nullable — USDA
 nutrient numbers 269 / 291 / 307); `meal_logs` stores the per-portion amount.
 Photo estimation and USDA/local search all populate them.
+
+## Trends
+
+The page fetches the last 30 days of `meal_logs` and `lib/nutrition-trends.ts`
+(pure, unit-tested) aggregates them by day into weekly (7-day) and monthly
+(30-day) summaries — averaged over *logged* days so gaps don't skew the number.
+Rendered as two rollup cards, the weekly one with a per-day kcal bar chart
+(goal line when a `calorie_intake` goal is set).
