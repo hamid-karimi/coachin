@@ -4,7 +4,7 @@
  * designs meals that hit them. The user reviews the plan before it drives goals.
  */
 import { Type } from "@google/genai";
-import { getGeminiClient, getGeminiModel } from "./gemini";
+import { generateJsonText } from "./text-json";
 import type { NutritionGoal, NutritionTargets } from "@/lib/nutrition-targets";
 
 export interface MealPlanIntake {
@@ -42,11 +42,6 @@ const num = (value: unknown) => Math.max(0, Math.round(Number(value) || 0));
 export async function generateMealPlan(
   intake: MealPlanIntake,
 ): Promise<GeneratedMealItem[] | { error: string }> {
-  const client = getGeminiClient();
-  if (!client) {
-    return { error: "AI is not configured (missing GEMINI_API_KEY)" };
-  }
-
   const { targets } = intake;
   const prompt = [
     `Design a 7-day meal plan (day_of_week 0=Sunday … 6=Saturday) with ${intake.meals_per_day} meals per day.`,
@@ -67,54 +62,53 @@ export async function generateMealPlan(
     .filter(Boolean)
     .join("\n");
 
-  try {
-    const response = await client.models.generateContent({
-      model: getGeminiModel(),
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            items: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  day_of_week: { type: Type.NUMBER },
-                  meal_type: { type: Type.STRING },
-                  title: { type: Type.STRING },
-                  ingredients: {
-                    type: Type.ARRAY,
-                    items: {
-                      type: Type.OBJECT,
-                      properties: {
-                        name: { type: Type.STRING },
-                        qty: { type: Type.STRING },
-                      },
-                      required: ["name"],
-                    },
+  const result = await generateJsonText({
+    prompt,
+    schema: {
+      type: Type.OBJECT,
+      properties: {
+        items: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              day_of_week: { type: Type.NUMBER },
+              meal_type: { type: Type.STRING },
+              title: { type: Type.STRING },
+              ingredients: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    name: { type: Type.STRING },
+                    qty: { type: Type.STRING },
                   },
-                  recipe: { type: Type.STRING },
-                  video_query: { type: Type.STRING },
-                  kcal: { type: Type.NUMBER },
-                  protein_g: { type: Type.NUMBER },
-                  carbs_g: { type: Type.NUMBER },
-                  fat_g: { type: Type.NUMBER },
-                  sugar_g: { type: Type.NUMBER },
-                  fiber_g: { type: Type.NUMBER },
-                  sodium_mg: { type: Type.NUMBER },
+                  required: ["name"],
                 },
-                required: ["day_of_week", "meal_type", "title", "kcal"],
               },
+              recipe: { type: Type.STRING },
+              video_query: { type: Type.STRING },
+              kcal: { type: Type.NUMBER },
+              protein_g: { type: Type.NUMBER },
+              carbs_g: { type: Type.NUMBER },
+              fat_g: { type: Type.NUMBER },
+              sugar_g: { type: Type.NUMBER },
+              fiber_g: { type: Type.NUMBER },
+              sodium_mg: { type: Type.NUMBER },
             },
+            required: ["day_of_week", "meal_type", "title", "kcal"],
           },
-          required: ["items"],
         },
       },
-    });
+      required: ["items"],
+    },
+  });
 
-    const parsed = JSON.parse(response.text ?? "{}") as { items?: unknown };
+  if (!result)
+    return { error: "AI is temporarily unavailable — try again later" };
+
+  try {
+    const parsed = JSON.parse(result.text) as { items?: unknown };
     if (!Array.isArray(parsed.items)) return [];
 
     const items = parsed.items
@@ -157,7 +151,7 @@ export async function generateMealPlan(
 
     return items;
   } catch (error) {
-    console.error("Meal-plan generation failed:", error);
+    console.error("Meal-plan parse failed:", error);
     return { error: "AI is temporarily unavailable — try again later" };
   }
 }

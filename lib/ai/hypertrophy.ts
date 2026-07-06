@@ -4,7 +4,7 @@
  * come from lib/ai/marathon.ts — one schema, never forked (plan guard).
  */
 import { Type } from "@google/genai";
-import { getGeminiClient, getGeminiModel } from "./gemini";
+import { generateJsonText } from "./text-json";
 import {
   validateItems,
   type GeneratedPlan,
@@ -41,12 +41,6 @@ const EQUIPMENT_RULES: Record<string, string> = {
 export async function generateHypertrophyPlan(
   intake: HypertrophyIntake,
 ): Promise<GeneratedPlan | { error: string }> {
-  const client = getGeminiClient();
-  if (!client) {
-    return { error: "AI is not configured (missing GEMINI_API_KEY)" };
-  }
-  const model = getGeminiModel();
-
   const athlete = [
     intake.age ? `age ${intake.age}` : null,
     intake.sex,
@@ -82,53 +76,57 @@ export async function generateHypertrophyPlan(
     .filter(Boolean)
     .join("\n");
 
-  try {
-    const response = await client.models.generateContent({
-      model,
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            summary: { type: Type.STRING },
-            items: {
-              type: Type.ARRAY,
-              items: {
+  const result = await generateJsonText({
+    prompt,
+    maxTokens: 24000,
+    schema: {
+      type: Type.OBJECT,
+      properties: {
+        summary: { type: Type.STRING },
+        items: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              week: { type: Type.INTEGER },
+              day_of_week: { type: Type.INTEGER },
+              item_type: {
+                type: Type.STRING,
+                enum: [
+                  "strength",
+                  "mobility",
+                  "stretch",
+                  "recovery",
+                  "meal_note",
+                ],
+              },
+              title: { type: Type.STRING },
+              details: {
                 type: Type.OBJECT,
                 properties: {
-                  week: { type: Type.INTEGER },
-                  day_of_week: { type: Type.INTEGER },
-                  item_type: {
-                    type: Type.STRING,
-                    enum: [
-                      "strength",
-                      "mobility",
-                      "stretch",
-                      "recovery",
-                      "meal_note",
-                    ],
-                  },
-                  title: { type: Type.STRING },
-                  details: {
-                    type: Type.OBJECT,
-                    properties: {
-                      duration_min: { type: Type.NUMBER, nullable: true },
-                      notes: { type: Type.STRING, nullable: true },
-                      video_query: { type: Type.STRING, nullable: true },
-                    },
-                  },
+                  duration_min: { type: Type.NUMBER, nullable: true },
+                  notes: { type: Type.STRING, nullable: true },
+                  video_query: { type: Type.STRING, nullable: true },
                 },
-                required: ["week", "day_of_week", "item_type", "title"],
               },
             },
+            required: ["week", "day_of_week", "item_type", "title"],
           },
-          required: ["summary", "items"],
         },
       },
-    });
+      required: ["summary", "items"],
+    },
+  });
 
-    const raw = JSON.parse(response.text ?? "{}") as {
+  if (!result) {
+    return {
+      error:
+        "AI plan generation is temporarily unavailable (quota or network) — try again later",
+    };
+  }
+
+  try {
+    const raw = JSON.parse(result.text) as {
       summary?: string;
       items?: unknown;
     };
@@ -140,10 +138,10 @@ export async function generateHypertrophyPlan(
       summary: String(raw.summary ?? "").slice(0, 1000),
       items,
       raw,
-      model,
+      model: result.model,
     };
   } catch (error) {
-    console.error("Hypertrophy plan generation failed:", error);
+    console.error("Hypertrophy plan parse failed:", error);
     return {
       error:
         "AI plan generation is temporarily unavailable (quota or network) — try again later",
