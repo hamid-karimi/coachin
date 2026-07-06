@@ -83,6 +83,18 @@ Use `components/design-system/` and `components/ui/` before writing new UI, and 
 - No config/options/generics "for later"
 - Match existing patterns before inventing new ones — search the codebase for a precedent first
 
+## Formulas are documented and authoritative
+
+Every formula, constant, and decision rule (XP, levels, streaks, leagues, Riegel/running
+math, goal progress, weekly scorecard, nutrition, plan-week dates) lives in `FORMULAS.md`
+at the repo root. It is the source of truth and stays in sync with code **both ways**:
+
+- User edits `FORMULAS.md` → update the referenced source file(s) + their `*.test.ts`.
+- You change the math in code → update `FORMULAS.md` in the same change.
+
+Never let a magic number drift from its `FORMULAS.md` entry. Before editing anything that
+computes a reward, threshold, prediction, or progress bar, read the relevant section first.
+
 ## House conventions
 
 - Files: kebab-case. Components: named exports, PascalCase

@@ -23,6 +23,14 @@ Full rules in `.claude/skills/coding-style/SKILL.md`. Read it before writing or 
 
 `pnpm exec tsc --noEmit` · `pnpm exec eslint <changed files>` · `pnpm test` — never commit on red.
 
+## Formulas — `FORMULAS.md` is authoritative
+
+All XP, streak, league, running, goal, scorecard, and date math is documented in
+[`FORMULAS.md`](FORMULAS.md). It is the **source of truth**: when the user edits a formula
+or constant there, update the referenced code to match (and its `*.test.ts`). When you
+change any of that math in code, update `FORMULAS.md` in the same change so the two never
+disagree. Read it before touching XP, streaks, tiers, goals, plans, or scorecards.
+
 ## Module docs
 
 Each `app/<module>/README.md` documents behavior — update it when you change the module.
