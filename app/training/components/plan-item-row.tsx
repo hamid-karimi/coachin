@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { planItemDetailLine, planItemVideoUrl } from "@/lib/plan-items";
 import { useActionToast } from "@/components/hooks/use-action-toast";
 import { togglePlanItemAction, type MarathonActionState } from "../actions";
 import { SessionLogSheet } from "./session-log-sheet";
@@ -102,11 +103,8 @@ export function PlanItemRow({
           day: "numeric",
         })}`
       : undefined;
-  const detailBits = [
-    item.details?.distance_km ? `${item.details.distance_km}km` : null,
-    item.details?.pace_min_km ? `@ ${item.details.pace_min_km}/km` : null,
-    item.details?.duration_min ? `${item.details.duration_min}min` : null,
-  ].filter(Boolean);
+  const detailLine = planItemDetailLine(item.details);
+  const videoUrl = planItemVideoUrl(item.details);
 
   return (
     <div className="space-y-1.5">
@@ -133,19 +131,17 @@ export function PlanItemRow({
           >
             {item.title}
           </p>
-          {detailBits.length > 0 && (
-            <p className="text-muted-foreground text-xs">
-              {detailBits.join(" · ")}
-            </p>
+          {detailLine && (
+            <p className="text-muted-foreground text-xs">{detailLine}</p>
           )}
           {item.details?.notes && (
             <p className="text-muted-foreground mt-0.5 text-xs">
               {item.details.notes}
             </p>
           )}
-          {item.details?.video_query && (
+          {videoUrl && (
             <a
-              href={`https://www.youtube.com/results?search_query=${encodeURIComponent(item.details.video_query)}`}
+              href={videoUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="text-brand-ink mt-1 inline-flex items-center gap-1 text-xs font-medium hover:underline"

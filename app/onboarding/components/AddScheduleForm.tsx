@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { SportChip } from "@/components/design-system/sport-chip";
 import { sportFromName } from "@/lib/sports";
 import { cn } from "@/lib/utils";
+import { WEEK_DAYS } from "@/lib/week-days";
 
 interface SportType {
   id: string | number;
@@ -14,18 +15,6 @@ interface SportType {
   xp_multiplier?: number;
   [key: string]: unknown;
 }
-
-// day_of_week semantics are 0=Sunday..6=Saturday (matches the DB / actions).
-// UI shows a Monday-first row, but each chip carries its real 0-6 id.
-const DAYS = [
-  { id: 1, short: "Mon" },
-  { id: 2, short: "Tue" },
-  { id: 3, short: "Wed" },
-  { id: 4, short: "Thu" },
-  { id: 5, short: "Fri" },
-  { id: 6, short: "Sat" },
-  { id: 0, short: "Sun" },
-];
 
 interface AddScheduleFormProps {
   sports: SportType[];
@@ -70,7 +59,7 @@ export function AddScheduleForm({
       <div className='flex flex-col gap-2'>
         <Label>Day</Label>
         <div className='flex gap-1.5'>
-          {DAYS.map((day) => {
+          {WEEK_DAYS.map((day) => {
             const active = dayOfWeek === day.id;
             const hasSessions = plannedDays.includes(day.id);
             return (

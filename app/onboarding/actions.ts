@@ -2,6 +2,17 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { planWeekOf } from "@/lib/dates";
+import type { PlanItemDetails } from "@/lib/plan-items";
+
+export type PlanWeekItem = {
+  id: string;
+  day_of_week: number;
+  item_type: string;
+  title: string;
+  is_completed: boolean;
+  details: PlanItemDetails | null;
+};
 
 export type OnboardingActionState = {
   error?: string;
@@ -42,6 +53,41 @@ export async function getUserSchedules() {
     return data || [];
   } catch (err) {
     console.error("Error fetching user schedules:", err);
+    return [];
+  }
+}
+
+// Fetch the active AI plan's items for the CURRENT plan week, so onboarding
+// can show today's (and this week's) generated training alongside the manual
+// routine. Read-only here — the plan is edited from /training.
+export async function getCurrentPlanWeekItems(): Promise<PlanWeekItem[]> {
+  try {
+    const supabase = await createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return [];
+
+    const { data: plan } = await supabase
+      .from("training_plans")
+      .select("id, created_at, weeks_total")
+      .eq("user_id", user.id)
+      .eq("status", "active")
+      .maybeSingle();
+    if (!plan) return [];
+
+    const week = planWeekOf(plan.created_at, plan.weeks_total);
+    const { data: items } = await supabase
+      .from("plan_items")
+      .select("id, day_of_week, item_type, title, details, is_completed")
+      .eq("plan_id", plan.id)
+      .eq("week", week)
+      .order("day_of_week");
+
+    return (items ?? []) as PlanWeekItem[];
+  } catch (err) {
+    console.error("Error fetching current plan week items:", err);
     return [];
   }
 }
