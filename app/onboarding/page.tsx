@@ -2,14 +2,13 @@
 
 import { useActionState } from "react";
 import {
-  addScheduleItem,
+  addScheduleSessions,
   deleteScheduleItem,
   completeOnboarding,
 } from "./actions";
 import {
   LoadingScreen,
   PageHeader,
-  AddScheduleForm,
   WeekAgenda,
   CompleteOnboardingButton,
   PageContainer,
@@ -27,7 +26,7 @@ export default function OnboardingPage() {
   } = useLoadData();
 
   // Form states
-  const [addState, addAction] = useActionState(addScheduleItem, {});
+  const [addState, addAction] = useActionState(addScheduleSessions, {});
   const [deleteState, deleteAction, deletePending] = useActionState(
     deleteScheduleItem,
     {},
@@ -86,15 +85,11 @@ export default function OnboardingPage() {
         description='Pick a day, pick a sport, add it. Aim for 3+ days.'
       />
 
-      <AddScheduleForm
-        sports={sports}
-        onSubmit={addAction}
-        plannedDays={plannedDays}
-      />
-
       <WeekAgenda
         schedules={schedules}
         planItems={planItems}
+        sports={sports}
+        addAction={addAction}
         deleteAction={deleteAction}
         isDeleting={deletePending}
       />
