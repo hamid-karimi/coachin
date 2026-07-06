@@ -26,10 +26,14 @@ import { canCoach } from "@/lib/roles";
 import { tierFromLeague } from "@/lib/tiers";
 import { getCoachingSummary } from "@/app/coaching/lib/coaching-hub-data";
 import { getGoalsWithProgress } from "@/lib/goals-data";
-import { weeksSince } from "@/lib/dates";
+import { planWeekForDate } from "@/lib/dates";
 import { GOAL_TYPE_META } from "@/lib/goals";
 import { Progress } from "@/components/ui/progress";
 import { WorkoutCard } from "./components/workout-card";
+import {
+  PlanItemRow,
+  type PlanItem,
+} from "@/app/training/components/plan-item-row";
 
 export const dynamic = "force-dynamic";
 
@@ -128,21 +132,24 @@ export default async function Dashboard() {
       .maybeSingle(),
   ]);
 
-  // Marathon card: today's items in the current plan week.
-  let marathonToday = 0;
+  // AI-plan sessions scheduled for today, surfaced in "Today's plan" so the
+  // plan lives in the daily flow alongside the recurring routine.
+  let planToday: PlanItem[] = [];
   let marathonWeek = 0;
   if (activePlan) {
-    marathonWeek = Math.min(
-      Math.max(weeksSince(activePlan.created_at) + 1, 1),
-      activePlan.weeks_total,
-    );
-    const { count } = await supabase
-      .from("plan_items")
-      .select("id", { count: "exact", head: true })
-      .eq("plan_id", activePlan.id)
-      .eq("week", marathonWeek)
-      .eq("day_of_week", dayIndex);
-    marathonToday = count ?? 0;
+    // Date-anchored week (same convention as /calendar) so today's items
+    // match what the calendar shows for this date.
+    const todayWeek = planWeekForDate(activePlan.created_at, today);
+    marathonWeek = Math.min(Math.max(todayWeek, 1), activePlan.weeks_total);
+    if (todayWeek >= 1 && todayWeek <= activePlan.weeks_total) {
+      const { data: items } = await supabase
+        .from("plan_items")
+        .select("id, week, day_of_week, item_type, title, details, is_completed")
+        .eq("plan_id", activePlan.id)
+        .eq("week", todayWeek)
+        .eq("day_of_week", dayIndex);
+      planToday = (items ?? []) as PlanItem[];
+    }
   }
   // Group-streak nudge: only when the user hasn't logged anything today.
   let groupAtRisk: { name: string; streak_count: number } | null = null;
@@ -193,10 +200,15 @@ export default async function Dashboard() {
     (progress.currentXp / progress.nextLevelXp) * 100,
   );
 
-  const doneCount = (todaysPlan ?? []).filter((item: ScheduleItem) =>
-    isCompleted(item.sport_type_id),
-  ).length;
-  const totalCount = todaysPlan?.length ?? 0;
+  // Meal notes carry no "done" toggle, so they stay out of the day's tally.
+  const checkablePlanItems = planToday.filter(
+    (item) => item.item_type !== "meal_note",
+  );
+  const doneCount =
+    (todaysPlan ?? []).filter((item: ScheduleItem) =>
+      isCompleted(item.sport_type_id),
+    ).length + checkablePlanItems.filter((item) => item.is_completed).length;
+  const totalCount = (todaysPlan?.length ?? 0) + checkablePlanItems.length;
 
   const dateLabel = today.toLocaleDateString("en-US", {
     weekday: "long",
@@ -345,8 +357,8 @@ export default async function Dashboard() {
               </span>
               <span className="text-muted-foreground block text-[13px]">
                 Week {marathonWeek} of {activePlan.weeks_total} ·{" "}
-                {marathonToday > 0
-                  ? `${marathonToday} ${marathonToday === 1 ? "item" : "items"} today`
+                {planToday.length > 0
+                  ? `${planToday.length} ${planToday.length === 1 ? "item" : "items"} today`
                   : "rest day"}
               </span>
             </span>
@@ -461,7 +473,8 @@ export default async function Dashboard() {
             )}
           </div>
 
-          {!todaysPlan || todaysPlan.length === 0 ? (
+          {(!todaysPlan || todaysPlan.length === 0) &&
+          planToday.length === 0 ? (
             <div className="border-border flex flex-col items-center gap-2.5 rounded-xl border border-dashed px-5 py-8 text-center">
               <span className="bg-secondary text-muted-foreground grid size-12 place-items-center rounded-full">
                 <MoonStar className="size-5" aria-hidden />
@@ -477,7 +490,7 @@ export default async function Dashboard() {
             </div>
           ) : (
             <div className="grid gap-3">
-              {todaysPlan.map((item: ScheduleItem) => {
+              {(todaysPlan ?? []).map((item: ScheduleItem) => {
                 const completed = isCompleted(item.sport_type_id);
 
                 return (
@@ -490,6 +503,22 @@ export default async function Dashboard() {
                   />
                 );
               })}
+              {planToday.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  <p className="text-overline flex items-center justify-between">
+                    <span>From your plan</span>
+                    <Link
+                      href="/training"
+                      className="text-brand-ink text-[11px] font-medium normal-case hover:underline"
+                    >
+                      Week {marathonWeek} →
+                    </Link>
+                  </p>
+                  {planToday.map((item) => (
+                    <PlanItemRow key={item.id} item={item} date={dateString} />
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>

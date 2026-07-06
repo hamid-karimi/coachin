@@ -20,7 +20,7 @@ import {
   generateHypertrophyPlan,
   type HypertrophyIntake,
 } from "@/lib/ai/hypertrophy";
-import { yearsSince } from "@/lib/dates";
+import { toLocalYMD, yearsSince } from "@/lib/dates";
 import type { WeekScorecard } from "@/lib/scorecard";
 import {
   generateSessionFeedback,
@@ -370,18 +370,34 @@ export async function togglePlanItemAction(
   if (!itemId) return { error: "Missing item id" };
 
   const supabase = await createClient();
-  // RLS restricts the update to items of the user's own plans.
-  const { error } = await supabase
-    .from("plan_items")
-    .update({ is_completed: completed })
-    .eq("id", itemId);
+  // Atomic toggle + XP award + streak log; the RPC verifies plan ownership
+  // and compensates XP on undo so done/undone cycles can't farm it.
+  const { data, error } = await supabase.rpc("complete_plan_item", {
+    p_item_id: itemId,
+    p_completed: completed,
+    p_date: toLocalYMD(new Date()),
+  });
 
-  if (error) {
-    console.error("plan item toggle failed:", error);
-    return { error: "Failed to update the item" };
+  if (error || !data?.success) {
+    console.error("plan item toggle failed:", error ?? data);
+    return { error: data?.error ?? "Failed to update the item" };
   }
 
   revalidatePath("/training");
+  revalidatePath("/dashboard");
+  revalidatePath("/calendar");
+
+  const awardedXp = Number(data.awarded_xp ?? 0);
+  if (awardedXp > 0) {
+    return { success: true, message: `+${awardedXp} XP earned` };
+  }
+  if (awardedXp < 0) {
+    return {
+      success: true,
+      message: `Undone · ${awardedXp} XP`,
+      status: "info",
+    };
+  }
   return { success: true };
 }
 
