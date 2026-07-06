@@ -8,6 +8,9 @@ export type FoodResult = {
   protein_g: number;
   carbs_g: number;
   fat_g: number;
+  sugar_g: number;
+  fiber_g: number;
+  sodium_mg: number;
   source: string;
 };
 
@@ -64,6 +67,9 @@ export async function GET(req: NextRequest) {
           protein_g: Math.round(nutrient(food, "203") * 10) / 10,
           carbs_g: Math.round(nutrient(food, "205") * 10) / 10,
           fat_g: Math.round(nutrient(food, "204") * 10) / 10,
+          sugar_g: Math.round(nutrient(food, "269") * 10) / 10,
+          fiber_g: Math.round(nutrient(food, "291") * 10) / 10,
+          sodium_mg: Math.round(nutrient(food, "307")),
           source: "usda",
         }))
         .filter((food) => food.name && food.kcal_per_100g > 0);
@@ -80,10 +86,20 @@ export async function GET(req: NextRequest) {
   const supabase = await createClient();
   const { data } = await supabase
     .from("foods")
-    .select("id, name, kcal_per_100g, protein_g, carbs_g, fat_g, source")
+    .select(
+      "id, name, kcal_per_100g, protein_g, carbs_g, fat_g, sugar_g, fiber_g, sodium_mg, source",
+    )
     .ilike("name", `%${query}%`)
     .order("source")
     .limit(8);
 
-  return NextResponse.json({ foods: (data ?? []) as FoodResult[] });
+  // sugar/fiber/sodium are nullable on foods; normalise to 0 for the client.
+  const foods: FoodResult[] = (data ?? []).map((food) => ({
+    ...food,
+    sugar_g: Number(food.sugar_g) || 0,
+    fiber_g: Number(food.fiber_g) || 0,
+    sodium_mg: Number(food.sodium_mg) || 0,
+  })) as FoodResult[];
+
+  return NextResponse.json({ foods });
 }

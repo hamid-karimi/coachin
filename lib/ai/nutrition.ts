@@ -13,6 +13,9 @@ export type MealEstimateItem = {
   protein_g: number;
   carbs_g: number;
   fat_g: number;
+  sugar_g: number;
+  fiber_g: number;
+  sodium_mg: number;
 };
 
 export async function estimateMealFromPhoto(
@@ -33,7 +36,7 @@ export async function estimateMealFromPhoto(
           parts: [
             { inlineData: { mimeType, data: base64 } },
             {
-              text: "Identify the food items in this meal photo. For each item estimate the portion in grams and its calories and macros for THAT portion (not per 100g). If it is not food, return an empty items array.",
+              text: "Identify the food items in this meal photo. For each item estimate the portion in grams and, for THAT portion (not per 100g): calories, protein, carbs, fat, sugar, fiber (all in grams) and sodium (in mg). If it is not food, return an empty items array.",
             },
           ],
         },
@@ -54,6 +57,9 @@ export async function estimateMealFromPhoto(
                   protein_g: { type: Type.NUMBER },
                   carbs_g: { type: Type.NUMBER },
                   fat_g: { type: Type.NUMBER },
+                  sugar_g: { type: Type.NUMBER },
+                  fiber_g: { type: Type.NUMBER },
+                  sodium_mg: { type: Type.NUMBER },
                 },
                 required: ["name", "est_quantity_g", "est_kcal"],
               },
@@ -85,6 +91,9 @@ export async function estimateMealFromPhoto(
           protein_g: Math.max(0, Math.round(Number(item.protein_g) || 0)),
           carbs_g: Math.max(0, Math.round(Number(item.carbs_g) || 0)),
           fat_g: Math.max(0, Math.round(Number(item.fat_g) || 0)),
+          sugar_g: Math.max(0, Math.round(Number(item.sugar_g) || 0)),
+          fiber_g: Math.max(0, Math.round(Number(item.fiber_g) || 0)),
+          sodium_mg: Math.max(0, Math.round(Number(item.sodium_mg) || 0)),
         };
       })
       .filter((item) => item.est_kcal > 0);

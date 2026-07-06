@@ -15,6 +15,11 @@ export type MealLog = {
   quantity_g: number | null;
   kcal: number;
   protein_g: number;
+  carbs_g: number;
+  fat_g: number;
+  sugar_g: number;
+  fiber_g: number;
+  sodium_mg: number;
   entry_method: string;
 };
 
@@ -36,7 +41,11 @@ export function MealRow({ log }: { log: MealLog }) {
         </p>
         <p className="text-muted-foreground text-xs">
           {log.quantity_g ? `${Math.round(log.quantity_g)}g · ` : ""}
-          {Math.round(log.protein_g)}g protein
+          {Math.round(log.protein_g)}P · {Math.round(log.carbs_g)}C ·{" "}
+          {Math.round(log.fat_g)}F
+          {Number(log.sugar_g) > 0
+            ? ` · ${Math.round(log.sugar_g)}g sugar`
+            : ""}
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-2">

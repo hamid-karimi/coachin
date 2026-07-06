@@ -55,6 +55,9 @@ function foodToReviewItem(food: FoodResult, grams: number): MealEstimateItem {
     protein_g: Math.round((food.protein_g ?? 0) * factor),
     carbs_g: Math.round((food.carbs_g ?? 0) * factor),
     fat_g: Math.round((food.fat_g ?? 0) * factor),
+    sugar_g: Math.round((food.sugar_g ?? 0) * factor),
+    fiber_g: Math.round((food.fiber_g ?? 0) * factor),
+    sodium_mg: Math.round((food.sodium_mg ?? 0) * factor),
   };
 }
 

@@ -41,7 +41,7 @@ export default async function NutritionPage() {
       supabase
         .from("meal_logs")
         .select(
-          "id, meal_type, free_text, quantity_g, kcal, protein_g, carbs_g, fat_g, entry_method",
+          "id, meal_type, free_text, quantity_g, kcal, protein_g, carbs_g, fat_g, sugar_g, fiber_g, sodium_mg, entry_method",
         )
         .eq("user_id", user.id)
         .eq("date", today)
@@ -55,18 +55,18 @@ export default async function NutritionPage() {
         .maybeSingle(),
     ]);
 
-  const meals = (logs ?? []) as (MealLog & {
-    carbs_g: number;
-    fat_g: number;
-  })[];
+  const meals = (logs ?? []) as MealLog[];
   const totals = meals.reduce(
     (sum, log) => ({
       kcal: sum.kcal + Number(log.kcal),
       protein: sum.protein + Number(log.protein_g),
       carbs: sum.carbs + Number(log.carbs_g),
       fat: sum.fat + Number(log.fat_g),
+      sugar: sum.sugar + Number(log.sugar_g),
+      fiber: sum.fiber + Number(log.fiber_g),
+      sodium: sum.sodium + Number(log.sodium_mg),
     }),
-    { kcal: 0, protein: 0, carbs: 0, fat: 0 },
+    { kcal: 0, protein: 0, carbs: 0, fat: 0, sugar: 0, fiber: 0, sodium: 0 },
   );
   const target = calorieGoal?.target_value
     ? Number(calorieGoal.target_value)
@@ -111,6 +111,10 @@ export default async function NutritionPage() {
           <p className="text-muted-foreground text-xs">
             {Math.round(totals.protein)}g protein ·{" "}
             {Math.round(totals.carbs)}g carbs · {Math.round(totals.fat)}g fat
+          </p>
+          <p className="text-muted-foreground text-xs">
+            {Math.round(totals.sugar)}g sugar · {Math.round(totals.fiber)}g
+            fiber · {Math.round(totals.sodium)}mg sodium
           </p>
         </div>
 
