@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, Plus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { WEEK_DAYS } from "@/lib/week-days";
+import { ConfirmDialog } from "@/components/design-system/confirm-dialog";
 import type { PlanWeekItem } from "../actions";
+import { DaySportPicker, type SportType } from "./DaySportPicker";
 import { PlanSessionCard } from "./PlanSessionCard";
 import { PlanSessionSheet } from "./PlanSessionSheet";
 import { RoutineSessionCard } from "./RoutineSessionCard";
@@ -26,10 +28,10 @@ interface WeekAgendaProps {
   schedules: Schedule[];
   /** Active AI plan's items for the current week, shown read-only per day. */
   planItems?: PlanWeekItem[];
-  onDeleteClick: (
-    scheduleId: string,
-    formAction: (formData: FormData) => void,
-  ) => void;
+  /** Sport types offered by the inline day-first picker. */
+  sports: SportType[];
+  /** Dispatches the multi-day `addScheduleSessions` server action. */
+  addAction: (formData: FormData) => void;
   deleteAction: (formData: FormData) => void;
   isDeleting?: boolean;
 }
@@ -75,27 +77,45 @@ function Legend() {
 export function WeekAgenda({
   schedules,
   planItems = [],
-  onDeleteClick,
+  sports,
+  addAction,
   deleteAction,
   isDeleting = false,
 }: WeekAgendaProps) {
   const [selected, setSelected] = useState<PlanWeekItem | null>(null);
+  const [openAddDay, setOpenAddDay] = useState<number | null>(null);
+  // The routine session awaiting a delete confirmation.
+  const [pendingDelete, setPendingDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   const hasPlan = planItems.length > 0;
   const todayDow = new Date().getDay();
 
-  // With an active plan the week is never truly empty, so only fall back to the
-  // "add your first session" prompt when there's nothing at all.
-  if ((!schedules || schedules.length === 0) && !hasPlan) {
-    return (
-      <div className="mb-6">
-        <EmptyWeek />
-      </div>
-    );
-  }
+  // ConfirmDialog runs onConfirm inside a transition, which is required for the
+  // useActionState delete dispatch (calling it directly throws and wedges
+  // isPending after the first delete).
+  const confirmDelete = () => {
+    if (!pendingDelete) return;
+    const formData = new FormData();
+    formData.append("scheduleId", pendingDelete.id);
+    deleteAction(formData);
+    setPendingDelete(null);
+  };
+
+  // With an active plan the week is never truly empty; otherwise nudge toward
+  // the first session with a banner while keeping every day's "+ Add session"
+  // reachable below.
+  const isEmpty = (!schedules || schedules.length === 0) && !hasPlan;
 
   return (
     <div className="mb-6">
+      {isEmpty && (
+        <div className="mb-4">
+          <EmptyWeek />
+        </div>
+      )}
       {hasPlan && <Legend />}
 
       <div className="border-border divide-border flex flex-col divide-y rounded-xl border">
@@ -104,6 +124,8 @@ export function WeekAgenda({
           const dayPlan = planItems.filter((p) => p.day_of_week === day.id);
           const isToday = day.id === todayDow;
           const empty = dayItems.length === 0 && dayPlan.length === 0;
+
+          const isAddOpen = openAddDay === day.id;
 
           return (
             <div
@@ -141,7 +163,12 @@ export function WeekAgenda({
                         time={item.time}
                         dayName={day.name}
                         isDeleting={isDeleting}
-                        onDelete={() => onDeleteClick(item.id, deleteAction)}
+                        onDelete={() =>
+                          setPendingDelete({
+                            id: item.id,
+                            name: item.sport_types?.name ?? "this session",
+                          })
+                        }
                       />
                     ))}
                     {dayPlan.map((item) => (
@@ -153,6 +180,28 @@ export function WeekAgenda({
                     ))}
                   </>
                 )}
+
+                {isAddOpen ? (
+                  <DaySportPicker
+                    entryDay={day.id}
+                    sports={sports}
+                    addAction={addAction}
+                    onClose={() => setOpenAddDay(null)}
+                  />
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setOpenAddDay(day.id)}
+                    className={cn(
+                      "text-brand-ink hover:bg-brand-tint inline-flex w-fit items-center gap-1 rounded-md py-1 text-sm font-semibold outline-none",
+                      "focus-visible:ring-[3px] focus-visible:ring-ring/40",
+                    )}
+                    aria-label={`Add session on ${day.name}`}
+                  >
+                    <Plus className="size-4" aria-hidden />
+                    Add session
+                  </button>
+                )}
               </div>
             </div>
           );
@@ -160,6 +209,20 @@ export function WeekAgenda({
       </div>
 
       <PlanSessionSheet item={selected} onClose={() => setSelected(null)} />
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title="Remove this session?"
+        description={
+          pendingDelete
+            ? `${pendingDelete.name} will be removed from your weekly routine.`
+            : undefined
+        }
+        confirmLabel="Remove"
+        pending={isDeleting}
+        onConfirm={confirmDelete}
+        onCancel={() => setPendingDelete(null)}
+      />
     </div>
   );
 }

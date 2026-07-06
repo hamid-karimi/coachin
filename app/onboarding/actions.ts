@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { planWeekOf } from "@/lib/dates";
 import type { PlanItemDetails } from "@/lib/plan-items";
+import { buildScheduleInserts } from "@/lib/schedule-inserts";
 
 export type PlanWeekItem = {
   id: string;
@@ -92,35 +93,30 @@ export async function getCurrentPlanWeekItems(): Promise<PlanWeekItem[]> {
   }
 }
 
-// Save one item in weekly schedule
-export async function addScheduleItem(
+// Save one sport across one or more days in a single insert. Reads a sport plus
+// repeated `day_of_week` values, fans them out via the pure helper, and inserts
+// every row at once.
+export async function addScheduleSessions(
   _prevState: OnboardingActionState,
   formData: FormData,
 ): Promise<OnboardingActionState> {
   try {
     const supabase = await createClient();
 
-    // Get current user
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
     if (!user) {
-      console.error("❌ No authenticated user found");
       return { error: "User is not signed in." };
     }
 
-    console.log("✅ Authenticated user:", {
-      id: user.id,
-      email: user.email,
-    });
-
     const sportId = formData.get("sport_type_id");
-    const dayOfWeek = formData.get("day_of_week");
+    const days = formData.getAll("day_of_week").map((d) => Number(d));
     const time = formData.get("time"); // HH:MM
     const endsOnRaw = String(formData.get("ends_on") ?? "").trim();
 
-    if (!sportId || !dayOfWeek) {
+    if (!sportId || days.length === 0) {
       return { error: "Please fill in all required fields." };
     }
 
@@ -133,43 +129,40 @@ export async function addScheduleItem(
       endsOn = endsOnRaw;
     }
 
-    const insertData = {
-      user_id: user.id,
-      sport_type_id: Number(sportId),
-      day_of_week: Number(dayOfWeek),
+    const rows = buildScheduleInserts({
+      userId: user.id,
+      sportTypeId: Number(sportId),
+      days,
       time: time ? String(time) : null,
-      ends_on: endsOn,
-    };
+      endsOn,
+    });
 
-    console.log("📝 Attempting to insert:", insertData);
+    if (rows.length === 0) {
+      return { error: "Please pick at least one day." };
+    }
 
-    const { data, error } = await supabase.from("schedules").insert(insertData);
+    const { error } = await supabase.from("schedules").insert(rows);
 
     if (error) {
-      console.error("❌ Supabase insert error:", error);
-      console.error("Error code:", error.code);
-      console.error("Error message:", error.message);
-      console.error("Error details:", error.details);
-      console.error("Error hint:", error.hint);
-
-      // Check if it's an RLS policy error
       if (error.message.includes("row-level security")) {
         return {
           error:
             "Access denied: row-level security policy prevents inserting schedule items. Please review your Supabase policies.",
         };
       }
-
       return {
         error: `Failed to save schedule: ${error.message || "Unknown error"}. Please try again.`,
       };
     }
 
-    console.log("✅ Schedule item inserted successfully:", data);
     revalidatePath("/onboarding");
-    return { success: true, message: "Activity added to your schedule." };
+    const count = rows.length;
+    return {
+      success: true,
+      message: `${count} session${count === 1 ? "" : "s"} added to your schedule.`,
+    };
   } catch (err) {
-    console.error("❌ Unexpected error adding schedule:", err);
+    console.error("❌ Unexpected error adding schedule sessions:", err);
     return {
       error: `Unexpected error: ${err instanceof Error ? err.message : "Unknown"}`,
     };
