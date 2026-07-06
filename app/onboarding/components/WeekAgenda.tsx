@@ -5,6 +5,7 @@ import { CalendarDays } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { WEEK_DAYS } from "@/lib/week-days";
+import { ConfirmDialog } from "@/components/design-system/confirm-dialog";
 import type { PlanWeekItem } from "../actions";
 import { PlanSessionCard } from "./PlanSessionCard";
 import { PlanSessionSheet } from "./PlanSessionSheet";
@@ -26,10 +27,6 @@ interface WeekAgendaProps {
   schedules: Schedule[];
   /** Active AI plan's items for the current week, shown read-only per day. */
   planItems?: PlanWeekItem[];
-  onDeleteClick: (
-    scheduleId: string,
-    formAction: (formData: FormData) => void,
-  ) => void;
   deleteAction: (formData: FormData) => void;
   isDeleting?: boolean;
 }
@@ -75,14 +72,28 @@ function Legend() {
 export function WeekAgenda({
   schedules,
   planItems = [],
-  onDeleteClick,
   deleteAction,
   isDeleting = false,
 }: WeekAgendaProps) {
   const [selected, setSelected] = useState<PlanWeekItem | null>(null);
+  // The routine session awaiting a delete confirmation.
+  const [pendingDelete, setPendingDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   const hasPlan = planItems.length > 0;
   const todayDow = new Date().getDay();
+
+  // ConfirmDialog runs onConfirm inside a transition, which is required for the
+  // useActionState dispatch (calling it directly throws and wedges isPending).
+  const confirmDelete = () => {
+    if (!pendingDelete) return;
+    const formData = new FormData();
+    formData.append("scheduleId", pendingDelete.id);
+    deleteAction(formData);
+    setPendingDelete(null);
+  };
 
   // With an active plan the week is never truly empty, so only fall back to the
   // "add your first session" prompt when there's nothing at all.
@@ -141,7 +152,12 @@ export function WeekAgenda({
                         time={item.time}
                         dayName={day.name}
                         isDeleting={isDeleting}
-                        onDelete={() => onDeleteClick(item.id, deleteAction)}
+                        onDelete={() =>
+                          setPendingDelete({
+                            id: item.id,
+                            name: item.sport_types?.name ?? "this session",
+                          })
+                        }
                       />
                     ))}
                     {dayPlan.map((item) => (
@@ -160,6 +176,20 @@ export function WeekAgenda({
       </div>
 
       <PlanSessionSheet item={selected} onClose={() => setSelected(null)} />
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title="Remove this session?"
+        description={
+          pendingDelete
+            ? `${pendingDelete.name} will be removed from your weekly routine.`
+            : undefined
+        }
+        confirmLabel="Remove"
+        pending={isDeleting}
+        onConfirm={confirmDelete}
+        onCancel={() => setPendingDelete(null)}
+      />
     </div>
   );
 }

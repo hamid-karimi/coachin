@@ -46,8 +46,9 @@ function MealCard({ item }: { item: MealPlanItem }) {
         </span>
       </div>
       <p className="text-muted-foreground mt-0.5 text-xs">
-        {Math.round(item.protein_g)}P · {Math.round(item.carbs_g)}C ·{" "}
-        {Math.round(item.fat_g)}F · {Math.round(item.sugar_g)}g sugar
+        {Math.round(item.protein_g)}g protein · {Math.round(item.carbs_g)}g
+        carbs · {Math.round(item.fat_g)}g fat · {Math.round(item.sugar_g)}g
+        sugar
       </p>
       {(item.recipe || (item.ingredients?.length ?? 0) > 0) && (
         <details className="mt-1.5">
