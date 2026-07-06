@@ -11,7 +11,14 @@ const meta: Meta<typeof BottomNav> = {
   argTypes: {
     active: {
       control: "inline-radio",
-      options: ["home", "plan", "community", "coaching", "profile"],
+      options: [
+        "home",
+        "calendar",
+        "nutrition",
+        "community",
+        "coaching",
+        "profile",
+      ],
     },
   },
 };

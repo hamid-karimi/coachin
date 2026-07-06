@@ -38,6 +38,17 @@ export const Pending: Story = {
   args: { pending: true },
 };
 
+/** Reversible actions confirm in green — red is reserved for destructive. */
+export const ArchiveSuccess: Story = {
+  args: {
+    title: "Archive this plan?",
+    description:
+      "Progress is kept, but the plan stops showing on your dashboard. You can generate a new one anytime.",
+    confirmLabel: "Archive",
+    confirmVariant: "success",
+  },
+};
+
 function InteractiveDemo() {
   const [open, setOpen] = React.useState(false);
   return (

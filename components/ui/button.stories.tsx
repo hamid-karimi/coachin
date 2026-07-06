@@ -18,6 +18,7 @@ const meta: Meta<typeof Button> = {
         "ghost",
         "destructive",
         "destructive-outline",
+        "success",
         "link",
       ],
     },
@@ -38,6 +39,11 @@ export const Outline: Story = {
 export const Ghost: Story = { args: { variant: "ghost", children: "Cancel" } };
 export const Destructive: Story = {
   args: { variant: "destructive", children: "Delete session" },
+};
+
+/** Green confirms reversible actions (archive); red stays for destructive. */
+export const Success: Story = {
+  args: { variant: "success", children: "Archive plan" },
 };
 
 /** Destructive stays outline until the confirm dialog; solid red lives there. */
