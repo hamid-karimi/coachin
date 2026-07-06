@@ -236,5 +236,27 @@ t2 = t1 × (d2 / d1) ^ 1.06
 
 ---
 
+## 10. Nutrition targets (meal plan)
+
+**Source of truth:** `lib/nutrition-targets.ts` (unit-tested in
+`lib/nutrition-targets.test.ts`). The AI meal-plan generator consumes these
+targets; it never computes them itself.
+
+- **BMR (Mifflin–St Jeor):** `10·kg + 6.25·cm − 5·age + s`, where `s = +5`
+  (male), `−161` (female), `−78` (unspecified — the midpoint).
+- **Activity factor** from weekly training days: `0 → 1.2`, `1–2 → 1.375`,
+  `3–4 → 1.55`, `5–6 → 1.725`, `7 → 1.9`. `TDEE = BMR × factor`.
+- **Goal adjustment** on TDEE: `lose −18%`, `maintain 0`, `gain +12%`,
+  `recomp 0`. Target kcal is `max(adjusted, BMR × 1.1)`, rounded to 10 — never
+  below ~BMR.
+- **Macros:** protein `kg × {lose 2.2, recomp 2.2, maintain 1.6, gain 1.8}` g/kg;
+  fat `= 25% of kcal ÷ 9`; carbs take the remaining kcal `÷ 4`.
+- Missing height / weight / age → no target (the intake wizard asks the user to
+  fill their profile).
+- On plan generation the active `calorie_intake` goal is set to the target kcal
+  so the nutrition tracker's bar and adherence bonus follow the plan.
+
+---
+
 _When behavior here changes, update the referenced source files and re-run
 `pnpm test` — the date and scorecard math is unit-tested._

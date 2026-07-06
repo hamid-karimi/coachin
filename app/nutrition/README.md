@@ -26,6 +26,23 @@ piece, handful, serving). `lib/food-units.ts` normalises everything to grams on
 submit, so the mass-based (`per-100g`) math downstream is unchanged. Volume
 units use approximate densities — fine for portion logging.
 
+## AI meal plan (`/nutrition/plan`)
+
+An AI weekly menu built from body metrics + training load.
+
+- `lib/nutrition-targets.ts` (pure, tested) computes daily kcal + macro targets
+  (Mifflin–St Jeor → activity factor from weekly training days → goal → macro
+  split; see FORMULAS.md §10).
+- `plan/actions.ts` `generateMealPlanAction` gathers profile + schedules +
+  consented body-photo analysis, computes targets, calls
+  `lib/ai/meal-plan.ts` (Gemini structured output) for a 7-day menu, stores it
+  in `meal_plans` / `meal_plan_items`, and points the active `calorie_intake`
+  goal at the target (closes the loop with the tracker).
+- The intake wizard softly *suggests* building a training plan first but never
+  blocks. Each meal shows macros, an expandable recipe/ingredients block, and a
+  "Watch how" YouTube link; `lib/meal-plan-grocery.ts` (tested) builds the
+  grocery list. Regenerate re-runs from the stored intake; discard archives.
+
 ## AI photo estimation
 
 `lib/ai/nutrition.ts` (Gemini vision) proposes items with per-portion calories
