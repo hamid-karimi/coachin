@@ -274,5 +274,23 @@ targets; it never computes them itself.
 
 ---
 
+## 11. Weekly quotas
+
+**Source of truth:** `lib/weekly-quotas.ts` (`quotaProgress`, unit-tested in
+`lib/weekly-quotas.test.ts`). Stored in `weekly_quotas` (one row per user × sport,
+`sessions_per_week` 1–14).
+
+- A quota is an **informational weekly target**: sport × N sessions per week, no fixed day.
+- Fulfilled automatically by **completed** logs: `done` = count of **distinct dates** with a
+  completed log of that sport within the **Mon–Sun local week** (two logs of the same sport
+  on one day count as **1** — mirrors the streak's day-based counting).
+- The week window (Monday-first, `mondayOf` / `toLocalYMD` in `lib/dates.ts`) is applied by
+  the **caller** — `quotaProgress` only counts the logs it is given, so it works for past
+  weeks too. `done` is raw and may exceed the target; capping the display is a UI concern.
+- **v1 has NO gameplay effect:** quotas create no required days and never touch streaks,
+  hearts, or XP — progress display only.
+
+---
+
 _When behavior here changes, update the referenced source files and re-run
 `pnpm test` — the date and scorecard math is unit-tested._

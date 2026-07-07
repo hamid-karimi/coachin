@@ -235,6 +235,145 @@ export async function deleteScheduleItem(
   }
 }
 
+// Every surface that shows quota progress (see plans/weekly-commitments.md).
+const QUOTA_PATHS = ["/onboarding", "/dashboard", "/calendar"] as const;
+
+function revalidateQuotaPaths() {
+  for (const path of QUOTA_PATHS) revalidatePath(path);
+}
+
+// Fetch current user's weekly quotas (sport × N sessions/week targets)
+export async function getWeeklyQuotas() {
+  try {
+    const supabase = await createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      throw new Error("User is not signed in");
+    }
+
+    const { data, error } = await supabase
+      .from("weekly_quotas")
+      .select("*, sport_types(name)")
+      .eq("user_id", user.id)
+      .order("created_at");
+
+    if (error) throw new Error(error.message);
+    return data || [];
+  } catch (err) {
+    console.error("Error fetching weekly quotas:", err);
+    return [];
+  }
+}
+
+// Add (or update — upsert on the user+sport unique pair) one weekly quota
+export async function addWeeklyQuota(
+  _prevState: OnboardingActionState,
+  formData: FormData,
+): Promise<OnboardingActionState> {
+  try {
+    const supabase = await createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { error: "User is not signed in." };
+    }
+
+    const sportId = Number(formData.get("sport_type_id"));
+    const sessionsPerWeek = Number(formData.get("sessions_per_week"));
+
+    if (!Number.isInteger(sportId) || sportId <= 0) {
+      return { error: "Please pick a sport." };
+    }
+    if (
+      !Number.isInteger(sessionsPerWeek) ||
+      sessionsPerWeek < 1 ||
+      sessionsPerWeek > 14
+    ) {
+      return { error: "Sessions per week must be between 1 and 14." };
+    }
+
+    const { data: sport } = await supabase
+      .from("sport_types")
+      .select("id")
+      .eq("id", sportId)
+      .maybeSingle();
+
+    if (!sport) {
+      return { error: "Unknown sport. Please pick one from the list." };
+    }
+
+    const { error } = await supabase.from("weekly_quotas").upsert(
+      {
+        user_id: user.id,
+        sport_type_id: sportId,
+        sessions_per_week: sessionsPerWeek,
+      },
+      { onConflict: "user_id,sport_type_id" },
+    );
+
+    if (error) {
+      console.error("Error saving weekly quota:", error);
+      return { error: "Failed to save the weekly target. Please try again." };
+    }
+
+    revalidateQuotaPaths();
+    return { success: true, message: "Weekly target saved." };
+  } catch (err) {
+    console.error("Unexpected error saving weekly quota:", err);
+    return {
+      error: `Unexpected error: ${err instanceof Error ? err.message : "Unknown"}`,
+    };
+  }
+}
+
+// Delete one weekly quota (scoped to the signed-in user)
+export async function deleteWeeklyQuota(
+  _prevState: OnboardingActionState,
+  formData: FormData,
+): Promise<OnboardingActionState> {
+  try {
+    const quotaId = formData.get("quotaId") as string;
+
+    if (!quotaId) {
+      return { error: "Weekly target ID is missing." };
+    }
+
+    const supabase = await createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { error: "User is not signed in." };
+    }
+
+    const { error } = await supabase
+      .from("weekly_quotas")
+      .delete()
+      .eq("id", quotaId)
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("Error deleting weekly quota:", error);
+      return { error: "Failed to remove the weekly target." };
+    }
+
+    revalidateQuotaPaths();
+    return { success: true, message: "Weekly target removed." };
+  } catch (err) {
+    console.error("Unexpected error deleting weekly quota:", err);
+    return { error: "Unexpected error occurred." };
+  }
+}
+
 // Finish onboarding and redirect to dashboard
 export async function completeOnboarding(): Promise<OnboardingActionState> {
   return {
