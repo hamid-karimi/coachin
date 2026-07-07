@@ -114,6 +114,7 @@ export function AddScheduleForm({
                 )}>
                 <SportChip
                   sport={sportFromName(sport.name)}
+                  label={sport.name}
                   multiplier={sport.xp_multiplier}
                   selected={active}
                 />

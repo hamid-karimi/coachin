@@ -1,12 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
-  BedDouble,
   Check,
   ChevronLeft,
   ChevronRight,
-  Dumbbell,
-  Footprints,
   Pencil,
   Repeat,
   Sparkles,
@@ -21,15 +18,11 @@ import { AppShell } from "@/components/design-system/app-shell";
 import { Button } from "@/components/ui/button";
 import { SportIcon } from "@/components/design-system/sport-chip";
 import { sportFromName } from "@/lib/sports";
+import type { PlanItemDetails } from "@/lib/plan-items";
 import { cn } from "@/lib/utils";
+import { DayPlanItems } from "./components/day-plan-items";
 
 export const dynamic = "force-dynamic";
-
-const PLAN_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
-  run: Footprints,
-  strength: Dumbbell,
-  recovery: BedDouble,
-};
 
 type ScheduleRow = {
   day_of_week: number;
@@ -47,7 +40,7 @@ type PlanItemRow = {
   item_type: string;
   title: string;
   is_completed: boolean;
-  details: { video_query?: string } | null;
+  details: PlanItemDetails | null;
 };
 
 type ActivePlan = { id: string; created_at: string; weeks_total: number };
@@ -322,32 +315,7 @@ export default async function CalendarPage({
                         </div>
                       );
                     })}
-                    {dayPlan.map((p, i) => {
-                      const Icon = PLAN_ICON[p.item_type] ?? Sparkles;
-                      return (
-                        <Link
-                          key={`p-${i}`}
-                          href="/training"
-                          className="hover:bg-secondary flex items-center gap-2.5 rounded-md text-sm"
-                        >
-                          <span className="bg-brand-tint text-brand-ink grid size-7 shrink-0 place-items-center rounded-lg">
-                            <Icon className="size-4" aria-hidden />
-                          </span>
-                          <span
-                            className={cn(
-                              "min-w-0 flex-1 truncate",
-                              p.is_completed &&
-                                "text-muted-foreground line-through",
-                            )}
-                          >
-                            {p.title}
-                          </span>
-                          <span className="text-brand-ink text-[11px] font-medium">
-                            plan
-                          </span>
-                        </Link>
-                      );
-                    })}
+                    <DayPlanItems items={dayPlan} />
                   </div>
                 )}
               </div>
