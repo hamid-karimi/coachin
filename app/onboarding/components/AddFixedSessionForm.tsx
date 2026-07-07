@@ -1,35 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SportChip } from "@/components/design-system/sport-chip";
-import { sportFromName } from "@/lib/sports";
+import { useActionToast } from "@/components/hooks/use-action-toast";
 import { cn } from "@/lib/utils";
 import { WEEK_DAYS } from "@/lib/week-days";
+import { addScheduleItem } from "../actions";
+import { SportPicker, type SportOption } from "./SportPicker";
 
-interface SportType {
-  id: string | number;
-  name: string;
-  xp_multiplier?: number;
-  [key: string]: unknown;
-}
-
-interface AddScheduleFormProps {
-  sports: SportType[];
-  onSubmit: (formData: FormData) => void;
+interface AddFixedSessionFormProps {
+  sports: SportOption[];
   /** Days (0-6) that already have at least one session — shown as volt dots. */
   plannedDays?: number[];
-  isPending?: boolean;
 }
 
-export function AddScheduleForm({
+/**
+ * Adds an anchor: a fixed recurring session — sport + day + optional time +
+ * optional repeat-until. Owns its action state so the server page stays free
+ * of client concerns; `addScheduleItem` revalidates the page after saving.
+ */
+export function AddFixedSessionForm({
   sports,
-  onSubmit,
   plannedDays = [],
-  isPending = false,
-}: AddScheduleFormProps) {
+}: AddFixedSessionFormProps) {
+  const [state, formAction, isPending] = useActionState(addScheduleItem, {});
+  useActionToast(state);
+
   const [dayOfWeek, setDayOfWeek] = useState<number | null>(null);
   const [sportId, setSportId] = useState<string>("");
   const [resetKey, setResetKey] = useState(0);
@@ -38,14 +36,14 @@ export function AddScheduleForm({
 
   function handleSubmit(formData: FormData) {
     if (!canSubmit) return;
-    onSubmit(formData);
+    formAction(formData);
     setDayOfWeek(null);
     setSportId("");
     setResetKey((k) => k + 1);
   }
 
   return (
-    <form action={handleSubmit} className='mb-6 flex flex-col gap-5'>
+    <form action={handleSubmit} className='flex flex-col gap-5'>
       {/* hidden inputs the action reads by name */}
       <input
         type='hidden'
@@ -95,33 +93,12 @@ export function AddScheduleForm({
 
       <div className='flex flex-col gap-2'>
         <Label>Sport</Label>
-        <div className='flex flex-wrap gap-2'>
-          {sports?.map((sport: SportType) => {
-            const value = String(sport.id);
-            const active = sportId === value;
-            return (
-              <button
-                key={sport.id}
-                type='button'
-                onClick={() => setSportId(active ? "" : value)}
-                disabled={isPending}
-                aria-pressed={active}
-                className={cn(
-                  "rounded-full transition-all disabled:opacity-50",
-                  active
-                    ? "ring-brand ring-offset-background ring-2 ring-offset-2"
-                    : "opacity-80 hover:opacity-100",
-                )}>
-                <SportChip
-                  sport={sportFromName(sport.name)}
-                  label={sport.name}
-                  multiplier={sport.xp_multiplier}
-                  selected={active}
-                />
-              </button>
-            );
-          })}
-        </div>
+        <SportPicker
+          sports={sports}
+          value={sportId}
+          onChange={setSportId}
+          disabled={isPending}
+        />
       </div>
 
       <div className='flex flex-wrap items-end gap-3'>

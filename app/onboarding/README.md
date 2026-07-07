@@ -1,42 +1,70 @@
-# Onboarding Module
+# Onboarding Module — "My week" commitments editor
 
-The onboarding flow helps users build their recurring weekly workout schedule.
+`/onboarding` is where users manage their **recurring weekly commitments**. It doubles as
+the first-run onboarding flow (`completeOnboarding` redirects to the dashboard) and stays
+reachable afterwards ("Edit routine" from the calendar).
+
+## Commitments model
+
+Two commitment types (see `plans/weekly-commitments.md` and `FORMULAS.md` § Weekly quotas):
+
+- **Fixed session (anchor)** — sport + fixed day + optional time + optional repeat-until.
+  Stored in `schedules`. Anchors create "required days" for the daily streak
+  (`evaluate_user_streak`): the streak expects them.
+- **Weekly target (quota)** — sport × N sessions per week (1–14), no fixed day. Stored in
+  `weekly_quotas` (one row per user × sport; re-adding a sport upserts its target).
+  Fulfilled automatically by **completed** logs of that sport: progress = distinct days
+  within the Mon–Sun local week (`quotaProgress` in `lib/weekly-quotas.ts`). Quotas are
+  **informational only** — they do NOT create required days and never affect streaks,
+  hearts, or XP.
+
+AI plan sessions (from `/training`) appear read-only alongside both.
 
 ## Structure
 
-- `page.tsx`: main onboarding flow
-- `actions.ts`: server actions for add/delete schedule items and completion
+- `page.tsx`: server page — fetches sports, schedules, plan items, quotas, and this
+  week's logs; computes quota progress; orchestration only
+- `loading.tsx`: route-level skeleton
+- `actions.ts`: server actions — schedules (`addScheduleItem`, `deleteScheduleItem`),
+  quotas (`getWeeklyQuotas`, `addWeeklyQuota`, `deleteWeeklyQuota`), `completeOnboarding`
 - `components/`
-  - `AddScheduleForm.tsx`
+  - `AddCommitmentSection.tsx` — segmented control ("Fixed session" | "Weekly target")
+    switching between the two add forms
+  - `AddFixedSessionForm.tsx` — day strip + sport picker + optional time/repeat-until
+  - `AddWeeklyTargetForm.tsx` — sport picker + sessions/week stepper (1–14)
+  - `SportPicker.tsx` — shared sport chip row (real sport names, no XP multiplier)
+  - `WeeklyTargetList.tsx` — one row per quota with "n/m this week" progress
+    (volt badge once met) and delete; renders nothing when there are no quotas
   - `WeekAgenda.tsx` — one vertical day-by-day agenda (same on mobile + desktop)
-  - `RoutineSessionCard.tsx` — editable, brand-tinted manual routine session
+  - `RoutineSessionCard.tsx` — editable, brand-tinted fixed-session card
   - `PlanSessionCard.tsx` — clickable read-only AI plan session
   - `PlanSessionSheet.tsx` — detail sheet (title, type, day) opened from a plan card
   - `PlanTypeIcon.tsx` — `item_type` → icon
   - `CompleteOnboardingButton.tsx`
-  - layout helpers (`PageHeader`, `PageContainer`, `LoadingScreen`)
+  - layout helpers (`PageHeader`, `PageContainer`)
 - `hooks/`
-  - `useLoadData.ts`
-  - `useRefreshSchedules.ts`
-  - `useRedirect.ts`
+  - `useRedirect.ts` — client redirect after `completeOnboarding`
 
 ## Data Flow
 
-1. User selects day, sport, and optional time.
-2. Action inserts a schedule row in Supabase.
-3. UI refreshes schedule state after mutation.
-4. `WeekAgenda` renders the manual routine and any active AI plan items per
-   day; tapping an AI plan card opens `PlanSessionSheet` (a bottom sheet on
-   mobile, a centered dialog on desktop). The plan is read-only here — it is
-   edited in `/training`.
-5. Completion redirects to dashboard.
+1. The server page fetches all data and computes `quotaProgress(quotas, weekLogs)` for
+   the current Mon–Sun week; components receive plain props.
+2. Each interactive leaf owns its `useActionState` (add fixed session, add weekly
+   target, delete quota, delete schedule item, complete) with toasts via
+   `useActionToast`; actions `revalidatePath` so the server page re-renders with fresh
+   data — no client-side refetching.
+3. `WeekAgenda` renders fixed sessions and any active AI plan items per day; tapping an
+   AI plan card opens `PlanSessionSheet` (bottom sheet on mobile, dialog on desktop).
+   The plan is read-only here — it is edited in `/training`.
+4. Completion redirects to the dashboard.
 
-Shared helpers: `lib/week-days.ts` (Monday-first day list, used by the form and
-the agenda) and `lib/plan-items.ts` (`item_type` → human label).
+Shared helpers: `lib/week-days.ts` (Monday-first day list), `lib/plan-items.ts`
+(`item_type` → human label), `lib/weekly-quotas.ts` (quota progress math),
+`lib/dates.ts` (`mondayOf`, `toLocalYMD`).
 
 ## Notifications and Language
 
-- User-facing messages are now English-only.
+- User-facing messages are English-only.
 - Transient success/error states use toast notifications instead of inline banners.
 
 ## Storybook

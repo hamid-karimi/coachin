@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import { CalendarDays } from "lucide-react";
 
+import { useActionToast } from "@/components/hooks/use-action-toast";
 import { cn } from "@/lib/utils";
 import { WEEK_DAYS } from "@/lib/week-days";
-import type { PlanWeekItem } from "../actions";
+import { deleteScheduleItem, type PlanWeekItem } from "../actions";
 import { PlanSessionCard } from "./PlanSessionCard";
 import { PlanSessionSheet } from "./PlanSessionSheet";
 import { RoutineSessionCard } from "./RoutineSessionCard";
@@ -26,12 +27,6 @@ interface WeekAgendaProps {
   schedules: Schedule[];
   /** Active AI plan's items for the current week, shown read-only per day. */
   planItems?: PlanWeekItem[];
-  onDeleteClick: (
-    scheduleId: string,
-    formAction: (formData: FormData) => void,
-  ) => void;
-  deleteAction: (formData: FormData) => void;
-  isDeleting?: boolean;
 }
 
 /** Guides instead of feeling broken: fixes "finish with an empty week". */
@@ -60,7 +55,7 @@ function Legend() {
       </span>
       <span className="inline-flex items-center gap-1.5">
         <span className="bg-secondary border-border size-3 rounded-sm border" />
-        AI plan · tap to view (edit in Plan)
+        AI plan · tap to view (edit in Training)
       </span>
     </div>
   );
@@ -72,14 +67,22 @@ function Legend() {
  * truncate the way the old fixed 7-column grid forced. AI plan cards open a
  * detail sheet; manual routine cards keep their delete.
  */
-export function WeekAgenda({
-  schedules,
-  planItems = [],
-  onDeleteClick,
-  deleteAction,
-  isDeleting = false,
-}: WeekAgendaProps) {
+export function WeekAgenda({ schedules, planItems = [] }: WeekAgendaProps) {
   const [selected, setSelected] = useState<PlanWeekItem | null>(null);
+
+  // The agenda owns its delete flow so the server page stays free of client
+  // concerns; `deleteScheduleItem` revalidates the page after removal.
+  const [deleteState, deleteAction, isDeleting] = useActionState(
+    deleteScheduleItem,
+    {},
+  );
+  useActionToast(deleteState);
+
+  function handleDelete(scheduleId: string) {
+    const formData = new FormData();
+    formData.append("scheduleId", scheduleId);
+    deleteAction(formData);
+  }
 
   const hasPlan = planItems.length > 0;
   const todayDow = new Date().getDay();
@@ -145,7 +148,7 @@ export function WeekAgenda({
                         time={item.time}
                         dayName={day.name}
                         isDeleting={isDeleting}
-                        onDelete={() => onDeleteClick(item.id, deleteAction)}
+                        onDelete={() => handleDelete(item.id)}
                       />
                     ))}
                     {dayPlan.map((item) => (

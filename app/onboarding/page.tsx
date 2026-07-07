@@ -1,61 +1,52 @@
-"use client";
+import { redirect } from "next/navigation";
 
-import { useActionState } from "react";
+import { createClient, getUser } from "@/lib/supabase/server";
+import { mondayOf, toLocalYMD } from "@/lib/dates";
+import { quotaProgress } from "@/lib/weekly-quotas";
 import {
-  addScheduleItem,
-  deleteScheduleItem,
-  completeOnboarding,
+  getSportTypes,
+  getUserSchedules,
+  getCurrentPlanWeekItems,
+  getWeeklyQuotas,
 } from "./actions";
 import {
-  LoadingScreen,
   PageHeader,
-  AddScheduleForm,
+  PageContainer,
+  AddCommitmentSection,
+  WeeklyTargetList,
   WeekAgenda,
   CompleteOnboardingButton,
-  PageContainer,
 } from "./components";
-import { useLoadData, useRedirect, useRefreshSchedules } from "./hooks";
-import { useActionToast } from "@/components/hooks/use-action-toast";
 
-export default function OnboardingPage() {
-  // Load initial data
-  const {
-    sports,
-    schedules: initialSchedules,
-    planItems,
-    isLoading,
-  } = useLoadData();
+export const dynamic = "force-dynamic";
 
-  // Form states
-  const [addState, addAction] = useActionState(addScheduleItem, {});
-  const [deleteState, deleteAction] = useActionState(deleteScheduleItem, {});
-  const [completeState, completeAction] = useActionState(
-    completeOnboarding,
-    {},
-  );
+export default async function OnboardingPage() {
+  const user = await getUser();
+  if (!user) {
+    redirect("/auth/login");
+  }
 
-  // Handle redirect on complete
-  useRedirect({ redirectUrl: completeState.redirect });
-  useActionToast(addState);
-  useActionToast(deleteState);
-  useActionToast(completeState);
+  // Current local week window (Mon–Sun) for weekly-target progress.
+  const monday = mondayOf(new Date());
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
 
-  // Refresh schedules after add/delete
-  const refreshedSchedulesFromAdd = useRefreshSchedules(
-    addState.success ?? false,
-  );
-  const refreshedSchedulesFromDelete = useRefreshSchedules(
-    deleteState.success ?? false,
-  );
+  const supabase = await createClient();
+  const [sports, schedules, planItems, quotas, { data: weekLogs }] =
+    await Promise.all([
+      getSportTypes(),
+      getUserSchedules(),
+      getCurrentPlanWeekItems(),
+      getWeeklyQuotas(),
+      supabase
+        .from("logs")
+        .select("date, sport_type_id, status")
+        .eq("user_id", user.id)
+        .gte("date", toLocalYMD(monday))
+        .lte("date", toLocalYMD(sunday)),
+    ]);
 
-  // Use the most recent schedules data
-  const schedules =
-    refreshedSchedulesFromAdd.length > 0
-      ? refreshedSchedulesFromAdd
-      : refreshedSchedulesFromDelete.length > 0
-        ? refreshedSchedulesFromDelete
-        : initialSchedules;
-
+  const progress = quotaProgress(quotas, weekLogs ?? []);
   const plannedDays = [...new Set(schedules.map((s) => s.day_of_week))];
 
   // Rough weekly XP estimate: 60 XP per session × the sport's multiplier.
@@ -72,36 +63,20 @@ export default function OnboardingPage() {
     ),
   );
 
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
-
   return (
     <PageContainer>
       <PageHeader
-        title='Plan your week'
-        description='Pick a day, pick a sport, add it. Aim for 3+ days.'
+        title='My week'
+        description='Fixed sessions and weekly targets — your recurring commitments. AI plan sessions appear alongside.'
       />
 
-      <AddScheduleForm
-        sports={sports}
-        onSubmit={addAction}
-        plannedDays={plannedDays}
-      />
+      <AddCommitmentSection sports={sports} plannedDays={plannedDays} />
 
-      <WeekAgenda
-        schedules={schedules}
-        planItems={planItems}
-        deleteAction={deleteAction}
-        onDeleteClick={(scheduleId, action) => {
-          const formData = new FormData();
-          formData.append("scheduleId", scheduleId);
-          action(formData);
-        }}
-      />
+      <WeeklyTargetList quotas={quotas} progress={progress} />
+
+      <WeekAgenda schedules={schedules} planItems={planItems} />
 
       <CompleteOnboardingButton
-        onSubmit={completeAction}
         plannedDayCount={plannedDays.length}
         estimatedWeeklyXp={estimatedWeeklyXp}
       />

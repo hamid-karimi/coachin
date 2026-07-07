@@ -1,6 +1,6 @@
-export { LoadingScreen } from "./LoadingScreen";
 export { PageHeader } from "./PageHeader";
-export { AddScheduleForm } from "./AddScheduleForm";
+export { AddCommitmentSection } from "./AddCommitmentSection";
+export { WeeklyTargetList } from "./WeeklyTargetList";
 export { WeekAgenda } from "./WeekAgenda";
 export { CompleteOnboardingButton } from "./CompleteOnboardingButton";
 export { PageContainer } from "./PageContainer";

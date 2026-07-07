@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * Monday-first ordering carrying real day_of_week ids (0=Sun..6=Sat),
- * same concept as the DAYS strip in app/onboarding/components/AddScheduleForm.tsx.
+ * same concept as the DAYS strip in app/onboarding/components/AddFixedSessionForm.tsx.
  */
 const DAYS = [
   { id: 1, short: "Mon" },
