@@ -14,7 +14,10 @@ import { createClient, getUser } from "@/lib/supabase/server";
 import { canCoach } from "@/lib/roles";
 import { mondayOf, planWeekForDate, toLocalYMD } from "@/lib/dates";
 import { hasHardCollision } from "@/lib/training-day";
+import { quotaProgress } from "@/lib/weekly-quotas";
+import { getWeeklyQuotas } from "@/app/onboarding/actions";
 import { AppShell } from "@/components/design-system/app-shell";
+import { QuotaChip } from "@/components/design-system/quota-chip";
 import { Button } from "@/components/ui/button";
 import { SportIcon } from "@/components/design-system/sport-chip";
 import { sportFromName } from "@/lib/sports";
@@ -80,6 +83,7 @@ export default async function CalendarPage({
     { data: schedules },
     { data: activePlans },
     { data: logs },
+    quotas,
   ] = await Promise.all([
     supabase.from("profiles").select("role").eq("id", user.id).single(),
     supabase
@@ -102,7 +106,16 @@ export default async function CalendarPage({
       .eq("user_id", user.id)
       .gte("date", mondayYmd)
       .lte("date", sundayYmd),
+    getWeeklyQuotas(),
   ]);
+
+  // Weekly-target progress for the VIEWED week: quotas are timeless targets
+  // and the logs query above is already scoped to this week's window, so
+  // past and future weeks score correctly. Informational only (FORMULAS.md §11).
+  const quotaChips = quotaProgress(quotas, logs ?? []);
+  const quotaNameById = new Map(
+    quotas.map((quota) => [quota.sport_type_id, quota.sport_types?.name]),
+  );
 
   const coachNav = canCoach(profile?.role);
   const plans = (activePlans ?? []) as ActivePlan[];
@@ -226,6 +239,23 @@ export default async function CalendarPage({
             <ChevronRight className="size-4" aria-hidden />
           </Link>
         </div>
+
+        {/* Weekly targets — quota progress for the viewed week */}
+        {quotaChips.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-muted-foreground text-xs font-medium">
+              Weekly targets
+            </span>
+            {quotaChips.map((chip) => (
+              <QuotaChip
+                key={chip.sport_type_id}
+                name={quotaNameById.get(chip.sport_type_id) ?? "Sport"}
+                done={chip.done}
+                target={chip.target}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Days */}
         <div className="flex flex-col gap-3">

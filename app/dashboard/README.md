@@ -13,6 +13,13 @@ The dashboard is the daily execution surface where users see today's plan and lo
 ## Key Behavior
 
 - Filters weekly schedule by today's weekday.
+- When the user has weekly targets (`weekly_quotas`), a quiet "This week" chip
+  row (shared `QuotaChip` from `components/design-system/`) shows per-sport
+  progress near the training block — e.g. `Running 1/2 · Strength 0/2` —
+  computed by `quotaProgress` (`lib/weekly-quotas.ts`) from the current Mon–Sun
+  week's completed logs (fetched alongside the page's other data in one
+  `Promise.all`). Informational only — no streak/hearts/XP effect
+  (`FORMULAS.md` §11); hidden when no quotas exist.
 - Surfaces today's AI training-plan items under "Today's plan" via the shared `PlanItemRow`, counted together with routine items in the day's done/total tally (meal notes excluded). Items are **blended across all active `training_plans`** (a user can hold one running + one hypertrophy plan concurrently); each plan resolves its own date-anchored week from its own `created_at`. When 2+ hard sessions (`run`/`strength`) land on today across plans, a soft chip ("2 intense workouts today — consider spacing them") appears via `hasHardCollision` (`lib/training-day.ts`).
 - Plan-item completion goes through the `complete_plan_item` RPC: it awards type-based XP (run/strength 60, stretch/mobility 30, recovery 20) and writes a `logs` row linked via `logs.plan_item_id`, so plan sessions feed the streak, calendar "logged" badge, and group nudges. Undo removes the log and compensates the XP, so toggling can't farm XP.
 - Prevents duplicate completion by checking existing logs for today.

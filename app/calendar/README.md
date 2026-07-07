@@ -30,6 +30,12 @@ longer a standalone nav tab.
   date can map to a different week number per plan.
 - Marks a day "logged" when any `logs` row for that date is `completed`, and
   strikes through routine items whose sport type was logged that day.
+- When the user has weekly targets (`weekly_quotas`), a "Weekly targets" chip
+  row (shared `QuotaChip` from `components/design-system/`) sits under the week
+  navigation, computed by `quotaProgress` (`lib/weekly-quotas.ts`) from the
+  **viewed** week's completed logs — the same week-scoped `logs` query the day
+  cells use — so past and future weeks score correctly. Informational only
+  (`FORMULAS.md` §11); hidden when no quotas exist.
 - When 2+ hard sessions (`run`/`strength`) land on the same day across plans, a
   soft chip ("2 intense workouts today — consider spacing them") appears on that cell,
   via `hasHardCollision` (`lib/training-day.ts`). No load coordination beyond

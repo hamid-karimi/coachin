@@ -28,7 +28,10 @@ import { tierFromLeague } from "@/lib/tiers";
 import { getCoachingSummary } from "@/app/coaching/lib/coaching-hub-data";
 import { getGoalsWithProgress } from "@/lib/goals-data";
 import { settleUserStreak } from "@/lib/streak-data";
-import { planWeekForDate } from "@/lib/dates";
+import { mondayOf, planWeekForDate, toLocalYMD } from "@/lib/dates";
+import { quotaProgress } from "@/lib/weekly-quotas";
+import { getWeeklyQuotas } from "@/app/onboarding/actions";
+import { QuotaChip } from "@/components/design-system/quota-chip";
 import { hasHardCollision } from "@/lib/training-day";
 import { GOAL_TYPE_META } from "@/lib/goals";
 import { Progress } from "@/components/ui/progress";
@@ -122,9 +125,20 @@ export default async function Dashboard() {
     return todaysLogs?.some((log) => log.sport_type_id === sportId);
   };
 
+  // Current local week window (Mon–Sun) for weekly-target progress.
+  const weekMonday = mondayOf(today);
+  const weekSunday = new Date(weekMonday);
+  weekSunday.setDate(weekMonday.getDate() + 6);
+
   // Coaching card (plan Phase 5): only coach-capable roles with ≥1 trainee.
   const isCoachCapable = canCoach(profile.role);
-  const [coachingSummary, goalsData, { data: activePlans }] = await Promise.all([
+  const [
+    coachingSummary,
+    goalsData,
+    { data: activePlans },
+    quotas,
+    { data: weekLogs },
+  ] = await Promise.all([
     isCoachCapable
       ? getCoachingSummary(supabase, user.id)
       : Promise.resolve({ traineeCount: 0, trainedThisWeek: 0 }),
@@ -135,7 +149,20 @@ export default async function Dashboard() {
       .eq("user_id", user.id)
       .eq("status", "active")
       .order("plan_kind"),
+    getWeeklyQuotas(),
+    supabase
+      .from("logs")
+      .select("date, sport_type_id, status")
+      .eq("user_id", user.id)
+      .gte("date", toLocalYMD(weekMonday))
+      .lte("date", toLocalYMD(weekSunday)),
   ]);
+
+  // Weekly-target progress (informational only — FORMULAS.md §11).
+  const quotaChips = quotaProgress(quotas, weekLogs ?? []);
+  const quotaNameById = new Map(
+    quotas.map((quota) => [quota.sport_type_id, quota.sport_types?.name]),
+  );
 
   const plans = (activePlans ?? []) as {
     id: string;
@@ -392,6 +419,23 @@ export default async function Dashboard() {
                 aria-hidden
               />
             </Link>
+          </div>
+        )}
+
+        {/* Weekly targets — quiet quota progress for the current week */}
+        {quotaChips.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1.5 px-0.5">
+            <span className="text-muted-foreground text-xs font-medium">
+              This week
+            </span>
+            {quotaChips.map((chip) => (
+              <QuotaChip
+                key={chip.sport_type_id}
+                name={quotaNameById.get(chip.sport_type_id) ?? "Sport"}
+                done={chip.done}
+                target={chip.target}
+              />
+            ))}
           </div>
         )}
 
