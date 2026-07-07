@@ -289,8 +289,8 @@ export default async function CalendarPage({
                   <div className="flex flex-col gap-1.5">
                     {collision && (
                       <p className="bg-flame-tint text-flame-ink inline-flex items-center gap-1.5 self-start rounded-full px-2.5 py-1 text-[11px] font-medium">
-                        <TriangleAlert className="size-3" aria-hidden />2 hard
-                        sessions — consider spacing them.
+                        <TriangleAlert className="size-3" aria-hidden />2
+                        intense workouts today — consider spacing them.
                       </p>
                     )}
                     {routines.map((s, i) => {

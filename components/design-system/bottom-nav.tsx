@@ -20,6 +20,12 @@ export type NavKey =
   | "coaching"
   | "profile";
 
+/** Sentinel for routes that live under the IA but are not a tab (Programs
+ * `/training`, the routine editor `/onboarding`). When it is the active value
+ * no nav item matches, so the bar renders with nothing highlighted — these
+ * routes are gateways reached from Calendar/Profile, not standalone tabs. */
+export const NO_TAB = "__none__";
+
 const ITEMS: {
   key: NavKey;
   label: string;
@@ -38,7 +44,7 @@ const ITEMS: {
 ];
 
 interface BottomNavProps {
-  active?: NavKey;
+  active?: NavKey | typeof NO_TAB;
   onNavigate?: (key: NavKey) => void;
   /** Server pages set this from the viewer's role — no client role checks. */
   coachNav?: boolean;

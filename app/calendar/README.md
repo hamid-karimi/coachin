@@ -9,6 +9,9 @@ plans, and logged workouts on real calendar dates.
   **all** active `training_plans` + their `plan_items`, and the week's `logs`.
   Orchestration only; day cells are rendered inline. Week is chosen via the
   `?week=<YYYY-MM-DD>` anchor.
+- `loading.tsx`: static skeleton (server component; `animate-pulse` +
+  `bg-secondary` blocks) shown while the page's server data resolves, matching
+  the `max-w-3xl` container, header, week-nav, and seven day cells.
 
 ## Time-first IA
 
@@ -28,7 +31,7 @@ longer a standalone nav tab.
 - Marks a day "logged" when any `logs` row for that date is `completed`, and
   strikes through routine items whose sport type was logged that day.
 - When 2+ hard sessions (`run`/`strength`) land on the same day across plans, a
-  soft chip ("2 hard sessions — consider spacing them") appears on that cell,
+  soft chip ("2 intense workouts today — consider spacing them") appears on that cell,
   via `hasHardCollision` (`lib/training-day.ts`). No load coordination beyond
   the nudge.
 

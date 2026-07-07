@@ -14,7 +14,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
-import type { NavKey } from "./bottom-nav";
+import { NO_TAB, type NavKey } from "./bottom-nav";
 
 /** Route map shared between the sidebar and the mobile bottom nav. */
 export function routeFor(key: NavKey): string {
@@ -37,12 +37,12 @@ export function routeFor(key: NavKey): string {
 }
 
 /** Derive the active NavKey from the current pathname. Programs (/training)
- * and the routine editor (/onboarding) are reached from Calendar, so they
- * highlight the Calendar gateway rather than a standalone tab. */
-export function keyFromPath(pathname: string | null): NavKey {
+ * and the routine editor (/onboarding) highlight no tab (NO_TAB) — they are
+ * gateways reached from Calendar/Profile, not standalone daily surfaces. */
+export function keyFromPath(pathname: string | null): NavKey | typeof NO_TAB {
+  if (pathname?.startsWith("/onboarding")) return NO_TAB;
+  if (pathname?.startsWith("/training")) return NO_TAB;
   if (pathname?.startsWith("/calendar")) return "calendar";
-  if (pathname?.startsWith("/onboarding")) return "calendar";
-  if (pathname?.startsWith("/training")) return "calendar";
   if (pathname?.startsWith("/nutrition")) return "nutrition";
   if (pathname?.startsWith("/community")) return "community";
   if (pathname?.startsWith("/coaching")) return "coaching";

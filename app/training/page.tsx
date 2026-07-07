@@ -205,8 +205,12 @@ export default async function TrainingPage({
             </Button>
           </div>
         </div>
-        {sections.map((section) => (
-          <PlanSection key={section.id} plan={section} />
+        {sections.map((section, index) => (
+          <PlanSection
+            key={section.id}
+            plan={section}
+            secondary={index > 0}
+          />
         ))}
       </div>
     </AppShell>

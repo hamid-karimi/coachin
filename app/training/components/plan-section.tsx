@@ -9,6 +9,7 @@ import {
 import { planItemDate, toLocalYMD } from "@/lib/dates";
 import { hasHardCollision } from "@/lib/training-day";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { PlanItemRow, type PlanItem } from "./plan-item-row";
 import { ArchivePlanButton } from "./archive-plan-button";
 
@@ -51,7 +52,19 @@ function weekHref(planId: string, week: number): string {
   return `/training?${weekParamFor(planId)}=${week}`;
 }
 
-export function PlanSection({ plan }: { plan: PlanSectionData }) {
+/**
+ * A single active plan. `secondary` marks any plan after the first when
+ * multiple stack on the page: the header and week-nav get a lighter, more
+ * compact treatment so the repeated chrome recedes, while every control
+ * (independent week nav, archive, check-in banner) stays fully functional.
+ */
+export function PlanSection({
+  plan,
+  secondary = false,
+}: {
+  plan: PlanSectionData;
+  secondary?: boolean;
+}) {
   const byDay = new Map<number, PlanItem[]>();
   for (const item of plan.items) {
     const list = byDay.get(item.day_of_week) ?? [];
@@ -60,10 +73,20 @@ export function PlanSection({ plan }: { plan: PlanSectionData }) {
   }
 
   return (
-    <section className="flex flex-col gap-5">
+    <section
+      className={cn(
+        "flex flex-col gap-5",
+        secondary && "border-border border-t pt-6",
+      )}
+    >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-foreground font-display text-xl font-bold tracking-tight md:text-2xl">
+          <h2
+            className={cn(
+              "text-foreground font-display font-bold tracking-tight",
+              secondary ? "text-lg" : "text-xl md:text-2xl",
+            )}
+          >
             {plan.title}
           </h2>
           <p className="text-muted-foreground text-sm">
@@ -104,11 +127,12 @@ export function PlanSection({ plan }: { plan: PlanSectionData }) {
         </p>
       )}
 
-      {/* Week navigation */}
+      {/* Week navigation — lighter (ghost) buttons on stacked secondary plans
+          so the repeated control recedes; nav stays fully independent. */}
       <div className="flex items-center justify-between">
         <Button
           asChild
-          variant="outline"
+          variant={secondary ? "ghost" : "outline"}
           size="sm"
           className={plan.week <= 1 ? "pointer-events-none opacity-40" : ""}
         >
@@ -138,7 +162,7 @@ export function PlanSection({ plan }: { plan: PlanSectionData }) {
         </div>
         <Button
           asChild
-          variant="outline"
+          variant={secondary ? "ghost" : "outline"}
           size="sm"
           className={
             plan.week >= plan.weeks_total
@@ -180,8 +204,8 @@ export function PlanSection({ plan }: { plan: PlanSectionData }) {
               </h3>
               {collision && (
                 <p className="bg-flame-tint text-flame-ink inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium">
-                  <TriangleAlert className="size-3.5" aria-hidden />2 hard
-                  sessions today — consider spacing them.
+                  <TriangleAlert className="size-3.5" aria-hidden />2 intense
+                  workouts today — consider spacing them.
                 </p>
               )}
               <div className="flex flex-col gap-2">

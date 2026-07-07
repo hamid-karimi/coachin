@@ -9,6 +9,7 @@ import {
   GraduationCap,
   Heart,
   MoonStar,
+  Sparkles,
   Target,
   TriangleAlert,
   UtensilsCrossed,
@@ -368,29 +369,40 @@ export default async function Dashboard() {
 
         {/* Training plan card (roadmap branch 4) — blends all active plans */}
         {hasActivePlan && (
-          <Link
-            href="/training"
-            className="bg-card border-border hover:border-brand/40 group flex items-center gap-3.5 rounded-2xl border p-4 transition-colors"
-          >
-            <span className="bg-brand-tint text-brand-ink grid size-10 shrink-0 place-items-center rounded-xl">
-              <CalendarHeart className="size-5" aria-hidden />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="text-foreground block text-sm font-semibold">
-                {plans.length > 1 ? "Training plans" : "Training plan"}
+          <div className="flex flex-col gap-2">
+            <Link
+              href="/training"
+              className="bg-card border-border hover:border-brand/40 group flex items-center gap-3.5 rounded-2xl border p-4 transition-colors"
+            >
+              <span className="bg-brand-tint text-brand-ink grid size-10 shrink-0 place-items-center rounded-xl">
+                <CalendarHeart className="size-5" aria-hidden />
               </span>
-              <span className="text-muted-foreground block text-[13px]">
-                {plans.length > 1 ? `${plans.length} active · ` : ""}
-                {planToday.length > 0
-                  ? `${planToday.length} ${planToday.length === 1 ? "item" : "items"} today`
-                  : "rest day"}
+              <span className="min-w-0 flex-1">
+                <span className="text-foreground block text-sm font-semibold">
+                  {plans.length > 1 ? "Training plans" : "Training plan"}
+                </span>
+                <span className="text-muted-foreground block text-[13px]">
+                  {plans.length > 1 ? `${plans.length} active · ` : ""}
+                  {planToday.length > 0
+                    ? `${planToday.length} ${planToday.length === 1 ? "item" : "items"} today`
+                    : "rest day"}
+                </span>
               </span>
-            </span>
-            <ChevronRight
-              className="text-muted-foreground group-hover:text-foreground size-4 shrink-0 transition-colors"
-              aria-hidden
-            />
-          </Link>
+              <ChevronRight
+                className="text-muted-foreground group-hover:text-foreground size-4 shrink-0 transition-colors"
+                aria-hidden
+              />
+            </Link>
+            {/* Quiet gateway to the "My programs" manager (add/archive/routine),
+                mirroring the Calendar and Profile entry points. */}
+            <Link
+              href="/training"
+              className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 self-end px-1 text-[13px] font-medium transition-colors"
+            >
+              <Sparkles className="size-3.5" aria-hidden />
+              Manage programs
+            </Link>
+          </div>
         )}
 
         {/* Group-streak nudge (roadmap branch 6) */}
@@ -540,8 +552,8 @@ export default async function Dashboard() {
                   </p>
                   {planCollision && (
                     <p className="bg-flame-tint text-flame-ink inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium">
-                      <TriangleAlert className="size-3.5" aria-hidden />2 hard
-                      sessions today — consider spacing them.
+                      <TriangleAlert className="size-3.5" aria-hidden />2
+                      intense workouts today — consider spacing them.
                     </p>
                   )}
                   {planToday.map((item) => (

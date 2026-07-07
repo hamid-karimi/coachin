@@ -25,9 +25,16 @@ per-program **archive** (`ArchivePlanButton` in each `PlanSection`), and an
   plan's title, and renders one `PlanSection` per active plan — each with its
   own week navigation (per-plan `?w_<planId>` query param, week anchored to that
   plan's `created_at`). Orchestration only.
+- `loading.tsx`: static skeleton (server component; `animate-pulse` +
+  `bg-secondary` blocks) shown while the page's server data resolves, matching
+  the `max-w-3xl` container, header, and a plan section's week-nav + day rhythm.
 - `components/plan-section.tsx`: presentational section for a single plan —
-  title, summary, per-plan week nav, and the day-by-day items. Shows a soft
-  "2 hard sessions today" chip on any day where 2+ `run`/`strength` items land
+  title, summary, per-plan week nav, and the day-by-day items. When plans
+  stack, sections after the first render with a `secondary` prop that lightens
+  the chrome (smaller header, a top divider, and ghost week-nav buttons) while
+  keeping every control — independent week nav, archive, check-in banner —
+  fully functional. Shows a soft
+  "2 intense workouts today" chip on any day where 2+ `run`/`strength` items land
   (via `hasHardCollision` from `lib/training-day.ts`).
 - `new/page.tsx`: entry chooser ("Running" vs "Build muscle") and, per `kind`,
   renders the running intake (`IntakeWizard`) or `HypertrophyWizard`.
