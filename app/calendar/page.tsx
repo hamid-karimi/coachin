@@ -42,6 +42,7 @@ type PlanItemRow = {
   day_of_week: number;
   item_type: string;
   title: string;
+  description: string | null;
   is_completed: boolean;
   details: PlanItemDetails | null;
 };
@@ -139,7 +140,7 @@ export default async function CalendarPage({
       const { data: items } = await supabase
         .from("plan_items")
         .select(
-          "plan_id, week, day_of_week, item_type, title, is_completed, details",
+          "plan_id, week, day_of_week, item_type, title, description, is_completed, details",
         )
         .in("plan_id", planIds)
         .in("week", weekNums);

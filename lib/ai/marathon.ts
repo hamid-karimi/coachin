@@ -52,7 +52,10 @@ export type PlanItemInput = {
     | "mobility"
     | "recovery"
     | "meal_note";
+  /** Short human-readable session name (≤60 chars), the card text. */
   title: string;
+  /** Full session detail — exercise list, structure — shown in detail views. */
+  description?: string;
   details: {
     distance_km?: number;
     pace_min_km?: string;
@@ -89,6 +92,8 @@ export function validateItems(raw: unknown): PlanItemInput[] {
     const day = Number(item.day_of_week);
     const type = String(item.item_type ?? "");
     const title = String(item.title ?? "").trim();
+    const description =
+      typeof item.description === "string" ? item.description.trim() : "";
     if (!Number.isInteger(week) || week < 1 || week > 24) continue;
     if (!Number.isInteger(day) || day < 0 || day > 6) continue;
     if (!ITEM_TYPES.has(type) || !title) continue;
@@ -102,6 +107,7 @@ export function validateItems(raw: unknown): PlanItemInput[] {
       day_of_week: day,
       item_type: type as PlanItemInput["item_type"],
       title: title.slice(0, 200),
+      description: description ? description.slice(0, 2000) : undefined,
       details: {
         distance_km:
           typeof details.distance_km === "number"
@@ -178,9 +184,10 @@ export async function generateMarathonPlan(
 
   const commonRules = [
     `- Exactly ${intake.days_per_week} training days per week (day_of_week: 0=Sunday..6=Saturday); remaining days get ONE recovery item.`,
+    `- Every item: "title" is a SHORT human-readable session name, max 60 characters (e.g. "Easy run 5k", "Strength — hips & core", "Long run 18k"). Put the full exercise list and session detail in "description" — NEVER in the title.`,
     `- Every run item: details.distance_km, details.pace_min_km (like "5:40"), short details.notes.`,
     `- Add ONE meal_note item per week (day_of_week of the long run) with practical fueling guidance in details.notes.`,
-    `- Strength items must be RUNNER-SPECIFIC — hips, glutes, calves, core, with a single-leg bias — and name concrete exercises in the title (e.g. "Strength: single-leg RDL + calf raises + side plank").${intake.experience_level === "new" ? " The athlete is new: bodyweight-first strength, no barbell work." : ""}`,
+    `- Strength items must be RUNNER-SPECIFIC — hips, glutes, calves, core, with a single-leg bias — short title (e.g. "Strength — single-leg focus") and the concrete exercise list with sets x reps in "description" (e.g. "Single-leg RDL 3x10 + calf raises 3x15 + side plank 3x30s").${intake.experience_level === "new" ? " The athlete is new: bodyweight-first strength, no barbell work." : ""}`,
     `- Every strength, stretch and mobility item (and run items with drills) gets details.video_query: a concise English YouTube SEARCH query for exercise form (e.g. "single leg romanian deadlift form"), max 80 chars. NEVER produce a youtube.com URL or a video id — only the search words.`,
     `- Respect the athlete's current volume: never jump weekly km more than ~10%.`,
     `- summary: 2-3 sentences describing the plan's approach.`,
@@ -248,6 +255,7 @@ export async function generateMarathonPlan(
                 ],
               },
               title: { type: Type.STRING },
+              description: { type: Type.STRING, nullable: true },
               details: {
                 type: Type.OBJECT,
                 properties: {

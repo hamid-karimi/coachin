@@ -11,6 +11,7 @@ export type PlanWeekItem = {
   day_of_week: number;
   item_type: string;
   title: string;
+  description: string | null;
   is_completed: boolean;
   details: PlanItemDetails | null;
 };
@@ -87,7 +88,7 @@ export async function getCurrentPlanWeekItems(): Promise<PlanWeekItem[]> {
     const week = planWeekOf(plan.created_at, plan.weeks_total);
     const { data: items } = await supabase
       .from("plan_items")
-      .select("id, day_of_week, item_type, title, details, is_completed")
+      .select("id, day_of_week, item_type, title, description, details, is_completed")
       .eq("plan_id", plan.id)
       .eq("week", week)
       .order("day_of_week");
