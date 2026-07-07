@@ -22,6 +22,13 @@ export function sportMeta(sport: Sport) {
 
 interface SportChipProps {
   sport: Sport;
+  /**
+   * Overrides the canonical sport label with the real name. Several distinct
+   * sport types (Yoga, Pilates, …) all canonicalize to the `mobility` icon, so
+   * without this they would all read as "Mobility" — pass the actual name to
+   * keep them distinguishable while still using the right icon.
+   */
+  label?: string;
   /** XP multiplier, e.g. 1.5 — highlighted in volt when above 1×. */
   multiplier?: number;
   selected?: boolean;
@@ -34,11 +41,13 @@ interface SportChipProps {
  */
 export function SportChip({
   sport,
+  label,
   multiplier,
   selected = false,
   className,
 }: SportChipProps) {
-  const { label, icon: Icon } = SPORTS[sport];
+  const { label: canonicalLabel, icon: Icon } = SPORTS[sport];
+  const displayLabel = label ?? canonicalLabel;
   const boosted = (multiplier ?? 1) > 1;
 
   return (
@@ -52,7 +61,7 @@ export function SportChip({
       )}
     >
       <Icon className="size-4 text-muted-foreground" aria-hidden />
-      {label}
+      {displayLabel}
       {multiplier !== undefined && (
         <span
           className={cn(

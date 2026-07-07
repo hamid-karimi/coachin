@@ -52,7 +52,7 @@ export function PlanSessionSheet({
       open={item !== null}
       onClose={onClose}
       title={item?.title ?? ""}
-      description="From your AI plan · edit it in Plan"
+      description="From your AI plan · edit it in Training"
     >
       {item && (
         <div className="flex flex-col gap-4">

@@ -203,3 +203,19 @@ body {
     var(--ember-to)
   );
 }
+
+/*
+ * Respect the OS "reduce motion" setting: neutralize every transition and
+ * animation (including tw-animate-css and skeleton pulses) to near-zero so
+ * motion-sensitive users get a still, instant UI instead of movement.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

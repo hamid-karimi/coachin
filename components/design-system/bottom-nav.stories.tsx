@@ -13,6 +13,7 @@ const meta: Meta<typeof BottomNav> = {
       control: "inline-radio",
       options: [
         "home",
+        "training",
         "calendar",
         "nutrition",
         "community",

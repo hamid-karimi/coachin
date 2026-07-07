@@ -3,6 +3,7 @@
 import * as React from "react";
 import {
   Home,
+  Dumbbell,
   CalendarRange,
   Users,
   GraduationCap,
@@ -14,7 +15,6 @@ import { cn } from "@/lib/utils";
 
 export type NavKey =
   | "home"
-  | "plan"
   | "training"
   | "calendar"
   | "nutrition"
@@ -27,10 +27,12 @@ const ITEMS: {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
 }[] = [
-  // Mobile bottom bar: the daily-use surfaces. "Calendar" is the gateway to
-  // the training plan + routine; the routine editor (/onboarding) is reached
-  // from there and from the desktop sidebar's "Plan" item.
+  // Time-first IA shared by mobile + desktop, with Training kept prominent as
+  // the core create/manage surface. Today + Calendar are the time surfaces;
+  // Training (/training) is the "My programs" manager where plans are created
+  // and managed. The routine editor (/onboarding) is reached from there.
   { key: "home", label: "Today", icon: Home },
+  { key: "training", label: "Training", icon: Dumbbell },
   { key: "calendar", label: "Calendar", icon: CalendarRange },
   { key: "nutrition", label: "Meals", icon: UtensilsCrossed },
   { key: "community", label: "Community", icon: Users },

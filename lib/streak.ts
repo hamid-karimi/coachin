@@ -16,9 +16,17 @@ export type StreakState = {
 };
 
 export type DayOutcome = {
-  /** A completed workout was logged that day (routine or plan). */
+  /**
+   * A completed workout was logged that day (routine or ANY plan). The streak
+   * is day-based and global, so a single completed log — of any discipline —
+   * makes the day trained, even if other scheduled sessions were skipped.
+   */
   trained: boolean;
-  /** That day had a scheduled session — a routine or a non-meal plan item. */
+  /**
+   * That day had a scheduled session — a routine or a non-meal plan item from
+   * ANY active plan. The caller (SQL `evaluate_user_streak`) unions across all
+   * active plans, so one plan requiring the day is enough.
+   */
   requiredDay: boolean;
 };
 

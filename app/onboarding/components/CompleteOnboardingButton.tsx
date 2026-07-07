@@ -1,20 +1,26 @@
+"use client";
+
+import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
+import { useActionToast } from "@/components/hooks/use-action-toast";
+import { completeOnboarding } from "../actions";
+import { useRedirect } from "../hooks";
 
 interface CompleteOnboardingButtonProps {
-  onSubmit: (formData: FormData) => void;
-  /** Number of distinct days with at least one session. */
+  /** Number of distinct days with at least one fixed session. */
   plannedDayCount?: number;
-  /** Estimated weekly XP from the current plan. */
+  /** Estimated weekly XP from the current fixed sessions. */
   estimatedWeeklyXp?: number;
-  isPending?: boolean;
 }
 
 export function CompleteOnboardingButton({
-  onSubmit,
   plannedDayCount = 0,
   estimatedWeeklyXp,
-  isPending = false,
 }: CompleteOnboardingButtonProps) {
+  const [state, formAction, isPending] = useActionState(completeOnboarding, {});
+  useActionToast(state);
+  useRedirect({ redirectUrl: state.redirect });
+
   const empty = plannedDayCount === 0;
 
   return (
@@ -37,7 +43,7 @@ export function CompleteOnboardingButton({
             </>
           )}
         </p>
-        <form action={onSubmit}>
+        <form action={formAction}>
           <Button
             type='submit'
             variant='brand'
@@ -52,7 +58,7 @@ export function CompleteOnboardingButton({
         </form>
       </div>
       <p className='text-muted-foreground/70 mt-3 text-center text-xs sm:text-right'>
-        You can change this anytime in Plan
+        You can come back and edit your commitments anytime
       </p>
     </div>
   );

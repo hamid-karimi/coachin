@@ -21,6 +21,7 @@ function ymdCompact(date: Date): string {
 
 type PlanItemRow = {
   id: string;
+  plan_id: string;
   week: number;
   day_of_week: number;
   item_type: string;
@@ -45,21 +46,28 @@ export async function GET() {
   }
 
   const supabase = await createClient();
-  const { data: plan } = await supabase
+  const { data: plans } = await supabase
     .from("training_plans")
     .select("id, created_at, intake")
     .eq("user_id", user.id)
     .eq("status", "active")
-    .maybeSingle();
+    .order("plan_kind");
 
-  if (!plan) {
+  const activePlans = (plans ?? []) as { id: string; created_at: string }[];
+  if (activePlans.length === 0) {
     return new Response("No active plan", { status: 404 });
   }
 
+  const createdAtByPlan = new Map(
+    activePlans.map((plan) => [plan.id, plan.created_at]),
+  );
   const { data: items } = await supabase
     .from("plan_items")
-    .select("id, week, day_of_week, item_type, title, details")
-    .eq("plan_id", plan.id)
+    .select("id, plan_id, week, day_of_week, item_type, title, details")
+    .in(
+      "plan_id",
+      activePlans.map((plan) => plan.id),
+    )
     .order("week")
     .order("day_of_week");
 
@@ -73,7 +81,9 @@ export async function GET() {
 
   for (const item of (items ?? []) as PlanItemRow[]) {
     if (item.item_type === "meal_note") continue; // notes aren't calendar events
-    const date = planItemDate(plan.created_at, item.week, item.day_of_week);
+    const createdAt = createdAtByPlan.get(item.plan_id);
+    if (!createdAt) continue;
+    const date = planItemDate(createdAt, item.week, item.day_of_week);
     const start = ymdCompact(date);
     const nextDay = new Date(date);
     nextDay.setDate(date.getDate() + 1);

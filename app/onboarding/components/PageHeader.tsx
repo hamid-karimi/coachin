@@ -6,7 +6,7 @@ interface PageHeaderProps {
 export function PageHeader({ title, description }: PageHeaderProps) {
   return (
     <div className='mb-6'>
-      <p className='text-overline'>Your training week</p>
+      <p className='text-overline'>Your commitments</p>
       <h1 className='text-foreground font-display mt-1 text-[26px] font-bold tracking-tight'>
         {title}
       </h1>

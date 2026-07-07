@@ -28,6 +28,15 @@ export type TraineeAdherence = {
   scheduledCount: number;
 };
 
+/** One active plan's current-week adherence, so a coach sees every plan a
+ *  trainee is running — not just whichever one happened to be read last. */
+export type PlanAdherence = {
+  planId: string;
+  /** 'race' (running) or 'hypertrophy' (strength). */
+  kind: string;
+  adherencePct: number;
+};
+
 export type CoachingHubData = {
   /** Active trainee relationships for the signed-in coach. */
   students: StudentRelationship[];
@@ -39,8 +48,8 @@ export type CoachingHubData = {
   weeklyXpByUserId: Map<string, number>;
   /** userId → this week's schedule adherence (logs + schedules). */
   adherenceByUserId: Map<string, TraineeAdherence>;
-  /** userId → current-week training-plan adherence % (active plans only). */
-  planAdherenceByUserId: Map<string, number>;
+  /** userId → per-active-plan current-week adherence (one entry per plan). */
+  planAdherenceByUserId: Map<string, PlanAdherence[]>;
   /** Monday of the current week, YYYY-MM-DD (local time). */
   weekStart: string;
 };
@@ -223,11 +232,11 @@ export async function getCoachingHubData(
   // Readable via the coach SELECT policies in 20260705160000_weekly_checkins;
   // before that migration applies, RLS silently returns nothing and no chip
   // renders. Uses the same deterministic math as the athlete's check-in.
-  const planAdherenceByUserId = new Map<string, number>();
+  const planAdherenceByUserId = new Map<string, PlanAdherence[]>();
   if (traineeIds.length > 0) {
     const { data: rawPlans } = await supabase
       .from("training_plans")
-      .select("id, user_id, created_at, weeks_total")
+      .select("id, user_id, created_at, weeks_total, plan_kind")
       .in("user_id", traineeIds)
       .eq("status", "active");
     const plans = (rawPlans ?? []) as {
@@ -235,6 +244,7 @@ export async function getCoachingHubData(
       user_id: string;
       created_at: string;
       weeks_total: number;
+      plan_kind: string;
     }[];
     if (plans.length > 0) {
       const weekByPlanId = new Map(
@@ -265,7 +275,13 @@ export async function getCoachingHubData(
         );
         if (weekItems.length === 0) continue;
         const scorecard = computeWeekScorecard(weekItems, []);
-        planAdherenceByUserId.set(plan.user_id, scorecard.adherence_pct);
+        const list = planAdherenceByUserId.get(plan.user_id) ?? [];
+        list.push({
+          planId: plan.id,
+          kind: plan.plan_kind,
+          adherencePct: scorecard.adherence_pct,
+        });
+        planAdherenceByUserId.set(plan.user_id, list);
       }
     }
   }

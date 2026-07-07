@@ -5,14 +5,17 @@
  */
 import { Type } from "@google/genai";
 import { generateJsonText } from "./text-json";
+import { anchorsPromptBlock, type PlanAnchor } from "./anchors";
 import type { ActivitySummary } from "@/lib/activity-parse";
 
 export type MarathonIntake = {
   /** Discriminates plan flavors inside training_plans.intake. */
   plan_kind: "race";
-  race_date: string;
-  /** "5k" | "10k" | "half" | "full" | "ultra" | "other" */
+  /** Null for a "base" plan (just start running, no race). */
+  race_date: string | null;
+  /** "base" | "5k" | "10k" | "half" | "full" | "ultra" | "other" */
   race_target: string;
+  /** 0 for a "base" plan — there is no target distance. */
   race_distance_km: number;
   /** "new" | "recreational" | "regular" | "competitive" */
   experience_level: string | null;
@@ -35,6 +38,8 @@ export type MarathonIntake = {
   weight_kg: number | null;
   training_history: string | null;
   activities: ActivitySummary[];
+  /** Fixed weekly commitments (schedules) — prompt constraints only. */
+  anchors: PlanAnchor[];
 };
 
 export type PlanItemInput = {
@@ -166,30 +171,56 @@ export async function generateMarathonPlan(
       competitive: "competitive runner (high volume, structured training background)",
     }[intake.experience_level ?? ""] ?? "unknown experience level";
 
-  const prompt = [
-    `Create a ${intake.weeks_total}-week training plan for a ${intake.race_distance_km}km race (${intake.race_target}).`,
-    `Athlete: ${athlete || "unknown"}. Experience: ${experience}. Training history: ${intake.training_history || "unknown"}.`,
-    intake.first_time_at_distance
-      ? `This is the athlete's FIRST race at this distance — no PB at or beyond ${intake.race_distance_km}km. Prioritize finishing healthy over time goals; be conservative with volume and pace targets.`
-      : null,
-    `PBs: ${pbs || "none"}. Current weekly volume: ${intake.weekly_km ?? "unknown"}km, longest recent run ${intake.longest_run_km ?? "unknown"}km.`,
-    `Recent uploaded runs: ${recent}.`,
-    `Race date: ${intake.race_date}. Goal time: ${intake.goal_time ?? "finish comfortably"}.`,
-    `Injuries/limitations: ${intake.injuries || "none reported"}.`,
-    `Rules:`,
+  const isBase = intake.race_target === "base";
+
+  // "" when the athlete has no fixed commitments — filtered out below.
+  const anchorConstraints = anchorsPromptBlock(intake.anchors);
+
+  const commonRules = [
     `- Exactly ${intake.days_per_week} training days per week (day_of_week: 0=Sunday..6=Saturday); remaining days get ONE recovery item.`,
-    `- Weekly structure: quality run(s), easy runs, one long run (progressing, stepback every 4th week, taper appropriately for the race distance), strength 1-2x, stretch 1x, and ONE mobility item (item_type "mobility": hip/ankle mobility or yoga-for-runners).`,
-    `- Scale everything to the ${intake.race_distance_km}km target: long-run peaks, interval distances, and taper length must fit the race distance and the athlete's experience level.`,
     `- Every run item: details.distance_km, details.pace_min_km (like "5:40"), short details.notes.`,
     `- Add ONE meal_note item per week (day_of_week of the long run) with practical fueling guidance in details.notes.`,
-    `- Titles short and concrete ("Easy run 8k", "Intervals 6x800m", "Long run 26k").`,
     `- Strength items must be RUNNER-SPECIFIC — hips, glutes, calves, core, with a single-leg bias — and name concrete exercises in the title (e.g. "Strength: single-leg RDL + calf raises + side plank").${intake.experience_level === "new" ? " The athlete is new: bodyweight-first strength, no barbell work." : ""}`,
     `- Every strength, stretch and mobility item (and run items with drills) gets details.video_query: a concise English YouTube SEARCH query for exercise form (e.g. "single leg romanian deadlift form"), max 80 chars. NEVER produce a youtube.com URL or a video id — only the search words.`,
     `- Respect the athlete's current volume: never jump weekly km more than ~10%.`,
     `- summary: 2-3 sentences describing the plan's approach.`,
-  ]
-    .filter(Boolean)
-    .join("\n");
+  ];
+
+  const prompt = isBase
+    ? [
+        `Create a ${intake.weeks_total}-week BASE-BUILDING running plan for someone who just wants to start running and build a consistent, injury-free habit. There is NO race and NO goal time — do NOT include a taper, goal-pace work, or race-specific peaking.`,
+        `Athlete: ${athlete || "unknown"}. Experience: ${experience}. Training history: ${intake.training_history || "unknown"}.`,
+        `PBs: ${pbs || "none"}. Current weekly volume: ${intake.weekly_km ?? "unknown"}km, longest recent run ${intake.longest_run_km ?? "unknown"}km.`,
+        `Recent uploaded runs: ${recent}.`,
+        `Injuries/limitations: ${intake.injuries || "none reported"}.`,
+        anchorConstraints,
+        `Rules:`,
+        `- Weekly structure: mostly EASY, conversational-pace runs (use run/walk intervals for a new runner), ONE slightly longer run that grows gently, strength 1-2x, stretch 1x, and ONE mobility item (item_type "mobility": hip/ankle mobility or yoga-for-runners).`,
+        `- Progress volume gradually week over week with a lighter "stepback" every 4th week; keep intensity low — the goal is aerobic base and consistency, not speed.`,
+        `- Titles short and concrete ("Easy run 4k", "Run/walk 30min", "Easy run 6k").`,
+        ...commonRules,
+      ]
+        .filter(Boolean)
+        .join("\n")
+    : [
+        `Create a ${intake.weeks_total}-week training plan for a ${intake.race_distance_km}km race (${intake.race_target}).`,
+        `Athlete: ${athlete || "unknown"}. Experience: ${experience}. Training history: ${intake.training_history || "unknown"}.`,
+        intake.first_time_at_distance
+          ? `This is the athlete's FIRST race at this distance — no PB at or beyond ${intake.race_distance_km}km. Prioritize finishing healthy over time goals; be conservative with volume and pace targets.`
+          : null,
+        `PBs: ${pbs || "none"}. Current weekly volume: ${intake.weekly_km ?? "unknown"}km, longest recent run ${intake.longest_run_km ?? "unknown"}km.`,
+        `Recent uploaded runs: ${recent}.`,
+        `Race date: ${intake.race_date}. Goal time: ${intake.goal_time ?? "finish comfortably"}.`,
+        `Injuries/limitations: ${intake.injuries || "none reported"}.`,
+        anchorConstraints,
+        `Rules:`,
+        `- Weekly structure: quality run(s), easy runs, one long run (progressing, stepback every 4th week, taper appropriately for the race distance), strength 1-2x, stretch 1x, and ONE mobility item (item_type "mobility": hip/ankle mobility or yoga-for-runners).`,
+        `- Scale everything to the ${intake.race_distance_km}km target: long-run peaks, interval distances, and taper length must fit the race distance and the athlete's experience level.`,
+        `- Titles short and concrete ("Easy run 8k", "Intervals 6x800m", "Long run 26k").`,
+        ...commonRules,
+      ]
+        .filter(Boolean)
+        .join("\n");
 
   const result = await generateJsonText({
     prompt,

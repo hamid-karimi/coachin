@@ -1,4 +1,3 @@
-export { useAddSession } from "./useAddSession";
-export { useLoadData } from "./useLoadData";
 export { useRedirect } from "./useRedirect";
-export { useRefreshSchedules } from "./useRefreshSchedules";
+// Retained from the inline-add redesign (currently unused by the "My week" page).
+export { useAddSession } from "./useAddSession";

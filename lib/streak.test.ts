@@ -62,6 +62,24 @@ describe("nextStreakState", () => {
     expect(state).toEqual({ streak: 0, best: 10, hearts: MAX_HEARTS });
   });
 
+  it("keeps the streak when a day required by two plans is trained via one log", () => {
+    // Multi-plan: a running plan AND a hypertrophy plan both schedule this day
+    // (requiredDay collapses their union to true). The user completed the run
+    // but skipped the lift — any completed log makes the day trained, so the
+    // streak extends and stays safe.
+    expect(nextStreakState(base, { trained: true, requiredDay: true })).toEqual(
+      { streak: 6, best: 8, hearts: 3 },
+    );
+  });
+
+  it("spends a heart when a multi-plan required day has no completed log", () => {
+    // Same two plans schedule the day, but nothing was completed anywhere —
+    // a fully-missed required day spends a heart, streak frozen.
+    expect(
+      nextStreakState(base, { trained: false, requiredDay: true }),
+    ).toEqual({ streak: 5, best: 8, hearts: 1 });
+  });
+
   it("normalizes out-of-range hearts before applying rules", () => {
     const weird = { streak: 3, best: 3, hearts: 99 };
     expect(

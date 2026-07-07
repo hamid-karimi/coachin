@@ -13,21 +13,20 @@ type ActionToastState = {
 };
 
 export function useActionToast(state: ActionToastState) {
-  const lastToastKeyRef = useRef("");
+  // Key on the state object identity, not its text. `useActionState` returns a
+  // NEW state object per submission but the SAME reference across unrelated
+  // re-renders — so this fires once per submission (even two identical failures
+  // in a row) without double-firing on re-render.
+  const lastStateRef = useRef<ActionToastState | null>(null);
 
   useEffect(() => {
-    if (!state) {
+    if (!state || state === lastStateRef.current) {
       return;
     }
+    lastStateRef.current = state;
 
     if (state.error) {
-      const key = `error:${state.error}`;
-
-      if (lastToastKeyRef.current !== key) {
-        lastToastKeyRef.current = key;
-        toast.error(state.error);
-      }
-
+      toast.error(state.error);
       return;
     }
 
@@ -36,13 +35,6 @@ export function useActionToast(state: ActionToastState) {
     }
 
     const status = state.status ?? "success";
-    const key = `${status}:${state.message}`;
-
-    if (lastToastKeyRef.current === key) {
-      return;
-    }
-
-    lastToastKeyRef.current = key;
 
     if (status === "info") {
       toast.info(state.message);

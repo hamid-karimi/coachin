@@ -9,10 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
   generateHypertrophyPlanAction,
-  type MarathonActionState,
+  type TrainingActionState,
 } from "../actions";
 
-const initialState: MarathonActionState = {};
+const initialState: TrainingActionState = {};
 
 const selectClassName =
   "border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-9 w-full rounded-md border px-3 py-1 text-sm outline-none focus-visible:ring-[3px]";

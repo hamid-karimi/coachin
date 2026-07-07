@@ -40,6 +40,25 @@ export function formatSeconds(totalSeconds: number): string {
   return hours > 0 ? `${hours}:${mm}:${ss}` : `${mm}:${ss}`;
 }
 
+/** Program lengths (weeks) offered for a no-race "just start running" plan. */
+export const BASE_WEEK_OPTIONS = [6, 8, 12] as const;
+
+/** Default program length when base_weeks is missing or invalid. */
+export const BASE_WEEKS_DEFAULT = 8;
+
+/**
+ * Clamp a base-building program length to the DB-allowed 4..24 weeks,
+ * falling back to BASE_WEEKS_DEFAULT for missing/invalid input.
+ */
+export function clampBaseWeeks(value: unknown): number {
+  if (value === null || value === undefined || value === "") {
+    return BASE_WEEKS_DEFAULT;
+  }
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return BASE_WEEKS_DEFAULT;
+  return Math.min(24, Math.max(4, Math.round(parsed)));
+}
+
 export const RACE_DISTANCES_KM = {
   pb_5k: 5,
   pb_10k: 10,

@@ -16,10 +16,10 @@ import {
 import { cn } from "@/lib/utils";
 import { planItemDetailLine, planItemVideoUrl } from "@/lib/plan-items";
 import { useActionToast } from "@/components/hooks/use-action-toast";
-import { togglePlanItemAction, type MarathonActionState } from "../actions";
+import { togglePlanItemAction, type TrainingActionState } from "../actions";
 import { SessionLogSheet } from "./session-log-sheet";
 
-const initialState: MarathonActionState = {};
+const initialState: TrainingActionState = {};
 
 const LOGGABLE_TYPES = new Set(["run", "strength"]);
 
@@ -162,7 +162,13 @@ export function PlanItemRow({
             <button
               type="submit"
               disabled={pending || !canMarkDone}
-              title={opensLabel}
+              // Hover tooltip: always describe what the control does, falling
+              // back to the "Opens <date>" hint while the item is still locked.
+              title={
+                item.is_completed
+                  ? "Mark as not done"
+                  : (opensLabel ?? "Mark as done")
+              }
               aria-label={
                 item.is_completed
                   ? "Mark as not done"

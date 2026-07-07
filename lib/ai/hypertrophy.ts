@@ -5,6 +5,7 @@
  */
 import { Type } from "@google/genai";
 import { generateJsonText } from "./text-json";
+import { anchorsPromptBlock, type PlanAnchor } from "./anchors";
 import {
   validateItems,
   type GeneratedPlan,
@@ -30,6 +31,8 @@ export type HypertrophyIntake = {
   height_cm: number | null;
   weight_kg: number | null;
   training_history: string | null;
+  /** Fixed weekly commitments (schedules) — prompt constraints only. */
+  anchors: PlanAnchor[];
 };
 
 const EQUIPMENT_RULES: Record<string, string> = {
@@ -61,6 +64,8 @@ export async function generateHypertrophyPlan(
     intake.calorie_target
       ? `The athlete targets ${intake.calorie_target} kcal/day — align protein guidance with it.`
       : null,
+    // "" when the athlete has no fixed commitments — filtered out below.
+    anchorsPromptBlock(intake.anchors),
     `Rules:`,
     `- Exactly ${intake.days_per_week} strength days per week (day_of_week: 0=Sunday..6=Saturday) using a sensible split for that frequency; remaining days get ONE recovery item.`,
     `- Every strength item (item_type "strength"): concrete exercises in the title (e.g. "Upper push: bench press 4x8 + incline DB press 3x10 + lateral raises 3x15"), sets x reps in the title, details.duration_min, short details.notes on progression (add weight/reps week to week; deload around week ${Math.max(4, intake.weeks_total - 2)}).`,

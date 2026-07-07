@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { parseFit, parseGpx, type ActivitySummary } from "@/lib/activity-parse";
 import {
+  clampBaseWeeks,
   parseTimeToSeconds,
   raceDistanceKm,
   RACE_DISTANCES_KM,
@@ -20,6 +21,7 @@ import {
   generateHypertrophyPlan,
   type HypertrophyIntake,
 } from "@/lib/ai/hypertrophy";
+import type { PlanAnchor } from "@/lib/ai/anchors";
 import { toLocalYMD, yearsSince } from "@/lib/dates";
 import type { WeekScorecard } from "@/lib/scorecard";
 import {
@@ -27,7 +29,7 @@ import {
   redFlagPrecheck,
 } from "@/lib/ai/session-feedback";
 
-export type MarathonActionState = {
+export type TrainingActionState = {
   error?: string;
   success?: boolean;
   message?: string;
@@ -43,9 +45,9 @@ const MAX_FILE_BYTES = 4 * 1024 * 1024;
 
 /** Parse uploaded GPX/FIT files into run summaries (nothing is persisted). */
 export async function parseActivitiesAction(
-  _prevState: MarathonActionState,
+  _prevState: TrainingActionState,
   formData: FormData,
-): Promise<MarathonActionState> {
+): Promise<TrainingActionState> {
   const user = await getUser();
   if (!user) return { error: "You must be signed in" };
 
@@ -109,25 +111,44 @@ function optionalNumber(value: FormDataEntryValue | null): number | null {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
 }
 
+const MAX_ANCHORS = 21;
+
+/** The user's currently-active fixed weekly sessions (`schedules`), shaped for
+ *  the generators' prompt constraints. Best-effort: any failure returns [] —
+ *  anchors must never block plan generation. */
+async function fetchAnchors(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string,
+): Promise<PlanAnchor[]> {
+  const todayYmd = toLocalYMD(new Date());
+  const { data, error } = await supabase
+    .from("schedules")
+    .select("day_of_week, time, sport_types(name)")
+    .eq("user_id", userId)
+    .or(`starts_on.is.null,starts_on.lte.${todayYmd}`)
+    .or(`ends_on.is.null,ends_on.gte.${todayYmd}`)
+    .limit(MAX_ANCHORS);
+  if (error || !data) {
+    if (error) console.error("anchor schedules fetch failed:", error);
+    return [];
+  }
+  return data.map((row) => ({
+    day_of_week: Number(row.day_of_week),
+    time: row.time ?? null,
+    sport:
+      (row.sport_types as { name?: string } | null)?.name ?? "a fixed session",
+  }));
+}
+
 export async function generatePlanAction(
-  _prevState: MarathonActionState,
+  _prevState: TrainingActionState,
   formData: FormData,
-): Promise<MarathonActionState> {
+): Promise<TrainingActionState> {
   const user = await getUser();
   if (!user) return { error: "You must be signed in" };
 
-  const raceTargetRaw = String(formData.get("race_target") ?? "").trim();
-  const raceTarget = RACE_TARGETS.find(
-    (entry) => entry.value === raceTargetRaw,
-  )?.value as RaceTarget | undefined;
-  if (!raceTarget) {
-    return { error: "Pick your race distance" };
-  }
-  const customKm = optionalNumber(formData.get("custom_distance_km"));
-  const distanceKm = raceDistanceKm(raceTarget, customKm);
-  if (!distanceKm || distanceKm < 1 || distanceKm > 500) {
-    return { error: "Enter the race distance in km (1-500)" };
-  }
+  // "base" = just start running (no race); "race" = train for a race.
+  const mode = String(formData.get("mode") ?? "race") === "base" ? "base" : "race";
 
   const experienceRaw = String(formData.get("experience_level") ?? "").trim();
   const experienceLevel = ["new", "recreational", "regular", "competitive"].includes(
@@ -136,18 +157,69 @@ export async function generatePlanAction(
     ? experienceRaw
     : null;
 
-  const raceDateRaw = String(formData.get("race_date") ?? "").trim();
-  const raceDate = new Date(`${raceDateRaw}T00:00:00`);
-  if (!raceDateRaw || Number.isNaN(raceDate.getTime())) {
-    return { error: "Pick your race date" };
+  // Race target / distance / date / goal / weeks all depend on the mode.
+  let raceTarget: RaceTarget | "base";
+  let distanceKm: number;
+  let raceDateRaw: string | null;
+  let goalTime: string | null;
+  let weeksTotal: number;
+  let firstTimeAtDistance: boolean;
+
+  if (mode === "base") {
+    raceTarget = "base";
+    distanceKm = 0;
+    raceDateRaw = null;
+    goalTime = null;
+    weeksTotal = clampBaseWeeks(formData.get("base_weeks"));
+    firstTimeAtDistance = experienceLevel === "new";
+  } else {
+    const raceTargetRaw = String(formData.get("race_target") ?? "").trim();
+    const resolvedTarget = RACE_TARGETS.find(
+      (entry) => entry.value === raceTargetRaw,
+    )?.value as RaceTarget | undefined;
+    if (!resolvedTarget) {
+      return { error: "Pick your race distance" };
+    }
+    raceTarget = resolvedTarget;
+
+    const customKm = optionalNumber(formData.get("custom_distance_km"));
+    const resolvedKm = raceDistanceKm(resolvedTarget, customKm);
+    if (!resolvedKm || resolvedKm < 1 || resolvedKm > 500) {
+      return { error: "Enter the race distance in km (1-500)" };
+    }
+    distanceKm = resolvedKm;
+
+    raceDateRaw = String(formData.get("race_date") ?? "").trim();
+    const raceDate = new Date(`${raceDateRaw}T00:00:00`);
+    if (!raceDateRaw || Number.isNaN(raceDate.getTime())) {
+      return { error: "Pick your race date" };
+    }
+    const weeksUntil = Math.floor(
+      (raceDate.getTime() - Date.now()) / (7 * 24 * 60 * 60 * 1000),
+    );
+    if (weeksUntil < 4) {
+      return { error: "Race must be at least 4 weeks away for a useful plan" };
+    }
+    weeksTotal = Math.min(weeksUntil, 24);
+
+    goalTime = optionalTime(formData.get("goal_time"));
+
+    // First time at this distance = no PB at or beyond the target.
+    const pb5kForFirst = optionalTime(formData.get("pb_5k"));
+    const pb10kForFirst = optionalTime(formData.get("pb_10k"));
+    const pbHalfForFirst = optionalTime(formData.get("pb_half"));
+    const pbFullForFirst = optionalTime(formData.get("pb_full"));
+    const longestPbKm = pbFullForFirst
+      ? RACE_DISTANCES_KM.pb_full
+      : pbHalfForFirst
+        ? RACE_DISTANCES_KM.pb_half
+        : pb10kForFirst
+          ? RACE_DISTANCES_KM.pb_10k
+          : pb5kForFirst
+            ? RACE_DISTANCES_KM.pb_5k
+            : 0;
+    firstTimeAtDistance = longestPbKm < distanceKm - 0.01;
   }
-  const weeksUntil = Math.floor(
-    (raceDate.getTime() - Date.now()) / (7 * 24 * 60 * 60 * 1000),
-  );
-  if (weeksUntil < 4) {
-    return { error: "Race must be at least 4 weeks away for a useful plan" };
-  }
-  const weeksTotal = Math.min(weeksUntil, 24);
 
   const daysPerWeek = Number(formData.get("days_per_week"));
   if (!Number.isInteger(daysPerWeek) || daysPerWeek < 2 || daysPerWeek > 7) {
@@ -166,11 +238,14 @@ export async function generatePlanAction(
   }
 
   const supabase = await createClient();
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("birth_date, sex, height_cm, weight_kg, training_history")
-    .eq("id", user.id)
-    .single();
+  const [{ data: profile }, anchors] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("birth_date, sex, height_cm, weight_kg, training_history")
+      .eq("id", user.id)
+      .single(),
+    fetchAnchors(supabase, user.id),
+  ]);
 
   const age = profile?.birth_date
     ? Math.floor(
@@ -183,17 +258,6 @@ export async function generatePlanAction(
   const pb10k = optionalTime(formData.get("pb_10k"));
   const pbHalf = optionalTime(formData.get("pb_half"));
   const pbFull = optionalTime(formData.get("pb_full"));
-  // First time at this distance = no PB at or beyond the target.
-  const longestPbKm = pbFull
-    ? RACE_DISTANCES_KM.pb_full
-    : pbHalf
-      ? RACE_DISTANCES_KM.pb_half
-      : pb10k
-        ? RACE_DISTANCES_KM.pb_10k
-        : pb5k
-          ? RACE_DISTANCES_KM.pb_5k
-          : 0;
-  const firstTimeAtDistance = longestPbKm < distanceKm - 0.01;
 
   const intake: MarathonIntake = {
     plan_kind: "race",
@@ -202,7 +266,7 @@ export async function generatePlanAction(
     race_distance_km: distanceKm,
     experience_level: experienceLevel,
     first_time_at_distance: firstTimeAtDistance,
-    goal_time: optionalTime(formData.get("goal_time")),
+    goal_time: goalTime,
     weeks_total: weeksTotal,
     days_per_week: daysPerWeek,
     pb_5k: pb5k,
@@ -218,6 +282,7 @@ export async function generatePlanAction(
     weight_kg: profile?.weight_kg ?? null,
     training_history: profile?.training_history ?? null,
     activities,
+    anchors,
   };
 
   const plan = await generateMarathonPlan(intake);
@@ -234,6 +299,7 @@ export async function generatePlanAction(
     p_raw: plan.raw as Record<string, unknown>,
     p_model: plan.model,
     p_items: plan.items as unknown as Record<string, unknown>[],
+    p_plan_kind: "race",
   });
 
   if (error || !data?.success) {
@@ -250,9 +316,9 @@ const HYPERTROPHY_GOALS = new Set(["muscle_gain", "recomp"]);
 const EQUIPMENT_OPTIONS = new Set(["gym", "home", "bodyweight"]);
 
 export async function generateHypertrophyPlanAction(
-  _prevState: MarathonActionState,
+  _prevState: TrainingActionState,
   formData: FormData,
-): Promise<MarathonActionState> {
+): Promise<TrainingActionState> {
   const user = await getUser();
   if (!user) return { error: "You must be signed in" };
 
@@ -276,29 +342,34 @@ export async function generateHypertrophyPlanAction(
     String(formData.get("experience_level") ?? "").trim() || null;
 
   const supabase = await createClient();
-  const [{ data: profile }, { data: calorieGoal }, { data: analyzedPhoto }] =
-    await Promise.all([
-      supabase
-        .from("profiles")
-        .select("birth_date, sex, height_cm, weight_kg, training_history")
-        .eq("id", user.id)
-        .single(),
-      supabase
-        .from("goals")
-        .select("target_value")
-        .eq("user_id", user.id)
-        .eq("goal_type", "calorie_intake")
-        .eq("status", "active")
-        .maybeSingle(),
-      supabase
-        .from("body_photos")
-        .select("analysis")
-        .eq("user_id", user.id)
-        .not("analysis", "is", null)
-        .order("analyzed_at", { ascending: false })
-        .limit(1)
-        .maybeSingle(),
-    ]);
+  const [
+    { data: profile },
+    { data: calorieGoal },
+    { data: analyzedPhoto },
+    anchors,
+  ] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("birth_date, sex, height_cm, weight_kg, training_history")
+      .eq("id", user.id)
+      .single(),
+    supabase
+      .from("goals")
+      .select("target_value")
+      .eq("user_id", user.id)
+      .eq("goal_type", "calorie_intake")
+      .eq("status", "active")
+      .maybeSingle(),
+    supabase
+      .from("body_photos")
+      .select("analysis")
+      .eq("user_id", user.id)
+      .not("analysis", "is", null)
+      .order("analyzed_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    fetchAnchors(supabase, user.id),
+  ]);
 
   const analysis = analyzedPhoto?.analysis as {
     build_notes?: string;
@@ -327,6 +398,7 @@ export async function generateHypertrophyPlanAction(
     height_cm: profile?.height_cm ?? null,
     weight_kg: profile?.weight_kg ?? null,
     training_history: profile?.training_history ?? null,
+    anchors,
   };
 
   const plan = await generateHypertrophyPlan(intake);
@@ -346,6 +418,7 @@ export async function generateHypertrophyPlanAction(
     p_raw: plan.raw as Record<string, unknown>,
     p_model: plan.model,
     p_items: plan.items as unknown as Record<string, unknown>[],
+    p_plan_kind: "hypertrophy",
   });
 
   if (error || !data?.success) {
@@ -359,9 +432,9 @@ export async function generateHypertrophyPlanAction(
 }
 
 export async function togglePlanItemAction(
-  _prevState: MarathonActionState,
+  _prevState: TrainingActionState,
   formData: FormData,
-): Promise<MarathonActionState> {
+): Promise<TrainingActionState> {
   const user = await getUser();
   if (!user) return { error: "You must be signed in" };
 
@@ -442,9 +515,9 @@ function validateExercises(raw: unknown): ExerciseEntry[] {
 /** Log how a completed run/strength session actually went (everything beyond
  *  the plan item reference is optional) and award +10 XP idempotently. */
 export async function logSessionAction(
-  _prevState: MarathonActionState,
+  _prevState: TrainingActionState,
   formData: FormData,
-): Promise<MarathonActionState> {
+): Promise<TrainingActionState> {
   const user = await getUser();
   if (!user) return { error: "You must be signed in" };
 
@@ -620,9 +693,9 @@ function sanitizeScorecard(raw: unknown): WeekScorecard | null {
  *  ONLY the target week via the apply_week_adjustment RPC (which also awards
  *  +20 XP idempotently). Everything is re-validated server-side. */
 export async function applyCheckinAction(
-  _prevState: MarathonActionState,
+  _prevState: TrainingActionState,
   formData: FormData,
-): Promise<MarathonActionState> {
+): Promise<TrainingActionState> {
   const user = await getUser();
   if (!user) return { error: "You must be signed in" };
 
@@ -693,9 +766,9 @@ export async function applyCheckinAction(
 }
 
 export async function archivePlanAction(
-  _prevState: MarathonActionState,
+  _prevState: TrainingActionState,
   formData: FormData,
-): Promise<MarathonActionState> {
+): Promise<TrainingActionState> {
   const user = await getUser();
   if (!user) return { error: "You must be signed in" };
 
@@ -707,8 +780,7 @@ export async function archivePlanAction(
     .from("training_plans")
     .update({ status: "archived" })
     .eq("id", planId)
-    .eq("user_id", user.id)
-    .eq("status", "active");
+    .eq("user_id", user.id);
 
   if (error) {
     console.error("plan archive failed:", error);

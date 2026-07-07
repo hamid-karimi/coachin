@@ -4,9 +4,9 @@ import { useActionState } from "react";
 
 import { useActionToast } from "@/components/hooks/use-action-toast";
 import { Button } from "@/components/ui/button";
-import { applyCheckinAction, type MarathonActionState } from "../actions";
+import { applyCheckinAction, type TrainingActionState } from "../actions";
 
-const initialState: MarathonActionState = {};
+const initialState: TrainingActionState = {};
 
 /** The ONE mutation path of the check-in: hidden payload + confirm button. */
 export function ConfirmCheckinForm({
