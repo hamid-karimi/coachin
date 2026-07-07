@@ -1,6 +1,7 @@
 import { createClient, getUser } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { Flame, Heart } from "lucide-react";
+import Link from "next/link";
+import { CalendarHeart, ChevronRight, Flame, Heart, Pencil } from "lucide-react";
 
 import { AppShell } from "@/components/design-system/app-shell";
 import { StatCard } from "@/components/design-system/stat-card";
@@ -251,6 +252,53 @@ export default async function ProfilePage() {
         <section className="space-y-2.5">
           <h2 className="text-overline">Goals</h2>
           <GoalsSection active={goalsData.active} achieved={goalsData.achieved} />
+        </section>
+
+        {/* Training programs + recurring routine entry points */}
+        <section className="space-y-2.5">
+          <h2 className="text-overline">Training</h2>
+          <div className="bg-card border-border divide-border divide-y rounded-xl border px-4">
+            <Link
+              href="/training"
+              className="hover:bg-secondary/50 -mx-4 flex items-center gap-3 px-4 py-3"
+            >
+              <span className="bg-brand-tint text-brand-ink grid size-9 shrink-0 place-items-center rounded-lg">
+                <CalendarHeart className="size-4.5" aria-hidden />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="text-foreground block text-sm font-semibold">
+                  My programs
+                </span>
+                <span className="text-muted-foreground block text-xs">
+                  View, add, or archive your training programs
+                </span>
+              </span>
+              <ChevronRight
+                className="text-muted-foreground size-4 shrink-0"
+                aria-hidden
+              />
+            </Link>
+            <Link
+              href="/onboarding"
+              className="hover:bg-secondary/50 -mx-4 flex items-center gap-3 px-4 py-3"
+            >
+              <span className="bg-brand-tint text-brand-ink grid size-9 shrink-0 place-items-center rounded-lg">
+                <Pencil className="size-4.5" aria-hidden />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="text-foreground block text-sm font-semibold">
+                  Recurring routine
+                </span>
+                <span className="text-muted-foreground block text-xs">
+                  Edit your weekly training schedule
+                </span>
+              </span>
+              <ChevronRight
+                className="text-muted-foreground size-4 shrink-0"
+                aria-hidden
+              />
+            </Link>
+          </div>
         </section>
 
         {/* Body profile — feeds the AI program/diet intake (roadmap branch 1) */}

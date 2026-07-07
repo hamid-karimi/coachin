@@ -18,6 +18,8 @@ import { Label } from "@/components/ui/label";
 import {
   raceDistanceKm,
   suggestGoalForDistance,
+  BASE_WEEK_OPTIONS,
+  BASE_WEEKS_DEFAULT,
   RACE_TARGETS,
   type RaceTarget,
 } from "@/lib/running";
@@ -25,10 +27,10 @@ import type { ActivitySummary } from "@/lib/activity-parse";
 import {
   generatePlanAction,
   parseActivitiesAction,
-  type MarathonActionState,
+  type TrainingActionState,
 } from "../actions";
 
-const initialState: MarathonActionState = {};
+const initialState: TrainingActionState = {};
 
 const EXPERIENCE_LEVELS = [
   ["new", "New to running", "Starting from zero or walk/run"],
@@ -61,6 +63,7 @@ export function IntakeWizard({
   useActionToast(generateState);
   useActionToast(parseState);
 
+  const [mode, setMode] = useState<"base" | "race">("base");
   const [raceTarget, setRaceTarget] = useState<RaceTarget>("full");
   const [customKm, setCustomKm] = useState("");
   const [pbs, setPbs] = useState({
@@ -79,6 +82,8 @@ export function IntakeWizard({
   );
   const targetLabel =
     RACE_TARGETS.find((entry) => entry.value === raceTarget)?.label ?? "race";
+  // Step 4 summary: base mode has no race distance, so use a neutral noun.
+  const planLabel = mode === "base" ? "running" : targetLabel.toLowerCase();
   const hasAnyPb = Object.values(pbs).some((value) => value.trim() !== "");
 
   const suggestGoal = () => {
@@ -173,6 +178,9 @@ export function IntakeWizard({
       )}
 
       <form action={generateAction} className="space-y-4">
+        {/* Server branches on this: "base" = just start running, "race" = train for a race. */}
+        <input type="hidden" name="mode" value={mode} />
+
         {/* Step 1 — about you (profile snapshot) */}
         <div className={step === 1 ? "space-y-4" : "hidden"}>
           <div className="bg-card border-border space-y-3 rounded-xl border p-4">
@@ -192,46 +200,97 @@ export function IntakeWizard({
           </div>
         </div>
 
-        {/* Step 3 — your goal (distance, experience, race date, goal time) */}
+        {/* Step 3 — your goal (mode choice, then race or base fields) */}
         <div className={step === 3 ? "space-y-4" : "hidden"}>
           <div className="bg-card border-border space-y-4 rounded-xl border p-4">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div
+              role="radiogroup"
+              aria-label="What are you running for?"
+              className="bg-secondary flex gap-1 rounded-lg p-1"
+            >
+              {(
+                [
+                  ["base", "Just start running"],
+                  ["race", "Train for a race"],
+                ] as const
+              ).map(([value, label]) => {
+                const active = mode === value;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    role="radio"
+                    aria-checked={active}
+                    onClick={() => setMode(value)}
+                    className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                      active
+                        ? "bg-card text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {mode === "race" && (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label htmlFor="race_target">Race distance</Label>
+                  <select
+                    id="race_target"
+                    name="race_target"
+                    value={raceTarget}
+                    onChange={(event) =>
+                      setRaceTarget(event.target.value as RaceTarget)
+                    }
+                    className={selectClassName}
+                  >
+                    {RACE_TARGETS.map((entry) => (
+                      <option key={entry.value} value={entry.value}>
+                        {entry.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {needsCustomKm && (
+                  <div className="space-y-1.5">
+                    <Label htmlFor="custom_distance_km">Distance (km)</Label>
+                    <Input
+                      id="custom_distance_km"
+                      name="custom_distance_km"
+                      type="number"
+                      min={1}
+                      max={500}
+                      step="0.1"
+                      placeholder={raceTarget === "ultra" ? "50" : "25"}
+                      value={customKm}
+                      onChange={(event) => setCustomKm(event.target.value)}
+                      required
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {mode === "base" && (
               <div className="space-y-1.5">
-                <Label htmlFor="race_target">Race distance</Label>
+                <Label htmlFor="base_weeks">Program length</Label>
                 <select
-                  id="race_target"
-                  name="race_target"
-                  value={raceTarget}
-                  onChange={(event) =>
-                    setRaceTarget(event.target.value as RaceTarget)
-                  }
+                  id="base_weeks"
+                  name="base_weeks"
+                  defaultValue={String(BASE_WEEKS_DEFAULT)}
                   className={selectClassName}
                 >
-                  {RACE_TARGETS.map((entry) => (
-                    <option key={entry.value} value={entry.value}>
-                      {entry.label}
+                  {BASE_WEEK_OPTIONS.map((weeks) => (
+                    <option key={weeks} value={weeks}>
+                      {weeks} weeks
                     </option>
                   ))}
                 </select>
               </div>
-              {needsCustomKm && (
-                <div className="space-y-1.5">
-                  <Label htmlFor="custom_distance_km">Distance (km)</Label>
-                  <Input
-                    id="custom_distance_km"
-                    name="custom_distance_km"
-                    type="number"
-                    min={1}
-                    max={500}
-                    step="0.1"
-                    placeholder={raceTarget === "ultra" ? "50" : "25"}
-                    value={customKm}
-                    onChange={(event) => setCustomKm(event.target.value)}
-                    required
-                  />
-                </div>
-              )}
-            </div>
+            )}
 
             <div className="space-y-1.5">
               <Label htmlFor="experience_level">
@@ -251,43 +310,55 @@ export function IntakeWizard({
               </select>
             </div>
 
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                <Label htmlFor="race_date">Race date</Label>
-                <Input id="race_date" name="race_date" type="date" required />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="goal_time">Goal time (optional)</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="goal_time"
-                    name="goal_time"
-                    placeholder={raceTarget === "5k" ? "25:00" : "3:59:00"}
-                    value={goalTime}
-                    onChange={(event) => setGoalTime(event.target.value)}
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={suggestGoal}
-                    disabled={!hasAnyPb || !targetKm}
-                    title={
-                      hasAnyPb
-                        ? "Suggest from your PBs (Riegel formula)"
-                        : "Add a personal best in the previous step to get a suggestion"
-                    }
-                  >
-                    <Wand2 aria-hidden />
-                    Suggest
-                  </Button>
+            {mode === "race" && (
+              <>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="race_date">Race date</Label>
+                    <Input id="race_date" name="race_date" type="date" required />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="goal_time">Goal time (optional)</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="goal_time"
+                        name="goal_time"
+                        placeholder={raceTarget === "5k" ? "25:00" : "3:59:00"}
+                        value={goalTime}
+                        onChange={(event) => setGoalTime(event.target.value)}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={suggestGoal}
+                        disabled={!hasAnyPb || !targetKm}
+                        title={
+                          hasAnyPb
+                            ? "Suggest from your PBs (Riegel formula)"
+                            : "Add a personal best in the previous step to get a suggestion"
+                        }
+                      >
+                        <Wand2 aria-hidden />
+                        Suggest
+                      </Button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            <p className="text-muted-foreground text-xs">
-              First {targetLabel.toLowerCase()}? Leave the goal time empty —
-              the plan will target a strong, healthy finish instead of a time.
-            </p>
+                <p className="text-muted-foreground text-xs">
+                  First {targetLabel.toLowerCase()}? Leave the goal time empty —
+                  the plan will target a strong, healthy finish instead of a
+                  time.
+                </p>
+              </>
+            )}
+
+            {mode === "base" && (
+              <p className="text-muted-foreground text-xs">
+                No race, no pressure — this builds an easy, consistent running
+                habit with gentle progression, strength, and mobility.
+              </p>
+            )}
           </div>
         </div>
 
@@ -387,7 +458,7 @@ export function IntakeWizard({
           />
           <div className="bg-card border-border space-y-2 rounded-xl border p-4">
             <p className="text-foreground text-sm font-semibold">
-              Ready to generate your {targetLabel.toLowerCase()} plan
+              Ready to generate your {planLabel} plan
             </p>
             <p className="text-muted-foreground text-sm">
               {activities.length > 0

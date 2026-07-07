@@ -1,46 +1,41 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import {
-  CalendarHeart,
-  CalendarPlus,
-  ChevronLeft,
-  ChevronRight,
-  ClipboardCheck,
-  Sparkles,
-} from "lucide-react";
+import { CalendarHeart, CalendarPlus, Pencil, Plus, Sparkles } from "lucide-react";
 
 import { createClient, getUser } from "@/lib/supabase/server";
 import { canCoach } from "@/lib/roles";
-import {
-  daysUntil,
-  lastElapsedPlanWeek,
-  planItemDate,
-  planWeekOf,
-  toLocalYMD,
-} from "@/lib/dates";
+import { daysUntil, lastElapsedPlanWeek, planWeekOf } from "@/lib/dates";
+import { planTitleFor } from "@/lib/plan-title";
 import { AppShell } from "@/components/design-system/app-shell";
 import { Button } from "@/components/ui/button";
-import { PlanItemRow, type PlanItem } from "./components/plan-item-row";
-import { ArchivePlanButton } from "./components/archive-plan-button";
+import { type PlanItem } from "./components/plan-item-row";
+import {
+  PlanSection,
+  weekParamFor,
+  type PlanSectionData,
+} from "./components/plan-section";
 
 export const dynamic = "force-dynamic";
 
-// Monday-first display order carrying real day_of_week ids (0=Sun..6=Sat),
-// same convention as the coaching adherence strip.
-const DAYS = [
-  { id: 1, name: "Monday" },
-  { id: 2, name: "Tuesday" },
-  { id: 3, name: "Wednesday" },
-  { id: 4, name: "Thursday" },
-  { id: 5, name: "Friday" },
-  { id: 6, name: "Saturday" },
-  { id: 0, name: "Sunday" },
-];
+type ActivePlan = {
+  id: string;
+  race_date: string | null;
+  goal_time: string | null;
+  weeks_total: number;
+  summary: string | null;
+  created_at: string;
+  plan_kind: string;
+  intake: {
+    plan_kind?: string;
+    race_target?: string;
+    race_distance_km?: number;
+  } | null;
+};
 
-export default async function MarathonPage({
+export default async function TrainingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ week?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const user = await getUser();
   if (!user) {
@@ -48,19 +43,22 @@ export default async function MarathonPage({
   }
 
   const supabase = await createClient();
-  const [{ data: profile }, { data: plan }] = await Promise.all([
+  const [{ data: profile }, { data: plans }] = await Promise.all([
     supabase.from("profiles").select("role").eq("id", user.id).single(),
     supabase
       .from("training_plans")
-      .select("id, race_date, goal_time, weeks_total, summary, created_at, intake")
+      .select(
+        "id, race_date, goal_time, weeks_total, summary, created_at, plan_kind, intake",
+      )
       .eq("user_id", user.id)
       .eq("status", "active")
-      .maybeSingle(),
+      .order("plan_kind"),
   ]);
 
   const coachNav = canCoach(profile?.role);
+  const activePlans = (plans ?? []) as ActivePlan[];
 
-  if (!plan) {
+  if (activePlans.length === 0) {
     return (
       <AppShell coachNav={coachNav}>
         <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-4 py-16 text-center">
@@ -68,17 +66,17 @@ export default async function MarathonPage({
             <CalendarHeart className="size-7" aria-hidden />
           </span>
           <h1 className="text-foreground font-display text-2xl font-bold tracking-tight">
-            Train for your race
+            My programs
           </h1>
           <p className="text-muted-foreground max-w-md text-sm">
-            First 5k or full marathon — answer a few questions about your
-            running and get an AI-generated week-by-week program — runs with paces, strength, mobility,
-            recovery, and fueling notes.
+            Add a goal — running or building muscle — and get an AI-generated
+            week-by-week program with sessions, strength, mobility, recovery,
+            and fueling notes. You can run one program per discipline at once.
           </p>
           <Button asChild variant="brand" size="lg">
             <Link href="/training/new">
               <Sparkles aria-hidden />
-              Build my plan
+              Add a goal
             </Link>
           </Button>
         </div>
@@ -86,191 +84,130 @@ export default async function MarathonPage({
     );
   }
 
-  const currentWeek = planWeekOf(plan.created_at, plan.weeks_total);
-  const { week: weekParam } = await searchParams;
-  const week = Math.min(
-    Math.max(Number(weekParam) || currentWeek, 1),
-    plan.weeks_total,
-  );
+  const params = await searchParams;
+  const weekOf = (planId: string): number | undefined => {
+    const raw = params[weekParamFor(planId)];
+    const value = Array.isArray(raw) ? raw[0] : raw;
+    return value ? Number(value) : undefined;
+  };
+
+  // Resolve the shown week per plan, then fetch all plans' items for their
+  // shown week in one round-trip (guarded against an empty id list).
+  const shownWeek = new Map<string, number>();
+  for (const plan of activePlans) {
+    const currentWeek = planWeekOf(plan.created_at, plan.weeks_total);
+    const week = Math.min(
+      Math.max(weekOf(plan.id) ?? currentWeek, 1),
+      plan.weeks_total,
+    );
+    shownWeek.set(plan.id, week);
+  }
+
+  const planIds = activePlans.map((plan) => plan.id);
+  const { data: items } = await supabase
+    .from("plan_items")
+    .select("id, plan_id, week, day_of_week, item_type, title, details, is_completed")
+    .in("plan_id", planIds)
+    .order("day_of_week");
+
+  const itemsByPlan = new Map<string, PlanItem[]>();
+  for (const item of (items ?? []) as (PlanItem & {
+    plan_id: string;
+    week: number;
+  })[]) {
+    if (item.week !== shownWeek.get(item.plan_id)) continue;
+    const list = itemsByPlan.get(item.plan_id) ?? [];
+    list.push(item);
+    itemsByPlan.set(item.plan_id, list);
+  }
 
   // Weekly check-in banner: due when a plan week fully elapsed, a next week
   // exists to adjust, and no weekly_checkins row reviews it yet.
-  const reviewWeek = lastElapsedPlanWeek(plan.created_at, plan.weeks_total);
-  let checkinDue = false;
-  if (reviewWeek >= 1 && reviewWeek < plan.weeks_total) {
-    const { data: existingCheckin } = await supabase
+  const reviewWeekOf = new Map<string, number>();
+  const checkinCandidates: { plan_id: string; week: number }[] = [];
+  for (const plan of activePlans) {
+    const reviewWeek = lastElapsedPlanWeek(plan.created_at, plan.weeks_total);
+    reviewWeekOf.set(plan.id, reviewWeek);
+    if (reviewWeek >= 1 && reviewWeek < plan.weeks_total) {
+      checkinCandidates.push({ plan_id: plan.id, week: reviewWeek });
+    }
+  }
+  const reviewedKeys = new Set<string>();
+  if (checkinCandidates.length > 0) {
+    const { data: checkins } = await supabase
       .from("weekly_checkins")
-      .select("id")
-      .eq("plan_id", plan.id)
-      .eq("week", reviewWeek)
-      .maybeSingle();
-    checkinDue = !existingCheckin;
+      .select("plan_id, week")
+      .in(
+        "plan_id",
+        checkinCandidates.map((c) => c.plan_id),
+      );
+    for (const row of checkins ?? []) {
+      reviewedKeys.add(`${row.plan_id}:${row.week}`);
+    }
   }
 
-  const { data: items } = await supabase
-    .from("plan_items")
-    .select("id, week, day_of_week, item_type, title, details, is_completed")
-    .eq("plan_id", plan.id)
-    .eq("week", week)
-    .order("day_of_week");
-
-  const byDay = new Map<number, PlanItem[]>();
-  for (const item of (items ?? []) as PlanItem[]) {
-    const list = byDay.get(item.day_of_week) ?? [];
-    list.push(item);
-    byDay.set(item.day_of_week, list);
-  }
-
-  const intake = (plan.intake ?? {}) as {
-    plan_kind?: string;
-    race_target?: string;
-    race_distance_km?: number;
-  };
-  const isHypertrophy = intake.plan_kind === "hypertrophy";
-  const daysUntilRace = plan.race_date ? daysUntil(plan.race_date) : null;
-  const planTitle = isHypertrophy
-    ? "Muscle building plan"
-    : ({
-        "5k": "5k plan",
-        "10k": "10k plan",
-        half: "Half marathon plan",
-        full: "Marathon plan",
-        ultra: `Ultra plan${intake.race_distance_km ? ` (${intake.race_distance_km}km)` : ""}`,
-        other: `${intake.race_distance_km ?? "?"}km race plan`,
-      }[intake.race_target ?? "full"] ?? "Marathon plan");
+  const sections: PlanSectionData[] = activePlans.map((plan) => {
+    const currentWeek = planWeekOf(plan.created_at, plan.weeks_total);
+    const reviewWeek = reviewWeekOf.get(plan.id) ?? 0;
+    const checkinDue =
+      reviewWeek >= 1 &&
+      reviewWeek < plan.weeks_total &&
+      !reviewedKeys.has(`${plan.id}:${reviewWeek}`);
+    return {
+      id: plan.id,
+      created_at: plan.created_at,
+      weeks_total: plan.weeks_total,
+      summary: plan.summary,
+      goal_time: plan.goal_time,
+      race_date: plan.race_date,
+      title: planTitleFor(plan.plan_kind, plan.intake),
+      isHypertrophy: plan.plan_kind === "hypertrophy",
+      daysUntilRace: plan.race_date ? daysUntil(plan.race_date) : null,
+      currentWeek,
+      week: shownWeek.get(plan.id) ?? currentWeek,
+      reviewWeek,
+      checkinDue,
+      items: itemsByPlan.get(plan.id) ?? [],
+    };
+  });
 
   return (
     <AppShell coachNav={coachNav}>
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h1 className="text-foreground font-display text-2xl font-bold tracking-tight md:text-[28px]">
-              {planTitle}
+              My programs
             </h1>
             <p className="text-muted-foreground text-sm">
-              {daysUntilRace !== null ? `Race in ${daysUntilRace} days · ` : ""}
-              {plan.goal_time ? `goal ${plan.goal_time} · ` : ""}
-              {plan.weeks_total} weeks
-              {isHypertrophy ? " · progressive overload" : ""}
+              Your active training programs — one per discipline. Add a goal,
+              archive a program, or edit your recurring routine.
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <Button asChild variant="brand" size="sm">
+              <Link href="/training/new">
+                <Plus aria-hidden />
+                Add a goal
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/onboarding">
+                <Pencil aria-hidden />
+                Edit routine
+              </Link>
+            </Button>
             <Button asChild variant="outline" size="sm">
               <a href="/training/calendar.ics" download>
                 <CalendarPlus aria-hidden />
                 Add to calendar
               </a>
             </Button>
-            <ArchivePlanButton planId={plan.id} />
           </div>
         </div>
-
-        {checkinDue && (
-          <div className="bg-brand-tint border-brand-ink/20 flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4">
-            <div>
-              <p className="text-brand-ink text-sm font-semibold">
-                Week {reviewWeek} review ready — see your scorecard
-              </p>
-              <p className="text-muted-foreground text-xs">
-                Review how the week went and confirm the adjustment for week{" "}
-                {reviewWeek + 1}.
-              </p>
-            </div>
-            <Button asChild variant="brand" size="sm">
-              <Link href="/training/checkin">
-                <ClipboardCheck aria-hidden />
-                Start check-in
-              </Link>
-            </Button>
-          </div>
-        )}
-
-        {plan.summary && (
-          <p className="bg-card border-border text-muted-foreground rounded-xl border p-4 text-sm">
-            {plan.summary}
-          </p>
-        )}
-
-        {/* Week navigation */}
-        <div className="flex items-center justify-between">
-          <Button
-            asChild
-            variant="outline"
-            size="sm"
-            className={week <= 1 ? "pointer-events-none opacity-40" : ""}
-          >
-            <Link href={`/training?week=${week - 1}`}>
-              <ChevronLeft aria-hidden />
-              Week {week - 1}
-            </Link>
-          </Button>
-          <div className="text-center">
-            <p className="text-foreground text-sm font-semibold">
-              Week {week} of {plan.weeks_total}
-              {week === currentWeek ? (
-                <span className="text-brand-ink"> · current</span>
-              ) : null}
-            </p>
-            <p className="text-muted-foreground text-xs">
-              {planItemDate(plan.created_at, week, 1).toLocaleDateString(
-                "en-US",
-                { month: "short", day: "numeric" },
-              )}{" "}
-              –{" "}
-              {planItemDate(plan.created_at, week, 0).toLocaleDateString(
-                "en-US",
-                { month: "short", day: "numeric" },
-              )}
-            </p>
-          </div>
-          <Button
-            asChild
-            variant="outline"
-            size="sm"
-            className={
-              week >= plan.weeks_total ? "pointer-events-none opacity-40" : ""
-            }
-          >
-            <Link href={`/training?week=${week + 1}`}>
-              Week {week + 1}
-              <ChevronRight aria-hidden />
-            </Link>
-          </Button>
-        </div>
-
-        {/* Days */}
-        <div className="flex flex-col gap-4">
-          {DAYS.map((day) => {
-            const dayItems = byDay.get(day.id) ?? [];
-            if (dayItems.length === 0) return null;
-            const dayDate = planItemDate(plan.created_at, week, day.id);
-            const dayYmd = toLocalYMD(dayDate);
-            const isToday = dayYmd === toLocalYMD(new Date());
-            return (
-              <section key={day.id} className="space-y-2">
-                <h2 className="text-overline flex items-center gap-2">
-                  <span>{day.name}</span>
-                  <span className="text-muted-foreground/70 normal-case">
-                    {dayDate.toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </span>
-                  {isToday && (
-                    <span className="bg-brand-tint text-brand-ink rounded-full px-2 py-0.5 text-[10px] font-bold normal-case">
-                      Today
-                    </span>
-                  )}
-                </h2>
-                <div className="flex flex-col gap-2">
-                  {dayItems.map((item) => (
-                    <PlanItemRow key={item.id} item={item} date={dayYmd} />
-                  ))}
-                </div>
-              </section>
-            );
-          })}
-        </div>
+        {sections.map((section) => (
+          <PlanSection key={section.id} plan={section} />
+        ))}
       </div>
     </AppShell>
   );

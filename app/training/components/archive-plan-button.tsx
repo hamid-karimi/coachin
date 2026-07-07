@@ -5,9 +5,9 @@ import { useState, useActionState } from "react";
 import { useActionToast } from "@/components/hooks/use-action-toast";
 import { ConfirmDialog } from "@/components/design-system/confirm-dialog";
 import { Button } from "@/components/ui/button";
-import { archivePlanAction, type MarathonActionState } from "../actions";
+import { archivePlanAction, type TrainingActionState } from "../actions";
 
-const initialState: MarathonActionState = {};
+const initialState: TrainingActionState = {};
 
 export function ArchivePlanButton({ planId }: { planId: string }) {
   const [state, formAction, pending] = useActionState(

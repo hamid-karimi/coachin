@@ -10,11 +10,13 @@ import {
   Pencil,
   Repeat,
   Sparkles,
+  TriangleAlert,
 } from "lucide-react";
 
 import { createClient, getUser } from "@/lib/supabase/server";
 import { canCoach } from "@/lib/roles";
 import { mondayOf, planWeekForDate, toLocalYMD } from "@/lib/dates";
+import { hasHardCollision } from "@/lib/training-day";
 import { AppShell } from "@/components/design-system/app-shell";
 import { Button } from "@/components/ui/button";
 import { SportIcon } from "@/components/design-system/sport-chip";
@@ -39,6 +41,7 @@ type ScheduleRow = {
 };
 
 type PlanItemRow = {
+  plan_id: string;
   week: number;
   day_of_week: number;
   item_type: string;
@@ -46,6 +49,8 @@ type PlanItemRow = {
   is_completed: boolean;
   details: { video_query?: string } | null;
 };
+
+type ActivePlan = { id: string; created_at: string; weeks_total: number };
 
 function within(date: string, start: string | null, end: string | null) {
   return (!start || date >= start) && (!end || date <= end);
@@ -77,50 +82,81 @@ export default async function CalendarPage({
   const todayYmd = toLocalYMD(new Date());
 
   const supabase = await createClient();
-  const [{ data: profile }, { data: schedules }, { data: plan }, { data: logs }] =
-    await Promise.all([
-      supabase.from("profiles").select("role").eq("id", user.id).single(),
-      supabase
-        .from("schedules")
-        .select(
-          "day_of_week, time, starts_on, ends_on, sport_type_id, sport_types(name)",
-        )
-        .eq("user_id", user.id)
-        .or(`starts_on.is.null,starts_on.lte.${sundayYmd}`)
-        .or(`ends_on.is.null,ends_on.gte.${mondayYmd}`),
-      supabase
-        .from("training_plans")
-        .select("id, created_at, weeks_total")
-        .eq("user_id", user.id)
-        .eq("status", "active")
-        .maybeSingle(),
-      supabase
-        .from("logs")
-        .select("date, sport_type_id, status")
-        .eq("user_id", user.id)
-        .gte("date", mondayYmd)
-        .lte("date", sundayYmd),
-    ]);
+  const [
+    { data: profile },
+    { data: schedules },
+    { data: activePlans },
+    { data: logs },
+  ] = await Promise.all([
+    supabase.from("profiles").select("role").eq("id", user.id).single(),
+    supabase
+      .from("schedules")
+      .select(
+        "day_of_week, time, starts_on, ends_on, sport_type_id, sport_types(name)",
+      )
+      .eq("user_id", user.id)
+      .or(`starts_on.is.null,starts_on.lte.${sundayYmd}`)
+      .or(`ends_on.is.null,ends_on.gte.${mondayYmd}`),
+    supabase
+      .from("training_plans")
+      .select("id, created_at, weeks_total")
+      .eq("user_id", user.id)
+      .eq("status", "active")
+      .order("plan_kind"),
+    supabase
+      .from("logs")
+      .select("date, sport_type_id, status")
+      .eq("user_id", user.id)
+      .gte("date", mondayYmd)
+      .lte("date", sundayYmd),
+  ]);
 
   const coachNav = canCoach(profile?.role);
+  const plans = (activePlans ?? []) as ActivePlan[];
 
-  // Plan items for the weeks this calendar week spans.
+  // Plan items across ALL active plans for the weeks this calendar week spans.
+  // Each plan anchors its own plan-week from its own created_at, so a given
+  // calendar date may map to a different week number per plan.
+  const planIds = plans.map((p) => p.id);
   let planItems: PlanItemRow[] = [];
-  if (plan) {
+  if (planIds.length > 0) {
     const weekNums = Array.from(
       new Set(
-        days
-          .map((d) => planWeekForDate(plan.created_at, d))
-          .filter((w) => w >= 1 && w <= plan.weeks_total),
+        plans.flatMap((p) =>
+          days
+            .map((d) => planWeekForDate(p.created_at, d))
+            .filter((w) => w >= 1 && w <= p.weeks_total),
+        ),
       ),
     );
     if (weekNums.length > 0) {
       const { data: items } = await supabase
         .from("plan_items")
-        .select("week, day_of_week, item_type, title, is_completed, details")
-        .eq("plan_id", plan.id)
+        .select(
+          "plan_id, week, day_of_week, item_type, title, is_completed, details",
+        )
+        .in("plan_id", planIds)
         .in("week", weekNums);
       planItems = (items ?? []) as PlanItemRow[];
+    }
+  }
+
+  // date ymd → merged plan items landing that day (across all active plans).
+  const planByDate = new Map<string, PlanItemRow[]>();
+  for (const plan of plans) {
+    for (const date of days) {
+      const ymd = toLocalYMD(date);
+      const planWeek = planWeekForDate(plan.created_at, date);
+      const dayItems = planItems.filter(
+        (p) =>
+          p.plan_id === plan.id &&
+          p.week === planWeek &&
+          p.day_of_week === date.getDay(),
+      );
+      if (dayItems.length === 0) continue;
+      const list = planByDate.get(ymd) ?? [];
+      list.push(...dayItems);
+      planByDate.set(ymd, list);
     }
   }
 
@@ -154,7 +190,7 @@ export default async function CalendarPage({
               Calendar
             </h1>
             <p className="text-muted-foreground text-sm">
-              Your recurring routine, active plan, and logged workouts on real
+              Your recurring routine, active plans, and logged workouts on real
               dates.
             </p>
           </div>
@@ -165,14 +201,12 @@ export default async function CalendarPage({
                 Edit routine
               </Link>
             </Button>
-            {plan && (
-              <Button asChild variant="outline" size="sm">
-                <Link href="/training">
-                  <Sparkles aria-hidden />
-                  Plan
-                </Link>
-              </Button>
-            )}
+            <Button asChild variant="outline" size="sm">
+              <Link href="/training">
+                <Sparkles aria-hidden />
+                Manage programs
+              </Link>
+            </Button>
           </div>
         </div>
 
@@ -215,12 +249,8 @@ export default async function CalendarPage({
                 s.day_of_week === dow &&
                 within(ymd, s.starts_on, s.ends_on),
             );
-            const planWeek = plan
-              ? planWeekForDate(plan.created_at, date)
-              : null;
-            const dayPlan = planItems.filter(
-              (p) => p.week === planWeek && p.day_of_week === dow,
-            );
+            const dayPlan = planByDate.get(ymd) ?? [];
+            const collision = hasHardCollision(dayPlan);
 
             const empty = routines.length === 0 && dayPlan.length === 0;
 
@@ -257,6 +287,12 @@ export default async function CalendarPage({
                   <p className="text-muted-foreground text-xs">Rest</p>
                 ) : (
                   <div className="flex flex-col gap-1.5">
+                    {collision && (
+                      <p className="bg-flame-tint text-flame-ink inline-flex items-center gap-1.5 self-start rounded-full px-2.5 py-1 text-[11px] font-medium">
+                        <TriangleAlert className="size-3" aria-hidden />2 hard
+                        sessions — consider spacing them.
+                      </p>
+                    )}
                     {routines.map((s, i) => {
                       const done =
                         s.sport_type_id != null &&

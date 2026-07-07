@@ -69,11 +69,17 @@ export async function getCurrentPlanWeekItems(): Promise<PlanWeekItem[]> {
     } = await supabase.auth.getUser();
     if (!user) return [];
 
+    // A user may hold several active plans (one per discipline). This view
+    // shows one plan-week's items beside the manual routine; take the most
+    // recent active plan without erroring on multiple rows. (Blending every
+    // active plan here is a possible future enhancement — see /training.)
     const { data: plan } = await supabase
       .from("training_plans")
       .select("id, created_at, weeks_total")
       .eq("user_id", user.id)
       .eq("status", "active")
+      .order("created_at", { ascending: false })
+      .limit(1)
       .maybeSingle();
     if (!plan) return [];
 

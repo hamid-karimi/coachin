@@ -51,11 +51,11 @@ export default async function NewTrainingPlanPage({
         <div className="mx-auto flex w-full max-w-2xl flex-col gap-5">
           <div>
             <h1 className="text-foreground font-display text-2xl font-bold tracking-tight md:text-[28px]">
-              {kind === "race" ? "Race plan" : "Muscle building plan"}
+              {kind === "race" ? "Running plan" : "Muscle building plan"}
             </h1>
             <p className="text-muted-foreground text-sm">
               {kind === "race"
-                ? "From your first 5k to a full marathon and beyond — answer a few questions and get a week-by-week program: running, strength, mobility, recovery, and fueling notes."
+                ? "Just want to build a running habit, or training for a 5k, marathon, or ultra — answer a few questions and get a week-by-week program: running, strength, mobility, recovery, and fueling notes."
                 : "A progressive-overload program built around your equipment, experience, and body profile — with form videos and protein guidance."}
             </p>
           </div>
@@ -98,11 +98,11 @@ export default async function NewTrainingPlanPage({
           </span>
           <span className="min-w-0 flex-1">
             <span className="text-foreground block text-base font-bold">
-              A race
+              Running
             </span>
             <span className="text-muted-foreground block text-sm">
-              5k, 10k, half, marathon, or ultra — runs with paces, long-run
-              progression, and taper.
+              Start from zero to build a habit, or train for a race — 5k to
+              ultra — with paces, long-run progression, and taper.
             </span>
           </span>
           <ChevronRight

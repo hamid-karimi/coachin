@@ -5,8 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Home,
-  CalendarDays,
-  CalendarHeart,
   CalendarRange,
   Users,
   GraduationCap,
@@ -23,10 +21,8 @@ export function routeFor(key: NavKey): string {
   switch (key) {
     case "home":
       return "/dashboard";
-    case "plan":
-      return "/onboarding";
-    case "training":
-      return "/training";
+    case "calendar":
+      return "/calendar";
     case "nutrition":
       return "/nutrition";
     case "community":
@@ -40,10 +36,13 @@ export function routeFor(key: NavKey): string {
   }
 }
 
-/** Derive the active NavKey from the current pathname. */
+/** Derive the active NavKey from the current pathname. Programs (/training)
+ * and the routine editor (/onboarding) are reached from Calendar, so they
+ * highlight the Calendar gateway rather than a standalone tab. */
 export function keyFromPath(pathname: string | null): NavKey {
-  if (pathname?.startsWith("/onboarding")) return "plan";
-  if (pathname?.startsWith("/training")) return "training";
+  if (pathname?.startsWith("/calendar")) return "calendar";
+  if (pathname?.startsWith("/onboarding")) return "calendar";
+  if (pathname?.startsWith("/training")) return "calendar";
   if (pathname?.startsWith("/nutrition")) return "nutrition";
   if (pathname?.startsWith("/community")) return "community";
   if (pathname?.startsWith("/coaching")) return "coaching";
@@ -57,8 +56,6 @@ const ITEMS: {
   icon: React.ComponentType<{ className?: string }>;
 }[] = [
   { key: "home", label: "Today", icon: Home },
-  { key: "plan", label: "Plan", icon: CalendarDays },
-  { key: "training", label: "Training", icon: CalendarHeart },
   { key: "calendar", label: "Calendar", icon: CalendarRange },
   { key: "nutrition", label: "Nutrition", icon: UtensilsCrossed },
   { key: "community", label: "Community", icon: Users },

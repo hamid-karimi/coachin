@@ -29,6 +29,9 @@ export default async function MealPlanPage() {
         .select("id")
         .eq("user_id", user.id)
         .eq("status", "active")
+        // A user may hold several active plans (one per discipline); this page
+        // only needs to know training exists, so take any one without erroring.
+        .limit(1)
         .maybeSingle(),
     ]);
 

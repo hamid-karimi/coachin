@@ -44,6 +44,9 @@ level = floor(totalXp / 1000) + 1
 
 - **Base workout XP = 60** (a "60-minute session" unit); routine workouts scale it by the
   sport's `xp_multiplier`, plan items use fixed per-type values above.
+- **Plan-item XP is per item** (idempotent by `plan_item:<id>`), so with **multiple active
+  plans** each item's award stands on its own and the totals simply **sum across plans** —
+  no double-counting, nothing special per discipline.
 - **Meal daily cap = 3** awarded meals per date; extras log but earn 0 (`capped: true`).
 - Plan-item **undo** writes a compensating `-XP` txn (`plan_item_undo:<id>`) so
   done→undo→done nets zero. See `complete_plan_item`.
@@ -54,16 +57,29 @@ level = floor(totalXp / 1000) + 1
 
 ### Personal streak + hearts
 **Source of truth:** `lib/streak.ts` (`nextStreakState`, unit-tested in `lib/streak.test.ts`),
-mirrored by `evaluate_user_streak` in `supabase/migrations/20260706110000_streak_and_league.sql`.
+mirrored by `evaluate_user_streak` (latest:
+`supabase/migrations/20260706150000_streak_multi_plan.sql`, superseding the original in
+`20260706110000_streak_and_league.sql`).
 
 Stored on `profiles.current_streak` / `best_streak` / `hearts` (0–**3**), settled lazily up
 to **yesterday** on dashboard/profile load (`streak_evaluated_date` tracks progress; first
 run settles only yesterday, so history before the mechanic isn't punished). Today's
 completion extends the streak at the next day's settle.
 
-Per settled day, given whether the user **trained** (a completed log that day) and whether
-it was a **required day** (a routine scheduled that weekday *or* a non-`meal_note` plan item
-on that date):
+The streak is **day-based and global**, not per-plan. With **multiple active plans** (at most
+one per discipline — e.g. a running plan and a hypertrophy plan) the two inputs below fold
+every plan into a single per-day verdict:
+
+- **Required day** = a routine scheduled that weekday **or** **any** active plan schedules a
+  non-`meal_note` item on that date (each plan's plan-week is derived from its own
+  `created_at`). It only takes one plan to make the day required.
+- **Trained** = **any** completed log exists that date (routine or plan, any discipline).
+
+So partial completion across disciplines still counts the day: **nailing your runs but
+skipping the lifts keeps the streak** (the day was trained). Only a **fully-missed** required
+day — no completed log at all — spends a heart. The heart economy below is unchanged.
+
+Per settled day, given whether the user **trained** and whether it was a **required day**:
 
 | Day | Effect |
 |---|---|

@@ -12,7 +12,7 @@ The dashboard is the daily execution surface where users see today's plan and lo
 ## Key Behavior
 
 - Filters weekly schedule by today's weekday.
-- Surfaces today's AI training-plan items (from the active `training_plans` plan, date-anchored week) under "Today's plan" via the shared `PlanItemRow`, counted together with routine items in the day's done/total tally (meal notes excluded).
+- Surfaces today's AI training-plan items under "Today's plan" via the shared `PlanItemRow`, counted together with routine items in the day's done/total tally (meal notes excluded). Items are **blended across all active `training_plans`** (a user can hold one running + one hypertrophy plan concurrently); each plan resolves its own date-anchored week from its own `created_at`. When 2+ hard sessions (`run`/`strength`) land on today across plans, a soft chip ("2 hard sessions today — consider spacing them") appears via `hasHardCollision` (`lib/training-day.ts`).
 - Plan-item completion goes through the `complete_plan_item` RPC: it awards type-based XP (run/strength 60, stretch/mobility 30, recovery 20) and writes a `logs` row linked via `logs.plan_item_id`, so plan sessions feed the streak, calendar "logged" badge, and group nudges. Undo removes the log and compensates the XP, so toggling can't farm XP.
 - Prevents duplicate completion by checking existing logs for today.
 - Updates XP and level after successful workout logging.

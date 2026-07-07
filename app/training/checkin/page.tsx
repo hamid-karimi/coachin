@@ -50,9 +50,18 @@ type ItemRow = {
   is_completed: boolean;
 };
 
-export default async function CheckinPage() {
+export default async function CheckinPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ plan?: string }>;
+}) {
   const user = await getUser();
   if (!user) redirect("/auth/login");
+
+  // A user can have multiple active plans; the check-in reviews one specific
+  // plan, identified by the `plan` query param from its per-plan banner.
+  const { plan: planId } = await searchParams;
+  if (!planId) redirect("/training");
 
   const supabase = await createClient();
   const [{ data: profile }, { data: plan }] = await Promise.all([
@@ -60,6 +69,7 @@ export default async function CheckinPage() {
     supabase
       .from("training_plans")
       .select("id, weeks_total, summary, created_at, intake")
+      .eq("id", planId)
       .eq("user_id", user.id)
       .eq("status", "active")
       .maybeSingle(),

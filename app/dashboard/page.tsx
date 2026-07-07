@@ -10,6 +10,7 @@ import {
   Heart,
   MoonStar,
   Target,
+  TriangleAlert,
   UtensilsCrossed,
 } from "lucide-react";
 
@@ -28,6 +29,7 @@ import { getCoachingSummary } from "@/app/coaching/lib/coaching-hub-data";
 import { getGoalsWithProgress } from "@/lib/goals-data";
 import { settleUserStreak } from "@/lib/streak-data";
 import { planWeekForDate } from "@/lib/dates";
+import { hasHardCollision } from "@/lib/training-day";
 import { GOAL_TYPE_META } from "@/lib/goals";
 import { Progress } from "@/components/ui/progress";
 import { WorkoutCard } from "./components/workout-card";
@@ -122,7 +124,7 @@ export default async function Dashboard() {
 
   // Coaching card (plan Phase 5): only coach-capable roles with ≥1 trainee.
   const isCoachCapable = canCoach(profile.role);
-  const [coachingSummary, goalsData, { data: activePlan }] = await Promise.all([
+  const [coachingSummary, goalsData, { data: activePlans }] = await Promise.all([
     isCoachCapable
       ? getCoachingSummary(supabase, user.id)
       : Promise.resolve({ traineeCount: 0, trainedThisWeek: 0 }),
@@ -132,28 +134,47 @@ export default async function Dashboard() {
       .select("id, weeks_total, created_at, race_date")
       .eq("user_id", user.id)
       .eq("status", "active")
-      .maybeSingle(),
+      .order("plan_kind"),
   ]);
 
-  // AI-plan sessions scheduled for today, surfaced in "Today's plan" so the
-  // plan lives in the daily flow alongside the recurring routine.
+  const plans = (activePlans ?? []) as {
+    id: string;
+    weeks_total: number;
+    created_at: string;
+    race_date: string | null;
+  }[];
+  const hasActivePlan = plans.length > 0;
+
+  // AI-plan sessions scheduled for today, blended across all active plans and
+  // surfaced in "Today's plan" so the plan lives in the daily flow alongside
+  // the recurring routine. Each plan computes its own date-anchored week (same
+  // convention as /calendar) so today's items match the calendar for this date.
   let planToday: PlanItem[] = [];
-  let marathonWeek = 0;
-  if (activePlan) {
-    // Date-anchored week (same convention as /calendar) so today's items
-    // match what the calendar shows for this date.
-    const todayWeek = planWeekForDate(activePlan.created_at, today);
-    marathonWeek = Math.min(Math.max(todayWeek, 1), activePlan.weeks_total);
-    if (todayWeek >= 1 && todayWeek <= activePlan.weeks_total) {
-      const { data: items } = await supabase
-        .from("plan_items")
-        .select("id, week, day_of_week, item_type, title, details, is_completed")
-        .eq("plan_id", activePlan.id)
-        .eq("week", todayWeek)
-        .eq("day_of_week", dayIndex);
-      planToday = (items ?? []) as PlanItem[];
-    }
+  let planWeekLabel = 0;
+  const activeToday = plans
+    .map((plan) => ({
+      plan,
+      week: planWeekForDate(plan.created_at, today),
+    }))
+    .filter(({ plan, week }) => week >= 1 && week <= plan.weeks_total);
+  if (activeToday.length > 0) {
+    planWeekLabel = activeToday[0].week;
+    const { data: items } = await supabase
+      .from("plan_items")
+      .select("id, plan_id, week, day_of_week, item_type, title, details, is_completed")
+      .in(
+        "plan_id",
+        activeToday.map(({ plan }) => plan.id),
+      )
+      .eq("day_of_week", dayIndex);
+    const weekByPlan = new Map(
+      activeToday.map(({ plan, week }) => [plan.id, week]),
+    );
+    planToday = ((items ?? []) as (PlanItem & { plan_id: string })[]).filter(
+      (item) => item.week === weekByPlan.get(item.plan_id),
+    );
   }
+  const planCollision = hasHardCollision(planToday);
   // Group-streak nudge: only when the user hasn't logged anything today.
   let groupAtRisk: { name: string; streak_count: number } | null = null;
   if ((todaysLogs ?? []).length === 0) {
@@ -322,7 +343,7 @@ export default async function Dashboard() {
         </div>
 
         {/* Marathon discovery — no plan yet, point at the generator */}
-        {!activePlan && (
+        {!hasActivePlan && (
           <Link
             href="/training"
             className="bg-card border-border hover:border-brand/40 group flex items-center gap-3.5 rounded-2xl border p-4 transition-colors"
@@ -345,8 +366,8 @@ export default async function Dashboard() {
           </Link>
         )}
 
-        {/* Marathon plan card (roadmap branch 4) */}
-        {activePlan && (
+        {/* Training plan card (roadmap branch 4) — blends all active plans */}
+        {hasActivePlan && (
           <Link
             href="/training"
             className="bg-card border-border hover:border-brand/40 group flex items-center gap-3.5 rounded-2xl border p-4 transition-colors"
@@ -356,10 +377,10 @@ export default async function Dashboard() {
             </span>
             <span className="min-w-0 flex-1">
               <span className="text-foreground block text-sm font-semibold">
-                Marathon plan
+                {plans.length > 1 ? "Training plans" : "Training plan"}
               </span>
               <span className="text-muted-foreground block text-[13px]">
-                Week {marathonWeek} of {activePlan.weeks_total} ·{" "}
+                {plans.length > 1 ? `${plans.length} active · ` : ""}
                 {planToday.length > 0
                   ? `${planToday.length} ${planToday.length === 1 ? "item" : "items"} today`
                   : "rest day"}
@@ -514,9 +535,15 @@ export default async function Dashboard() {
                       href="/training"
                       className="text-brand-ink text-[11px] font-medium normal-case hover:underline"
                     >
-                      Week {marathonWeek} →
+                      Week {planWeekLabel} →
                     </Link>
                   </p>
+                  {planCollision && (
+                    <p className="bg-flame-tint text-flame-ink inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium">
+                      <TriangleAlert className="size-3.5" aria-hidden />2 hard
+                      sessions today — consider spacing them.
+                    </p>
+                  )}
                   {planToday.map((item) => (
                     <PlanItemRow key={item.id} item={item} date={dateString} />
                   ))}

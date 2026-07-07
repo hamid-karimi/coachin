@@ -8,9 +8,9 @@ import { useActionToast } from "@/components/hooks/use-action-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { logSessionAction, type MarathonActionState } from "../actions";
+import { logSessionAction, type TrainingActionState } from "../actions";
 
-const initialState: MarathonActionState = {};
+const initialState: TrainingActionState = {};
 
 const textareaClassName =
   "border-input bg-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 w-full rounded-md border px-3 py-2 text-sm outline-none focus-visible:ring-[3px]";

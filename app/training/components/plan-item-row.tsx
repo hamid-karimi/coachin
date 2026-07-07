@@ -16,10 +16,10 @@ import {
 import { cn } from "@/lib/utils";
 import { planItemDetailLine, planItemVideoUrl } from "@/lib/plan-items";
 import { useActionToast } from "@/components/hooks/use-action-toast";
-import { togglePlanItemAction, type MarathonActionState } from "../actions";
+import { togglePlanItemAction, type TrainingActionState } from "../actions";
 import { SessionLogSheet } from "./session-log-sheet";
 
-const initialState: MarathonActionState = {};
+const initialState: TrainingActionState = {};
 
 const LOGGABLE_TYPES = new Set(["run", "strength"]);
 

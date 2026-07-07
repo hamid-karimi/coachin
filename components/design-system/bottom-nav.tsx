@@ -14,8 +14,6 @@ import { cn } from "@/lib/utils";
 
 export type NavKey =
   | "home"
-  | "plan"
-  | "training"
   | "calendar"
   | "nutrition"
   | "community"
@@ -27,9 +25,10 @@ const ITEMS: {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
 }[] = [
-  // Mobile bottom bar: the daily-use surfaces. "Calendar" is the gateway to
-  // the training plan + routine; the routine editor (/onboarding) is reached
-  // from there and from the desktop sidebar's "Plan" item.
+  // Single Time-first IA, shared by mobile + desktop. "Calendar" is the
+  // gateway to the training programs + routine; "My programs" (/training) and
+  // the routine editor (/onboarding) are reached from there and from Profile —
+  // they are no longer standalone daily tabs.
   { key: "home", label: "Today", icon: Home },
   { key: "calendar", label: "Calendar", icon: CalendarRange },
   { key: "nutrition", label: "Meals", icon: UtensilsCrossed },

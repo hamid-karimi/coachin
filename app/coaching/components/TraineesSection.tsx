@@ -1,5 +1,8 @@
 import type { StudentRelationship } from "@/app/community/types";
-import type { TraineeAdherence } from "../lib/coaching-hub-data";
+import type {
+  TraineeAdherence,
+  PlanAdherence,
+} from "../lib/coaching-hub-data";
 import { AdherenceWeekStrip } from "./AdherenceWeekStrip";
 import { AssignPlanButton } from "@/app/community/components/AssignPlanButton";
 import {
@@ -17,8 +20,8 @@ interface TraineesSectionProps {
   weeklyXpByUserId?: Map<string, number>;
   /** userId → this week's schedule adherence (logs + schedules). */
   adherenceByUserId?: Map<string, TraineeAdherence>;
-  /** userId → current-week training-plan adherence % (active plans only). */
-  planAdherenceByUserId?: Map<string, number>;
+  /** userId → per-active-plan current-week adherence (one entry per plan). */
+  planAdherenceByUserId?: Map<string, PlanAdherence[]>;
   /** Monday of the current week, YYYY-MM-DD (local time). */
   weekStart?: string;
 }
@@ -48,7 +51,9 @@ export function TraineesSection({
               const initials = student.email?.[0]?.toUpperCase() ?? "?";
               const weeklyXp = weeklyXpByUserId?.get(student.id);
               const adherence = adherenceByUserId?.get(student.id);
-              const planAdherence = planAdherenceByUserId?.get(student.id);
+              const offTrackPlans = (
+                planAdherenceByUserId?.get(student.id) ?? []
+              ).filter((plan) => plan.adherencePct < 50);
 
               return (
                 <li
@@ -89,12 +94,15 @@ export function TraineesSection({
                               ? "No plan assigned yet"
                               : `${adherence.doneCount} of ${adherence.scheduledCount} this week`}
                           </span>
-                          {typeof planAdherence === "number" &&
-                          planAdherence < 50 ? (
-                            <Badge variant='flame'>
-                              Off-track · {Math.round(planAdherence)}% plan
+                          {offTrackPlans.map((plan) => (
+                            <Badge key={plan.planId} variant='flame'>
+                              Off-track ·{" "}
+                              {plan.kind === "hypertrophy"
+                                ? "Strength"
+                                : "Running"}{" "}
+                              {Math.round(plan.adherencePct)}%
                             </Badge>
-                          ) : null}
+                          ))}
                         </div>
                       ) : null}
                     </div>
