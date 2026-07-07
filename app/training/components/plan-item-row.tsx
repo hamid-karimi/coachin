@@ -162,7 +162,13 @@ export function PlanItemRow({
             <button
               type="submit"
               disabled={pending || !canMarkDone}
-              title={opensLabel}
+              // Hover tooltip: always describe what the control does, falling
+              // back to the "Opens <date>" hint while the item is still locked.
+              title={
+                item.is_completed
+                  ? "Mark as not done"
+                  : (opensLabel ?? "Mark as done")
+              }
               aria-label={
                 item.is_completed
                   ? "Mark as not done"

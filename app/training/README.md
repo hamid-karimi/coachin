@@ -13,29 +13,28 @@ them. Both `/training` and the routine editor (`/onboarding`) highlight the
 Training tab. Secondary entry points also exist on **Calendar** ("Manage
 programs" header button) and **Profile** ("Training" section).
 
-The manager lists every active program (one per discipline) with an **"Add a
-goal"** affordance (`/training/new`), an **"Edit routine"** link (`/onboarding`),
-per-program **archive** (`ArchivePlanButton` in each `PlanSection`), and an
-"Add to calendar" `.ics` export. The empty state is a single "Add a goal" CTA.
+The manager is deliberately light: it lists every active program (one per
+discipline) as a **compact card** with a **"New plan"** affordance
+(`/training/new`), an **"Edit routine"** link (`/onboarding`), per-program
+**archive** (`ArchivePlanButton`), and an "Add to calendar" `.ics` export. The
+empty state is a single "Create a plan" CTA. The **day-by-day schedule is not
+shown here** — that is Calendar's job (blended across all active plans); each
+card links to it. Marking a session done + logging it happens on **Today**
+(`/dashboard`), gated to the session's day.
 
 ## Structure
 
 - `page.tsx` (default export `TrainingPage`): loads **all** active
-  `training_plans` (one per discipline) + their `plan_items`, derives each
-  plan's title, and renders one `PlanSection` per active plan — each with its
-  own week navigation (per-plan `?w_<planId>` query param, week anchored to that
-  plan's `created_at`). Orchestration only.
+  `training_plans` (one per discipline), derives each plan's title + current
+  week + check-in-due state, and renders one `ProgramCard` per plan.
+  Orchestration only — no `plan_items` fetch (the schedule lives in Calendar).
 - `loading.tsx`: static skeleton (server component; `animate-pulse` +
   `bg-secondary` blocks) shown while the page's server data resolves, matching
-  the `max-w-3xl` container, header, and a plan section's week-nav + day rhythm.
-- `components/plan-section.tsx`: presentational section for a single plan —
-  title, summary, per-plan week nav, and the day-by-day items. When plans
-  stack, sections after the first render with a `secondary` prop that lightens
-  the chrome (smaller header, a top divider, and ghost week-nav buttons) while
-  keeping every control — independent week nav, archive, check-in banner —
-  fully functional. Shows a soft
-  "2 intense workouts today" chip on any day where 2+ `run`/`strength` items land
-  (via `hasHardCollision` from `lib/training-day.ts`).
+  the `max-w-3xl` container, header, and card rhythm.
+- `components/program-card.tsx`: compact per-program summary — title, meta
+  (week X of Y, days-to-race, goal), a "Week N review ready" check-in CTA when
+  due (links to `/training/checkin?plan=<id>`), archive, and a "View sessions
+  in Calendar" link. No week-by-week browsing.
 - `new/page.tsx`: entry chooser ("Running" vs "Build muscle") and, per `kind`,
   renders the running intake (`IntakeWizard`) or `HypertrophyWizard`.
 - `actions.ts`: server actions — plan generation (running + hypertrophy),
