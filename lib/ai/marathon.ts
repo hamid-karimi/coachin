@@ -5,6 +5,7 @@
  */
 import { Type } from "@google/genai";
 import { generateJsonText } from "./text-json";
+import { anchorsPromptBlock, type PlanAnchor } from "./anchors";
 import type { ActivitySummary } from "@/lib/activity-parse";
 
 export type MarathonIntake = {
@@ -37,6 +38,8 @@ export type MarathonIntake = {
   weight_kg: number | null;
   training_history: string | null;
   activities: ActivitySummary[];
+  /** Fixed weekly commitments (schedules) — prompt constraints only. */
+  anchors: PlanAnchor[];
 };
 
 export type PlanItemInput = {
@@ -170,6 +173,9 @@ export async function generateMarathonPlan(
 
   const isBase = intake.race_target === "base";
 
+  // "" when the athlete has no fixed commitments — filtered out below.
+  const anchorConstraints = anchorsPromptBlock(intake.anchors);
+
   const commonRules = [
     `- Exactly ${intake.days_per_week} training days per week (day_of_week: 0=Sunday..6=Saturday); remaining days get ONE recovery item.`,
     `- Every run item: details.distance_km, details.pace_min_km (like "5:40"), short details.notes.`,
@@ -187,6 +193,7 @@ export async function generateMarathonPlan(
         `PBs: ${pbs || "none"}. Current weekly volume: ${intake.weekly_km ?? "unknown"}km, longest recent run ${intake.longest_run_km ?? "unknown"}km.`,
         `Recent uploaded runs: ${recent}.`,
         `Injuries/limitations: ${intake.injuries || "none reported"}.`,
+        anchorConstraints,
         `Rules:`,
         `- Weekly structure: mostly EASY, conversational-pace runs (use run/walk intervals for a new runner), ONE slightly longer run that grows gently, strength 1-2x, stretch 1x, and ONE mobility item (item_type "mobility": hip/ankle mobility or yoga-for-runners).`,
         `- Progress volume gradually week over week with a lighter "stepback" every 4th week; keep intensity low — the goal is aerobic base and consistency, not speed.`,
@@ -205,6 +212,7 @@ export async function generateMarathonPlan(
         `Recent uploaded runs: ${recent}.`,
         `Race date: ${intake.race_date}. Goal time: ${intake.goal_time ?? "finish comfortably"}.`,
         `Injuries/limitations: ${intake.injuries || "none reported"}.`,
+        anchorConstraints,
         `Rules:`,
         `- Weekly structure: quality run(s), easy runs, one long run (progressing, stepback every 4th week, taper appropriately for the race distance), strength 1-2x, stretch 1x, and ONE mobility item (item_type "mobility": hip/ankle mobility or yoga-for-runners).`,
         `- Scale everything to the ${intake.race_distance_km}km target: long-run peaks, interval distances, and taper length must fit the race distance and the athlete's experience level.`,

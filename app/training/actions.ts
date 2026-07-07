@@ -21,6 +21,7 @@ import {
   generateHypertrophyPlan,
   type HypertrophyIntake,
 } from "@/lib/ai/hypertrophy";
+import type { PlanAnchor } from "@/lib/ai/anchors";
 import { toLocalYMD, yearsSince } from "@/lib/dates";
 import type { WeekScorecard } from "@/lib/scorecard";
 import {
@@ -108,6 +109,35 @@ function optionalNumber(value: FormDataEntryValue | null): number | null {
   if (!raw) return null;
   const parsed = Number(raw);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
+const MAX_ANCHORS = 21;
+
+/** The user's currently-active fixed weekly sessions (`schedules`), shaped for
+ *  the generators' prompt constraints. Best-effort: any failure returns [] —
+ *  anchors must never block plan generation. */
+async function fetchAnchors(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string,
+): Promise<PlanAnchor[]> {
+  const todayYmd = toLocalYMD(new Date());
+  const { data, error } = await supabase
+    .from("schedules")
+    .select("day_of_week, time, sport_types(name)")
+    .eq("user_id", userId)
+    .or(`starts_on.is.null,starts_on.lte.${todayYmd}`)
+    .or(`ends_on.is.null,ends_on.gte.${todayYmd}`)
+    .limit(MAX_ANCHORS);
+  if (error || !data) {
+    if (error) console.error("anchor schedules fetch failed:", error);
+    return [];
+  }
+  return data.map((row) => ({
+    day_of_week: Number(row.day_of_week),
+    time: row.time ?? null,
+    sport:
+      (row.sport_types as { name?: string } | null)?.name ?? "a fixed session",
+  }));
 }
 
 export async function generatePlanAction(
@@ -208,11 +238,14 @@ export async function generatePlanAction(
   }
 
   const supabase = await createClient();
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("birth_date, sex, height_cm, weight_kg, training_history")
-    .eq("id", user.id)
-    .single();
+  const [{ data: profile }, anchors] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("birth_date, sex, height_cm, weight_kg, training_history")
+      .eq("id", user.id)
+      .single(),
+    fetchAnchors(supabase, user.id),
+  ]);
 
   const age = profile?.birth_date
     ? Math.floor(
@@ -249,6 +282,7 @@ export async function generatePlanAction(
     weight_kg: profile?.weight_kg ?? null,
     training_history: profile?.training_history ?? null,
     activities,
+    anchors,
   };
 
   const plan = await generateMarathonPlan(intake);
@@ -308,29 +342,34 @@ export async function generateHypertrophyPlanAction(
     String(formData.get("experience_level") ?? "").trim() || null;
 
   const supabase = await createClient();
-  const [{ data: profile }, { data: calorieGoal }, { data: analyzedPhoto }] =
-    await Promise.all([
-      supabase
-        .from("profiles")
-        .select("birth_date, sex, height_cm, weight_kg, training_history")
-        .eq("id", user.id)
-        .single(),
-      supabase
-        .from("goals")
-        .select("target_value")
-        .eq("user_id", user.id)
-        .eq("goal_type", "calorie_intake")
-        .eq("status", "active")
-        .maybeSingle(),
-      supabase
-        .from("body_photos")
-        .select("analysis")
-        .eq("user_id", user.id)
-        .not("analysis", "is", null)
-        .order("analyzed_at", { ascending: false })
-        .limit(1)
-        .maybeSingle(),
-    ]);
+  const [
+    { data: profile },
+    { data: calorieGoal },
+    { data: analyzedPhoto },
+    anchors,
+  ] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("birth_date, sex, height_cm, weight_kg, training_history")
+      .eq("id", user.id)
+      .single(),
+    supabase
+      .from("goals")
+      .select("target_value")
+      .eq("user_id", user.id)
+      .eq("goal_type", "calorie_intake")
+      .eq("status", "active")
+      .maybeSingle(),
+    supabase
+      .from("body_photos")
+      .select("analysis")
+      .eq("user_id", user.id)
+      .not("analysis", "is", null)
+      .order("analyzed_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    fetchAnchors(supabase, user.id),
+  ]);
 
   const analysis = analyzedPhoto?.analysis as {
     build_notes?: string;
@@ -359,6 +398,7 @@ export async function generateHypertrophyPlanAction(
     height_cm: profile?.height_cm ?? null,
     weight_kg: profile?.weight_kg ?? null,
     training_history: profile?.training_history ?? null,
+    anchors,
   };
 
   const plan = await generateHypertrophyPlan(intake);

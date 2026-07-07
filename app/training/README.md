@@ -78,3 +78,21 @@ The `MarathonIntake` type (`lib/ai/marathon.ts`) accepts `race_date: string | nu
 and a `race_target` of `"base"`; `planTitleFor` (`lib/plan-title.ts`) maps
 `race_target: "base"` to the plan title **"Running plan"** and `plan_kind`
 `hypertrophy` to **"Muscle building plan"**.
+
+## Anchor-aware generation
+
+Both generation actions (`generatePlanAction` and `generateHypertrophyPlanAction`)
+fetch the user's currently-active fixed weekly sessions (the `schedules` table,
+joined with sport names) and pass them into the intake as
+`anchors: { day_of_week, time, sport }[]` (best-effort — a failed fetch yields
+`[]` and never blocks generation; the anchors persist inside the saved plan's
+`intake` jsonb like every other intake field).
+
+When anchors exist, both prompt builders append a constraints block
+(`anchorsPromptBlock` in `lib/ai/anchors.ts`): don't schedule plan sessions
+that conflict with those slots, and treat them as training load — no HARD
+sessions (long runs, intervals, heavy strength) on intense anchor days; put
+key sessions on free days. This is **prompt-level only** — there is no
+scheduling engine, and the response schema/validation is unchanged. The
+week-agenda collision chip remains the post-hoc guard when the model still
+double-books a day.
