@@ -28,10 +28,16 @@ AI plan sessions (from `/training`) appear read-only alongside both.
 - `actions.ts`: server actions — schedules (`addScheduleSessions`, `deleteScheduleItem`),
   quotas (`getWeeklyQuotas`, `addWeeklyQuota`, `deleteWeeklyQuota`), `completeOnboarding`
 - `components/`
-  - `AddCommitmentSection.tsx` — segmented control ("Fixed session" | "Weekly target")
-    switching between the two add forms
-  - `AddFixedSessionForm.tsx` — day strip + sport picker + optional time/repeat-until
-  - `AddWeeklyTargetForm.tsx` — sport picker + sessions/week stepper (1–14)
+  - `AddCommitmentSection.tsx` — thin section wrapper around the add sheet
+  - `AddCommitmentSheet.tsx` — prominent "Add to my week" trigger + stepwise bottom
+    sheet: step 1 picks a sport (`SportPicker`), step 2 fills in the details
+  - `CommitmentDetailsStep.tsx` — step 2 body: picked-sport back affordance +
+    `CommitmentTypeSwitch` ("Fixed session" | "Weekly target") + the matching form
+  - `AddFixedSessionForm.tsx` — day strip + optional time/repeat-until (sport comes
+    from the sheet as a prop). Add is always enabled; an invalid submit shows an
+    inline pointing error ("Pick at least one day") instead of a dead button
+  - `AddWeeklyTargetForm.tsx` — sessions/week stepper (1–14), same always-enabled
+    Add + inline error pattern
   - `SportPicker.tsx` — shared sport chip row (real sport names, no XP multiplier)
   - `WeeklyTargetList.tsx` — one row per quota with "n/m this week" progress
     (volt badge once met) and delete; renders nothing when there are no quotas
@@ -70,6 +76,12 @@ Sports come from the admin-seeded `sport_types` table. The
 `20260706140000_dedup_mobility_sport_types.sql` migration collapses the several
 hand-entered "Mobility" duplicates into one canonical row (neutral 1.0
 xp_multiplier) so the sport picker shows a single Mobility option.
+`20260707121000_seed_sport_types.sql` seeds the wider catalogue (Football,
+Basketball, Boxing, Tennis, Volleyball, Martial arts, Climbing, Hiking, Rowing,
+Dance, Table tennis, Badminton — all 1.0) idempotently per name. Icons are
+derived from the name by `sportFromName` (`lib/sports.ts`, unit-tested), which
+buckets names into design-system categories (`ball_sports`, `combat`,
+`climbing`, `outdoor`, `rowing`, `dance`, …) rendered by `SportChip`.
 
 ## Notifications and Language
 
