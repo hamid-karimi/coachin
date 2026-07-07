@@ -25,7 +25,7 @@ AI plan sessions (from `/training`) appear read-only alongside both.
 - `page.tsx`: server page — fetches sports, schedules, plan items, quotas, and this
   week's logs; computes quota progress; orchestration only
 - `loading.tsx`: route-level skeleton
-- `actions.ts`: server actions — schedules (`addScheduleItem`, `deleteScheduleItem`),
+- `actions.ts`: server actions — schedules (`addScheduleSessions`, `deleteScheduleItem`),
   quotas (`getWeeklyQuotas`, `addWeeklyQuota`, `deleteWeeklyQuota`), `completeOnboarding`
 - `components/`
   - `AddCommitmentSection.tsx` — segmented control ("Fixed session" | "Weekly target")
@@ -52,15 +52,24 @@ AI plan sessions (from `/training`) appear read-only alongside both.
 2. Each interactive leaf owns its `useActionState` (add fixed session, add weekly
    target, delete quota, delete schedule item, complete) with toasts via
    `useActionToast`; actions `revalidatePath` so the server page re-renders with fresh
-   data — no client-side refetching.
+   data — no client-side refetching. Adding a fixed session dispatches
+   `addScheduleSessions`, which fans the sport out across every selected day via the
+   pure, unit-tested `lib/schedule-inserts.ts` helper and inserts all rows in one call.
 3. `WeekAgenda` renders fixed sessions and any active AI plan items per day; tapping an
    AI plan card opens `PlanSessionSheet` (bottom sheet on mobile, dialog on desktop).
    The plan is read-only here — it is edited in `/training`.
 4. Completion redirects to the dashboard.
 
-Shared helpers: `lib/week-days.ts` (Monday-first day list), `lib/plan-items.ts`
-(`item_type` → human label), `lib/weekly-quotas.ts` (quota progress math),
-`lib/dates.ts` (`mondayOf`, `toLocalYMD`).
+Shared helpers: `lib/week-days.ts` (Monday-first day list), `lib/schedule-inserts.ts`
+(multi-day fan-out, unit-tested), `lib/plan-items.ts` (`item_type` → human label),
+`lib/weekly-quotas.ts` (quota progress math), `lib/dates.ts` (`mondayOf`, `toLocalYMD`).
+
+## Sport types
+
+Sports come from the admin-seeded `sport_types` table. The
+`20260706140000_dedup_mobility_sport_types.sql` migration collapses the several
+hand-entered "Mobility" duplicates into one canonical row (neutral 1.0
+xp_multiplier) so the sport picker shows a single Mobility option.
 
 ## Notifications and Language
 
@@ -72,3 +81,4 @@ Shared helpers: `lib/week-days.ts` (Monday-first day list), `lib/plan-items.ts`
 Initial coverage includes:
 
 - `page-header.stories.tsx`
+- `DaySportPicker.stories.tsx` — default and empty-sport-list states

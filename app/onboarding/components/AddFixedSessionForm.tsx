@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useActionToast } from "@/components/hooks/use-action-toast";
 import { cn } from "@/lib/utils";
 import { WEEK_DAYS } from "@/lib/week-days";
-import { addScheduleItem } from "../actions";
+import { addScheduleSessions } from "../actions";
 import { SportPicker, type SportOption } from "./SportPicker";
 
 interface AddFixedSessionFormProps {
@@ -19,13 +19,16 @@ interface AddFixedSessionFormProps {
 /**
  * Adds an anchor: a fixed recurring session — sport + day + optional time +
  * optional repeat-until. Owns its action state so the server page stays free
- * of client concerns; `addScheduleItem` revalidates the page after saving.
+ * of client concerns; `addScheduleSessions` revalidates the page after saving.
  */
 export function AddFixedSessionForm({
   sports,
   plannedDays = [],
 }: AddFixedSessionFormProps) {
-  const [state, formAction, isPending] = useActionState(addScheduleItem, {});
+  const [state, formAction, isPending] = useActionState(
+    addScheduleSessions,
+    {},
+  );
   useActionToast(state);
 
   const [dayOfWeek, setDayOfWeek] = useState<number | null>(null);
