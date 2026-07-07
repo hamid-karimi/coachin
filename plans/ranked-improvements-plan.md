@@ -1,5 +1,23 @@
 # Ranked improvements — execution plan
 
+## User needs (original requests, 2026-07-07)
+
+1. A trainee can give their coach access to their diet logs and diet program.
+2. Coaches need a real way to give trainees a plan — give the coach AI access to
+   generate a plan for each trainee (today's "Assign plan" only copies the coach's own
+   weekly schedule onto the trainee).
+3. Routines added in onboarding (e.g. Rock Climbing) have no discoverable place to be
+   marked as done — "where can I say I've done it?"
+4. Extend the sports list in onboarding (football, basketball, boxing, …) and fix the
+   entry form UX: users don't understand the day/sport chips are selectable and
+   repeatedly press the disabled Add button. Consider modal or accordion.
+5. AI training sessions must not use the whole session program as the title — short
+   title, program in the description.
+6. Users should log bodybuilding sessions per rep/weight (like Hevy), with a total
+   lifted weight at the end and a fun comparison ("you lifted 1,500 kg — like a car").
+7. QA needs a report/onboarding mechanism — decided: a markdown doc that explains the
+   system so QA can test it properly.
+
 Owner decisions baked in: coach AI plans apply **directly** to the trainee (no acceptance
 step); diet sharing grants the coach **full** nutrition log access (trainee opt-in); QA
 deliverable is an onboarding **markdown doc**.
