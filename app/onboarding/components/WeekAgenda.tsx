@@ -110,7 +110,9 @@ export function WeekAgenda({
               key={day.id}
               className={cn(
                 "flex flex-col gap-2.5 p-3 sm:flex-row sm:gap-4 sm:p-4",
-                isToday && "bg-brand-tint",
+                // Today: a quiet volt rail + the pill, instead of washing the
+                // whole row in brand-tint (which fought with the cards).
+                isToday && "border-l-2 border-l-brand",
               )}
             >
               <div className="flex items-center gap-2 sm:w-24 sm:shrink-0 sm:flex-col sm:items-start sm:gap-0.5 sm:pt-1">
@@ -127,7 +129,9 @@ export function WeekAgenda({
                 )}
               </div>
 
-              <div className="flex flex-1 flex-col gap-2">
+              {/* min-w-0 lets long AI titles truncate instead of blowing the
+                  card out past the container edge. */}
+              <div className="flex min-w-0 flex-1 flex-col gap-2">
                 {empty ? (
                   <p className="text-muted-foreground/60 py-1 text-sm">
                     Rest day
