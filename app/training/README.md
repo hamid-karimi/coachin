@@ -5,13 +5,13 @@ weekly check-ins, plan-item completion, and session logging.
 
 ## "My programs" manager
 
-`/training` is the **program manager**, not a daily tab. In the Time-first IA
-the daily surfaces are **Today + Calendar** only (see `components/design-system/
-bottom-nav.tsx` + `app-sidebar.tsx`), so `/training` is reached from:
-
-- **Calendar** — a "Manage programs" button in the header.
-- **Profile** — a "Training" section linking to "My programs" and the routine
-  editor (`/onboarding`).
+`/training` is the **program manager** where plans are created, managed, and
+archived. It is a **top-level `Training` tab** in the nav (see
+`components/design-system/bottom-nav.tsx` + `app-sidebar.tsx`) — plan creation
+is a primary feature, so it sits alongside Today and Calendar rather than behind
+them. Both `/training` and the routine editor (`/onboarding`) highlight the
+Training tab. Secondary entry points also exist on **Calendar** ("Manage
+programs" header button) and **Profile** ("Training" section).
 
 The manager lists every active program (one per discipline) with an **"Add a
 goal"** affordance (`/training/new`), an **"Edit routine"** link (`/onboarding`),

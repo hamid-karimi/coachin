@@ -39,8 +39,6 @@ export function AppShell({ children, coachNav = false }: AppShellProps) {
           coachNav={coachNav}
           onNavigate={(key) => router.push(routeFor(key))}
         />
-        {/* `active` may be the NO_TAB sentinel on gateway routes; no item
-            matches it, so the bar renders with nothing highlighted. */}
       </div>
     </div>
   );

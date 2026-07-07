@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Home,
+  Dumbbell,
   CalendarRange,
   Users,
   GraduationCap,
@@ -14,13 +15,15 @@ import {
 
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
-import { NO_TAB, type NavKey } from "./bottom-nav";
+import { type NavKey } from "./bottom-nav";
 
 /** Route map shared between the sidebar and the mobile bottom nav. */
 export function routeFor(key: NavKey): string {
   switch (key) {
     case "home":
       return "/dashboard";
+    case "training":
+      return "/training";
     case "calendar":
       return "/calendar";
     case "nutrition":
@@ -36,12 +39,12 @@ export function routeFor(key: NavKey): string {
   }
 }
 
-/** Derive the active NavKey from the current pathname. Programs (/training)
- * and the routine editor (/onboarding) highlight no tab (NO_TAB) — they are
- * gateways reached from Calendar/Profile, not standalone daily surfaces. */
-export function keyFromPath(pathname: string | null): NavKey | typeof NO_TAB {
-  if (pathname?.startsWith("/onboarding")) return NO_TAB;
-  if (pathname?.startsWith("/training")) return NO_TAB;
+/** Derive the active NavKey from the current pathname. Programs (/training) and
+ * the routine editor (/onboarding) both belong to the Training surface, so they
+ * highlight the Training tab. */
+export function keyFromPath(pathname: string | null): NavKey {
+  if (pathname?.startsWith("/training")) return "training";
+  if (pathname?.startsWith("/onboarding")) return "training";
   if (pathname?.startsWith("/calendar")) return "calendar";
   if (pathname?.startsWith("/nutrition")) return "nutrition";
   if (pathname?.startsWith("/community")) return "community";
@@ -56,6 +59,7 @@ const ITEMS: {
   icon: React.ComponentType<{ className?: string }>;
 }[] = [
   { key: "home", label: "Today", icon: Home },
+  { key: "training", label: "Training", icon: Dumbbell },
   { key: "calendar", label: "Calendar", icon: CalendarRange },
   { key: "nutrition", label: "Nutrition", icon: UtensilsCrossed },
   { key: "community", label: "Community", icon: Users },

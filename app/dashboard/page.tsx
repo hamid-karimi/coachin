@@ -9,7 +9,6 @@ import {
   GraduationCap,
   Heart,
   MoonStar,
-  Sparkles,
   Target,
   TriangleAlert,
   UtensilsCrossed,
@@ -392,15 +391,6 @@ export default async function Dashboard() {
                 className="text-muted-foreground group-hover:text-foreground size-4 shrink-0 transition-colors"
                 aria-hidden
               />
-            </Link>
-            {/* Quiet gateway to the "My programs" manager (add/archive/routine),
-                mirroring the Calendar and Profile entry points. */}
-            <Link
-              href="/training"
-              className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 self-end px-1 text-[13px] font-medium transition-colors"
-            >
-              <Sparkles className="size-3.5" aria-hidden />
-              Manage programs
             </Link>
           </div>
         )}

@@ -3,6 +3,7 @@
 import * as React from "react";
 import {
   Home,
+  Dumbbell,
   CalendarRange,
   Users,
   GraduationCap,
@@ -14,28 +15,24 @@ import { cn } from "@/lib/utils";
 
 export type NavKey =
   | "home"
+  | "training"
   | "calendar"
   | "nutrition"
   | "community"
   | "coaching"
   | "profile";
 
-/** Sentinel for routes that live under the IA but are not a tab (Programs
- * `/training`, the routine editor `/onboarding`). When it is the active value
- * no nav item matches, so the bar renders with nothing highlighted — these
- * routes are gateways reached from Calendar/Profile, not standalone tabs. */
-export const NO_TAB = "__none__";
-
 const ITEMS: {
   key: NavKey;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
 }[] = [
-  // Single Time-first IA, shared by mobile + desktop. "Calendar" is the
-  // gateway to the training programs + routine; "My programs" (/training) and
-  // the routine editor (/onboarding) are reached from there and from Profile —
-  // they are no longer standalone daily tabs.
+  // Time-first IA shared by mobile + desktop, with Training kept prominent as
+  // the core create/manage surface. Today + Calendar are the time surfaces;
+  // Training (/training) is the "My programs" manager where plans are created
+  // and managed. The routine editor (/onboarding) is reached from there.
   { key: "home", label: "Today", icon: Home },
+  { key: "training", label: "Training", icon: Dumbbell },
   { key: "calendar", label: "Calendar", icon: CalendarRange },
   { key: "nutrition", label: "Meals", icon: UtensilsCrossed },
   { key: "community", label: "Community", icon: Users },
@@ -44,7 +41,7 @@ const ITEMS: {
 ];
 
 interface BottomNavProps {
-  active?: NavKey | typeof NO_TAB;
+  active?: NavKey;
   onNavigate?: (key: NavKey) => void;
   /** Server pages set this from the viewer's role — no client role checks. */
   coachNav?: boolean;
