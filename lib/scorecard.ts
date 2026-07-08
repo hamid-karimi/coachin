@@ -4,6 +4,8 @@
  * unit-testable (see scripts/scorecard-check.ts).
  */
 
+import { normalizeLoggedExercises } from "./workout-sets";
+
 export type WeekScorecard = {
   /** Completed non-meal_note items / planned non-meal_note items, 0-100. */
   adherence_pct: number;
@@ -99,8 +101,6 @@ export function computeWeekScorecard(
   };
 }
 
-type ExerciseSet = { name?: unknown; reps?: unknown; weight_kg?: unknown };
-
 /**
  * Hypertrophy stall detection (adaptive plan Phase 5): an exercise logged in
  * each of the last 3 weeks with no weight OR rep increase from first to last
@@ -114,19 +114,20 @@ export function detectStalledLifts(
   const lastThree = weeklyStrengthLogs.slice(-3);
 
   // Per week: exercise name → best (weight, reps) seen that week.
+  // normalizeLoggedExercises accepts both the legacy flat rows and the
+  // per-set shape logged since the Hevy-style editor.
   const weekMaps = lastThree.map((logs) => {
     const map = new Map<string, { weight: number; reps: number }>();
     for (const log of logs) {
-      const exercises = log?.actual?.exercises;
-      if (!Array.isArray(exercises)) continue;
-      for (const raw of exercises as ExerciseSet[]) {
-        const name = String(raw?.name ?? "").trim().toLowerCase();
-        if (!name) continue;
-        const weight = numberOrNull(raw?.weight_kg) ?? 0;
-        const reps = numberOrNull(raw?.reps) ?? 0;
-        const best = map.get(name);
-        if (!best || weight > best.weight || (weight === best.weight && reps > best.reps)) {
-          map.set(name, { weight, reps });
+      for (const exercise of normalizeLoggedExercises(log?.actual?.exercises)) {
+        const name = exercise.name.toLowerCase();
+        for (const set of exercise.sets) {
+          const weight = numberOrNull(set.weight_kg) ?? 0;
+          const reps = numberOrNull(set.reps) ?? 0;
+          const best = map.get(name);
+          if (!best || weight > best.weight || (weight === best.weight && reps > best.reps)) {
+            map.set(name, { weight, reps });
+          }
         }
       }
     }

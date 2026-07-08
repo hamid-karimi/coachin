@@ -25,6 +25,12 @@ import type { PlanAnchor } from "@/lib/ai/anchors";
 import { toLocalYMD, yearsSince } from "@/lib/dates";
 import type { WeekScorecard } from "@/lib/scorecard";
 import {
+  normalizeLoggedExercises,
+  totalVolumeKg,
+  volumeEquivalence,
+  type LoggedExercise,
+} from "@/lib/workout-sets";
+import {
   generateSessionFeedback,
   redFlagPrecheck,
 } from "@/lib/ai/session-feedback";
@@ -38,6 +44,8 @@ export type TrainingActionState = {
   activities?: ActivitySummary[];
   /** AI feedback on a logged session (validated, non-fatal on failure). */
   feedback?: { message: string; flag: string };
+  /** Total kg lifted in a strength log — celebration stat only, never XP. */
+  totalVolumeKg?: number;
 };
 
 const MAX_FILES = 3;
@@ -474,44 +482,6 @@ export async function togglePlanItemAction(
   return { success: true };
 }
 
-type ExerciseEntry = {
-  name: string;
-  sets: number;
-  reps: number;
-  weight_kg?: number;
-};
-
-const MAX_EXERCISES = 20;
-
-/** Validate a client-serialized exercises array field-by-field (style copied
- *  from validateItems in lib/ai/marathon.ts). Invalid entries are dropped. */
-function validateExercises(raw: unknown): ExerciseEntry[] {
-  if (!Array.isArray(raw)) return [];
-  const exercises: ExerciseEntry[] = [];
-  for (const entry of raw.slice(0, MAX_EXERCISES)) {
-    if (typeof entry !== "object" || entry === null) continue;
-    const item = entry as Record<string, unknown>;
-    const name = String(item.name ?? "").trim();
-    const sets = Number(item.sets);
-    const reps = Number(item.reps);
-    if (!name) continue;
-    if (!Number.isInteger(sets) || sets < 1 || sets > 50) continue;
-    if (!Number.isInteger(reps) || reps < 1 || reps > 50) continue;
-    const exercise: ExerciseEntry = { name: name.slice(0, 80), sets, reps };
-    const weight = Number(item.weight_kg);
-    if (
-      item.weight_kg !== undefined &&
-      item.weight_kg !== null &&
-      Number.isFinite(weight) &&
-      weight > 0
-    ) {
-      exercise.weight_kg = Math.round(weight * 10) / 10;
-    }
-    exercises.push(exercise);
-  }
-  return exercises;
-}
-
 /** Log how a completed run/strength session actually went (everything beyond
  *  the plan item reference is optional) and award +10 XP idempotently. */
 export async function logSessionAction(
@@ -543,6 +513,7 @@ export async function logSessionAction(
 
   // Sport-shaped `actual` payload — every field optional.
   const actual: Record<string, unknown> = {};
+  let loggedExercises: LoggedExercise[] = [];
   if (sport === "run") {
     const distanceKm = optionalNumber(formData.get("distance_km"));
     const durationMin = optionalNumber(formData.get("duration_min"));
@@ -554,8 +525,8 @@ export async function logSessionAction(
     const exercisesJson = String(formData.get("exercises_json") ?? "");
     if (exercisesJson) {
       try {
-        const exercises = validateExercises(JSON.parse(exercisesJson));
-        if (exercises.length > 0) actual.exercises = exercises;
+        loggedExercises = normalizeLoggedExercises(JSON.parse(exercisesJson));
+        if (loggedExercises.length > 0) actual.exercises = loggedExercises;
       } catch {
         // ignore malformed hidden field — exercises are optional
       }
@@ -655,10 +626,21 @@ export async function logSessionAction(
   revalidatePath("/training");
   const baseMessage =
     awardedXp > 0 ? `Session logged · +${awardedXp} XP` : "Session logged.";
+  // Total volume is a celebration stat only — XP stays the fixed award above.
+  const totalVolume = totalVolumeKg(loggedExercises);
+  let volumeMessage = "";
+  if (totalVolume > 0) {
+    const equivalence = volumeEquivalence(totalVolume);
+    volumeMessage = ` You lifted ${totalVolume.toLocaleString("en-US")} kg total${
+      equivalence ? ` — that's ${equivalence.label} ${equivalence.emoji}` : ""
+    }.`;
+  }
+  const message = `${baseMessage}${volumeMessage}`;
   return {
     success: true,
-    message: feedback ? `${baseMessage} 🏃 ${feedback.message}` : baseMessage,
+    message: feedback ? `${message} 🏃 ${feedback.message}` : message,
     feedback,
+    ...(totalVolume > 0 ? { totalVolumeKg: totalVolume } : {}),
   };
 }
 

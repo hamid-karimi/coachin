@@ -1,13 +1,21 @@
 "use client";
 
-import { useActionState, useState } from "react";
-import { Loader2, NotebookPen, Plus, Save, Trash2 } from "lucide-react";
+import { useActionState, useReducer, useState } from "react";
+import { Loader2, NotebookPen, Save } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { volumeEquivalence } from "@/lib/workout-sets";
 import { useActionToast } from "@/components/hooks/use-action-toast";
+import { useConfettiBurst } from "@/components/hooks/use-confetti-burst";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  StrengthSetsEditor,
+  buildEditableExercises,
+  strengthSetsReducer,
+  toLoggedExercises,
+} from "./strength-sets-editor";
 import { logSessionAction, type TrainingActionState } from "../actions";
 
 const initialState: TrainingActionState = {};
@@ -15,37 +23,13 @@ const initialState: TrainingActionState = {};
 const textareaClassName =
   "border-input bg-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 w-full rounded-md border px-3 py-2 text-sm outline-none focus-visible:ring-[3px]";
 
-type ExerciseRow = {
-  name: string;
-  sets: string;
-  reps: string;
-  weight_kg: string;
-};
-
-const EMPTY_EXERCISE: ExerciseRow = { name: "", sets: "", reps: "", weight_kg: "" };
-
-const MAX_EXERCISES = 20;
-
-function serializeExercises(rows: ExerciseRow[]): string {
-  return JSON.stringify(
-    rows
-      .filter((row) => row.name.trim() !== "")
-      .map((row) => ({
-        name: row.name.trim(),
-        sets: Number(row.sets),
-        reps: Number(row.reps),
-        ...(row.weight_kg.trim() !== ""
-          ? { weight_kg: Number(row.weight_kg) }
-          : {}),
-      })),
-  );
-}
-
 interface SessionLogSheetProps {
   itemId: string;
   /** Only 'run' and 'strength' items are loggable. */
   itemType: string;
   itemTitle: string;
+  /** Full session prescription — prefills the per-set strength editor. */
+  itemDescription?: string | null;
 }
 
 /** Optional post-completion session log ("How did it go?" — skippable).
@@ -54,24 +38,36 @@ export function SessionLogSheet({
   itemId,
   itemType,
   itemTitle,
+  itemDescription,
 }: SessionLogSheetProps) {
   const [open, setOpen] = useState(false);
   const [rpe, setRpe] = useState<number | null>(null);
-  const [exercises, setExercises] = useState<ExerciseRow[]>([
-    { ...EMPTY_EXERCISE },
-  ]);
+  const [exercises, dispatch] = useReducer(
+    strengthSetsReducer,
+    itemDescription ?? itemTitle,
+    buildEditableExercises,
+  );
   const [state, formAction, pending] = useActionState(
     logSessionAction,
     initialState,
   );
   useActionToast(state);
+  const totalVolume = state.totalVolumeKg ?? 0;
+  useConfettiBurst(Boolean(state.success) && totalVolume > 0);
 
   if (state.success) {
+    const equivalence = volumeEquivalence(totalVolume);
     return (
       <div className="space-y-1 pl-11">
         <p className="text-muted-foreground text-xs">
           Session logged — nice work.
         </p>
+        {totalVolume > 0 && (
+          <p className="text-foreground text-xs font-medium">
+            You lifted {totalVolume.toLocaleString("en-US")} kg total
+            {equivalence && ` — that's ${equivalence.label} ${equivalence.emoji}`}
+          </p>
+        )}
         {state.feedback && (
           <p
             className={cn(
@@ -105,18 +101,6 @@ export function SessionLogSheet({
       </div>
     );
   }
-
-  const updateExercise = (
-    index: number,
-    field: keyof ExerciseRow,
-    value: string,
-  ) => {
-    setExercises((current) =>
-      current.map((row, rowIndex) =>
-        rowIndex === index ? { ...row, [field]: value } : row,
-      ),
-    );
-  };
 
   return (
     <form
@@ -194,86 +178,14 @@ export function SessionLogSheet({
           </div>
         </div>
       ) : (
-        <div className="space-y-2">
-          <Label>Exercises (optional)</Label>
+        <>
           <input
             type="hidden"
             name="exercises_json"
-            value={serializeExercises(exercises)}
+            value={JSON.stringify(toLoggedExercises(exercises))}
           />
-          {exercises.map((row, index) => (
-            <div key={index} className="flex items-end gap-2">
-              <div className="min-w-0 flex-1 space-y-1">
-                {index === 0 && (
-                  <span className="text-muted-foreground text-[11px]">
-                    Exercise
-                  </span>
-                )}
-                <Input
-                  aria-label={`Exercise ${index + 1} name`}
-                  maxLength={80}
-                  placeholder="Bulgarian split squat"
-                  value={row.name}
-                  onChange={(event) =>
-                    updateExercise(index, "name", event.target.value)
-                  }
-                />
-              </div>
-              {(
-                [
-                  ["sets", "Sets", "3"],
-                  ["reps", "Reps", "10"],
-                  ["weight_kg", "kg", "20"],
-                ] as const
-              ).map(([field, label, placeholder]) => (
-                <div key={field} className="w-14 space-y-1">
-                  {index === 0 && (
-                    <span className="text-muted-foreground text-[11px]">
-                      {label}
-                    </span>
-                  )}
-                  <Input
-                    aria-label={`Exercise ${index + 1} ${label}`}
-                    type="number"
-                    min={0}
-                    step={field === "weight_kg" ? "0.5" : "1"}
-                    placeholder={placeholder}
-                    value={row[field]}
-                    onChange={(event) =>
-                      updateExercise(index, field, event.target.value)
-                    }
-                  />
-                </div>
-              ))}
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-label={`Remove exercise ${index + 1}`}
-                disabled={exercises.length === 1}
-                onClick={() =>
-                  setExercises((current) =>
-                    current.filter((_, rowIndex) => rowIndex !== index),
-                  )
-                }
-              >
-                <Trash2 aria-hidden />
-              </Button>
-            </div>
-          ))}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={exercises.length >= MAX_EXERCISES}
-            onClick={() =>
-              setExercises((current) => [...current, { ...EMPTY_EXERCISE }])
-            }
-          >
-            <Plus aria-hidden />
-            Add exercise
-          </Button>
-        </div>
+          <StrengthSetsEditor exercises={exercises} dispatch={dispatch} />
+        </>
       )}
 
       <div className="space-y-1.5">

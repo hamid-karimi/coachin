@@ -200,6 +200,7 @@ export function PlanItemRow({
           itemId={item.id}
           itemType={item.item_type}
           itemTitle={item.title}
+          itemDescription={item.description}
         />
       )}
     </div>
