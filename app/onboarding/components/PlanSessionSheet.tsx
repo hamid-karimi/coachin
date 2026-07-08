@@ -60,6 +60,12 @@ export function PlanSessionSheet({
             <p className="text-foreground text-sm font-semibold">{detailLine}</p>
           )}
 
+          {item.description && (
+            <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line">
+              {item.description}
+            </p>
+          )}
+
           {item.details?.notes && (
             <p className="text-muted-foreground text-sm leading-relaxed">
               {item.details.notes}

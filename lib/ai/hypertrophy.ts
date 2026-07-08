@@ -68,7 +68,8 @@ export async function generateHypertrophyPlan(
     anchorsPromptBlock(intake.anchors),
     `Rules:`,
     `- Exactly ${intake.days_per_week} strength days per week (day_of_week: 0=Sunday..6=Saturday) using a sensible split for that frequency; remaining days get ONE recovery item.`,
-    `- Every strength item (item_type "strength"): concrete exercises in the title (e.g. "Upper push: bench press 4x8 + incline DB press 3x10 + lateral raises 3x15"), sets x reps in the title, details.duration_min, short details.notes on progression (add weight/reps week to week; deload around week ${Math.max(4, intake.weeks_total - 2)}).`,
+    `- Every item: "title" is a SHORT human-readable session name, max 60 characters (e.g. "Upper body — Day A", "Legs & core"). Put the full exercise list in "description" — NEVER in the title.`,
+    `- Every strength item (item_type "strength"): short split-name title, the concrete exercise list with sets x reps in "description" (e.g. "Bench press 4x8 + incline DB press 3x10 + lateral raises 3x15"), details.duration_min, short details.notes on progression (add weight/reps week to week; deload around week ${Math.max(4, intake.weeks_total - 2)}).`,
     `- ONE mobility item per week (item_type "mobility").`,
     `- ONE meal_note item per week with practical protein guidance in details.notes (${intake.weight_kg ? `target ~${Math.round(Number(intake.weight_kg) * 1.8)}g protein/day for ${intake.weight_kg}kg bodyweight` : "about 1.6-2g protein per kg bodyweight"}).`,
     `- Every strength and mobility item gets details.video_query: a concise English YouTube SEARCH query for exercise form, max 80 chars. NEVER produce a youtube.com URL or a video id — only the search words.`,
@@ -106,6 +107,7 @@ export async function generateHypertrophyPlan(
                 ],
               },
               title: { type: Type.STRING },
+              description: { type: Type.STRING, nullable: true },
               details: {
                 type: Type.OBJECT,
                 properties: {

@@ -188,7 +188,9 @@ export default async function Dashboard() {
     planWeekLabel = activeToday[0].week;
     const { data: items } = await supabase
       .from("plan_items")
-      .select("id, plan_id, week, day_of_week, item_type, title, details, is_completed")
+      .select(
+        "id, plan_id, week, day_of_week, item_type, title, description, details, is_completed",
+      )
       .in(
         "plan_id",
         activeToday.map(({ plan }) => plan.id),

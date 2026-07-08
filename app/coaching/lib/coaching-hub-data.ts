@@ -50,6 +50,9 @@ export type CoachingHubData = {
   adherenceByUserId: Map<string, TraineeAdherence>;
   /** userId → per-active-plan current-week adherence (one entry per plan). */
   planAdherenceByUserId: Map<string, PlanAdherence[]>;
+  /** userId → the trainee shares nutrition with their coach (drives the
+   *  roster's Nutrition link). Empty until the sharing migration is applied. */
+  nutritionSharedByUserId: Map<string, boolean>;
   /** Monday of the current week, YYYY-MM-DD (local time). */
   weekStart: string;
 };
@@ -286,6 +289,23 @@ export async function getCoachingHubData(
     }
   }
 
+  // Nutrition-sharing flags — best-effort: before the sharing migration is
+  // applied the column doesn't exist, the query errors, and every trainee
+  // simply shows no Nutrition link.
+  const nutritionSharedByUserId = new Map<string, boolean>();
+  if (traineeIds.length > 0) {
+    const { data: sharingRows } = await supabase
+      .from("profiles")
+      .select("id, nutrition_sharing_enabled")
+      .in("id", traineeIds);
+    for (const row of (sharingRows ?? []) as {
+      id: string;
+      nutrition_sharing_enabled: boolean | null;
+    }[]) {
+      nutritionSharedByUserId.set(row.id, Boolean(row.nutrition_sharing_enabled));
+    }
+  }
+
   // Weekly XP only via the get_weekly_leaderboard RPC (xp_transactions is
   // RLS-blocked for other users). Skip entirely with zero trainees so the
   // total-XP fallback inside buildWeeklyLeaderboard can never widen to
@@ -313,6 +333,7 @@ export async function getCoachingHubData(
     weeklyXpByUserId,
     adherenceByUserId,
     planAdherenceByUserId,
+    nutritionSharedByUserId,
     weekStart,
   };
 }

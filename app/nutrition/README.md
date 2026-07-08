@@ -61,6 +61,17 @@ sodium. `foods` carries per-100g values (sugar/fiber/sodium nullable — USDA
 nutrient numbers 269 / 291 / 307); `meal_logs` stores the per-portion amount.
 Photo estimation and USDA/local search all populate them.
 
+## Coach sharing
+
+Trainees can opt in to sharing nutrition with their active coach: the
+"Share nutrition with my coach" toggle in Profile → Settings flips
+`profiles.nutrition_sharing_enabled` (default off). While on, the coach-read
+RLS policies (`20260707131000_nutrition_coach_read.sql`, copying the logs
+coach-read pattern) grant the active coach **read-only** SELECT on
+`meal_logs`, `meal_plans`, and `meal_plan_items`; the coach views the last 7
+days at `/coaching/trainees/[id]/nutrition`. Turning the toggle off revokes
+access immediately. Write policies remain self-only.
+
 ## Trends
 
 The page fetches the last 30 days of `meal_logs` and `lib/nutrition-trends.ts`

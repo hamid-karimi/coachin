@@ -30,6 +30,7 @@ export type CalendarPlanItem = {
   day_of_week: number;
   item_type: string;
   title: string;
+  description: string | null;
   is_completed: boolean;
   details: PlanItemDetails | null;
 };
@@ -107,6 +108,12 @@ function PlanDetailSheet({
         <div className="flex flex-col gap-4">
           {detailLine && (
             <p className="text-foreground text-sm font-semibold">{detailLine}</p>
+          )}
+
+          {item.description && (
+            <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line">
+              {item.description}
+            </p>
           )}
 
           {item.details?.notes && (

@@ -14,7 +14,11 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { planItemDetailLine, planItemVideoUrl } from "@/lib/plan-items";
+import {
+  planItemDetailLine,
+  planItemVideoUrl,
+  type PlanItemDetails,
+} from "@/lib/plan-items";
 import { useActionToast } from "@/components/hooks/use-action-toast";
 import { togglePlanItemAction, type TrainingActionState } from "../actions";
 import { SessionLogSheet } from "./session-log-sheet";
@@ -55,13 +59,8 @@ export type PlanItem = {
   day_of_week: number;
   item_type: string;
   title: string;
-  details: {
-    distance_km?: number;
-    pace_min_km?: string;
-    duration_min?: number;
-    notes?: string;
-    video_query?: string;
-  } | null;
+  description: string | null;
+  details: PlanItemDetails | null;
   is_completed: boolean;
 };
 
@@ -134,6 +133,11 @@ export function PlanItemRow({
           {detailLine && (
             <p className="text-muted-foreground text-xs">{detailLine}</p>
           )}
+          {item.description && (
+            <p className="text-muted-foreground mt-0.5 text-xs whitespace-pre-line">
+              {item.description}
+            </p>
+          )}
           {item.details?.notes && (
             <p className="text-muted-foreground mt-0.5 text-xs">
               {item.details.notes}
@@ -196,6 +200,7 @@ export function PlanItemRow({
           itemId={item.id}
           itemType={item.item_type}
           itemTitle={item.title}
+          itemDescription={item.description}
         />
       )}
     </div>

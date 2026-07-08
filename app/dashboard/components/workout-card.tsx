@@ -1,17 +1,15 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState } from "react";
 import { Check, Flame } from "lucide-react";
 
 import { logWorkout } from "../actions";
 import type { ScheduleItem } from "../page";
 import { useActionToast } from "@/components/hooks/use-action-toast";
+import { useConfettiBurst } from "@/components/hooks/use-confetti-burst";
 import { sportFromName } from "@/lib/sports";
 import { SportIcon } from "@/components/design-system/sport-chip";
 import { Button } from "@/components/ui/button";
-
-// Volt + ember — the celebration palette.
-const CONFETTI_COLORS = ["#D4F531", "#FF5C1F", "#FFB03A", "#FFC14D", "#5EB8FF"];
 
 export function WorkoutCard({
   item,
@@ -26,59 +24,10 @@ export function WorkoutCard({
 }) {
   const [state, action, isPending] = useActionState(logWorkout, {});
   const justCompleted = state?.success;
-  const confettiFired = useRef(false);
   useActionToast({
     error: state?.error,
   });
-
-  // Fire confetti after successful completion.
-  useEffect(() => {
-    if (justCompleted && !confettiFired.current) {
-      confettiFired.current = true;
-      // Dynamic import to avoid SSR issues
-      import("canvas-confetti").then((mod) => {
-        const confetti = mod.default;
-        const duration = 2 * 1000;
-        const animationEnd = Date.now() + duration;
-        const defaults = {
-          startVelocity: 30,
-          spread: 360,
-          ticks: 60,
-          zIndex: 50,
-          colors: CONFETTI_COLORS,
-        };
-
-        const randomInRange = (min: number, max: number) =>
-          Math.random() * (max - min) + min;
-
-        const interval: ReturnType<typeof setInterval> = setInterval(
-          function () {
-            const timeLeft = animationEnd - Date.now();
-
-            if (timeLeft <= 0) {
-              clearInterval(interval);
-              return;
-            }
-
-            const particleCount = 50 * (timeLeft / duration);
-            confetti({
-              ...defaults,
-              particleCount,
-              origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-            });
-            confetti({
-              ...defaults,
-              particleCount,
-              origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-            });
-          },
-          250,
-        );
-
-        return () => clearInterval(interval);
-      });
-    }
-  }, [justCompleted]);
+  useConfettiBurst(Boolean(justCompleted));
 
   const sport = sportFromName(item.sport_types?.name);
   const time = item.time ? item.time.slice(0, 5) : null;

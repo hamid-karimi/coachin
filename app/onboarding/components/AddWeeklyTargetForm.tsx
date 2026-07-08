@@ -5,8 +5,8 @@ import { Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useActionToast } from "@/components/hooks/use-action-toast";
+import { useActionSuccess } from "@/components/hooks/use-action-success";
 import { addWeeklyQuota } from "../actions";
-import { SportPicker, type SportOption } from "./SportPicker";
 
 // Bounds mirror the `weekly_quotas.sessions_per_week` CHECK (1..14); most
 // people target 1–7, so the stepper starts low and steps by one.
@@ -15,27 +15,40 @@ const MAX_SESSIONS = 14;
 const DEFAULT_SESSIONS = 2;
 
 interface AddWeeklyTargetFormProps {
-  sports: SportOption[];
+  /** Selected sport id ("" = none) — sport is picked in the sheet's first step. */
+  sportId: string;
+  /** Called once after the server action saves (e.g. to close the sheet). */
+  onSuccess?: () => void;
 }
 
 /**
- * Adds a weekly target (quota): sport × N sessions per week with no fixed
- * day. Posts to `addWeeklyQuota`, which upserts on the user+sport pair — so
- * re-adding a sport updates its target instead of duplicating it.
+ * Adds a weekly target (quota): the sport picked upstream × N sessions per
+ * week with no fixed day. The Add button is always enabled; submitting without
+ * a sport points at the gap instead of a dead button. Posts to
+ * `addWeeklyQuota`, which upserts on the user+sport pair — so re-adding a
+ * sport updates its target instead of duplicating it.
  */
-export function AddWeeklyTargetForm({ sports }: AddWeeklyTargetFormProps) {
+export function AddWeeklyTargetForm({
+  sportId,
+  onSuccess,
+}: AddWeeklyTargetFormProps) {
   const [state, formAction, isPending] = useActionState(addWeeklyQuota, {});
   useActionToast(state);
+  useActionSuccess(state, onSuccess);
 
-  const [sportId, setSportId] = useState<string>("");
   const [sessions, setSessions] = useState(DEFAULT_SESSIONS);
-
-  const canSubmit = sportId !== "";
+  const [sportError, setSportError] = useState<string | null>(null);
+  // Derived, not cleared in an effect: the error only shows while the sport is
+  // still missing, so picking one upstream hides it instantly.
+  const visibleSportError = sportId === "" ? sportError : null;
 
   function handleSubmit(formData: FormData) {
-    if (!canSubmit) return;
+    if (sportId === "") {
+      setSportError("Pick a sport first");
+      return;
+    }
+    setSportError(null);
     formAction(formData);
-    setSportId("");
     setSessions(DEFAULT_SESSIONS);
   }
 
@@ -44,16 +57,6 @@ export function AddWeeklyTargetForm({ sports }: AddWeeklyTargetFormProps) {
       {/* hidden inputs the action reads by name */}
       <input type='hidden' name='sport_type_id' value={sportId} readOnly />
       <input type='hidden' name='sessions_per_week' value={sessions} readOnly />
-
-      <div className='flex flex-col gap-2'>
-        <Label>Sport</Label>
-        <SportPicker
-          sports={sports}
-          value={sportId}
-          onChange={setSportId}
-          disabled={isPending}
-        />
-      </div>
 
       <div className='flex flex-wrap items-end gap-3'>
         <div className='flex flex-col gap-2'>
@@ -88,13 +91,13 @@ export function AddWeeklyTargetForm({ sports }: AddWeeklyTargetFormProps) {
           </div>
         </div>
 
-        <Button
-          type='submit'
-          variant='brand'
-          disabled={isPending || !canSubmit}>
+        <Button type='submit' variant='brand' disabled={isPending}>
           {isPending ? "Adding…" : "Add"}
         </Button>
       </div>
+      <p aria-live='polite' className='text-destructive text-sm'>
+        {visibleSportError}
+      </p>
 
       <p className='text-muted-foreground text-xs'>
         No fixed day — completed workouts of this sport count automatically.

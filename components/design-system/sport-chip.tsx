@@ -1,9 +1,32 @@
 import * as React from "react";
-import { Footprints, Dumbbell, Waves, Bike, Activity } from "lucide-react";
+import {
+  Footprints,
+  Dumbbell,
+  Waves,
+  Bike,
+  Activity,
+  Volleyball,
+  Swords,
+  Mountain,
+  TreePine,
+  Sailboat,
+  Music,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-export type Sport = "running" | "strength" | "swimming" | "cycling" | "mobility";
+export type Sport =
+  | "running"
+  | "strength"
+  | "swimming"
+  | "cycling"
+  | "mobility"
+  | "ball_sports"
+  | "combat"
+  | "climbing"
+  | "outdoor"
+  | "rowing"
+  | "dance";
 
 const SPORTS: Record<
   Sport,
@@ -14,6 +37,12 @@ const SPORTS: Record<
   swimming: { label: "Swimming", icon: Waves },
   cycling: { label: "Cycling", icon: Bike },
   mobility: { label: "Mobility", icon: Activity },
+  ball_sports: { label: "Ball sports", icon: Volleyball },
+  combat: { label: "Combat", icon: Swords },
+  climbing: { label: "Climbing", icon: Mountain },
+  outdoor: { label: "Outdoor", icon: TreePine },
+  rowing: { label: "Rowing", icon: Sailboat },
+  dance: { label: "Dance", icon: Music },
 };
 
 export function sportMeta(sport: Sport) {

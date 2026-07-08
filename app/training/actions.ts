@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient, getUser } from "@/lib/supabase/server";
+import { canCoach } from "@/lib/roles";
 import { parseFit, parseGpx, type ActivitySummary } from "@/lib/activity-parse";
 import {
   clampBaseWeeks,
@@ -25,6 +26,12 @@ import type { PlanAnchor } from "@/lib/ai/anchors";
 import { toLocalYMD, yearsSince } from "@/lib/dates";
 import type { WeekScorecard } from "@/lib/scorecard";
 import {
+  normalizeLoggedExercises,
+  totalVolumeKg,
+  volumeEquivalence,
+  type LoggedExercise,
+} from "@/lib/workout-sets";
+import {
   generateSessionFeedback,
   redFlagPrecheck,
 } from "@/lib/ai/session-feedback";
@@ -38,6 +45,8 @@ export type TrainingActionState = {
   activities?: ActivitySummary[];
   /** AI feedback on a logged session (validated, non-fatal on failure). */
   feedback?: { message: string; flag: string };
+  /** Total kg lifted in a strength log — celebration stat only, never XP. */
+  totalVolumeKg?: number;
 };
 
 const MAX_FILES = 3;
@@ -140,6 +149,45 @@ async function fetchAnchors(
   }));
 }
 
+type PlanTarget = { userId: string; forStudent: boolean };
+
+/** Who the plan is for. Coaches may pass `target_student_id` to generate on
+ *  behalf of a trainee — verified here (role + active relationship) and again
+ *  inside the create_training_plan RPC. Defaults to the signed-in user. */
+async function resolvePlanTarget(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string,
+  formData: FormData,
+): Promise<PlanTarget | { error: string }> {
+  const targetId = String(formData.get("target_student_id") ?? "").trim();
+  if (!targetId || targetId === userId) {
+    return { userId, forStudent: false };
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", userId)
+    .single();
+  if (!canCoach(profile?.role)) {
+    return { error: "Your current role cannot generate plans for trainees" };
+  }
+
+  const { data: relationship } = await supabase
+    .from("coaching_relationships")
+    .select("id")
+    .eq("coach_id", userId)
+    .eq("student_id", targetId)
+    .eq("status", "active")
+    .limit(1)
+    .maybeSingle();
+  if (!relationship) {
+    return { error: "This trainee is not coached by you" };
+  }
+
+  return { userId: targetId, forStudent: true };
+}
+
 export async function generatePlanAction(
   _prevState: TrainingActionState,
   formData: FormData,
@@ -238,13 +286,18 @@ export async function generatePlanAction(
   }
 
   const supabase = await createClient();
+  const target = await resolvePlanTarget(supabase, user.id, formData);
+  if ("error" in target) return { error: target.error };
+
+  // Personalization reads use the target athlete — the trainee's body profile
+  // and weekly anchors, not the coach's, must shape a coach-generated plan.
   const [{ data: profile }, anchors] = await Promise.all([
     supabase
       .from("profiles")
       .select("birth_date, sex, height_cm, weight_kg, training_history")
-      .eq("id", user.id)
+      .eq("id", target.userId)
       .single(),
-    fetchAnchors(supabase, user.id),
+    fetchAnchors(supabase, target.userId),
   ]);
 
   const age = profile?.birth_date
@@ -300,6 +353,7 @@ export async function generatePlanAction(
     p_model: plan.model,
     p_items: plan.items as unknown as Record<string, unknown>[],
     p_plan_kind: "race",
+    p_target_user_id: target.forStudent ? target.userId : null,
   });
 
   if (error || !data?.success) {
@@ -309,6 +363,10 @@ export async function generatePlanAction(
 
   revalidatePath("/training");
   revalidatePath("/dashboard");
+  if (target.forStudent) {
+    revalidatePath("/coaching");
+    redirect("/coaching");
+  }
   redirect("/training");
 }
 
@@ -342,6 +400,12 @@ export async function generateHypertrophyPlanAction(
     String(formData.get("experience_level") ?? "").trim() || null;
 
   const supabase = await createClient();
+  const target = await resolvePlanTarget(supabase, user.id, formData);
+  if ("error" in target) return { error: target.error };
+
+  // Personalization reads use the target athlete. Goal/photo reads are
+  // RLS-guarded self-only — for a trainee they return null and the intake
+  // simply loses those optional hints (best-effort, never blocking).
   const [
     { data: profile },
     { data: calorieGoal },
@@ -351,24 +415,24 @@ export async function generateHypertrophyPlanAction(
     supabase
       .from("profiles")
       .select("birth_date, sex, height_cm, weight_kg, training_history")
-      .eq("id", user.id)
+      .eq("id", target.userId)
       .single(),
     supabase
       .from("goals")
       .select("target_value")
-      .eq("user_id", user.id)
+      .eq("user_id", target.userId)
       .eq("goal_type", "calorie_intake")
       .eq("status", "active")
       .maybeSingle(),
     supabase
       .from("body_photos")
       .select("analysis")
-      .eq("user_id", user.id)
+      .eq("user_id", target.userId)
       .not("analysis", "is", null)
       .order("analyzed_at", { ascending: false })
       .limit(1)
       .maybeSingle(),
-    fetchAnchors(supabase, user.id),
+    fetchAnchors(supabase, target.userId),
   ]);
 
   const analysis = analyzedPhoto?.analysis as {
@@ -419,6 +483,7 @@ export async function generateHypertrophyPlanAction(
     p_model: plan.model,
     p_items: plan.items as unknown as Record<string, unknown>[],
     p_plan_kind: "hypertrophy",
+    p_target_user_id: target.forStudent ? target.userId : null,
   });
 
   if (error || !data?.success) {
@@ -428,6 +493,10 @@ export async function generateHypertrophyPlanAction(
 
   revalidatePath("/training");
   revalidatePath("/dashboard");
+  if (target.forStudent) {
+    revalidatePath("/coaching");
+    redirect("/coaching");
+  }
   redirect("/training");
 }
 
@@ -474,44 +543,6 @@ export async function togglePlanItemAction(
   return { success: true };
 }
 
-type ExerciseEntry = {
-  name: string;
-  sets: number;
-  reps: number;
-  weight_kg?: number;
-};
-
-const MAX_EXERCISES = 20;
-
-/** Validate a client-serialized exercises array field-by-field (style copied
- *  from validateItems in lib/ai/marathon.ts). Invalid entries are dropped. */
-function validateExercises(raw: unknown): ExerciseEntry[] {
-  if (!Array.isArray(raw)) return [];
-  const exercises: ExerciseEntry[] = [];
-  for (const entry of raw.slice(0, MAX_EXERCISES)) {
-    if (typeof entry !== "object" || entry === null) continue;
-    const item = entry as Record<string, unknown>;
-    const name = String(item.name ?? "").trim();
-    const sets = Number(item.sets);
-    const reps = Number(item.reps);
-    if (!name) continue;
-    if (!Number.isInteger(sets) || sets < 1 || sets > 50) continue;
-    if (!Number.isInteger(reps) || reps < 1 || reps > 50) continue;
-    const exercise: ExerciseEntry = { name: name.slice(0, 80), sets, reps };
-    const weight = Number(item.weight_kg);
-    if (
-      item.weight_kg !== undefined &&
-      item.weight_kg !== null &&
-      Number.isFinite(weight) &&
-      weight > 0
-    ) {
-      exercise.weight_kg = Math.round(weight * 10) / 10;
-    }
-    exercises.push(exercise);
-  }
-  return exercises;
-}
-
 /** Log how a completed run/strength session actually went (everything beyond
  *  the plan item reference is optional) and award +10 XP idempotently. */
 export async function logSessionAction(
@@ -543,6 +574,7 @@ export async function logSessionAction(
 
   // Sport-shaped `actual` payload — every field optional.
   const actual: Record<string, unknown> = {};
+  let loggedExercises: LoggedExercise[] = [];
   if (sport === "run") {
     const distanceKm = optionalNumber(formData.get("distance_km"));
     const durationMin = optionalNumber(formData.get("duration_min"));
@@ -554,8 +586,8 @@ export async function logSessionAction(
     const exercisesJson = String(formData.get("exercises_json") ?? "");
     if (exercisesJson) {
       try {
-        const exercises = validateExercises(JSON.parse(exercisesJson));
-        if (exercises.length > 0) actual.exercises = exercises;
+        loggedExercises = normalizeLoggedExercises(JSON.parse(exercisesJson));
+        if (loggedExercises.length > 0) actual.exercises = loggedExercises;
       } catch {
         // ignore malformed hidden field — exercises are optional
       }
@@ -655,10 +687,21 @@ export async function logSessionAction(
   revalidatePath("/training");
   const baseMessage =
     awardedXp > 0 ? `Session logged · +${awardedXp} XP` : "Session logged.";
+  // Total volume is a celebration stat only — XP stays the fixed award above.
+  const totalVolume = totalVolumeKg(loggedExercises);
+  let volumeMessage = "";
+  if (totalVolume > 0) {
+    const equivalence = volumeEquivalence(totalVolume);
+    volumeMessage = ` You lifted ${totalVolume.toLocaleString("en-US")} kg total${
+      equivalence ? ` — that's ${equivalence.label} ${equivalence.emoji}` : ""
+    }.`;
+  }
+  const message = `${baseMessage}${volumeMessage}`;
   return {
     success: true,
-    message: feedback ? `${baseMessage} 🏃 ${feedback.message}` : baseMessage,
+    message: feedback ? `${message} 🏃 ${feedback.message}` : message,
     feedback,
+    ...(totalVolume > 0 ? { totalVolumeKg: totalVolume } : {}),
   };
 }
 

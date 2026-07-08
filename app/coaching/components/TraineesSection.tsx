@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { Salad, WandSparkles } from "lucide-react";
+
 import type { StudentRelationship } from "@/app/community/types";
 import type {
   TraineeAdherence,
@@ -13,6 +16,7 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface TraineesSectionProps {
   students: StudentRelationship[];
@@ -24,6 +28,8 @@ interface TraineesSectionProps {
   planAdherenceByUserId?: Map<string, PlanAdherence[]>;
   /** Monday of the current week, YYYY-MM-DD (local time). */
   weekStart?: string;
+  /** userId → the trainee shares nutrition with their coach. */
+  nutritionSharedByUserId?: Map<string, boolean>;
 }
 
 export function TraineesSection({
@@ -32,6 +38,7 @@ export function TraineesSection({
   adherenceByUserId,
   planAdherenceByUserId,
   weekStart,
+  nutritionSharedByUserId,
 }: TraineesSectionProps) {
   const hasStudents = students.length > 0;
 
@@ -112,6 +119,21 @@ export function TraineesSection({
                       {student.xp?.toLocaleString() ?? 0} XP
                     </Badge>
                     <AssignPlanButton studentId={student.id} />
+                    <Button asChild size='sm' variant='secondary'>
+                      <Link href={`/training/new?student=${student.id}`}>
+                        <WandSparkles aria-hidden />
+                        Generate plan
+                      </Link>
+                    </Button>
+                    {nutritionSharedByUserId?.get(student.id) && (
+                      <Button asChild size='sm' variant='ghost'>
+                        <Link
+                          href={`/coaching/trainees/${student.id}/nutrition`}>
+                          <Salad aria-hidden />
+                          Nutrition
+                        </Link>
+                      </Button>
+                    )}
                   </div>
                 </li>
               );

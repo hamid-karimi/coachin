@@ -13,6 +13,7 @@ import { canCoach } from "@/lib/roles";
 import { tierFromLeague } from "@/lib/tiers";
 import { LogoutButton } from "./components/logout-button";
 import { ThemePreference } from "./components/theme-preference";
+import { NutritionSharingToggle } from "./components/nutrition-sharing-toggle";
 import { BodyMetricsForm } from "./components/body-metrics-form";
 import {
   MeasurementsSection,
@@ -375,6 +376,11 @@ export default async function ProfilePage() {
                 Theme
               </span>
               <ThemePreference />
+            </div>
+            <div className="py-3">
+              <NutritionSharingToggle
+                enabled={Boolean(profile?.nutrition_sharing_enabled)}
+              />
             </div>
             <div className="flex items-center justify-between gap-3 py-3 md:hidden">
               <span className="text-foreground text-sm font-semibold">

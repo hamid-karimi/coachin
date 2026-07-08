@@ -24,6 +24,7 @@ type ActivePlan = {
     race_target?: string;
     race_distance_km?: number;
   } | null;
+  created_by: string | null;
 };
 
 export default async function TrainingPage() {
@@ -38,7 +39,7 @@ export default async function TrainingPage() {
     supabase
       .from("training_plans")
       .select(
-        "id, race_date, goal_time, weeks_total, created_at, plan_kind, intake",
+        "id, race_date, goal_time, weeks_total, created_at, plan_kind, intake, created_by",
       )
       .eq("user_id", user.id)
       .eq("status", "active")
@@ -115,6 +116,9 @@ export default async function TrainingPage() {
       daysUntilRace: plan.race_date ? daysUntil(plan.race_date) : null,
       goal_time: plan.goal_time,
       isHypertrophy: plan.plan_kind === "hypertrophy",
+      // created_by is null on pre-migration rows; only a differing creator
+      // marks a coach-generated plan.
+      fromCoach: Boolean(plan.created_by && plan.created_by !== user.id),
       reviewWeek,
       checkinDue,
     };

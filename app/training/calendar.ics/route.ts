@@ -1,5 +1,6 @@
 import { createClient, getUser } from "@/lib/supabase/server";
 import { planItemDate } from "@/lib/dates";
+import type { PlanItemDetails } from "@/lib/plan-items";
 
 export const dynamic = "force-dynamic";
 
@@ -26,13 +27,8 @@ type PlanItemRow = {
   day_of_week: number;
   item_type: string;
   title: string;
-  details: {
-    distance_km?: number;
-    pace_min_km?: string;
-    duration_min?: number;
-    notes?: string;
-    video_query?: string;
-  } | null;
+  description: string | null;
+  details: PlanItemDetails | null;
 };
 
 /**
@@ -63,7 +59,7 @@ export async function GET() {
   );
   const { data: items } = await supabase
     .from("plan_items")
-    .select("id, plan_id, week, day_of_week, item_type, title, details")
+    .select("id, plan_id, week, day_of_week, item_type, title, description, details")
     .in(
       "plan_id",
       activePlans.map((plan) => plan.id),
@@ -96,6 +92,7 @@ export async function GET() {
       ]
         .filter(Boolean)
         .join(" · "),
+      item.description ?? "",
       item.details?.notes ?? "",
       item.details?.video_query
         ? `Form video: https://www.youtube.com/results?search_query=${encodeURIComponent(item.details.video_query)}`

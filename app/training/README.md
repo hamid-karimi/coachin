@@ -3,6 +3,37 @@
 Generates and displays AI training programs (running and hypertrophy), handles
 weekly check-ins, plan-item completion, and session logging.
 
+## Plan-item titles vs description
+
+Generated items carry a **short `title`** (≤60 chars, e.g. "Upper body — Day
+A") and put the full session detail (exercise lists, drills) in
+`plan_items.description` (nullable text column; `20260707120000`). Both
+prompts demand the split; `validateItems` (`lib/ai/marathon.ts`) trims and
+caps both. Cards/rows render the title; sheets, `PlanItemRow`, and the `.ics`
+DESCRIPTION render the description.
+
+## Per-set session logging (strength)
+
+`SessionLogSheet` logs strength sessions Hevy-style: per-exercise **per-set
+weight × reps** rows (`StrengthSetsEditor`), prefilled from the item's
+prescription via `parsePrescription` (`lib/workout-sets.ts`, pure + tested).
+The payload is stored in `session_logs.actual.exercises` as
+`[{name, sets:[{weight_kg, reps}]}]`; readers use `normalizeLoggedExercises`
+to also accept the legacy flat shape. Total volume (Σ weight × reps) shows
+live in the editor and, on save, in the success message with a real-world
+equivalence ("that's a small car 🚗") plus a confetti burst
+(`useConfettiBurst`). **Volume is a celebration stat only — session-log XP
+stays the fixed idempotent +10** (see FORMULAS.md).
+
+## Coach mode
+
+`/training/new?student=<id>` lets a coach generate a plan **for a trainee**:
+the page verifies the active coaching relationship, prefills the wizard from
+the trainee's body profile, and both generate actions + the
+`create_training_plan` RPC re-verify before saving with `user_id = trainee`,
+`created_by = coach` (`20260707130000`). The trainee's program card shows a
+"By your coach" tag.
+
 ## "My programs" manager
 
 `/training` is the **program manager** where plans are created, managed, and

@@ -1,6 +1,20 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
-import { SportChip, SportIcon } from "./sport-chip";
+import { SportChip, SportIcon, type Sport } from "./sport-chip";
+
+const ALL_SPORTS: Sport[] = [
+  "running",
+  "strength",
+  "swimming",
+  "cycling",
+  "mobility",
+  "ball_sports",
+  "combat",
+  "climbing",
+  "outdoor",
+  "rowing",
+  "dance",
+];
 
 const meta: Meta<typeof SportChip> = {
   title: "CoachIn/Sport Chip",
@@ -10,7 +24,7 @@ const meta: Meta<typeof SportChip> = {
   argTypes: {
     sport: {
       control: "select",
-      options: ["running", "strength", "swimming", "cycling", "mobility"],
+      options: ALL_SPORTS,
     },
   },
 };
@@ -22,12 +36,29 @@ export const Default: Story = {};
 
 export const AllSports: Story = {
   render: () => (
-    <div className="flex flex-wrap gap-2">
-      <SportChip sport="running" />
-      <SportChip sport="strength" />
-      <SportChip sport="swimming" />
-      <SportChip sport="cycling" />
-      <SportChip sport="mobility" />
+    <div className="flex max-w-md flex-wrap gap-2">
+      {ALL_SPORTS.map((sport) => (
+        <SportChip key={sport} sport={sport} />
+      ))}
+    </div>
+  ),
+};
+
+/**
+ * Several concrete sport names share one category icon (Football, Tennis, … →
+ * ball_sports) — the `label` prop keeps them distinguishable.
+ */
+export const LabelledCategories: Story = {
+  render: () => (
+    <div className="flex max-w-md flex-wrap gap-2">
+      <SportChip sport="ball_sports" label="Football" />
+      <SportChip sport="ball_sports" label="Table tennis" />
+      <SportChip sport="combat" label="Boxing" />
+      <SportChip sport="combat" label="Martial arts" />
+      <SportChip sport="climbing" label="Climbing" />
+      <SportChip sport="outdoor" label="Hiking" />
+      <SportChip sport="rowing" label="Rowing" />
+      <SportChip sport="dance" label="Dance" />
     </div>
   ),
 };
@@ -56,12 +87,10 @@ export const Selected: Story = {
 
 export const Icons: Story = {
   render: () => (
-    <div className="flex flex-wrap gap-3">
-      <SportIcon sport="running" />
-      <SportIcon sport="strength" />
-      <SportIcon sport="swimming" />
-      <SportIcon sport="cycling" />
-      <SportIcon sport="mobility" />
+    <div className="flex max-w-md flex-wrap gap-3">
+      {ALL_SPORTS.map((sport) => (
+        <SportIcon key={sport} sport={sport} />
+      ))}
     </div>
   ),
 };

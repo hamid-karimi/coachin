@@ -5,7 +5,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Pencil,
-  Repeat,
   Sparkles,
   TriangleAlert,
 } from "lucide-react";
@@ -19,11 +18,10 @@ import { getWeeklyQuotas } from "@/app/onboarding/actions";
 import { AppShell } from "@/components/design-system/app-shell";
 import { QuotaChip } from "@/components/design-system/quota-chip";
 import { Button } from "@/components/ui/button";
-import { SportIcon } from "@/components/design-system/sport-chip";
-import { sportFromName } from "@/lib/sports";
 import type { PlanItemDetails } from "@/lib/plan-items";
 import { cn } from "@/lib/utils";
 import { DayPlanItems } from "./components/day-plan-items";
+import { RoutineSessionItem } from "./components/routine-session-item";
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +40,7 @@ type PlanItemRow = {
   day_of_week: number;
   item_type: string;
   title: string;
+  description: string | null;
   is_completed: boolean;
   details: PlanItemDetails | null;
 };
@@ -139,7 +138,7 @@ export default async function CalendarPage({
       const { data: items } = await supabase
         .from("plan_items")
         .select(
-          "plan_id, week, day_of_week, item_type, title, is_completed, details",
+          "plan_id, week, day_of_week, item_type, title, description, is_completed, details",
         )
         .in("plan_id", planIds)
         .in("week", weekNums);
@@ -316,35 +315,18 @@ export default async function CalendarPage({
                         intense workouts today — consider spacing them.
                       </p>
                     )}
-                    {routines.map((s, i) => {
-                      const done =
-                        s.sport_type_id != null &&
-                        doneSports.has(s.sport_type_id);
-                      return (
-                        <div
-                          key={`r-${i}`}
-                          className="flex items-center gap-2.5 text-sm"
-                        >
-                          <SportIcon
-                            sport={sportFromName(s.sport_types?.name)}
-                            className="size-7 shrink-0"
-                          />
-                          <span
-                            className={cn(
-                              "min-w-0 flex-1 truncate",
-                              done && "text-muted-foreground line-through",
-                            )}
-                          >
-                            {s.sport_types?.name ?? "Workout"}
-                            {s.time ? ` · ${s.time.slice(0, 5)}` : ""}
-                          </span>
-                          <span className="text-muted-foreground inline-flex items-center gap-1 text-[11px]">
-                            <Repeat className="size-3" aria-hidden />
-                            routine
-                          </span>
-                        </div>
-                      );
-                    })}
+                    {routines.map((s, i) => (
+                      <RoutineSessionItem
+                        key={`r-${i}`}
+                        sportName={s.sport_types?.name ?? null}
+                        time={s.time ? s.time.slice(0, 5) : null}
+                        done={
+                          s.sport_type_id != null &&
+                          doneSports.has(s.sport_type_id)
+                        }
+                        isToday={isToday}
+                      />
+                    ))}
                     <DayPlanItems items={dayPlan} />
                   </div>
                 )}
