@@ -290,6 +290,26 @@ targets; it never computes them itself.
 - **v1 has NO gameplay effect:** quotas create no required days and never touch streaks,
   hearts, or XP — progress display only.
 
+## 12. Strength session volume (celebration stat)
+
+**Source of truth:** `lib/workout-sets.ts` (`totalVolumeKg`, `volumeEquivalence`,
+`parsePrescription`, `normalizeLoggedExercises` — unit-tested in
+`lib/workout-sets.test.ts`). Logged per set in `session_logs.actual.exercises`
+as `[{name, sets: [{weight_kg, reps}]}]` (legacy flat rows
+`{name, sets, reps, weight_kg}` are normalized to N identical set entries).
+
+- **Total volume** = Σ over every set of `weight_kg × reps`, rounded to 0.1 kg.
+  Non-finite/negative values count as 0; bodyweight sets (0 kg) add no volume.
+- **Equivalence** = first threshold cleared in the descending lookup table
+  (≥4000 elephant 🐘, ≥1500 small car 🚗, ≥700 grand piano 🎹, ≥400 horse 🐎,
+  ≥180 refrigerator 🧊, ≥80 washing machine 🧺; below 80 → none).
+- **NO gameplay effect:** volume never touches XP, streaks, hearts, or tiers.
+  Session-log XP stays the fixed idempotent **+10** (§1); plan-item XP stays
+  per-type. Volume is display + celebration only.
+- Prescription prefill parses `plan_items.description ?? title` segments
+  (`"Name NxM[-M2]"`, split on `" + "` or newlines); unparseable text falls
+  back to a blank editor.
+
 ---
 
 _When behavior here changes, update the referenced source files and re-run

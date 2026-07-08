@@ -30,6 +30,13 @@ longer a standalone nav tab.
   date can map to a different week number per plan.
 - Marks a day "logged" when any `logs` row for that date is `completed`, and
   strikes through routine items whose sport type was logged that day.
+- Routine rows are clickable (`RoutineSessionItem`, a client leaf): they open a
+  bottom sheet (same pattern as plan items) with the recurrence details, a link
+  to the routine editor, and — on the session's own day — a "Log it on Today"
+  button deep-linking to `/dashboard`, where routines are actually logged
+  (`WorkoutCard`). Other days show a hint instead of a dead button.
+- Plan items show their short `title` in the cell; the full session detail
+  (`plan_items.description`) renders inside the item's detail sheet.
 - When the user has weekly targets (`weekly_quotas`), a "Weekly targets" chip
   row (shared `QuotaChip` from `components/design-system/`) sits under the week
   navigation, computed by `quotaProgress` (`lib/weekly-quotas.ts`) from the

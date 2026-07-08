@@ -8,7 +8,19 @@ dashboard coaching card.
 ## Scope
 
 - **Trainee roster**: every active trainee with level, weekly XP, this week's
-  adherence strip, and a plan-assignment action
+  adherence strip, and per-trainee actions: schedule assignment
+  (`AssignPlanButton`), **"Generate plan"** (AI plan wizards run for the
+  trainee), and **"Nutrition"** (visible only when the trainee shares)
+- **Coach-generated AI plans**: "Generate plan" opens
+  `/training/new?student=<id>` — the same wizards, prefilled from the
+  trainee's body profile and weekly anchors. The plan applies to the trainee
+  immediately (no acceptance step), records `created_by = coach`, and shows a
+  "By your coach" tag on the trainee's program card. The relationship is
+  verified in the page, the action, AND the `create_training_plan` RPC.
+- **Trainee nutrition view** (`/coaching/trainees/[id]/nutrition`): read-only
+  last-7-days meal logs with kcal/protein totals vs meal-plan targets, gated
+  on the trainee's `nutrition_sharing_enabled` opt-in (see the nutrition
+  README's "Coach sharing" section)
 - **Invite codes**: generate per-sport coach invite codes
 - **Trainee weekly leaderboard**: trainees ranked by weekly XP
   (`get_weekly_leaderboard` RPC)
