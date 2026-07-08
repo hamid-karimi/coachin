@@ -84,6 +84,42 @@ export async function updateProfileAction(
   return { success: true, message: "Profile updated.", status: "success" };
 }
 
+/** Trainee opt-in: share nutrition (meal logs + meal plan) with the active
+ *  coach. The flag gates the coach-read RLS policies on the meal tables —
+ *  flipping it off revokes access immediately. */
+export async function setNutritionSharingAction(
+  _prevState: ProfileActionState,
+  formData: FormData,
+): Promise<ProfileActionState> {
+  const user = await getUser();
+  if (!user) {
+    return { error: "You must be signed in" };
+  }
+
+  const enabled = String(formData.get("enabled") ?? "") === "true";
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("profiles")
+    .update({ nutrition_sharing_enabled: enabled })
+    .eq("id", user.id);
+
+  if (error) {
+    console.error("Error updating nutrition sharing:", error);
+    return { error: "Failed to update nutrition sharing" };
+  }
+
+  revalidatePath("/profile");
+  revalidatePath("/coaching");
+  return {
+    success: true,
+    message: enabled
+      ? "Your coach can now see your nutrition."
+      : "Nutrition sharing turned off.",
+    status: enabled ? "success" : "info",
+  };
+}
+
 /**
  * Log a weight / body-fat measurement: inserts into the body_measurements
  * series AND refreshes the profiles snapshot in one flow (roadmap branch 1).

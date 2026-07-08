@@ -20,11 +20,15 @@ const selectClassName =
 interface HypertrophyWizardProps {
   profileSummary: string;
   hasBodyProfile: boolean;
+  /** Coach mode: generate the plan for this trainee (relationship is
+   *  re-verified server-side in the action AND the RPC). */
+  targetStudentId?: string;
 }
 
 export function HypertrophyWizard({
   profileSummary,
   hasBodyProfile,
+  targetStudentId,
 }: HypertrophyWizardProps) {
   const [state, formAction, generating] = useActionState(
     generateHypertrophyPlanAction,
@@ -34,6 +38,9 @@ export function HypertrophyWizard({
 
   return (
     <form action={formAction} className="space-y-4">
+      {targetStudentId && (
+        <input type="hidden" name="target_student_id" value={targetStudentId} />
+      )}
       <div className="bg-card border-border space-y-3 rounded-xl border p-4">
         <p className="text-foreground inline-flex items-center gap-2 text-sm font-semibold">
           <Dumbbell className="text-brand size-4" aria-hidden />

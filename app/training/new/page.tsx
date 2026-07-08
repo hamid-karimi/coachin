@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 export default async function NewTrainingPlanPage({
   searchParams,
 }: {
-  searchParams: Promise<{ kind?: string }>;
+  searchParams: Promise<{ kind?: string; student?: string }>;
 }) {
   const user = await getUser();
   if (!user) {
@@ -28,22 +28,58 @@ export default async function NewTrainingPlanPage({
     .eq("id", user.id)
     .single();
 
-  const age = yearsSince(profile?.birth_date);
+  const { kind, student } = await searchParams;
+  const coachNav = canCoach(profile?.role);
+
+  // Coach mode: ?student=<id> generates for a trainee. Verified here for the
+  // page render; the action + RPC re-verify on submit.
+  const studentId = (student ?? "").trim();
+  let trainee: { id: string; name: string } | null = null;
+  if (studentId && studentId !== user.id) {
+    if (!coachNav) redirect("/training/new");
+    const { data: relationship } = await supabase
+      .from("coaching_relationships")
+      .select("student:profiles(id, full_name, email)")
+      .eq("coach_id", user.id)
+      .eq("student_id", studentId)
+      .eq("status", "active")
+      .limit(1)
+      .maybeSingle();
+    // Supabase types to-one joins as arrays; the row is a single object.
+    const traineeProfile = relationship?.student as unknown as {
+      id: string;
+      full_name: string | null;
+      email: string | null;
+    } | null;
+    if (!traineeProfile) redirect("/coaching");
+    trainee = {
+      id: traineeProfile.id,
+      name: traineeProfile.full_name || traineeProfile.email || "your trainee",
+    };
+  }
+
+  // The body profile shaping the plan is the target athlete's.
+  const { data: targetProfile } = trainee
+    ? await supabase
+        .from("profiles")
+        .select("birth_date, sex, height_cm, weight_kg, training_history")
+        .eq("id", trainee.id)
+        .single()
+    : { data: profile };
+
+  const age = yearsSince(targetProfile?.birth_date);
 
   const parts = [
     age ? `${age} years old` : null,
-    profile?.sex ?? null,
-    profile?.height_cm ? `${profile.height_cm}cm` : null,
-    profile?.weight_kg ? `${profile.weight_kg}kg` : null,
+    targetProfile?.sex ?? null,
+    targetProfile?.height_cm ? `${targetProfile.height_cm}cm` : null,
+    targetProfile?.weight_kg ? `${targetProfile.weight_kg}kg` : null,
   ].filter(Boolean);
   const hasBodyProfile = parts.length >= 3;
   const profileSummary =
     parts.length > 0
-      ? `${parts.join(" · ")}${profile?.training_history ? ` — ${profile.training_history}` : ""}`
+      ? `${parts.join(" · ")}${targetProfile?.training_history ? ` — ${targetProfile.training_history}` : ""}`
       : "No body profile yet — the plan will rely on your answers only.";
-
-  const { kind } = await searchParams;
-  const coachNav = canCoach(profile?.role);
 
   if (kind === "race" || kind === "hypertrophy") {
     return (
@@ -52,7 +88,14 @@ export default async function NewTrainingPlanPage({
           <div>
             <h1 className="text-foreground font-display text-2xl font-bold tracking-tight md:text-[28px]">
               {kind === "race" ? "Running plan" : "Muscle building plan"}
+              {trainee ? ` for ${trainee.name}` : ""}
             </h1>
+            {trainee && (
+              <p className="text-brand-ink text-sm font-medium">
+                Coach mode — this plan is generated for {trainee.name} and
+                replaces their active plan right away.
+              </p>
+            )}
             <p className="text-muted-foreground text-sm">
               {kind === "race"
                 ? "Just want to build a running habit, or training for a 5k, marathon, or ultra — answer a few questions and get a week-by-week program: running, strength, mobility, recovery, and fueling notes."
@@ -63,11 +106,13 @@ export default async function NewTrainingPlanPage({
             <IntakeWizard
               profileSummary={profileSummary}
               hasBodyProfile={hasBodyProfile}
+              targetStudentId={trainee?.id}
             />
           ) : (
             <HypertrophyWizard
               profileSummary={profileSummary}
               hasBodyProfile={hasBodyProfile}
+              targetStudentId={trainee?.id}
             />
           )}
         </div>
@@ -75,13 +120,17 @@ export default async function NewTrainingPlanPage({
     );
   }
 
+  const studentQuery = trainee ? `&student=${trainee.id}` : "";
+
   // Entry choice: what are you training for?
   return (
     <AppShell coachNav={coachNav}>
       <div className="mx-auto flex w-full max-w-2xl flex-col gap-5">
         <div>
           <h1 className="text-foreground font-display text-2xl font-bold tracking-tight md:text-[28px]">
-            What are you training for?
+            {trainee
+              ? `What is ${trainee.name} training for?`
+              : "What are you training for?"}
           </h1>
           <p className="text-muted-foreground text-sm">
             Both paths generate a week-by-week plan with check-ins that adapt
@@ -90,7 +139,7 @@ export default async function NewTrainingPlanPage({
         </div>
 
         <Link
-          href="/training/new?kind=race"
+          href={`/training/new?kind=race${studentQuery}`}
           className="bg-card border-border hover:border-brand/40 group flex items-center gap-4 rounded-2xl border p-5 transition-colors"
         >
           <span className="bg-brand-tint text-brand-ink grid size-12 shrink-0 place-items-center rounded-xl">
@@ -112,7 +161,7 @@ export default async function NewTrainingPlanPage({
         </Link>
 
         <Link
-          href="/training/new?kind=hypertrophy"
+          href={`/training/new?kind=hypertrophy${studentQuery}`}
           className="bg-card border-border hover:border-brand/40 group flex items-center gap-4 rounded-2xl border p-5 transition-colors"
         >
           <span className="bg-xp-tint text-xp-ink grid size-12 shrink-0 place-items-center rounded-xl">

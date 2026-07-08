@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient, getUser } from "@/lib/supabase/server";
+import { canCoach } from "@/lib/roles";
 import { parseFit, parseGpx, type ActivitySummary } from "@/lib/activity-parse";
 import {
   clampBaseWeeks,
@@ -148,6 +149,45 @@ async function fetchAnchors(
   }));
 }
 
+type PlanTarget = { userId: string; forStudent: boolean };
+
+/** Who the plan is for. Coaches may pass `target_student_id` to generate on
+ *  behalf of a trainee — verified here (role + active relationship) and again
+ *  inside the create_training_plan RPC. Defaults to the signed-in user. */
+async function resolvePlanTarget(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string,
+  formData: FormData,
+): Promise<PlanTarget | { error: string }> {
+  const targetId = String(formData.get("target_student_id") ?? "").trim();
+  if (!targetId || targetId === userId) {
+    return { userId, forStudent: false };
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", userId)
+    .single();
+  if (!canCoach(profile?.role)) {
+    return { error: "Your current role cannot generate plans for trainees" };
+  }
+
+  const { data: relationship } = await supabase
+    .from("coaching_relationships")
+    .select("id")
+    .eq("coach_id", userId)
+    .eq("student_id", targetId)
+    .eq("status", "active")
+    .limit(1)
+    .maybeSingle();
+  if (!relationship) {
+    return { error: "This trainee is not coached by you" };
+  }
+
+  return { userId: targetId, forStudent: true };
+}
+
 export async function generatePlanAction(
   _prevState: TrainingActionState,
   formData: FormData,
@@ -246,13 +286,18 @@ export async function generatePlanAction(
   }
 
   const supabase = await createClient();
+  const target = await resolvePlanTarget(supabase, user.id, formData);
+  if ("error" in target) return { error: target.error };
+
+  // Personalization reads use the target athlete — the trainee's body profile
+  // and weekly anchors, not the coach's, must shape a coach-generated plan.
   const [{ data: profile }, anchors] = await Promise.all([
     supabase
       .from("profiles")
       .select("birth_date, sex, height_cm, weight_kg, training_history")
-      .eq("id", user.id)
+      .eq("id", target.userId)
       .single(),
-    fetchAnchors(supabase, user.id),
+    fetchAnchors(supabase, target.userId),
   ]);
 
   const age = profile?.birth_date
@@ -308,6 +353,7 @@ export async function generatePlanAction(
     p_model: plan.model,
     p_items: plan.items as unknown as Record<string, unknown>[],
     p_plan_kind: "race",
+    p_target_user_id: target.forStudent ? target.userId : null,
   });
 
   if (error || !data?.success) {
@@ -317,6 +363,10 @@ export async function generatePlanAction(
 
   revalidatePath("/training");
   revalidatePath("/dashboard");
+  if (target.forStudent) {
+    revalidatePath("/coaching");
+    redirect("/coaching");
+  }
   redirect("/training");
 }
 
@@ -350,6 +400,12 @@ export async function generateHypertrophyPlanAction(
     String(formData.get("experience_level") ?? "").trim() || null;
 
   const supabase = await createClient();
+  const target = await resolvePlanTarget(supabase, user.id, formData);
+  if ("error" in target) return { error: target.error };
+
+  // Personalization reads use the target athlete. Goal/photo reads are
+  // RLS-guarded self-only — for a trainee they return null and the intake
+  // simply loses those optional hints (best-effort, never blocking).
   const [
     { data: profile },
     { data: calorieGoal },
@@ -359,24 +415,24 @@ export async function generateHypertrophyPlanAction(
     supabase
       .from("profiles")
       .select("birth_date, sex, height_cm, weight_kg, training_history")
-      .eq("id", user.id)
+      .eq("id", target.userId)
       .single(),
     supabase
       .from("goals")
       .select("target_value")
-      .eq("user_id", user.id)
+      .eq("user_id", target.userId)
       .eq("goal_type", "calorie_intake")
       .eq("status", "active")
       .maybeSingle(),
     supabase
       .from("body_photos")
       .select("analysis")
-      .eq("user_id", user.id)
+      .eq("user_id", target.userId)
       .not("analysis", "is", null)
       .order("analyzed_at", { ascending: false })
       .limit(1)
       .maybeSingle(),
-    fetchAnchors(supabase, user.id),
+    fetchAnchors(supabase, target.userId),
   ]);
 
   const analysis = analyzedPhoto?.analysis as {
@@ -427,6 +483,7 @@ export async function generateHypertrophyPlanAction(
     p_model: plan.model,
     p_items: plan.items as unknown as Record<string, unknown>[],
     p_plan_kind: "hypertrophy",
+    p_target_user_id: target.forStudent ? target.userId : null,
   });
 
   if (error || !data?.success) {
@@ -436,6 +493,10 @@ export async function generateHypertrophyPlanAction(
 
   revalidatePath("/training");
   revalidatePath("/dashboard");
+  if (target.forStudent) {
+    revalidatePath("/coaching");
+    redirect("/coaching");
+  }
   redirect("/training");
 }
 

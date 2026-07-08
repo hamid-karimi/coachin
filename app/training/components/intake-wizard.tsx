@@ -45,11 +45,15 @@ const selectClassName =
 interface IntakeWizardProps {
   profileSummary: string;
   hasBodyProfile: boolean;
+  /** Coach mode: generate the plan for this trainee (relationship is
+   *  re-verified server-side in the action AND the RPC). */
+  targetStudentId?: string;
 }
 
 export function IntakeWizard({
   profileSummary,
   hasBodyProfile,
+  targetStudentId,
 }: IntakeWizardProps) {
   const [step, setStep] = useState(1);
   const [generateState, generateAction, generating] = useActionState(
@@ -180,6 +184,13 @@ export function IntakeWizard({
       <form action={generateAction} className="space-y-4">
         {/* Server branches on this: "base" = just start running, "race" = train for a race. */}
         <input type="hidden" name="mode" value={mode} />
+        {targetStudentId && (
+          <input
+            type="hidden"
+            name="target_student_id"
+            value={targetStudentId}
+          />
+        )}
 
         {/* Step 1 — about you (profile snapshot) */}
         <div className={step === 1 ? "space-y-4" : "hidden"}>
