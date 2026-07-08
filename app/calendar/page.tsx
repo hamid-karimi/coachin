@@ -7,6 +7,7 @@ import {
   Pencil,
   Sparkles,
   TriangleAlert,
+  UtensilsCrossed,
 } from "lucide-react";
 
 import { createClient, getUser } from "@/lib/supabase/server";
@@ -22,6 +23,7 @@ import type { PlanItemDetails } from "@/lib/plan-items";
 import { cn } from "@/lib/utils";
 import { DayPlanItems } from "./components/day-plan-items";
 import { RoutineSessionItem } from "./components/routine-session-item";
+import { getActiveMealPlanByDay } from "@/app/nutrition/lib/meal-plan-day";
 
 export const dynamic = "force-dynamic";
 
@@ -83,6 +85,7 @@ export default async function CalendarPage({
     { data: activePlans },
     { data: logs },
     quotas,
+    mealPlanByDay,
   ] = await Promise.all([
     supabase.from("profiles").select("role").eq("id", user.id).single(),
     supabase
@@ -106,6 +109,7 @@ export default async function CalendarPage({
       .gte("date", mondayYmd)
       .lte("date", sundayYmd),
     getWeeklyQuotas(),
+    getActiveMealPlanByDay(supabase, user.id),
   ]);
 
   // Weekly-target progress for the VIEWED week: quotas are timeless targets
@@ -273,6 +277,11 @@ export default async function CalendarPage({
             );
             const dayPlan = planByDate.get(ymd) ?? [];
             const collision = hasHardCollision(dayPlan);
+            const dayMeals = mealPlanByDay?.byDay.get(dow) ?? [];
+            const dayMealsKcal = dayMeals.reduce(
+              (sum, meal) => sum + meal.kcal,
+              0,
+            );
 
             const empty = routines.length === 0 && dayPlan.length === 0;
 
@@ -329,6 +338,19 @@ export default async function CalendarPage({
                     ))}
                     <DayPlanItems items={dayPlan} />
                   </div>
+                )}
+
+                {/* Planned menu from the active AI meal plan — link only,
+                    meals are viewed/edited in /nutrition/plan */}
+                {dayMeals.length > 0 && (
+                  <Link
+                    href="/nutrition/plan"
+                    className="text-muted-foreground hover:text-foreground mt-2 inline-flex items-center gap-1.5 text-[11px] font-medium transition-colors"
+                  >
+                    <UtensilsCrossed className="size-3" aria-hidden />
+                    {dayMeals.length} {dayMeals.length === 1 ? "meal" : "meals"}{" "}
+                    planned · {Math.round(dayMealsKcal).toLocaleString()} kcal
+                  </Link>
                 )}
               </div>
             );
