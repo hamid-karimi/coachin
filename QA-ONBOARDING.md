@@ -107,6 +107,15 @@ inactive; every coach feature checks for an **active** relationship.
 
 1. Log meals by search (local + USDA), photo (AI proposes, user must review —
    nothing auto-saves), or manual entry; household units convert to grams.
+   Photo mode accepts **up to 3 photos of the same meal** (angles or a
+   package-label shot — the label should win over visual guessing) plus an
+   optional text hint ("restaurant pizza, large"); the result is still ONE
+   merged item list to review.
+1. **Country-aware suggestions**: with a country set on the profile (Profile →
+   Body profile → Country, free text like "Iran"), generated meal plans should
+   prefer local dishes and locally available ingredients, and must **never
+   quote prices**. Without a profile country the deployed app falls back to
+   IP-based country detection — profile always wins.
 2. Daily kcal/macros bar tracks the `calorie_intake` goal; hitting the goal
    day awards the adherence bonus (FORMULAS.md §8).
 3. AI meal plan (`/nutrition/plan`) builds a 7-day menu from body metrics +
@@ -139,6 +148,16 @@ inactive; every coach feature checks for an **active** relationship.
    roster row → read-only last-7-days meal view. Turning the toggle off must
    revoke access immediately (the coach page then shows the opt-in
    explainer). Coaches must never be able to edit trainee meals.
+
+### 7. Watch-data import (Profile)
+
+1. Profile → **Watch data** → upload .fit/.gpx exports (≤3 files) → parsed
+   runs listed (date · km · min) → "Log N runs" saves them as completed
+   workouts with XP (60 × running multiplier each) and they appear on the
+   calendar.
+2. Rules to verify (FORMULAS.md §14): runs older than **14 days** or in the
+   future are skipped; a date that already has a logged run is skipped;
+   **re-importing the same file imports nothing** (no double XP).
 
 ## Gamification rules QA must know
 

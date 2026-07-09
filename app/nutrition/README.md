@@ -50,8 +50,19 @@ An AI weekly menu built from body metrics + training load.
 ## AI photo estimation
 
 `lib/ai/nutrition.ts` (Gemini vision) proposes items with per-portion calories
-and macros. Nothing is auto-saved: the user always reviews and edits in the
-photo-review sheet before it becomes `meal_logs` rows.
+and macros. Accepts up to **3 photos of the same meal** (angles or a
+packaging/nutrition-label shot — the prompt prefers label data) plus an
+optional free-text hint; the model merges everything into one item list.
+Nothing is auto-saved: the user always reviews and edits in the photo-review
+sheet before it becomes `meal_logs` rows.
+
+## Locale-aware suggestions
+
+`profiles.country` (free text, set on the profile's body form) feeds both the
+meal-plan prompt (ingredients commonly available/affordable there, familiar
+local dishes, **never quote prices**) and photo recognition (cuisine hint).
+When unset, `lib/user-country.ts` (pure, tested) falls back to Vercel's
+`x-vercel-ip-country` header — the profile value always wins.
 
 ## Data
 

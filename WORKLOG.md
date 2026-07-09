@@ -5,6 +5,39 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-07-09 · `feat/nutrition-integrations`
+
+**Done** (plan: `plans/nutrition-integrations-plan.md`):
+
+- Multi-photo meal recognition: up to 3 photos of the same meal + optional
+  context hint; prompt merges angles/label shots, prefers label data
+  (`lib/ai/nutrition.ts`, `estimateMealPhotoAction`, meal-logger UI).
+- Locale-aware nutrition: `profiles.country` column (migration
+  `20260709090000`), Country field on the profile body form,
+  `lib/user-country.ts` (profile wins over `x-vercel-ip-country` header),
+  country injected into meal-plan + photo prompts. No AI price quoting.
+- Watch-file import on Profile: "Watch data" section reuses the GPX/FIT
+  parser; `importActivitiesAction` logs completed runs — 14-day window,
+  one per sport×date dedup, XP = 60×multiplier (FORMULAS §14;
+  `lib/activity-import.ts` pure + tested).
+- Docs: FORMULAS §14, QA-ONBOARDING journeys 5+7, nutrition README.
+
+**Decisions**: Iran first locale (user-set country, IP fallback); watch
+import capped to 14 days to prevent bulk XP farming; Strava = spec only in
+the plan file (Phase 4) until Hamid registers the API app; Apple/Samsung
+Health parked for the future React Native/Flutter app.
+
+**Next steps**
+
+- [ ] Push `feat/nutrition-integrations`, PR → develop, apply migrations
+      `20260709090000_profile_country.sql` (+ `20260708090000_supplements.sql`
+      if not yet applied) to hosted Supabase.
+- [ ] Hamid: register the Strava API app (strava.com/settings/api, callback
+      domain = production Vercel domain) and add STRAVA_CLIENT_ID /
+      STRAVA_CLIENT_SECRET / STRAVA_WEBHOOK_VERIFY_TOKEN to Vercel env —
+      then build Phase 4 from the plan's spec.
+- [ ] QA the three features on Vercel per QA-ONBOARDING journeys 5 and 7.
+
 ## 2026-07-08 · `feat/meal-plan-surfacing-supplements`
 
 **Done** (commit `1cfced7`, + docs/process commit after it):

@@ -15,6 +15,7 @@ import { LogoutButton } from "./components/logout-button";
 import { ThemePreference } from "./components/theme-preference";
 import { NutritionSharingToggle } from "./components/nutrition-sharing-toggle";
 import { BodyMetricsForm } from "./components/body-metrics-form";
+import { ActivityImportSection } from "./components/activity-import-section";
 import {
   MeasurementsSection,
   type Measurement,
@@ -312,6 +313,12 @@ export default async function ProfilePage() {
             trainingHistory={profile.training_history ?? null}
             country={profile.country ?? null}
           />
+        </section>
+
+        {/* Occasional watch-data import (FORMULAS.md §14) */}
+        <section className="space-y-2.5">
+          <h2 className="text-overline">Watch data</h2>
+          <ActivityImportSection />
         </section>
 
         {/* Measurements */}

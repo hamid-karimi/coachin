@@ -324,6 +324,25 @@ as `[{name, sets: [{weight_kg, reps}]}]` (legacy flat rows
 - **NO gameplay effect:** supplements never award XP and never touch streaks,
   hearts, quotas, or tiers — the card is a reminder + logger only.
 
+## 14. Watch-file activity import
+
+**Source of truth:** `lib/activity-import.ts` (`sanitizeActivities`,
+`splitImportableActivities`, unit-tested), `importActivitiesAction`
+(`app/profile/actions.ts`), parser `lib/activity-parse.ts`.
+
+- Uploaded .fit/.gpx files are parsed to run summaries (≤3 files/upload,
+  ≤20 activities) and logged as **completed runs** (`logs` rows) from the
+  Profile page.
+- **XP = 60 × running sport multiplier per imported run** — the exact
+  routine-log formula (§1), summed into one profile update.
+- **Window**: only dates within the last **14 days** (and not in the future)
+  import; older/future dates are skipped.
+- **Dedup**: one completed log per sport×date — dates that already have a
+  completed running log are skipped, and two files for the same date import
+  once. Re-importing the same file is therefore a no-op.
+- Streaks: already-settled past days are never re-evaluated; only un-settled
+  days (e.g. today) can benefit from an imported run.
+
 ---
 
 _When behavior here changes, update the referenced source files and re-run
