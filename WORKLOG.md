@@ -5,16 +5,29 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
-## 2026-07-09 (later) · `feat/share-progress` — plan only, not yet built
+## 2026-07-09 (later) · `feat/share-progress` — BUILT (3 phases committed)
 
-Plan: `plans/share-progress-plan.md` (share cards + progress photos +
-progress charts). Decisions: cards = deterministic CANVAS composition, not
-AI image editing (AI = caption suggestions later); Web Share API + download
-fallback; watermark "coachin" always on; privacy defaults (no body weight on
-cards, photos explicit, nothing auto-posts). body_photos gets a 'progress'
-kind (existing trigger caps body_photo at 5 — replace per-kind). Charts:
-no chart lib — SVG primitives extending the nutrition-trends precedent,
-pure aggregators in lib/. **Next: run /do on the plan.**
+Plan: `plans/share-progress-plan.md`. All three phases implemented:
+
+1. **Share cards** (`3300d8d`): `lib/share-card.ts` (pure builders, privacy
+   rules: no body weight, additive stats only) + canvas renderer
+   (`components/share/share-card-canvas.ts`, story/square, watermark always
+   on) + `ShareCardSheet` (preview, photo picker, Web Share API/download).
+   Entry points: strength-log success ("Share it"), nutrition day summary
+   ("Share today"), meal rows.
+2. **Progress photos** (`67912d3`): migration `20260709150000` ('progress'
+   kind + per-kind cap trigger: body_photo 5, progress 24);
+   `uploadProgressPhotoAction` reuses sharp+moderation pipeline; profile
+   timeline/compare/share section; 28-day dashboard nudge.
+3. **Progress charts**: `lib/progress-charts.ts` (weeklyVolume, weeklyKm,
+   exerciseTopSets, weightSeries — pure + tested), design-system
+   `WeeklyBarsChart`/`TrendLineChart` (SVG, no lib, stories), profile
+   "Progress" section fed by last-12-week session_logs.
+
+**Next steps**: push branch + PR → develop; apply migration
+`20260709150000_progress_photos.sql` to hosted Supabase; QA journey 8.
+Parked: AI caption suggestions on share cards; weekly-recap share card
+(needs the recap feature from the joy brainstorm below).
 
 ## 2026-07-09 (later) · brainstorm — joy/consistency engine (no code yet)
 

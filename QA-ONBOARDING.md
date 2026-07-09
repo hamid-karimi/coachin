@@ -174,6 +174,26 @@ inactive; every coach feature checks for an **active** relationship.
    future are skipped; a date that already has a logged run is skipped;
    **re-importing the same file imports nothing** (no double XP).
 
+### 8. Share cards & progress (Profile + logging surfaces)
+
+1. **Share cards**: after logging a strength session with weights, "Share
+   it" opens a preview sheet — Story/Square formats, optional photo, Share
+   (native share sheet on mobile) or Save image on desktop. Same sheet from
+   the nutrition day summary ("Share today") and each meal row's share icon.
+   Verify: the "coachin" watermark is always on the image; **body weight
+   never appears on a card**; nothing posts anywhere without the OS share
+   sheet or an explicit save.
+2. **Progress photos** (Profile → Progress photos): add photos (they're
+   re-encoded — EXIF/location stripped — and AI-screened; reports are
+   rejected here), max 24; Compare → pick two → oldest shows left →
+   "Share progress" builds a two-photo card after an explicit consent note.
+   Dashboard shows a quiet "add a progress photo" hint for active users
+   after 28+ days without one.
+3. **Progress charts** (Profile → Progress): weekly volume bars, weekly km,
+   body-weight trend (needs ≥2 measurements), and top-set trends for
+   exercises logged ≥3 times. Charts hide individually without data; an
+   explainer shows when everything is empty. Values must match the raw logs.
+
 ## Gamification rules QA must know
 
 All from [`FORMULAS.md`](FORMULAS.md) — spot-check against it, not intuition:

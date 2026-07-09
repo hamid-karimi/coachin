@@ -23,7 +23,10 @@ to also accept the legacy flat shape. Total volume (Σ weight × reps) shows
 live in the editor and, on save, in the success message with a real-world
 equivalence ("that's a small car 🚗") plus a confetti burst
 (`useConfettiBurst`). **Volume is a celebration stat only — session-log XP
-stays the fixed idempotent +10** (see FORMULAS.md).
+stays the fixed idempotent +10** (see FORMULAS.md). The success state also
+offers "Share it" — a canvas-composed share card (`lib/share-card.ts` +
+`components/share/`) with the volume stats; deterministic composition, no
+AI image editing, permanent watermark.
 
 ## Coach mode
 
