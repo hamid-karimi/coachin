@@ -310,6 +310,7 @@ export default async function ProfilePage() {
             sex={profile.sex ?? null}
             heightCm={profile.height_cm ?? null}
             trainingHistory={profile.training_history ?? null}
+            country={profile.country ?? null}
           />
         </section>
 

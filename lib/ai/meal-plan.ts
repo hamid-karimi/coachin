@@ -18,6 +18,8 @@ export interface MealPlanIntake {
   targets: NutritionTargets;
   /** Consented body-photo analysis summary, when available. */
   body_analysis?: string | null;
+  /** User's country (profile value or IP-geo fallback) for local food. */
+  country?: string | null;
 }
 
 export interface GeneratedMealItem {
@@ -57,7 +59,10 @@ export async function generateMealPlan(
       ? `Athlete context (consented): ${intake.body_analysis}`
       : null,
     `For every meal provide: day_of_week, meal_type (breakfast/lunch/dinner/snack), a short title, an ingredient list with quantities, 1-3 concise recipe steps, a YouTube search query for a how-to video, and the meal's macros (protein/carbs/fat/sugar/fiber in grams, sodium in mg) and kcal.`,
-    `Vary meals across the week. Keep ingredients common and affordable.`,
+    intake.country
+      ? `The user lives in ${intake.country}: use ingredients that are commonly available and affordable there, and prefer familiar local dishes and staple foods alongside general healthy options. Never quote prices or costs.`
+      : `Keep ingredients common and affordable.`,
+    `Vary meals across the week.`,
   ]
     .filter(Boolean)
     .join("\n");

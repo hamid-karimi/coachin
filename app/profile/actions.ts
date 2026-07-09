@@ -64,6 +64,9 @@ export async function updateProfileAction(
   const trainingHistory =
     String(formData.get("training_history") ?? "").trim() || null;
 
+  const country =
+    String(formData.get("country") ?? "").trim().slice(0, 56) || null;
+
   const supabase = await createClient();
   const { error } = await supabase
     .from("profiles")
@@ -72,6 +75,7 @@ export async function updateProfileAction(
       sex: sexRaw || null,
       height_cm: height.value,
       training_history: trainingHistory,
+      country,
     })
     .eq("id", user.id);
 
