@@ -4,10 +4,19 @@ The dashboard is the daily execution surface where users see today's plan and lo
 
 ## Structure
 
-- `page.tsx`: loads profile, today's schedule, and today's logs
+- `page.tsx`: loads profile, today's schedule, today's logs, the active meal
+  plan's menu, and the supplements stack
 - `loading.tsx`: static skeleton (server component; `animate-pulse` + `bg-secondary` blocks) shown while the page's server data resolves, matching the `max-w-4xl` container and header/card rhythm
 - `actions.ts`: `logWorkout` server action for logging activity and updating XP
+- `supplements-actions.ts`: add / delete / toggle-taken for the daily stack
 - `components/workout-card.tsx`: card UI for each planned activity
+- `components/todays-meals-card.tsx`: today's menu from the active AI meal
+  plan (server component; data via `app/nutrition/lib/meal-plan-day.ts`),
+  linking to `/nutrition/plan`; hidden when no active meal plan exists
+- `components/supplements-card.tsx`: "Daily stack" — supplements checklist
+  (check off taken-today per item) with a manage sheet (add name + dose,
+  delete). One `supplement_logs` row per supplement per day; **no XP,
+  streaks, or hearts** (`FORMULAS.md` §13)
 - `logout-button.tsx`: sign-out control
 
 ## Key Behavior

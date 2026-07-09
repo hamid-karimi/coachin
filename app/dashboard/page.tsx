@@ -36,6 +36,12 @@ import { hasHardCollision } from "@/lib/training-day";
 import { GOAL_TYPE_META } from "@/lib/goals";
 import { Progress } from "@/components/ui/progress";
 import { WorkoutCard } from "./components/workout-card";
+import { TodaysMealsCard } from "./components/todays-meals-card";
+import {
+  SupplementsCard,
+  type SupplementRow,
+} from "./components/supplements-card";
+import { getActiveMealPlanByDay } from "@/app/nutrition/lib/meal-plan-day";
 import {
   PlanItemRow,
   type PlanItem,
@@ -138,6 +144,9 @@ export default async function Dashboard() {
     { data: activePlans },
     quotas,
     { data: weekLogs },
+    mealPlanByDay,
+    { data: supplementRows },
+    { data: supplementLogRows },
   ] = await Promise.all([
     isCoachCapable
       ? getCoachingSummary(supabase, user.id)
@@ -156,7 +165,24 @@ export default async function Dashboard() {
       .eq("user_id", user.id)
       .gte("date", toLocalYMD(weekMonday))
       .lte("date", toLocalYMD(weekSunday)),
+    getActiveMealPlanByDay(supabase, user.id),
+    supabase
+      .from("supplements")
+      .select("id, name, dose")
+      .eq("user_id", user.id)
+      .order("created_at"),
+    supabase
+      .from("supplement_logs")
+      .select("supplement_id")
+      .eq("user_id", user.id)
+      .eq("date", dateString),
   ]);
+
+  const supplements = (supplementRows ?? []) as SupplementRow[];
+  const takenSupplementIds = (supplementLogRows ?? []).map(
+    (row) => row.supplement_id as string,
+  );
+  const todaysMeals = mealPlanByDay?.byDay.get(dayIndex) ?? [];
 
   // Weekly-target progress (informational only — FORMULAS.md §11).
   const quotaChips = quotaProgress(quotas, weekLogs ?? []);
@@ -509,6 +535,20 @@ export default async function Dashboard() {
             aria-hidden
           />
         </Link>
+
+        {/* Today's menu from the active AI meal plan */}
+        {mealPlanByDay && (
+          <TodaysMealsCard
+            meals={todaysMeals}
+            kcalTarget={mealPlanByDay.kcalTarget}
+          />
+        )}
+
+        {/* Daily supplements — reminder + logger, no XP (FORMULAS.md §13) */}
+        <SupplementsCard
+          supplements={supplements}
+          takenIds={takenSupplementIds}
+        />
 
         {/* Active goal strip (roadmap branch 2) */}
         {featuredGoal && featuredGoal.progress && (

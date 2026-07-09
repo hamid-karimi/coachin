@@ -42,6 +42,10 @@ An AI weekly menu built from body metrics + training load.
   blocks. Each meal shows macros, an expandable recipe/ingredients block, and a
   "Watch how" YouTube link; `lib/meal-plan-grocery.ts` (tested) builds the
   grocery list. Regenerate re-runs from the stored intake; discard archives.
+- The active plan is surfaced elsewhere via `lib/meal-plan-day.ts`
+  (`getActiveMealPlanByDay`, weekday-keyed menu): the dashboard shows a
+  "Today's meals" card and the calendar a per-day "N meals planned" link —
+  both read-only pointers back to `/nutrition/plan`.
 
 ## AI photo estimation
 

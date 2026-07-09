@@ -37,6 +37,10 @@ longer a standalone nav tab.
   (`WorkoutCard`). Other days show a hint instead of a dead button.
 - Plan items show their short `title` in the cell; the full session detail
   (`plan_items.description`) renders inside the item's detail sheet.
+- When an active AI meal plan exists, each day cell ends with a quiet
+  "N meals planned · X kcal" link to `/nutrition/plan` (menu data via
+  `app/nutrition/lib/meal-plan-day.ts`, keyed by weekday — the menu repeats
+  weekly). Shown on rest days too; hidden when there is no active plan.
 - When the user has weekly targets (`weekly_quotas`), a "Weekly targets" chip
   row (shared `QuotaChip` from `components/design-system/`) sits under the week
   navigation, computed by `quotaProgress` (`lib/weekly-quotas.ts`) from the

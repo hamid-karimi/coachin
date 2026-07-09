@@ -310,6 +310,20 @@ as `[{name, sets: [{weight_kg, reps}]}]` (legacy flat rows
   (`"Name NxM[-M2]"`, split on `" + "` or newlines); unparseable text falls
   back to a blank editor.
 
+## 13. Supplements (daily stack)
+
+**Source of truth:** `supplements` + `supplement_logs` tables
+(`20260708090000_supplements.sql`), dashboard card
+`app/dashboard/components/supplements-card.tsx`, actions in
+`app/dashboard/supplements-actions.ts`.
+
+- A supplement is a user-defined daily habit (name + optional dose text).
+  Taking one inserts a `supplement_logs` row for the local date; the
+  `(supplement_id, date)` unique constraint makes logging idempotent per day.
+- "Taken today" = a log row exists for the local `toLocalYMD` date.
+- **NO gameplay effect:** supplements never award XP and never touch streaks,
+  hearts, quotas, or tiers — the card is a reminder + logger only.
+
 ---
 
 _When behavior here changes, update the referenced source files and re-run
