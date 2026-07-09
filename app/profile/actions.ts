@@ -3,6 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { checkGoalAchievements } from "@/lib/goal-achievements";
+import { toLocalYMD } from "@/lib/dates";
+import {
+  sanitizeActivities,
+  splitImportableActivities,
+} from "@/lib/activity-import";
 
 export type ProfileActionState = {
   error?: string;
@@ -64,6 +69,9 @@ export async function updateProfileAction(
   const trainingHistory =
     String(formData.get("training_history") ?? "").trim() || null;
 
+  const country =
+    String(formData.get("country") ?? "").trim().slice(0, 56) || null;
+
   const supabase = await createClient();
   const { error } = await supabase
     .from("profiles")
@@ -72,6 +80,7 @@ export async function updateProfileAction(
       sex: sexRaw || null,
       height_cm: height.value,
       training_history: trainingHistory,
+      country,
     })
     .eq("id", user.id);
 
@@ -197,6 +206,118 @@ export async function addMeasurementAction(
   }
 
   return { success: true, message: "Measurement logged.", status: "success" };
+}
+
+/**
+ * Log parsed watch-file activities as completed runs (FORMULAS.md §14):
+ * last-14-days window, one per sport×date (existing logs win), XP =
+ * 60 × sport multiplier per imported run — the same formula as a routine log.
+ */
+export async function importActivitiesAction(
+  _prevState: ProfileActionState,
+  formData: FormData,
+): Promise<ProfileActionState> {
+  const user = await getUser();
+  if (!user) {
+    return { error: "You must be signed in" };
+  }
+
+  let activities;
+  try {
+    activities = sanitizeActivities(
+      JSON.parse(String(formData.get("activities_json") ?? "[]")),
+    );
+  } catch {
+    return { error: "Could not read the parsed activities — try again" };
+  }
+  if (activities.length === 0) {
+    return { error: "No importable runs in those files" };
+  }
+
+  const supabase = await createClient();
+
+  // Imported watch files are runs; resolve the Running sport type.
+  const { data: sport } = await supabase
+    .from("sport_types")
+    .select("id, xp_multiplier")
+    .ilike("name", "%run%")
+    .order("id")
+    .limit(1)
+    .maybeSingle();
+  if (!sport) {
+    return { error: "No running sport type is configured" };
+  }
+
+  const today = toLocalYMD(new Date());
+  const { data: existingLogs } = await supabase
+    .from("logs")
+    .select("date")
+    .eq("user_id", user.id)
+    .eq("sport_type_id", sport.id)
+    .eq("status", "completed")
+    .in(
+      "date",
+      activities.map((activity) => activity.date),
+    );
+
+  const split = splitImportableActivities(
+    activities,
+    (existingLogs ?? []).map((row) => row.date as string),
+    today,
+  );
+  if (split.importable.length === 0) {
+    return {
+      error:
+        split.duplicates.length > 0
+          ? "Those days already have a logged run"
+          : "Only runs from the last 14 days can be imported",
+    };
+  }
+
+  const { error: insertError } = await supabase.from("logs").insert(
+    split.importable.map((activity) => ({
+      user_id: user.id,
+      sport_type_id: sport.id,
+      date: activity.date,
+      status: "completed",
+      notes: `Imported from watch file — ${activity.distance_km} km in ${activity.duration_min} min`,
+    })),
+  );
+  if (insertError) {
+    console.error("activity import insert failed:", insertError);
+    return { error: "Failed to save the imported runs" };
+  }
+
+  // Same award as logWorkout (FORMULAS §1: 60 × multiplier per completed log),
+  // summed into one profile update.
+  const multiplier = Number(sport.xp_multiplier ?? 1) || 1;
+  const earnedXp = split.importable.length * Math.round(60 * multiplier);
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("xp")
+    .eq("id", user.id)
+    .single();
+  const newXp = (profile?.xp ?? 0) + earnedXp;
+  const { error: xpError } = await supabase
+    .from("profiles")
+    .update({ xp: newXp, level: Math.floor(newXp / 1000) + 1 })
+    .eq("id", user.id);
+  if (xpError) {
+    console.error("activity import XP update failed:", xpError);
+  }
+
+  revalidatePath("/profile");
+  revalidatePath("/dashboard");
+  revalidatePath("/calendar");
+
+  const skipped = split.duplicates.length + split.outOfWindow.length;
+  return {
+    success: true,
+    status: "success",
+    message:
+      `Imported ${split.importable.length} ${split.importable.length === 1 ? "run" : "runs"} · +${earnedXp} XP` +
+      (skipped > 0 ? ` · ${skipped} skipped (already logged or older than 14 days)` : ""),
+  };
 }
 
 export async function deleteMeasurementAction(

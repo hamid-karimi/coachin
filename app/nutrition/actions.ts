@@ -1,7 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { createClient, getUser } from "@/lib/supabase/server";
+import { resolveUserCountry } from "@/lib/user-country";
 import {
   estimateMealFromPhoto,
   type MealEstimateItem,
@@ -218,19 +220,43 @@ export async function estimateMealPhotoAction(
   const user = await getUser();
   if (!user) return { error: "You must be signed in" };
 
-  const photo = formData.get("photo");
-  if (!(photo instanceof File) || photo.size === 0) {
+  const photos = formData
+    .getAll("photos")
+    .filter((entry): entry is File => entry instanceof File && entry.size > 0)
+    .slice(0, 3);
+  if (photos.length === 0) {
     return { error: "Choose a meal photo" };
   }
-  if (photo.size > 2 * 1024 * 1024) {
-    return { error: "Photo must be under 2MB (it should be pre-compressed)" };
+  for (const photo of photos) {
+    if (photo.size > 2 * 1024 * 1024) {
+      return {
+        error: "Each photo must be under 2MB (they should be pre-compressed)",
+      };
+    }
   }
+  const context =
+    String(formData.get("context") ?? "").trim().slice(0, 140) || null;
 
-  const base64 = Buffer.from(await photo.arrayBuffer()).toString("base64");
-  const estimate = await estimateMealFromPhoto(
-    base64,
-    photo.type || "image/jpeg",
+  const images = await Promise.all(
+    photos.map(async (photo) => ({
+      base64: Buffer.from(await photo.arrayBuffer()).toString("base64"),
+      mimeType: photo.type || "image/jpeg",
+    })),
   );
+
+  // Locale hint: profile country wins, IP-geo header is the fallback.
+  const supabase = await createClient();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("country")
+    .eq("id", user.id)
+    .maybeSingle();
+  const country = resolveUserCountry(
+    profile?.country,
+    (await headers()).get("x-vercel-ip-country"),
+  );
+
+  const estimate = await estimateMealFromPhoto({ images, context, country });
   if ("error" in estimate) return { error: estimate.error };
   if (estimate.length === 0) {
     return { error: "Couldn't recognize food in that photo — try another angle" };

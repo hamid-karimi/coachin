@@ -19,6 +19,7 @@ interface BodyMetricsFormProps {
   sex: string | null;
   heightCm: number | null;
   trainingHistory: string | null;
+  country: string | null;
 }
 
 /** Static body profile used by the AI program/diet intake (roadmap branch 1). */
@@ -27,6 +28,7 @@ export function BodyMetricsForm({
   sex,
   heightCm,
   trainingHistory,
+  country,
 }: BodyMetricsFormProps) {
   const [state, formAction, pending] = useActionState(
     updateProfileAction,
@@ -77,6 +79,21 @@ export function BodyMetricsForm({
             defaultValue={heightCm ?? ""}
           />
         </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="country">Country</Label>
+        <Input
+          id="country"
+          name="country"
+          maxLength={56}
+          placeholder="Iran"
+          defaultValue={country ?? ""}
+        />
+        <p className="text-muted-foreground text-xs">
+          Meal plans and food recognition prefer dishes and ingredients that
+          are common and affordable where you live.
+        </p>
       </div>
 
       <div className="space-y-1.5">

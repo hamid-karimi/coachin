@@ -1,8 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { yearsSince } from "@/lib/dates";
+import { resolveUserCountry } from "@/lib/user-country";
 import {
   computeTargets,
   type NutritionGoal,
@@ -77,7 +79,7 @@ export async function generateMealPlanAction(
     await Promise.all([
       supabase
         .from("profiles")
-        .select("sex, birth_date, height_cm, weight_kg")
+        .select("sex, birth_date, height_cm, weight_kg, country")
         .eq("id", user.id)
         .single(),
       supabase
@@ -125,6 +127,12 @@ export async function generateMealPlanAction(
         .slice(0, 500) || null
     : null;
 
+  // Profile country wins; Vercel's IP-geo header is only a fallback hint.
+  const country = resolveUserCountry(
+    profile.country,
+    (await headers()).get("x-vercel-ip-country"),
+  );
+
   const intake: MealPlanIntake = {
     goal,
     diet,
@@ -133,6 +141,7 @@ export async function generateMealPlanAction(
     meals_per_day: mealsPerDay,
     targets,
     body_analysis: bodyAnalysis,
+    country,
   };
 
   const generated = await generateMealPlan(intake);
