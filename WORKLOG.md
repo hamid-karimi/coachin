@@ -41,6 +41,24 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 - Ideas parked: per-date meal adherence on calendar; supplement schedules
   (times / training-days-only); coach visibility of the supplement stack.
 
+**Ideas brainstormed 2026-07-09 (not yet specced)** — agreed order:
+
+1. Multi-photo meal recognition (up to 3 angles + optional packaging shot +
+   context text field; Gemini takes multiple images in one request) — days.
+2. Locale-aware nutrition: country/food-culture/budget in profile → into the
+   meal-plan AND photo-recognition prompts ("ingredients affordable in X,
+   local dishes"); NO AI price quoting. Prompt-level MVP before any local
+   food-DB investment — days.
+3. Strava integration (OAuth + webhooks): auto-import watch activities →
+   same logging path as manual logs. HARD PART: dedup/XP integrity
+   (external_activities table, provider-id idempotency, plan-item matching,
+   imported activities count toward streaks). Needs a plan file first.
+   Apple Health/Samsung Health need NATIVE apps (no web API) — parked until
+   a mobile decision; aggregator APIs (Terra/Rook) as middle option.
+
+Open questions for Hamid: register a Strava API app? Which country first
+for locale-aware food? Native mobile app in the 12-month picture?
+
 ## 2026-07-07 · `feat/ranked-improvements` (merged → develop as PR #48)
 
 **Done** — six phases, plan in `plans/ranked-improvements-plan.md`:
