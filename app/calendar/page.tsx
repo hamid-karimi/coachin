@@ -7,7 +7,6 @@ import {
   Pencil,
   Sparkles,
   TriangleAlert,
-  UtensilsCrossed,
 } from "lucide-react";
 
 import { createClient, getUser } from "@/lib/supabase/server";
@@ -15,6 +14,7 @@ import { canCoach } from "@/lib/roles";
 import { mondayOf, planWeekForDate, toLocalYMD } from "@/lib/dates";
 import { hasHardCollision } from "@/lib/training-day";
 import { quotaProgress } from "@/lib/weekly-quotas";
+import { mealAdherenceForDay } from "@/lib/meal-adherence";
 import { getWeeklyQuotas } from "@/app/onboarding/actions";
 import { AppShell } from "@/components/design-system/app-shell";
 import { QuotaChip } from "@/components/design-system/quota-chip";
@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import type { PlanItemDetails } from "@/lib/plan-items";
 import { cn } from "@/lib/utils";
 import { DayPlanItems } from "./components/day-plan-items";
+import { DayMealsLine } from "./components/day-meals-line";
 import { RoutineSessionItem } from "./components/routine-session-item";
 import { getActiveMealPlanByDay } from "@/app/nutrition/lib/meal-plan-day";
 
@@ -169,6 +170,30 @@ export default async function CalendarPage({
     }
   }
 
+  // Week's meal logs grouped by date — only when an active meal plan exists,
+  // so past/today cells can show adherence against the plan. Display-only.
+  const mealLogsByDate = new Map<
+    string,
+    { meal_type: string; kcal: number }[]
+  >();
+  if (mealPlanByDay) {
+    const { data: mealLogs } = await supabase
+      .from("meal_logs")
+      .select("date, meal_type, kcal")
+      .eq("user_id", user.id)
+      .gte("date", mondayYmd)
+      .lte("date", sundayYmd);
+    for (const log of (mealLogs ?? []) as {
+      date: string;
+      meal_type: string;
+      kcal: number | null;
+    }[]) {
+      const list = mealLogsByDate.get(log.date) ?? [];
+      list.push({ meal_type: log.meal_type, kcal: Number(log.kcal ?? 0) });
+      mealLogsByDate.set(log.date, list);
+    }
+  }
+
   // date ymd → set of completed sport_type_ids
   const doneByDate = new Map<string, Set<number>>();
   for (const log of logs ?? []) {
@@ -282,6 +307,18 @@ export default async function CalendarPage({
               (sum, meal) => sum + meal.kcal,
               0,
             );
+            // Adherence only for today/past days that have a planned menu;
+            // future days keep the plain planned link (adherence = null).
+            const dayMealsAdherence =
+              dayMeals.length > 0 && ymd <= todayYmd
+                ? mealAdherenceForDay(
+                    dayMeals.map((meal) => ({
+                      meal_type: meal.meal_type,
+                      kcal: meal.kcal,
+                    })),
+                    mealLogsByDate.get(ymd) ?? [],
+                  )
+                : null;
 
             const empty = routines.length === 0 && dayPlan.length === 0;
 
@@ -340,17 +377,14 @@ export default async function CalendarPage({
                   </div>
                 )}
 
-                {/* Planned menu from the active AI meal plan — link only,
-                    meals are viewed/edited in /nutrition/plan */}
+                {/* Planned menu from the active AI meal plan — a link to
+                    /nutrition/plan plus (today/past) a muted adherence line. */}
                 {dayMeals.length > 0 && (
-                  <Link
-                    href="/nutrition/plan"
-                    className="text-muted-foreground hover:text-foreground mt-2 inline-flex items-center gap-1.5 text-[11px] font-medium transition-colors"
-                  >
-                    <UtensilsCrossed className="size-3" aria-hidden />
-                    {dayMeals.length} {dayMeals.length === 1 ? "meal" : "meals"}{" "}
-                    planned · {Math.round(dayMealsKcal).toLocaleString()} kcal
-                  </Link>
+                  <DayMealsLine
+                    plannedCount={dayMeals.length}
+                    plannedKcal={dayMealsKcal}
+                    adherence={dayMealsAdherence}
+                  />
                 )}
               </div>
             );

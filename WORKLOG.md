@@ -5,6 +5,49 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-07-09 · `feat/adherence-supplements`
+
+**Done** (plan: `plans/adherence-supplements-plan.md`, phases A→B→C):
+
+- **Supplement schedules** (A): `schedule_type` + `days_of_week` on
+  `supplements` (migration `20260709120000`); `lib/supplement-schedule.ts`
+  (`isSupplementDue`, `scheduleLabel`, pure + tested). Dashboard checklist +
+  tally show only due-today; manage sheet adds a schedule picker + inline
+  editor (`updateSupplementScheduleAction`). training_days degrades to daily
+  only when the user has NO training structure (dashboard derives it from
+  today's plan/routine + a schedules-existence count).
+- **Coach stack visibility** (B): migration `20260709130000` mirrors the
+  nutrition coach-read RLS onto `supplements` + `supplement_logs` (SELECT,
+  gated on `nutrition_sharing_enabled`). `getTraineeSupplements` +
+  `lib/supplement-adherence.ts` compute a 7-day "N/M due days" rate (reads the
+  trainee's plan/plan_items/schedules — all coach-readable). Read-only
+  `TraineeSupplementsSection` on the coach nutrition page.
+- **Meal adherence** (C): `lib/meal-adherence.ts` (pure + tested) — slots
+  match on `meal_type`, kcal ratio vs plan. Calendar shows a muted line on
+  today/past cells only, when an active plan exists (`day-meals-line.tsx`);
+  future days keep the plain planned link.
+- Docs: FORMULAS §13 (schedules, coach read, new Meal-adherence subsection),
+  QA journeys 4/5/6, dashboard/calendar/coaching/nutrition READMEs.
+
+**Decisions**: no new XP anywhere (adherence + supplements stay
+informational, FORMULAS §13); meal adherence deliberately does NOT string-match
+logs to AI dish titles (slots + kcal only); reused `nutrition_sharing_enabled`
+for the coach stack view (no new consent flag); schedules have no times-of-day
+/ notifications (dose free-text carries timing).
+
+**Verification**: tsc · eslint · 197 tests · `pnpm build` all green. Commits
+on `feat/adherence-supplements`: A `ad0660b`, B `18f15f6`, C `bfe1b83`, plus
+this docs commit.
+
+**Next steps**
+
+- [ ] Push `feat/adherence-supplements`, open PR → develop.
+- [ ] Apply migrations `20260709120000_supplement_schedules.sql` +
+      `20260709130000_supplements_coach_read.sql` to hosted Supabase after
+      merge.
+- [ ] QA per updated journeys 4 (calendar adherence), 5 (schedules /
+      due-only checklist), 6 (coach Daily stack).
+
 ## 2026-07-09 · `feat/nutrition-integrations`
 
 **Done** (plan: `plans/nutrition-integrations-plan.md`):

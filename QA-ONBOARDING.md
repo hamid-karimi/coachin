@@ -102,6 +102,11 @@ inactive; every coach feature checks for an **active** relationship.
 3. Plan items open a read-only detail sheet (short title, full description,
    notes, video link). Two hard sessions on one day show the "2 intense
    workouts" chip.
+4. **Meal adherence** (only with an active meal plan): today's and past day
+   cells show a muted line under the meals link, e.g. "2/3 meals logged · 85%
+   of plan kcal" ("No meals logged" when nothing was logged). Future days keep
+   the plain "N meals planned" link with no adherence. It's informational —
+   never changes XP, streaks, or hearts (FORMULAS.md §13, Meal adherence).
 
 ### 5. Nutrition
 
@@ -127,11 +132,19 @@ inactive; every coach feature checks for an **active** relationship.
    weekly (keyed by weekday), so the same weekday always shows the same
    meals — that's intentional.
 5. **Daily stack (supplements)** on the dashboard: "Add" opens a sheet
-   (name + optional dose) → items appear as a daily checklist. Checking one
-   marks it taken for today only (unchecked again tomorrow); "Manage"
-   deletes items. Verify double-tapping a checkmark doesn't error, and that
-   taking supplements **never changes XP, streak, or hearts**
+   (name + optional dose + **schedule**) → items appear as a daily checklist.
+   Checking one marks it taken for today only (unchecked again tomorrow);
+   "Manage" lists the whole stack (with each item's schedule label), edits a
+   schedule inline, and deletes items. Verify double-tapping a checkmark
+   doesn't error, and that supplements **never change XP, streak, or hearts**
    (FORMULAS.md §13).
+6. **Schedules**: a supplement can be Every day / Training days / Custom
+   weekdays. The checklist and "X of Y taken" tally show only supplements
+   **due today**; the rest live in Manage. Verify a "Training days" supplement
+   shows on a day with a planned/routine session and hides on a rest day — but
+   if you have **no** plan or routine at all it shows every day (degrades to
+   daily, never stranded). A "Custom" supplement shows only on its chosen
+   weekdays.
 
 ### 6. Coaching
 
@@ -145,9 +158,11 @@ inactive; every coach feature checks for an **active** relationship.
    with the `?student=` URL — expect a redirect).
 3. **Nutrition sharing**: trainee turns on Profile → Settings → "Share
    nutrition with my coach" → a "Nutrition" link appears on the coach's
-   roster row → read-only last-7-days meal view. Turning the toggle off must
-   revoke access immediately (the coach page then shows the opt-in
-   explainer). Coaches must never be able to edit trainee meals.
+   roster row → read-only last-7-days meal view **plus a read-only "Daily
+   stack" section** (each supplement's dose, schedule, and a "5/7 due days"
+   7-day taken rate). Turning the toggle off must revoke access immediately —
+   both the meals and the stack sections then show the opt-in explainer.
+   Coaches must never be able to edit trainee meals or supplements.
 
 ### 7. Watch-data import (Profile)
 

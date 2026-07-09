@@ -33,6 +33,7 @@ import { quotaProgress } from "@/lib/weekly-quotas";
 import { getWeeklyQuotas } from "@/app/onboarding/actions";
 import { QuotaChip } from "@/components/design-system/quota-chip";
 import { hasHardCollision } from "@/lib/training-day";
+import { isSupplementDue } from "@/lib/supplement-schedule";
 import { GOAL_TYPE_META } from "@/lib/goals";
 import { Progress } from "@/components/ui/progress";
 import { WorkoutCard } from "./components/workout-card";
@@ -147,6 +148,7 @@ export default async function Dashboard() {
     mealPlanByDay,
     { data: supplementRows },
     { data: supplementLogRows },
+    { count: scheduleCount },
   ] = await Promise.all([
     isCoachCapable
       ? getCoachingSummary(supabase, user.id)
@@ -168,7 +170,7 @@ export default async function Dashboard() {
     getActiveMealPlanByDay(supabase, user.id),
     supabase
       .from("supplements")
-      .select("id, name, dose")
+      .select("id, name, dose, schedule_type, days_of_week")
       .eq("user_id", user.id)
       .order("created_at"),
     supabase
@@ -176,9 +178,14 @@ export default async function Dashboard() {
       .select("supplement_id")
       .eq("user_id", user.id)
       .eq("date", dateString),
+    // Existence only: does the user have any recurring routine at all? Used to
+    // decide whether "training days" supplements should degrade to daily.
+    supabase
+      .from("schedules")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id),
   ]);
 
-  const supplements = (supplementRows ?? []) as SupplementRow[];
   const takenSupplementIds = (supplementLogRows ?? []).map(
     (row) => row.supplement_id as string,
   );
@@ -230,6 +237,39 @@ export default async function Dashboard() {
     );
   }
   const planCollision = hasHardCollision(planToday);
+
+  // "Training day" for supplement due-dates: does an AI plan session or a
+  // recurring routine session fall on today? When the user has NO training
+  // structure at all (no active plan and no recurring routine), "training days"
+  // supplements degrade to daily so they never vanish from the checklist
+  // (isSupplementDue contract). A rest day within an existing plan/routine is
+  // correctly not a training day.
+  const trainsToday = planToday.length > 0 || (todaysPlan?.length ?? 0) > 0;
+  const hasTrainingStructure = hasActivePlan || (scheduleCount ?? 0) > 0;
+  const isTrainingDay = hasTrainingStructure ? trainsToday : true;
+  const supplements: SupplementRow[] = (
+    (supplementRows ?? []) as {
+      id: string;
+      name: string;
+      dose: string | null;
+      schedule_type: string;
+      days_of_week: number[] | null;
+    }[]
+  ).map((row) => {
+    const scheduleType = row.schedule_type as SupplementRow["scheduleType"];
+    const daysOfWeek = row.days_of_week;
+    return {
+      id: row.id,
+      name: row.name,
+      dose: row.dose,
+      scheduleType,
+      daysOfWeek,
+      due: isSupplementDue(
+        { scheduleType, daysOfWeek },
+        { weekday: dayIndex, isTrainingDay },
+      ),
+    };
+  });
   // Group-streak nudge: only when the user hasn't logged anything today.
   let groupAtRisk: { name: string; streak_count: number } | null = null;
   if ((todaysLogs ?? []).length === 0) {

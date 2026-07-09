@@ -6,7 +6,9 @@ import { createClient, getUser } from "@/lib/supabase/server";
 import { canCoach } from "@/lib/roles";
 import { AppShell } from "@/components/design-system/app-shell";
 import { getTraineeNutritionData } from "../../../lib/trainee-nutrition-data";
+import { getTraineeSupplements } from "../../../lib/trainee-supplements-data";
 import { TraineeNutritionSection } from "../../../components/TraineeNutritionSection";
+import { TraineeSupplementsSection } from "../../../components/TraineeSupplementsSection";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +33,10 @@ export default async function TraineeNutritionPage({
   }
 
   const { id } = await params;
-  const data = await getTraineeNutritionData(supabase, user.id, id);
+  const [data, supplements] = await Promise.all([
+    getTraineeNutritionData(supabase, user.id, id),
+    getTraineeSupplements(supabase, user.id, id),
+  ]);
   if (!data) {
     redirect("/coaching");
   }
@@ -56,6 +61,7 @@ export default async function TraineeNutritionPage({
         </header>
 
         <TraineeNutritionSection data={data} />
+        {supplements ? <TraineeSupplementsSection data={supplements} /> : null}
       </div>
     </AppShell>
   );
