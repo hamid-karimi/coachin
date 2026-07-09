@@ -5,6 +5,38 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-07-09 (later) · `feat/share-progress` — plan only, not yet built
+
+Plan: `plans/share-progress-plan.md` (share cards + progress photos +
+progress charts). Decisions: cards = deterministic CANVAS composition, not
+AI image editing (AI = caption suggestions later); Web Share API + download
+fallback; watermark "coachin" always on; privacy defaults (no body weight on
+cards, photos explicit, nothing auto-posts). body_photos gets a 'progress'
+kind (existing trigger caps body_photo at 5 — replace per-kind). Charts:
+no chart lib — SVG primitives extending the nutrition-trends precedent,
+pure aggregators in lib/. **Next: run /do on the plan.**
+
+## 2026-07-09 (later) · brainstorm — joy/consistency engine (no code yet)
+
+Deep-dive on using collected data for 30s/40s starters. Diagnosis: log-moment
+dopamine is strong (confetti/XP/volume); missing layer is serotonin — proof,
+forgiveness, being seen. Converged ranking (joy ÷ effort):
+
+1. **PR detection** at save from session_logs.actual per-set history (days).
+2. **"Your week" recap card** on dashboard (scorecard math exists; shareable
+   image later; no push channel yet — v1 is seen-on-next-visit).
+3. **Fresh-start/comeback mode**: ≥6 idle days → one auto-shrunk week +
+   streak rebuild quest (reuse deload machinery; forgiveness > punishment).
+4. **Coach high-five** on logs + coach at-risk flag with drafted message.
+5. **Then-vs-now** monthly + lifetime milestones (reuse equivalence table,
+   localized landmarks).
+
+Medium-term differentiator: **self-evidence engine** (RPE-at-same-weight
+trend, pace-at-HR trend, adherence↔effort correlations; honest wording,
+min-data thresholds). Also: capture the user's "why" at onboarding and echo
+it in AI feedback/recaps. Guardrails agreed: NO XP on any of these; never
+celebrate scale weight in shareables by default.
+
 ## 2026-07-09 · `feat/adherence-supplements`
 
 **Done** (plan: `plans/adherence-supplements-plan.md`, phases A→B→C):
