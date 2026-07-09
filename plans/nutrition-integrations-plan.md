@@ -98,9 +98,17 @@ hint only (profile wins).
 Guards: never re-award for a date+sport that already has a completed log; no
 new XP formula — reuse the routine-log one; parser stays pure.
 
-## Phase 4 — Strava (SPEC ONLY; blocked on API app registration)
+## Phase 4 — Strava (PARKED 2026-07-09; API is now paywalled)
 
-Prereq (Hamid): strava.com/settings/api → create app → callback domain =
+Strava now requires a paid subscription to create an API application
+("The Strava API is available to subscribers"), and Hamid's account gets
+"Sorry, you don't have access to this page" on the subscription link —
+likely a region/payment restriction. Watch-file import (Phase 3) covers
+the device-data use case. Revisit only if the paywall/region situation
+changes; the spec below stays valid.
+
+Prereq (Hamid): active Strava subscription with API access, then
+strava.com/settings/api → create app → callback domain =
 production Vercel domain; env `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`,
 `STRAVA_WEBHOOK_VERIFY_TOKEN` (random string).
 

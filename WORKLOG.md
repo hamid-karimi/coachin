@@ -37,10 +37,11 @@ Health parked for the future React Native/Flutter app.
       — draft PR body in session notes), then apply migrations
       `20260709090000_profile_country.sql` (+ `20260708090000_supplements.sql`
       if not yet applied) to hosted Supabase after merge.
-- [ ] Hamid: register the Strava API app (strava.com/settings/api, callback
-      domain = production Vercel domain) and add STRAVA_CLIENT_ID /
-      STRAVA_CLIENT_SECRET / STRAVA_WEBHOOK_VERIFY_TOKEN to Vercel env —
-      then build Phase 4 from the plan's spec.
+- [x] ~~Strava API app~~ — PARKED: Strava now paywalls API access behind a
+      subscription, and Hamid's account can't even open the subscription
+      page ("no access" — likely region/payment restriction). Watch-file
+      import covers the use case; spec kept in the plan file if this ever
+      unblocks.
 - [ ] QA the three features on Vercel per QA-ONBOARDING journeys 5 and 7.
 
 ## 2026-07-08 · `feat/meal-plan-surfacing-supplements`
