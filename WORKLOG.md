@@ -21,6 +21,9 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
   one per sport×date dedup, XP = 60×multiplier (FORMULAS §14;
   `lib/activity-import.ts` pure + tested).
 - Docs: FORMULAS §14, QA-ONBOARDING journeys 5+7, nutrition README.
+- Committed `9a61011` (watch import + docs) after full verification
+  (tsc · eslint · 179 tests · production build all green); branch pushed
+  to origin.
 
 **Decisions**: Iran first locale (user-set country, IP fallback); watch
 import capped to 14 days to prevent bulk XP farming; Strava = spec only in
@@ -29,9 +32,11 @@ Health parked for the future React Native/Flutter app.
 
 **Next steps**
 
-- [ ] Push `feat/nutrition-integrations`, PR → develop, apply migrations
+- [ ] Open PR → develop (gh CLI unauthenticated in-session; use
+      https://github.com/hamid-karimi/coachin/compare/develop...feat/nutrition-integrations
+      — draft PR body in session notes), then apply migrations
       `20260709090000_profile_country.sql` (+ `20260708090000_supplements.sql`
-      if not yet applied) to hosted Supabase.
+      if not yet applied) to hosted Supabase after merge.
 - [ ] Hamid: register the Strava API app (strava.com/settings/api, callback
       domain = production Vercel domain) and add STRAVA_CLIENT_ID /
       STRAVA_CLIENT_SECRET / STRAVA_WEBHOOK_VERIFY_TOKEN to Vercel env —
