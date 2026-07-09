@@ -24,14 +24,34 @@ export type MealEstimateItem = {
   source?: "photo" | "search";
 };
 
-export async function estimateMealFromPhoto(
-  base64: string,
-  mimeType: string,
-): Promise<MealEstimateItem[] | { error: string }> {
+export type MealPhotoInput = {
+  /** 1-3 photos of the SAME meal (angles, packaging/label shots). */
+  images: { base64: string; mimeType: string }[];
+  /** Optional user hint, e.g. "restaurant pizza, large slice". */
+  context?: string | null;
+  /** Optional locale hint — the user's country (e.g. "Iran"). */
+  country?: string | null;
+};
+
+export async function estimateMealFromPhoto({
+  images,
+  context,
+  country,
+}: MealPhotoInput): Promise<MealEstimateItem[] | { error: string }> {
   const result = await generateJsonText({
-    prompt:
-      "Identify the food items in this meal photo. For each item estimate the portion in grams and, for THAT portion (not per 100g): calories, protein, carbs, fat, sugar, fiber (all in grams) and sodium (in mg). If it is not food, return an empty items array.",
-    images: [{ base64, mimeType }],
+    prompt: [
+      images.length > 1
+        ? `These ${images.length} photos show the SAME meal — different angles or a packaging/nutrition-label shot. Merge them into ONE list of items with no duplicates; use the extra angles to judge portion sizes, and when a nutrition label is visible prefer the label's data over visual estimation.`
+        : "Identify the food items in this meal photo.",
+      "For each item estimate the portion in grams and, for THAT portion (not per 100g): calories, protein, carbs, fat, sugar, fiber (all in grams) and sodium (in mg). If it is not food, return an empty items array.",
+      context ? `The user says: "${context}".` : null,
+      country
+        ? `The user is in ${country} — consider dishes and portion conventions common there when identifying the food.`
+        : null,
+    ]
+      .filter(Boolean)
+      .join("\n"),
+    images,
     schema: {
       type: Type.OBJECT,
       properties: {

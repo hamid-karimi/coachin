@@ -107,6 +107,7 @@ export function MealLogger({ hasUsda }: { hasUsda: boolean }) {
   const [isPreparing, setIsPreparing] = useState(false);
   const [, startDispatch] = useTransition();
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const [photoContext, setPhotoContext] = useState("");
   const [reviewItems, setReviewItems] = useState<MealEstimateItem[] | null>(
     null,
   );
@@ -130,14 +131,16 @@ export function MealLogger({ hasUsda }: { hasUsda: boolean }) {
   }, [confirmState]);
 
   const onPhotoPicked = async (list: FileList | null) => {
-    const file = list?.[0];
+    const files = Array.from(list ?? []).slice(0, 3);
     if (photoInputRef.current) photoInputRef.current.value = "";
-    if (!file) return;
+    if (files.length === 0) return;
     setIsPreparing(true);
     try {
-      const compressed = await compressImage(file);
       const formData = new FormData();
-      formData.set("photo", compressed);
+      for (const file of files) {
+        formData.append("photos", await compressImage(file));
+      }
+      formData.set("context", photoContext.trim());
       startDispatch(() => estimateAction(formData));
     } catch {
       toast.error("Could not read that image");
@@ -322,9 +325,17 @@ export function MealLogger({ hasUsda }: { hasUsda: boolean }) {
                 ref={photoInputRef}
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
-                capture="environment"
+                multiple
                 className="sr-only"
                 onChange={(event) => onPhotoPicked(event.target.files)}
+              />
+              <Input
+                aria-label="What is it? (optional)"
+                maxLength={140}
+                placeholder="Optional: what is it? e.g. restaurant pizza, large"
+                value={photoContext}
+                onChange={(event) => setPhotoContext(event.target.value)}
+                disabled={busy}
               />
               <Button
                 type="button"
@@ -339,11 +350,12 @@ export function MealLogger({ hasUsda }: { hasUsda: boolean }) {
                 )}
                 {estimating || isPreparing
                   ? "Estimating…"
-                  : "Snap or choose a meal photo"}
+                  : "Snap or choose meal photos"}
               </Button>
               <p className="text-muted-foreground text-xs">
-                AI estimates portions and calories — you review and adjust
-                everything before it&apos;s saved.
+                Up to 3 photos of the same meal — different angles help with
+                portions, and a shot of the package label beats any estimate.
+                You review and adjust everything before it&apos;s saved.
               </p>
             </div>
           ) : (
