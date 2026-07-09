@@ -16,6 +16,7 @@ import { ThemePreference } from "./components/theme-preference";
 import { NutritionSharingToggle } from "./components/nutrition-sharing-toggle";
 import { BodyMetricsForm } from "./components/body-metrics-form";
 import { ActivityImportSection } from "./components/activity-import-section";
+import { ProgressPhotosSection } from "./components/progress-photos-section";
 import {
   MeasurementsSection,
   type Measurement,
@@ -333,9 +334,17 @@ export default async function ProfilePage() {
         <section className="space-y-2.5">
           <h2 className="text-overline">Body photos</h2>
           <BodyPhotosSection
-            photos={bodyPhotos}
+            photos={bodyPhotos.filter((photo) => photo.kind !== "progress")}
             consented={Boolean(profile.ai_photo_consent_at)}
             analysis={latestAnalysis}
+          />
+        </section>
+
+        {/* Progress-photo journal (share-progress plan phase 2) */}
+        <section className="space-y-2.5">
+          <h2 className="text-overline">Progress photos</h2>
+          <ProgressPhotosSection
+            photos={bodyPhotos.filter((photo) => photo.kind === "progress")}
           />
         </section>
 

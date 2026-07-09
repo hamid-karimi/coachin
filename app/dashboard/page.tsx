@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import {
   CalendarHeart,
   CalendarRange,
+  Camera,
   ChevronRight,
   Flame,
   GraduationCap,
@@ -149,6 +150,7 @@ export default async function Dashboard() {
     { data: supplementRows },
     { data: supplementLogRows },
     { count: scheduleCount },
+    { data: latestProgressPhoto },
   ] = await Promise.all([
     isCoachCapable
       ? getCoachingSummary(supabase, user.id)
@@ -184,7 +186,29 @@ export default async function Dashboard() {
       .from("schedules")
       .select("id", { count: "exact", head: true })
       .eq("user_id", user.id),
+    // Progress-photo nudge: only the newest journal photo's date matters.
+    supabase
+      .from("body_photos")
+      .select("created_at")
+      .eq("user_id", user.id)
+      .eq("kind", "progress")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
   ]);
+
+  // Quiet progress-photo nudge (share-progress phase 2): active users whose
+  // newest journal photo is ≥28 days old (or who have none). No XP, no badge.
+  const PROGRESS_PHOTO_NUDGE_DAYS = 28;
+  const lastProgressPhotoAt = latestProgressPhoto?.created_at
+    ? new Date(latestProgressPhoto.created_at)
+    : null;
+  const progressPhotoDue =
+    (profile.current_streak ?? 0) > 0 || (weekLogs ?? []).length > 0
+      ? !lastProgressPhotoAt ||
+        today.getTime() - lastProgressPhotoAt.getTime() >
+          PROGRESS_PHOTO_NUDGE_DAYS * 24 * 60 * 60 * 1000
+      : false;
 
   const takenSupplementIds = (supplementLogRows ?? []).map(
     (row) => row.supplement_id as string,
@@ -575,6 +599,19 @@ export default async function Dashboard() {
             aria-hidden
           />
         </Link>
+
+        {/* Quiet progress-photo nudge — link only, dismissed by doing it */}
+        {progressPhotoDue && (
+          <Link
+            href="/profile"
+            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 px-0.5 text-xs transition-colors"
+          >
+            <Camera className="size-3.5" aria-hidden />
+            {lastProgressPhotoAt
+              ? "It's been a few weeks — add a progress photo"
+              : "Start your progress-photo journal on your profile"}
+          </Link>
+        )}
 
         {/* Today's menu from the active AI meal plan */}
         {mealPlanByDay && (

@@ -173,6 +173,97 @@ export async function uploadBodyPhotosAction(
   };
 }
 
+const MAX_PROGRESS_PHOTOS = 24;
+
+/**
+ * Upload ONE progress-journal photo (kind 'progress'). Same pipeline as the
+ * analysis set — sharp re-encode (strips EXIF/GPS) + moderation gate — but a
+ * separate, larger cap (24) and never fed into AI analysis.
+ */
+export async function uploadProgressPhotoAction(
+  _prevState: BodyPhotosActionState,
+  formData: FormData,
+): Promise<BodyPhotosActionState> {
+  const user = await getUser();
+  if (!user) {
+    return { error: "You must be signed in" };
+  }
+
+  const file = formData.get("photo");
+  if (!(file instanceof File) || file.size === 0) {
+    return { error: "Choose a photo" };
+  }
+  if (!ACCEPTED_TYPES.has(file.type)) {
+    return { error: "Use JPEG, PNG, or WebP" };
+  }
+  if (file.size > MAX_UPLOAD_BYTES) {
+    return { error: "Photo must be 5MB or smaller" };
+  }
+
+  const supabase = await createClient();
+  const { count } = await supabase
+    .from("body_photos")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .eq("kind", "progress");
+  if ((count ?? 0) >= MAX_PROGRESS_PHOTOS) {
+    return {
+      error: `You already have ${MAX_PROGRESS_PHOTOS} progress photos — delete an old one first`,
+    };
+  }
+
+  let jpeg: Buffer;
+  try {
+    const original = Buffer.from(await file.arrayBuffer());
+    jpeg = await sharp(original)
+      .rotate()
+      .resize({ width: 1600, height: 1600, fit: "inside", withoutEnlargement: true })
+      .jpeg({ quality: 82 })
+      .toBuffer();
+  } catch (error) {
+    console.error("Progress photo re-encode failed:", error);
+    return { error: "Could not read that image" };
+  }
+
+  const moderation = await moderateBodyImage(
+    jpeg.toString("base64"),
+    "image/jpeg",
+  );
+  if (!moderation.ok) {
+    return { error: moderation.reason };
+  }
+  if (moderation.category === "analysis_report") {
+    return {
+      error:
+        "That looks like a report — upload it in the analysis set instead",
+    };
+  }
+
+  const storagePath = `${user.id}/${crypto.randomUUID()}.jpg`;
+  const { error: uploadError } = await supabase.storage
+    .from(BUCKET)
+    .upload(storagePath, jpeg, { contentType: "image/jpeg" });
+  if (uploadError) {
+    console.error("Progress photo upload failed:", uploadError);
+    return { error: "Failed to store the photo" };
+  }
+
+  const { error: insertError } = await supabase.from("body_photos").insert({
+    user_id: user.id,
+    storage_path: storagePath,
+    kind: "progress",
+  });
+  if (insertError) {
+    await supabase.storage.from(BUCKET).remove([storagePath]);
+    console.error("progress photo insert failed:", insertError);
+    return { error: "Failed to save the photo" };
+  }
+
+  revalidatePath("/profile");
+  revalidatePath("/dashboard");
+  return { success: true, message: "Progress photo added.", status: "success" };
+}
+
 export async function deleteBodyPhotoAction(
   _prevState: BodyPhotosActionState,
   formData: FormData,

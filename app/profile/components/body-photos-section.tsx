@@ -39,7 +39,7 @@ const initialState: BodyPhotosActionState = {};
 
 export type BodyPhotoItem = {
   id: string;
-  kind: "body_photo" | "analysis_report";
+  kind: "body_photo" | "analysis_report" | "progress";
   url: string | null;
   created_at: string;
 };
