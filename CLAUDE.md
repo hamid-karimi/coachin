@@ -34,3 +34,26 @@ disagree. Read it before touching XP, streaks, tiers, goals, plans, or scorecard
 ## Module docs
 
 Each `app/<module>/README.md` documents behavior — update it when you change the module.
+
+## QA doc — keep it current
+
+[`QA-ONBOARDING.md`](QA-ONBOARDING.md) is how QA learns and tests the system.
+**Every time a feature is built or behavior changes, update it in the same
+change**: extend the relevant test journey (or add one), the module map, and
+the "gamification rules" / "known intentional behaviors" lists if they moved.
+Treat it like FORMULAS.md — code and doc must never disagree.
+
+## Work log — session continuity
+
+[`WORKLOG.md`](WORKLOG.md) is the running journal that survives usage-limit
+pauses, context resets, and nights of sleep.
+
+- **At the start of every session**: read the top entry first to restore
+  context — what was in flight, on which branch, and what's next.
+- **After every committed chunk of work** (and always before a session might
+  end — long task, limits approaching): append an entry at the TOP with:
+  date · branch · what was done (commits) · decisions made · exact next steps
+  (including anything NOT yet done, e.g. unpushed branches or unapplied
+  migrations).
+- Keep entries short and skimmable; newest first. This file is for the human
+  and the next Claude session equally — write it so either can resume cold.

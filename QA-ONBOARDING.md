@@ -111,6 +111,18 @@ inactive; every coach feature checks for an **active** relationship.
    day awards the adherence bonus (FORMULAS.md §8).
 3. AI meal plan (`/nutrition/plan`) builds a 7-day menu from body metrics +
    training load and points the calorie goal at its target.
+4. With an active meal plan: the dashboard shows a **"Today's meals"** card
+   (today's menu, kcal total vs target, "Full meal plan" link) and every
+   calendar day cell ends with a "N meals planned · X kcal" link to the plan.
+   Both disappear when the plan is archived/discarded. The menu repeats
+   weekly (keyed by weekday), so the same weekday always shows the same
+   meals — that's intentional.
+5. **Daily stack (supplements)** on the dashboard: "Add" opens a sheet
+   (name + optional dose) → items appear as a daily checklist. Checking one
+   marks it taken for today only (unchecked again tomorrow); "Manage"
+   deletes items. Verify double-tapping a checkmark doesn't error, and that
+   taking supplements **never changes XP, streak, or hearts**
+   (FORMULAS.md §13).
 
 ### 6. Coaching
 
@@ -137,8 +149,9 @@ All from [`FORMULAS.md`](FORMULAS.md) — spot-check against it, not intuition:
   logging and daily calorie adherence have their own fixed awards.
 - Levels: every 1000 XP. Streaks count **days**, driven by fixed-session
   required days; hearts absorb missed required days.
-- Weekly targets (quotas) and strength **total volume** are informational /
-  celebration only — they never move XP, streaks, hearts, or tiers.
+- Weekly targets (quotas), strength **total volume**, and **supplements**
+  are informational / celebration only — they never move XP, streaks,
+  hearts, or tiers.
 
 ## Running the app locally
 
