@@ -87,6 +87,14 @@ coach-read pattern) grant the active coach **read-only** SELECT on
 days at `/coaching/trainees/[id]/nutrition`. Turning the toggle off revokes
 access immediately. Write policies remain self-only.
 
+The same toggle also gates the coach's read-only view of the trainee's
+**daily supplement stack** on that page: `20260709130000_supplements_coach_read.sql`
+mirrors the meal coach-read policy onto `supplements` + `supplement_logs`
+(SELECT for the active coach when sharing is on). The coach sees each
+supplement's dose, schedule, and a 7-day "N/M due days" taken rate
+(`getTraineeSupplements` + `lib/supplement-adherence.ts`). Read-only —
+coaches never mutate the stack.
+
 ## Trends
 
 The page fetches the last 30 days of `meal_logs` and `lib/nutrition-trends.ts`

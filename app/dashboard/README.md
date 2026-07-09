@@ -5,7 +5,8 @@ The dashboard is the daily execution surface where users see today's plan and lo
 ## Structure
 
 - `page.tsx`: loads profile, today's schedule, today's logs, the active meal
-  plan's menu, and the supplements stack
+  plan's menu, and the supplements stack (deriving each supplement's
+  due-today flag from today's plan/routine and a schedules-existence check)
 - `loading.tsx`: static skeleton (server component; `animate-pulse` + `bg-secondary` blocks) shown while the page's server data resolves, matching the `max-w-4xl` container and header/card rhythm
 - `actions.ts`: `logWorkout` server action for logging activity and updating XP
 - `supplements-actions.ts`: add / delete / toggle-taken for the daily stack
@@ -14,9 +15,13 @@ The dashboard is the daily execution surface where users see today's plan and lo
   plan (server component; data via `app/nutrition/lib/meal-plan-day.ts`),
   linking to `/nutrition/plan`; hidden when no active meal plan exists
 - `components/supplements-card.tsx`: "Daily stack" — supplements checklist
-  (check off taken-today per item) with a manage sheet (add name + dose,
-  delete). One `supplement_logs` row per supplement per day; **no XP,
-  streaks, or hearts** (`FORMULAS.md` §13)
+  (check off taken-today per item) with a manage sheet (add name + dose +
+  **schedule**, edit a schedule inline, delete). The checklist and its
+  "X of Y taken" tally show only supplements **due today**; the manage sheet
+  lists the whole stack. Dueness (`lib/supplement-schedule.ts`) is computed in
+  `page.tsx` from today's training structure and passed in. One
+  `supplement_logs` row per supplement per day; **no XP, streaks, or hearts**
+  (`FORMULAS.md` §13)
 - `logout-button.tsx`: sign-out control
 
 ## Key Behavior

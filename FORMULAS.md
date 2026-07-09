@@ -313,16 +313,49 @@ as `[{name, sets: [{weight_kg, reps}]}]` (legacy flat rows
 ## 13. Supplements (daily stack)
 
 **Source of truth:** `supplements` + `supplement_logs` tables
-(`20260708090000_supplements.sql`), dashboard card
+(`20260708090000_supplements.sql`, schedules in
+`20260709120000_supplement_schedules.sql`, coach read in
+`20260709130000_supplements_coach_read.sql`), dashboard card
 `app/dashboard/components/supplements-card.tsx`, actions in
-`app/dashboard/supplements-actions.ts`.
+`app/dashboard/supplements-actions.ts`, due-day + rate helpers
+`lib/supplement-schedule.ts` and `lib/supplement-adherence.ts`.
 
-- A supplement is a user-defined daily habit (name + optional dose text).
+- A supplement is a user-defined habit (name + optional dose text).
   Taking one inserts a `supplement_logs` row for the local date; the
   `(supplement_id, date)` unique constraint makes logging idempotent per day.
 - "Taken today" = a log row exists for the local `toLocalYMD` date.
-- **NO gameplay effect:** supplements never award XP and never touch streaks,
-  hearts, quotas, or tiers — the card is a reminder + logger only.
+- **Schedule (`isSupplementDue`)** decides whether a supplement is *due* on a
+  given weekday (0=Sun…6=Sat): `daily` → every day; `training_days` → only
+  days with an active-plan session or recurring routine, degrading to daily
+  when the user has **no** training structure at all (so it never vanishes);
+  `custom` → the listed weekdays (an empty list reads as daily). The dashboard
+  checklist and its "X of Y taken" tally cover only **due-today** supplements;
+  the Manage sheet lists the whole stack.
+- **Coach read**: a coach sees a trainee's stack read-only, gated on the same
+  `nutrition_sharing_enabled` flag as meals (RLS mirrors
+  `nutrition_coach_read`). The coach's "N/M due days" (`supplementTakenRate`)
+  counts, over the last 7 days on/after each supplement's created date, the
+  due days that have a log. Read-only — coaches never mutate the stack.
+- **NO gameplay effect:** supplements — including schedules and taken-rates —
+  never award XP and never touch streaks, hearts, quotas, or tiers. The card
+  is a reminder + logger only.
+
+### Meal adherence (calendar, informational)
+
+**Source of truth:** `lib/meal-adherence.ts` (`mealAdherenceForDay`, unit-tested),
+consumed by `app/calendar/page.tsx` + `app/calendar/components/day-meals-line.tsx`.
+
+- For a date with an active meal plan, adherence compares the plan's meals for
+  that weekday against the day's `meal_logs`: **slots** = distinct planned
+  `meal_type`s, a slot is "logged" when any log shares its type; **kcal ratio**
+  = summed logged kcal ÷ summed planned kcal (null when nothing planned).
+  Logged meal_types not in the plan are ignored for slots but still count
+  toward logged kcal. No thresholds or verdicts — just the numbers.
+- Logs are foods (search/photo/manual), plan items are AI dish titles — they
+  **never string-match**; adherence is slot + kcal only, deliberately.
+- Shown as one muted line on **today/past** calendar cells only; future days
+  keep the plain "N meals planned" link. **Display-only:** no XP, streaks,
+  hearts, or quotas.
 
 ## 14. Watch-file activity import
 

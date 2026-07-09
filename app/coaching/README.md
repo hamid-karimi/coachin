@@ -18,7 +18,9 @@ dashboard coaching card.
   "By your coach" tag on the trainee's program card. The relationship is
   verified in the page, the action, AND the `create_training_plan` RPC.
 - **Trainee nutrition view** (`/coaching/trainees/[id]/nutrition`): read-only
-  last-7-days meal logs with kcal/protein totals vs meal-plan targets, gated
+  last-7-days meal logs with kcal/protein totals vs meal-plan targets, plus a
+  read-only **Daily stack** section (each supplement's dose, schedule, and a
+  7-day "N/M due days" taken rate via `getTraineeSupplements`). Both are gated
   on the trainee's `nutrition_sharing_enabled` opt-in (see the nutrition
   README's "Coach sharing" section)
 - **Invite codes**: generate per-sport coach invite codes

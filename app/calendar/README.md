@@ -41,6 +41,14 @@ longer a standalone nav tab.
   "N meals planned · X kcal" link to `/nutrition/plan` (menu data via
   `app/nutrition/lib/meal-plan-day.ts`, keyed by weekday — the menu repeats
   weekly). Shown on rest days too; hidden when there is no active plan.
+- With an active meal plan, **today's and past** day cells also show a muted
+  adherence line under that link (e.g. "2/3 meals logged · 85% of plan kcal",
+  or "No meals logged"), computed by `mealAdherenceForDay`
+  (`lib/meal-adherence.ts`) from the week's `meal_logs` (one extra SELECT,
+  only when a plan exists) — slots match on `meal_type`, kcal is a ratio vs
+  the plan. Future days keep the plain planned link. Rendered via
+  `components/day-meals-line.tsx`. Display-only — no XP/streaks/hearts
+  (`FORMULAS.md` §13, Meal adherence).
 - When the user has weekly targets (`weekly_quotas`), a "Weekly targets" chip
   row (shared `QuotaChip` from `components/design-system/`) sits under the week
   navigation, computed by `quotaProgress` (`lib/weekly-quotas.ts`) from the
