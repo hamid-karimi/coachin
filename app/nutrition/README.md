@@ -56,6 +56,15 @@ optional free-text hint; the model merges everything into one item list.
 Nothing is auto-saved: the user always reviews and edits in the photo-review
 sheet before it becomes `meal_logs` rows.
 
+## Share cards
+
+The day summary ("Share today") and each meal row (share icon) open the
+shared `ShareCardSheet` (`components/share/`): a canvas-composed image
+(user photo optional, permanent "coachin" watermark) pushed through the Web
+Share API with a download fallback. Additive stats only — kcal eaten,
+protein, meal counts; never targets, deficits, or body weight
+(`lib/share-card.ts` enforces this for every entry point).
+
 ## Locale-aware suggestions
 
 `profiles.country` (free text, set on the profile's body form) feeds both the

@@ -5,6 +5,51 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-07-09 (later) · `feat/share-progress` — BUILT (3 phases committed)
+
+Plan: `plans/share-progress-plan.md`. All three phases implemented:
+
+1. **Share cards** (`3300d8d`): `lib/share-card.ts` (pure builders, privacy
+   rules: no body weight, additive stats only) + canvas renderer
+   (`components/share/share-card-canvas.ts`, story/square, watermark always
+   on) + `ShareCardSheet` (preview, photo picker, Web Share API/download).
+   Entry points: strength-log success ("Share it"), nutrition day summary
+   ("Share today"), meal rows.
+2. **Progress photos** (`67912d3`): migration `20260709150000` ('progress'
+   kind + per-kind cap trigger: body_photo 5, progress 24);
+   `uploadProgressPhotoAction` reuses sharp+moderation pipeline; profile
+   timeline/compare/share section; 28-day dashboard nudge.
+3. **Progress charts**: `lib/progress-charts.ts` (weeklyVolume, weeklyKm,
+   exerciseTopSets, weightSeries — pure + tested), design-system
+   `WeeklyBarsChart`/`TrendLineChart` (SVG, no lib, stories), profile
+   "Progress" section fed by last-12-week session_logs.
+
+**Next steps**: push branch + PR → develop; apply migration
+`20260709150000_progress_photos.sql` to hosted Supabase; QA journey 8.
+Parked: AI caption suggestions on share cards; weekly-recap share card
+(needs the recap feature from the joy brainstorm below).
+
+## 2026-07-09 (later) · brainstorm — joy/consistency engine (no code yet)
+
+Deep-dive on using collected data for 30s/40s starters. Diagnosis: log-moment
+dopamine is strong (confetti/XP/volume); missing layer is serotonin — proof,
+forgiveness, being seen. Converged ranking (joy ÷ effort):
+
+1. **PR detection** at save from session_logs.actual per-set history (days).
+2. **"Your week" recap card** on dashboard (scorecard math exists; shareable
+   image later; no push channel yet — v1 is seen-on-next-visit).
+3. **Fresh-start/comeback mode**: ≥6 idle days → one auto-shrunk week +
+   streak rebuild quest (reuse deload machinery; forgiveness > punishment).
+4. **Coach high-five** on logs + coach at-risk flag with drafted message.
+5. **Then-vs-now** monthly + lifetime milestones (reuse equivalence table,
+   localized landmarks).
+
+Medium-term differentiator: **self-evidence engine** (RPE-at-same-weight
+trend, pace-at-HR trend, adherence↔effort correlations; honest wording,
+min-data thresholds). Also: capture the user's "why" at onboarding and echo
+it in AI feedback/recaps. Guardrails agreed: NO XP on any of these; never
+celebrate scale weight in shareables by default.
+
 ## 2026-07-09 · `feat/adherence-supplements`
 
 **Done** (plan: `plans/adherence-supplements-plan.md`, phases A→B→C):

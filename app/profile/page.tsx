@@ -16,6 +16,12 @@ import { ThemePreference } from "./components/theme-preference";
 import { NutritionSharingToggle } from "./components/nutrition-sharing-toggle";
 import { BodyMetricsForm } from "./components/body-metrics-form";
 import { ActivityImportSection } from "./components/activity-import-section";
+import { ProgressPhotosSection } from "./components/progress-photos-section";
+import { ProgressChartsSection } from "./components/progress-charts-section";
+import type {
+  MeasurementRow,
+  SessionLogRow,
+} from "@/lib/progress-charts";
 import {
   MeasurementsSection,
   type Measurement,
@@ -63,12 +69,17 @@ export default async function ProfilePage() {
   // Settle any un-evaluated past days (streak/hearts) before reading profile.
   await settleUserStreak(supabase);
 
+  // Progress charts read the last ~12 weeks of detailed session logs.
+  const chartWindowStart = new Date();
+  chartWindowStart.setDate(chartWindowStart.getDate() - 12 * 7);
+
   const [
     { data: profile, error: profileError },
     { data: transactions },
     { data: sportTypes },
     { count: workoutCount },
     { data: measurements },
+    { data: chartSessionLogs },
   ] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).single(),
     supabase
@@ -90,6 +101,12 @@ export default async function ProfilePage() {
       .order("measured_at", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(6),
+    supabase
+      .from("session_logs")
+      .select("created_at, sport, actual")
+      .eq("user_id", user.id)
+      .gte("created_at", chartWindowStart.toISOString())
+      .order("created_at", { ascending: true }),
   ]);
 
   if (profileError || !profile) {
@@ -303,6 +320,15 @@ export default async function ProfilePage() {
           </div>
         </section>
 
+        {/* Progress charts — the evidence layer (share-progress phase 3) */}
+        <section className="space-y-2.5">
+          <h2 className="text-overline">Progress</h2>
+          <ProgressChartsSection
+            sessionLogs={(chartSessionLogs ?? []) as SessionLogRow[]}
+            measurements={(measurements ?? []) as MeasurementRow[]}
+          />
+        </section>
+
         {/* Body profile — feeds the AI program/diet intake (roadmap branch 1) */}
         <section className="space-y-2.5">
           <h2 className="text-overline">Body profile</h2>
@@ -333,9 +359,17 @@ export default async function ProfilePage() {
         <section className="space-y-2.5">
           <h2 className="text-overline">Body photos</h2>
           <BodyPhotosSection
-            photos={bodyPhotos}
+            photos={bodyPhotos.filter((photo) => photo.kind !== "progress")}
             consented={Boolean(profile.ai_photo_consent_at)}
             analysis={latestAnalysis}
+          />
+        </section>
+
+        {/* Progress-photo journal (share-progress plan phase 2) */}
+        <section className="space-y-2.5">
+          <h2 className="text-overline">Progress photos</h2>
+          <ProgressPhotosSection
+            photos={bodyPhotos.filter((photo) => photo.kind === "progress")}
           />
         </section>
 

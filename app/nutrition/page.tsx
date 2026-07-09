@@ -9,6 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { summarizePeriod, type DatedNutrients } from "@/lib/nutrition-trends";
 import { MealLogger } from "./components/meal-logger";
 import { MealRow, type MealLog } from "./components/meal-row";
+import { ShareDayButton } from "./components/share-day-button";
 import { NutritionTrends } from "./components/nutrition-trends";
 
 export const dynamic = "force-dynamic";
@@ -152,6 +153,11 @@ export default async function NutritionPage() {
             {Math.round(totals.sugar)}g sugar · {Math.round(totals.fiber)}g
             fiber · {Math.round(totals.sodium)}mg sodium
           </p>
+          <ShareDayButton
+            kcal={totals.kcal}
+            proteinG={totals.protein}
+            mealsCount={meals.length}
+          />
         </div>
 
         <MealLogger hasUsda={Boolean(process.env.USDA_API_KEY)} />
