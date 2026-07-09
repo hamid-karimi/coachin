@@ -1,9 +1,11 @@
 "use client";
 
-import { useActionState } from "react";
-import { Camera, Loader2, X } from "lucide-react";
+import { useActionState, useState } from "react";
+import { Camera, Loader2, Share2, X } from "lucide-react";
 
+import { mealShareCard } from "@/lib/share-card";
 import { useActionToast } from "@/components/hooks/use-action-toast";
+import { ShareCardSheet } from "@/components/share/ShareCardSheet";
 import { deleteMealLogAction, type NutritionActionState } from "../actions";
 
 const initialState: NutritionActionState = {};
@@ -29,6 +31,7 @@ export function MealRow({ log }: { log: MealLog }) {
     initialState,
   );
   useActionToast(state);
+  const [shareOpen, setShareOpen] = useState(false);
 
   return (
     <div className="flex items-center justify-between gap-3 py-2.5">
@@ -55,6 +58,23 @@ export function MealRow({ log }: { log: MealLog }) {
         <span className="text-stat text-brand-ink text-sm">
           {Math.round(log.kcal)} kcal
         </span>
+        <button
+          type="button"
+          aria-label="Share meal"
+          onClick={() => setShareOpen(true)}
+          className="text-muted-foreground hover:bg-secondary hover:text-foreground grid size-6 place-items-center rounded-md transition-colors"
+        >
+          <Share2 className="size-3.5" aria-hidden />
+        </button>
+        <ShareCardSheet
+          open={shareOpen}
+          onClose={() => setShareOpen(false)}
+          data={mealShareCard({
+            title: log.free_text ?? "Meal",
+            kcal: log.kcal,
+            proteinG: log.protein_g,
+          })}
+        />
         <form action={formAction}>
           <input type="hidden" name="log_id" value={log.id} />
           <button

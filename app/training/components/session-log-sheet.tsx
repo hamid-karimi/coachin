@@ -1,15 +1,17 @@
 "use client";
 
 import { useActionState, useReducer, useState } from "react";
-import { Loader2, NotebookPen, Save } from "lucide-react";
+import { Loader2, NotebookPen, Save, Share2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { volumeEquivalence } from "@/lib/workout-sets";
+import { sessionShareCard } from "@/lib/share-card";
 import { useActionToast } from "@/components/hooks/use-action-toast";
 import { useConfettiBurst } from "@/components/hooks/use-confetti-burst";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ShareCardSheet } from "@/components/share/ShareCardSheet";
 import {
   StrengthSetsEditor,
   buildEditableExercises,
@@ -41,6 +43,7 @@ export function SessionLogSheet({
   itemDescription,
 }: SessionLogSheetProps) {
   const [open, setOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [rpe, setRpe] = useState<number | null>(null);
   const [exercises, dispatch] = useReducer(
     strengthSetsReducer,
@@ -81,6 +84,29 @@ export function SessionLogSheet({
           >
             {state.feedback.message}
           </p>
+        )}
+        {totalVolume > 0 && (
+          <>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="-ml-2"
+              onClick={() => setShareOpen(true)}
+            >
+              <Share2 aria-hidden />
+              Share it
+            </Button>
+            <ShareCardSheet
+              open={shareOpen}
+              onClose={() => setShareOpen(false)}
+              data={sessionShareCard({
+                title: itemTitle,
+                totalVolumeKg: totalVolume,
+                exercises: toLoggedExercises(exercises),
+              })}
+            />
+          </>
         )}
       </div>
     );
