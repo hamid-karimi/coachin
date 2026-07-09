@@ -367,7 +367,7 @@ export function SupplementsCard({
         open={manageOpen}
         onClose={() => setManageOpen(false)}
         title="Daily stack"
-        description="Supplements you take on a schedule — reminders only, no XP."
+        description="Supplements you take on a schedule — reminders only, no XP. Visible to your coach when nutrition sharing is on."
       >
         <div className="space-y-4">
           <AddSupplementForm />
