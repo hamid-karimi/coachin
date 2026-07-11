@@ -44,7 +44,7 @@ inactive; every coach feature checks for an **active** relationship.
 | `/training/new` | Plan wizards (running / muscle building); coach mode via `?student=<id>` | [README](app/training/README.md) |
 | `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan | [README](app/nutrition/README.md) |
 | `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions | [README](app/coaching/README.md) |
-| `/community` | Social/leaderboard surfaces | [README](app/community/README.md) |
+| `/community` | Social/leaderboard surfaces — **currently disabled** (feature flag; redirects to dashboard, nav item hidden). Coach invite codes are redeemed on `/profile` → "My coach" while off. | [README](app/community/README.md) |
 | `/profile` | Body metrics, goals, measurements, photos, settings (theme, nutrition sharing) | — |
 | `/auth` | Login / signup | [README](app/auth/README.md) |
 
@@ -148,8 +148,9 @@ inactive; every coach feature checks for an **active** relationship.
 
 ### 6. Coaching
 
-1. Coach generates an invite code (per sport); trainee redeems it → appears
-   on the roster with level, weekly XP, and the 7-dot adherence strip.
+1. Coach generates an invite code (per sport); trainee redeems it (while
+   community is disabled: Profile → "My coach" section) → appears on the
+   roster with level, weekly XP, and the 7-dot adherence strip.
 2. **Assign plan** copies the coach's own weekly schedule onto the trainee
    (replaces theirs). **Generate plan** opens the AI wizards for that trainee
    (prefilled with the *trainee's* body profile); the resulting plan applies
@@ -239,4 +240,7 @@ Always include:
 
 Known intentional behaviors (not bugs): "student" naming in code/DB; weekly
 targets never affecting streaks; plan-item completion gated to its day;
-one active plan per discipline; quotas/volume having no XP effect.
+one active plan per discipline; quotas/volume having no XP effect;
+**community is disabled on purpose** (nav item hidden, /community redirects
+to the dashboard, user discovery API returns 404 — behind a feature flag,
+not removed).

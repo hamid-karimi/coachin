@@ -1,8 +1,10 @@
 import { ReactNode } from "react";
+import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/design-system/app-shell";
 import { createClient } from "@/lib/supabase/server";
 import { canCoach } from "@/lib/roles";
+import { isCommunityEnabled } from "@/lib/feature-flags";
 import { CommunityTabs } from "./components/CommunityTabs";
 
 export default async function CommunityLayout({
@@ -10,6 +12,12 @@ export default async function CommunityLayout({
 }: {
   children: ReactNode;
 }) {
+  // Community is feature-flagged off (see lib/feature-flags.ts) — this
+  // layout guards every /community/* page in one place.
+  if (!isCommunityEnabled()) {
+    redirect("/dashboard");
+  }
+
   const supabase = await createClient();
   const {
     data: { user },

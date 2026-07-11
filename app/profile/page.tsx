@@ -18,6 +18,8 @@ import { BodyMetricsForm } from "./components/body-metrics-form";
 import { ActivityImportSection } from "./components/activity-import-section";
 import { ProgressPhotosSection } from "./components/progress-photos-section";
 import { ProgressChartsSection } from "./components/progress-charts-section";
+import { AddCoachByCodeForm } from "@/app/community/components/AddCoachByCodeForm";
+import { isCommunityEnabled } from "@/lib/feature-flags";
 import type {
   MeasurementRow,
   SessionLogRow,
@@ -410,6 +412,18 @@ export default async function ProfilePage() {
             </div>
           )}
         </section>
+
+        {/* Coach invite redemption normally lives in /community/circle;
+            while community is feature-flagged off it surfaces here so
+            trainees can still join their coach. */}
+        {!isCommunityEnabled() && (
+          <section className="space-y-2.5">
+            <h2 className="text-overline">My coach</h2>
+            <div className="bg-card border-border rounded-xl border p-4">
+              <AddCoachByCodeForm />
+            </div>
+          </section>
+        )}
 
         {/* Settings */}
         <section className="space-y-2.5">

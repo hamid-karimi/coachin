@@ -2,6 +2,14 @@
 
 The `community` module contains social features, coaching workflows, and leaderboard views.
 
+> **⚠ Feature-flagged OFF** (owner decision 2026-07-10: users shouldn't see
+> each other for now). `lib/feature-flags.ts` `isCommunityEnabled()` gates:
+> the `/community` layout (redirects to `/dashboard`), the discover API
+> (404), the Community nav item, and the dashboard group-streak nudge.
+> While off, `AddCoachByCodeForm` renders on `/profile` so trainees can
+> still redeem coach invite codes. **No code was removed** — re-enable by
+> setting `NEXT_PUBLIC_FEATURE_COMMUNITY=on` and redeploying.
+
 ## Scope
 
 - **Leaderboards**

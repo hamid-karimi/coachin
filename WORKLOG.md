@@ -5,6 +5,27 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-07-10 · `fix/logout-and-community-flag`
+
+**Done**:
+
+- `752f6b7` fix(auth): logout 500 (digest 2304524774). Root cause:
+  `logoutAction` did `revalidatePath("/", "layout")` before redirecting →
+  Next re-rendered the CURRENT page (/profile) mid-logout with a
+  half-cleared session → profile page's `throw` on failed profile fetch.
+  Fix: drop the revalidation (authed pages are dynamic) + profile/dashboard
+  now redirect to /auth/login instead of throwing on profile-fetch failure.
+- Community kill-switch: `lib/feature-flags.ts` `isCommunityEnabled()`
+  (NEXT_PUBLIC_FEATURE_COMMUNITY === "on"; default OFF). Gates: /community
+  layout redirect, discover API 404, Community nav item (bottom-nav +
+  sidebar), dashboard group-streak nudge. AddCoachByCodeForm surfaces on
+  /profile ("My coach") while off so trainees can still join a coach.
+  NOTHING deleted — re-enable = set the env var + redeploy.
+
+**Next steps**: push + PR → develop; verify logout on Vercel (was
+production-only symptom); QA journey 6 step 1 changed (invite redemption on
+profile while community is off).
+
 ## 2026-07-09 (later) · `feat/share-progress` — BUILT (3 phases committed)
 
 Plan: `plans/share-progress-plan.md`. All three phases implemented:
