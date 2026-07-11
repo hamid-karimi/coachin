@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Flame } from "lucide-react";
 import { ThemeToggle } from "@/components/design-system/theme-toggle";
+import { FeatureSlideshow } from "./feature-slideshow";
 
 interface AuthShellProps {
   children: ReactNode;
@@ -40,11 +41,12 @@ export function AuthShell({ children }: AuthShellProps) {
             <br />
             gamified.
           </h2>
-          <p className="text-muted-foreground mt-4 max-w-sm leading-relaxed">
-            Build your week, log workouts in one tap, earn XP, and keep the
-            flame alive.
-          </p>
-          <div className="mt-6 flex flex-wrap items-center gap-2.5">
+
+          {/* What-the-system-does slideshow (text + icons — no screenshots
+              to keep current; see app/auth/README.md) */}
+          <FeatureSlideshow />
+
+          <div className="mt-8 flex flex-wrap items-center gap-2.5">
             <span className="border-flame/40 bg-flame-tint inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2">
               <Flame className="text-flame fill-flame/30 size-4" aria-hidden />
               <span className="text-foreground text-stat text-sm">12</span>

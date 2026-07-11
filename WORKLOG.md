@@ -5,6 +5,30 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-07-10 (later) · `feat/profile-login-redesign`
+
+**Done**:
+
+- `fce8864` sidebar: sticky + h-dvh (exactly one viewport tall, scrolls
+  internally — no longer stretches to page height) + profile page split into
+  four `?tab=` server-rendered tabs (ProfileTabs pill nav, CommunityTabs
+  pattern): Overview (stats/hearts/goals/training links/recent XP),
+  Progress (charts/measurements/progress photos), Body (body profile/body
+  photos/watch import), Settings (theme/nutrition sharing/my coach/logout).
+  Heavy fetches (photo URL signing, 12-wk session logs, XP feed, goals) are
+  tab-scoped now.
+- Login/register brand panel: static copy → `FeatureSlideshow`
+  (app/auth/components) — 5 text+icon slides (~5s, hover-pauses, dot nav,
+  carousel a11y). Decision: text + lucide icons over screenshots — nothing
+  to re-shoot when UI changes, always token-themed.
+
+**Next**: ⚠ the slideshow/auth + docs changes are IN THE WORKING TREE but
+NOT yet committed (a temporary harness outage blocked shell commands after
+tsc+eslint passed). Resume with: `pnpm test && pnpm build`, then commit as
+"feat(auth): what-the-system-does slideshow on the login brand panel", then
+push + PR → develop (no migrations); eyeball the slideshow and tab flows on
+the Vercel preview.
+
 ## 2026-07-10 · `fix/logout-and-community-flag`
 
 **Done**:

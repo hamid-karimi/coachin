@@ -6,6 +6,12 @@ This module handles user sign-in and registration through Supabase Auth.
 
 - `components/`
   - `auth-container.tsx`: auth layout wrapper
+  - `auth-shell.tsx`: split layout — desktop brand panel (left) + form column
+  - `feature-slideshow.tsx`: auto-advancing what-the-system-does carousel in
+    the brand panel. **Text + lucide icons only, no screenshots** — nothing
+    to re-shoot when the UI changes, always on-brand via tokens. 5 slides ×
+    ~5s, pauses on hover, clickable dots, `aria-roledescription="carousel"`.
+    Desktop-only (the brand panel is hidden on mobile).
   - `submit-button.tsx`: submit button with pending state
 - `login/`
   - `page.tsx`
