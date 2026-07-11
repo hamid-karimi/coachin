@@ -88,8 +88,10 @@ export default async function Dashboard() {
     .single();
 
   if (profileError) {
+    // Mid-logout or revoked session: the auth cookie can outlive the row
+    // access. Bounce to login instead of a 500 (see logoutAction).
     console.error("Error fetching profile:", profileError);
-    throw new Error("Failed to load profile");
+    redirect("/auth/login");
   }
 
   const today = new Date();

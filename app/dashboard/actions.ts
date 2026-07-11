@@ -1,7 +1,6 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export type DashboardActionState = {
@@ -21,7 +20,10 @@ export async function logoutAction(): Promise<DashboardActionState> {
     return { error: error.message };
   }
 
-  revalidatePath("/", "layout");
+  // No layout revalidation here: it would re-render the CURRENT page (e.g.
+  // /profile) inside this response with a half-cleared session, which is a
+  // guaranteed server error. Every authed page is dynamic and re-checks auth
+  // per request, so the redirect alone is correct.
   redirect("/auth/login");
 }
 

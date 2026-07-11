@@ -110,8 +110,10 @@ export default async function ProfilePage() {
   ]);
 
   if (profileError || !profile) {
+    // Mid-logout or revoked session: the auth cookie can outlive the row
+    // access. Bounce to login instead of a 500 (see logoutAction).
     console.error("Error fetching profile:", profileError);
-    throw new Error("Failed to load profile");
+    redirect("/auth/login");
   }
 
   const goalsData = await getGoalsWithProgress(supabase, user.id);
