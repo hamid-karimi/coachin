@@ -20,6 +20,10 @@ import { ProgressPhotosSection } from "./components/progress-photos-section";
 import { ProgressChartsSection } from "./components/progress-charts-section";
 import { AddCoachByCodeForm } from "@/app/community/components/AddCoachByCodeForm";
 import { isCommunityEnabled } from "@/lib/feature-flags";
+import {
+  ProfileTabs,
+  resolveProfileTab,
+} from "./components/profile-tabs";
 import type {
   MeasurementRow,
   SessionLogRow,
@@ -60,7 +64,13 @@ function formatReason(
   return reason.replaceAll("_", " ");
 }
 
-export default async function ProfilePage() {
+export default async function ProfilePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
+  const { tab: rawTab } = await searchParams;
+  const tab = resolveProfileTab(rawTab);
   const user = await getUser();
 
   if (!user) {
@@ -75,6 +85,10 @@ export default async function ProfilePage() {
   const chartWindowStart = new Date();
   chartWindowStart.setDate(chartWindowStart.getDate() - 12 * 7);
 
+  // Tab-scoped fetches: only the active tab's heavy data is loaded (photos
+  // need per-file signed URLs, charts need 12 weeks of session logs).
+  const none = Promise.resolve({ data: null } as { data: null });
+
   const [
     { data: profile, error: profileError },
     { data: transactions },
@@ -84,31 +98,37 @@ export default async function ProfilePage() {
     { data: chartSessionLogs },
   ] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).single(),
-    supabase
-      .from("xp_transactions")
-      .select("id, amount, reason, created_at")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(5),
+    tab === "overview"
+      ? supabase
+          .from("xp_transactions")
+          .select("id, amount, reason, created_at")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(5)
+      : none,
     supabase.from("sport_types").select("id, name"),
     supabase
       .from("logs")
       .select("id", { count: "exact", head: true })
       .eq("user_id", user.id)
       .eq("status", "completed"),
-    supabase
-      .from("body_measurements")
-      .select("id, measured_at, weight_kg, body_fat_pct")
-      .eq("user_id", user.id)
-      .order("measured_at", { ascending: false })
-      .order("created_at", { ascending: false })
-      .limit(6),
-    supabase
-      .from("session_logs")
-      .select("created_at, sport, actual")
-      .eq("user_id", user.id)
-      .gte("created_at", chartWindowStart.toISOString())
-      .order("created_at", { ascending: true }),
+    tab === "progress"
+      ? supabase
+          .from("body_measurements")
+          .select("id, measured_at, weight_kg, body_fat_pct")
+          .eq("user_id", user.id)
+          .order("measured_at", { ascending: false })
+          .order("created_at", { ascending: false })
+          .limit(6)
+      : none,
+    tab === "progress"
+      ? supabase
+          .from("session_logs")
+          .select("created_at, sport, actual")
+          .eq("user_id", user.id)
+          .gte("created_at", chartWindowStart.toISOString())
+          .order("created_at", { ascending: true })
+      : none,
   ]);
 
   if (profileError || !profile) {
@@ -118,14 +138,21 @@ export default async function ProfilePage() {
     redirect("/auth/login");
   }
 
-  const goalsData = await getGoalsWithProgress(supabase, user.id);
+  const goalsData =
+    tab === "overview"
+      ? await getGoalsWithProgress(supabase, user.id)
+      : { active: [], achieved: [] };
 
   // Body photos: metadata + short-lived signed URLs (bucket is private).
-  const { data: photoRows } = await supabase
-    .from("body_photos")
-    .select("id, kind, storage_path, analysis, analyzed_at, created_at")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false });
+  // Only the tabs that render photos pay for the per-file signing.
+  const { data: photoRows } =
+    tab === "body" || tab === "progress"
+      ? await supabase
+          .from("body_photos")
+          .select("id, kind, storage_path, analysis, analyzed_at, created_at")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+      : { data: null };
 
   const bodyPhotos: BodyPhotoItem[] = await Promise.all(
     (photoRows ?? []).map(async (row) => {
@@ -228,6 +255,11 @@ export default async function ProfilePage() {
           </div>
         </div>
 
+        {/* Tab nav — sections below render per tab (?tab= query param) */}
+        <ProfileTabs active={tab} />
+
+        {tab === "overview" && (
+        <>
         {/* Stat grid */}
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <StatCard label="Total XP" value={xp.toLocaleString()} />
@@ -324,59 +356,6 @@ export default async function ProfilePage() {
           </div>
         </section>
 
-        {/* Progress charts — the evidence layer (share-progress phase 3) */}
-        <section className="space-y-2.5">
-          <h2 className="text-overline">Progress</h2>
-          <ProgressChartsSection
-            sessionLogs={(chartSessionLogs ?? []) as SessionLogRow[]}
-            measurements={(measurements ?? []) as MeasurementRow[]}
-          />
-        </section>
-
-        {/* Body profile — feeds the AI program/diet intake (roadmap branch 1) */}
-        <section className="space-y-2.5">
-          <h2 className="text-overline">Body profile</h2>
-          <BodyMetricsForm
-            birthDate={profile.birth_date ?? null}
-            sex={profile.sex ?? null}
-            heightCm={profile.height_cm ?? null}
-            trainingHistory={profile.training_history ?? null}
-            country={profile.country ?? null}
-          />
-        </section>
-
-        {/* Occasional watch-data import (FORMULAS.md §14) */}
-        <section className="space-y-2.5">
-          <h2 className="text-overline">Watch data</h2>
-          <ActivityImportSection />
-        </section>
-
-        {/* Measurements */}
-        <section className="space-y-2.5">
-          <h2 className="text-overline">Measurements</h2>
-          <MeasurementsSection
-            measurements={(measurements ?? []) as Measurement[]}
-          />
-        </section>
-
-        {/* Body photos (roadmap branch 3) */}
-        <section className="space-y-2.5">
-          <h2 className="text-overline">Body photos</h2>
-          <BodyPhotosSection
-            photos={bodyPhotos.filter((photo) => photo.kind !== "progress")}
-            consented={Boolean(profile.ai_photo_consent_at)}
-            analysis={latestAnalysis}
-          />
-        </section>
-
-        {/* Progress-photo journal (share-progress plan phase 2) */}
-        <section className="space-y-2.5">
-          <h2 className="text-overline">Progress photos</h2>
-          <ProgressPhotosSection
-            photos={bodyPhotos.filter((photo) => photo.kind === "progress")}
-          />
-        </section>
-
         {/* Recent XP */}
         <section className="space-y-2.5">
           <h2 className="text-overline">Recent XP</h2>
@@ -412,7 +391,72 @@ export default async function ProfilePage() {
             </div>
           )}
         </section>
+        </>
+        )}
 
+        {tab === "progress" && (
+        <>
+        {/* Progress charts — the evidence layer (share-progress phase 3) */}
+        <section className="space-y-2.5">
+          <h2 className="text-overline">Progress</h2>
+          <ProgressChartsSection
+            sessionLogs={(chartSessionLogs ?? []) as SessionLogRow[]}
+            measurements={(measurements ?? []) as MeasurementRow[]}
+          />
+        </section>
+
+        {/* Measurements */}
+        <section className="space-y-2.5">
+          <h2 className="text-overline">Measurements</h2>
+          <MeasurementsSection
+            measurements={(measurements ?? []) as Measurement[]}
+          />
+        </section>
+
+        {/* Progress-photo journal (share-progress plan phase 2) */}
+        <section className="space-y-2.5">
+          <h2 className="text-overline">Progress photos</h2>
+          <ProgressPhotosSection
+            photos={bodyPhotos.filter((photo) => photo.kind === "progress")}
+          />
+        </section>
+        </>
+        )}
+
+        {tab === "body" && (
+        <>
+        {/* Body profile — feeds the AI program/diet intake (roadmap branch 1) */}
+        <section className="space-y-2.5">
+          <h2 className="text-overline">Body profile</h2>
+          <BodyMetricsForm
+            birthDate={profile.birth_date ?? null}
+            sex={profile.sex ?? null}
+            heightCm={profile.height_cm ?? null}
+            trainingHistory={profile.training_history ?? null}
+            country={profile.country ?? null}
+          />
+        </section>
+
+        {/* Body photos (roadmap branch 3) */}
+        <section className="space-y-2.5">
+          <h2 className="text-overline">Body photos</h2>
+          <BodyPhotosSection
+            photos={bodyPhotos.filter((photo) => photo.kind !== "progress")}
+            consented={Boolean(profile.ai_photo_consent_at)}
+            analysis={latestAnalysis}
+          />
+        </section>
+
+        {/* Occasional watch-data import (FORMULAS.md §14) */}
+        <section className="space-y-2.5">
+          <h2 className="text-overline">Watch data</h2>
+          <ActivityImportSection />
+        </section>
+        </>
+        )}
+
+        {tab === "settings" && (
+        <>
         {/* Coach invite redemption normally lives in /community/circle;
             while community is feature-flagged off it surfaces here so
             trainees can still join their coach. */}
@@ -448,6 +492,8 @@ export default async function ProfilePage() {
             </div>
           </div>
         </section>
+        </>
+        )}
       </div>
     </AppShell>
   );

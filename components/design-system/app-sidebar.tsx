@@ -87,7 +87,9 @@ export function AppSidebar({ coachNav = false, className }: AppSidebarProps) {
   return (
     <aside
       className={cn(
-        "border-border bg-card hidden md:flex md:w-[220px] md:shrink-0 md:flex-col gap-1.5 border-r p-4",
+        // Sticky + h-dvh: the sidebar fills exactly one viewport and stays
+        // put while long pages scroll (it never stretches to page height).
+        "border-border bg-card sticky top-0 hidden h-dvh md:flex md:w-[220px] md:shrink-0 md:flex-col gap-1.5 overflow-y-auto border-r p-4",
         className,
       )}
     >
