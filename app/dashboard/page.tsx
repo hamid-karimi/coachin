@@ -34,6 +34,7 @@ import { quotaProgress } from "@/lib/weekly-quotas";
 import { getWeeklyQuotas } from "@/app/onboarding/actions";
 import { QuotaChip } from "@/components/design-system/quota-chip";
 import { hasHardCollision } from "@/lib/training-day";
+import { isCommunityEnabled } from "@/lib/feature-flags";
 import { isSupplementDue } from "@/lib/supplement-schedule";
 import { GOAL_TYPE_META } from "@/lib/goals";
 import { Progress } from "@/components/ui/progress";
@@ -88,8 +89,10 @@ export default async function Dashboard() {
     .single();
 
   if (profileError) {
+    // Mid-logout or revoked session: the auth cookie can outlive the row
+    // access. Bounce to login instead of a 500 (see logoutAction).
     console.error("Error fetching profile:", profileError);
-    throw new Error("Failed to load profile");
+    redirect("/auth/login");
   }
 
   const today = new Date();
@@ -295,8 +298,10 @@ export default async function Dashboard() {
     };
   });
   // Group-streak nudge: only when the user hasn't logged anything today.
+  // Skipped entirely while community is feature-flagged off (its link
+  // targets /community/groups, which redirects while disabled).
   let groupAtRisk: { name: string; streak_count: number } | null = null;
-  if ((todaysLogs ?? []).length === 0) {
+  if (isCommunityEnabled() && (todaysLogs ?? []).length === 0) {
     const { data: myGroups } = await supabase
       .from("group_members")
       .select("training_groups(name, streak_count)")

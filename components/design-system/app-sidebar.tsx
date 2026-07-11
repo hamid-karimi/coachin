@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { isCommunityEnabled } from "@/lib/feature-flags";
 import { ThemeToggle } from "./theme-toggle";
 import { type NavKey } from "./bottom-nav";
 
@@ -77,9 +78,11 @@ export function AppSidebar({ coachNav = false, className }: AppSidebarProps) {
   const pathname = usePathname();
   const active = keyFromPath(pathname);
 
-  const items = coachNav
-    ? ITEMS
-    : ITEMS.filter((item) => item.key !== "coaching");
+  const items = ITEMS.filter(
+    (item) =>
+      (item.key !== "coaching" || coachNav) &&
+      (item.key !== "community" || isCommunityEnabled()),
+  );
 
   return (
     <aside

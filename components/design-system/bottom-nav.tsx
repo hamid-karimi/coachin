@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { isCommunityEnabled } from "@/lib/feature-flags";
 
 export type NavKey =
   | "home"
@@ -54,9 +55,11 @@ export function BottomNav({
   coachNav = false,
   className,
 }: BottomNavProps) {
-  const items = coachNav
-    ? ITEMS
-    : ITEMS.filter((item) => item.key !== "coaching");
+  const items = ITEMS.filter(
+    (item) =>
+      (item.key !== "coaching" || coachNav) &&
+      (item.key !== "community" || isCommunityEnabled()),
+  );
 
   return (
     <nav
