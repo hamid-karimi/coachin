@@ -4,6 +4,16 @@ import { randomInt } from "crypto";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { COACH_ENABLED_ROLES, STUDENT_ENABLED_ROLES } from "@/lib/roles";
+import { isCommunityEnabled } from "@/lib/feature-flags";
+
+// Server actions are public HTTP endpoints even when no UI renders them, so
+// the community kill-switch must block social mutations here too — the layout
+// redirect only covers pages. Coach flows (invite codes, plan assignment)
+// stay open: coaching is a separate surface and the invite form lives on
+// /profile while community is off.
+const COMMUNITY_DISABLED: CommunityActionState = {
+  error: "Community features are currently disabled.",
+};
 
 export type CommunityActionState = {
   error?: string;
@@ -167,6 +177,8 @@ export async function joinClubByInviteAction(
   _prevState: CommunityActionState,
   formData: FormData,
 ): Promise<CommunityActionState> {
+  if (!isCommunityEnabled()) return COMMUNITY_DISABLED;
+
   const rawCode = formData.get("club_invite_code");
   const inviteCode = normalizeCode(String(rawCode ?? ""));
 
@@ -206,6 +218,8 @@ export async function createClubAction(
   _prevState: CommunityActionState,
   formData: FormData,
 ): Promise<CommunityActionState> {
+  if (!isCommunityEnabled()) return COMMUNITY_DISABLED;
+
   const rawName = String(formData.get("club_name") ?? "").trim();
   const rawDescription = String(formData.get("club_description") ?? "").trim();
 
@@ -265,6 +279,8 @@ export async function setPrimaryClubAction(
   _prevState: CommunityActionState,
   formData: FormData,
 ): Promise<CommunityActionState> {
+  if (!isCommunityEnabled()) return COMMUNITY_DISABLED;
+
   const clubId = String(formData.get("club_id") ?? "").trim();
 
   if (!clubId) {
@@ -321,6 +337,8 @@ export async function leaveClubAction(
   _prevState: CommunityActionState,
   formData: FormData,
 ): Promise<CommunityActionState> {
+  if (!isCommunityEnabled()) return COMMUNITY_DISABLED;
+
   const clubId = String(formData.get("club_id") ?? "").trim();
 
   if (!clubId) {
@@ -427,6 +445,8 @@ export async function followUserAction(
   _prevState: CommunityActionState,
   formData: FormData,
 ): Promise<CommunityActionState> {
+  if (!isCommunityEnabled()) return COMMUNITY_DISABLED;
+
   const followingId = String(formData.get("following_id") ?? "").trim();
 
   if (!followingId) {
@@ -465,6 +485,8 @@ export async function unfollowUserAction(
   _prevState: CommunityActionState,
   formData: FormData,
 ): Promise<CommunityActionState> {
+  if (!isCommunityEnabled()) return COMMUNITY_DISABLED;
+
   const followingId = String(formData.get("following_id") ?? "").trim();
 
   if (!followingId) {

@@ -75,6 +75,23 @@ describe("exerciseTopSets", () => {
   it("returns [] when nothing reaches the minimum session count", () => {
     expect(exerciseTopSets([], 3)).toEqual([]);
   });
+
+  it("buckets sessions by local day, matching the weekly charts", () => {
+    // Two logs on the same LOCAL day (whatever the zone) merge into one point.
+    const morning = new Date(2026, 5, 1, 9, 0, 0);
+    const evening = new Date(2026, 5, 1, 21, 0, 0);
+    const logs = [
+      strengthLog(morning.toISOString(), [
+        { name: "Squat", sets: [{ weight_kg: 50, reps: 5 }] },
+      ]),
+      strengthLog(evening.toISOString(), [
+        { name: "Squat", sets: [{ weight_kg: 55, reps: 5 }] },
+      ]),
+    ];
+    const trends = exerciseTopSets(logs, 1);
+    expect(trends[0].points).toHaveLength(1);
+    expect(trends[0].points[0].value).toBe(55);
+  });
 });
 
 describe("weightSeries", () => {
@@ -85,5 +102,10 @@ describe("weightSeries", () => {
       { measured_at: "2026-06-15T08:00:00Z", weight_kg: null },
     ]);
     expect(points.map((p) => p.value)).toEqual([84, 82.5]);
+  });
+
+  it("labels date-only measurements as that local day (no UTC shift)", () => {
+    const points = weightSeries([{ measured_at: "2026-07-01", weight_kg: 80 }]);
+    expect(points[0].label).toBe("Jul 1");
   });
 });

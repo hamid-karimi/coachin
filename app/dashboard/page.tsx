@@ -35,6 +35,7 @@ import { getWeeklyQuotas } from "@/app/onboarding/actions";
 import { QuotaChip } from "@/components/design-system/quota-chip";
 import { hasHardCollision } from "@/lib/training-day";
 import { isCommunityEnabled } from "@/lib/feature-flags";
+import { isProgressPhotoDue } from "@/lib/progress-photo-nudge";
 import { isSupplementDue } from "@/lib/supplement-schedule";
 import { GOAL_TYPE_META } from "@/lib/goals";
 import { Progress } from "@/components/ui/progress";
@@ -200,18 +201,16 @@ export default async function Dashboard() {
       .maybeSingle(),
   ]);
 
-  // Quiet progress-photo nudge (share-progress phase 2): active users whose
-  // newest journal photo is ≥28 days old (or who have none). No XP, no badge.
-  const PROGRESS_PHOTO_NUDGE_DAYS = 28;
+  // Quiet progress-photo nudge (rule + constant in lib/progress-photo-nudge).
   const lastProgressPhotoAt = latestProgressPhoto?.created_at
     ? new Date(latestProgressPhoto.created_at)
     : null;
-  const progressPhotoDue =
-    (profile.current_streak ?? 0) > 0 || (weekLogs ?? []).length > 0
-      ? !lastProgressPhotoAt ||
-        today.getTime() - lastProgressPhotoAt.getTime() >
-          PROGRESS_PHOTO_NUDGE_DAYS * 24 * 60 * 60 * 1000
-      : false;
+  const progressPhotoDue = isProgressPhotoDue({
+    currentStreak: profile.current_streak ?? 0,
+    weekLogCount: (weekLogs ?? []).length,
+    lastPhotoAt: lastProgressPhotoAt,
+    today,
+  });
 
   const takenSupplementIds = (supplementLogRows ?? []).map(
     (row) => row.supplement_id as string,

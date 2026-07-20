@@ -286,13 +286,9 @@ export async function deleteBodyPhotoAction(
 
   if (!photo) return { error: "Photo not found" };
 
-  const { error: storageError } = await supabase.storage
-    .from(BUCKET)
-    .remove([photo.storage_path]);
-  if (storageError) {
-    console.error("Storage delete failed:", storageError);
-  }
-
+  // Row first, storage second: an orphaned storage object is invisible and
+  // harmless, but a surviving row pointing at a deleted object is a broken
+  // image that still counts against the photo cap.
   const { error } = await supabase
     .from("body_photos")
     .delete()
@@ -302,6 +298,13 @@ export async function deleteBodyPhotoAction(
   if (error) {
     console.error("body_photos delete failed:", error);
     return { error: "Failed to delete the photo" };
+  }
+
+  const { error: storageError } = await supabase.storage
+    .from(BUCKET)
+    .remove([photo.storage_path]);
+  if (storageError) {
+    console.error("Storage delete failed:", storageError);
   }
 
   revalidatePath("/profile");

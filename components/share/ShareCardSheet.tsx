@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Download, ImagePlus, Loader2, Share2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -43,19 +43,29 @@ export function ShareCardSheet({
   // stays visible while the next one draws (renders take ~a frame).
   const [busy, setBusy] = useState(true);
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const previewUrlRef = useRef<string | null>(null);
+
+  // Call sites build `data` inline, so its identity changes on every parent
+  // render; keying on content keeps the (canvas + image decode) effect from
+  // re-running for no reason while the sheet is open.
+  const dataKey = JSON.stringify(data);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const stableData = useMemo(() => data, [dataKey]);
 
   // Re-render the card whenever inputs change while open. State updates
   // happen only in the promise callbacks (react-hooks/set-state-in-effect).
   useEffect(() => {
     if (!open) return;
     let cancelled = false;
-    renderShareCard(data, { format, photo, comparePhotos })
+    renderShareCard(stableData, { format, photo, comparePhotos })
       .then((rendered) => {
         if (cancelled) return;
         setFile(rendered);
         setPreviewUrl((current) => {
           if (current) URL.revokeObjectURL(current);
-          return URL.createObjectURL(rendered);
+          const next = URL.createObjectURL(rendered);
+          previewUrlRef.current = next;
+          return next;
         });
       })
       .catch(() => {
@@ -67,7 +77,15 @@ export function ShareCardSheet({
     return () => {
       cancelled = true;
     };
-  }, [open, data, format, photo, comparePhotos]);
+  }, [open, stableData, format, photo, comparePhotos]);
+
+  // Release the last blob URL when the sheet unmounts.
+  useEffect(
+    () => () => {
+      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+    },
+    [],
+  );
 
   const onPickPhoto = async (list: FileList | null) => {
     const picked = list?.[0];
@@ -86,9 +104,12 @@ export function ShareCardSheet({
       try {
         await navigator.share({ files: [file] });
         return;
-      } catch {
-        // user cancelled the OS sheet — nothing to do
-        return;
+      } catch (error) {
+        // Cancelling the OS sheet is not a failure — anything else is.
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+        toast.error("Sharing failed — saving the image instead");
       }
     }
     downloadFile(file);

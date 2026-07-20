@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient, getUser } from "@/lib/supabase/server";
+import { isCommunityEnabled } from "@/lib/feature-flags";
 
 export type GroupsActionState = {
   error?: string;
@@ -10,10 +11,18 @@ export type GroupsActionState = {
   status?: "success" | "info" | "error";
 };
 
+// Server actions stay callable even when their UI is hidden, so the community
+// kill-switch blocks group mutations here as well as in the layout.
+const COMMUNITY_DISABLED: GroupsActionState = {
+  error: "Community features are currently disabled.",
+};
+
 export async function createGroupAction(
   _prevState: GroupsActionState,
   formData: FormData,
 ): Promise<GroupsActionState> {
+  if (!isCommunityEnabled()) return COMMUNITY_DISABLED;
+
   const user = await getUser();
   if (!user) return { error: "You must be signed in" };
 
@@ -39,6 +48,8 @@ export async function joinGroupAction(
   _prevState: GroupsActionState,
   formData: FormData,
 ): Promise<GroupsActionState> {
+  if (!isCommunityEnabled()) return COMMUNITY_DISABLED;
+
   const user = await getUser();
   if (!user) return { error: "You must be signed in" };
 
@@ -69,6 +80,8 @@ export async function leaveGroupAction(
   _prevState: GroupsActionState,
   formData: FormData,
 ): Promise<GroupsActionState> {
+  if (!isCommunityEnabled()) return COMMUNITY_DISABLED;
+
   const user = await getUser();
   if (!user) return { error: "You must be signed in" };
 

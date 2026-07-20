@@ -27,12 +27,13 @@ const MAX_HEADLINE = 60;
 
 function card(
   headline: string,
+  fallbackHeadline: string,
   stats: ShareCardStat[],
   dateLabel: string,
   equivalence?: string,
 ): ShareCardData {
   return {
-    headline: headline.trim().slice(0, MAX_HEADLINE) || "Training day",
+    headline: headline.trim().slice(0, MAX_HEADLINE) || fallbackHeadline,
     stats: stats.filter((stat) => stat.value !== "").slice(0, MAX_STATS),
     dateLabel,
     ...(equivalence ? { equivalence } : {}),
@@ -62,6 +63,7 @@ export function sessionShareCard(input: {
     input.totalVolumeKg > 0 ? volumeEquivalence(input.totalVolumeKg) : null;
   return card(
     input.title,
+    "Training day",
     [
       input.totalVolumeKg > 0
         ? {
@@ -90,6 +92,7 @@ export function mealShareCard(input: {
 }): ShareCardData {
   return card(
     input.title,
+    "Meal",
     [
       { label: "kcal", value: Math.round(input.kcal).toLocaleString("en-US") },
       input.proteinG && input.proteinG > 0
@@ -109,6 +112,7 @@ export function dayShareCard(input: {
   date?: Date;
 }): ShareCardData {
   return card(
+    "Today's fuel",
     "Today's fuel",
     [
       { label: "kcal", value: Math.round(input.kcal).toLocaleString("en-US") },
@@ -133,6 +137,7 @@ export function progressShareCard(input: {
   weeksBetween: number;
 }): ShareCardData {
   return card(
+    "Progress, not perfection",
     "Progress, not perfection",
     [
       {

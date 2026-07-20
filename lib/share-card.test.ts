@@ -53,6 +53,10 @@ describe("mealShareCard / dayShareCard", () => {
     ]);
   });
 
+  it("blank meal titles fall back to 'Meal', not the session fallback", () => {
+    expect(mealShareCard({ title: "", kcal: 300 }).headline).toBe("Meal");
+  });
+
   it("day card pluralizes meals", () => {
     expect(
       dayShareCard({ kcal: 2100, proteinG: 130, mealsCount: 1 }).stats[2],

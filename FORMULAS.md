@@ -376,6 +376,31 @@ consumed by `app/calendar/page.tsx` + `app/calendar/components/day-meals-line.ts
 - Streaks: already-settled past days are never re-evaluated; only un-settled
   days (e.g. today) can benefit from an imported run.
 
+## 15. Progress charts & photo nudge
+
+**Source of truth:** `lib/progress-charts.ts` (`weeklyVolume`, `weeklyKm`,
+`exerciseTopSets`, `weightSeries`) and `lib/progress-photo-nudge.ts`
+(`isProgressPhotoDue`) — both unit-tested. Rendered on Profile → Progress;
+the nudge renders on the dashboard.
+
+- **Week buckets**: contiguous **Monday-anchored local weeks** (`mondayOf`),
+  default **8 weeks** ending in the current week; zero weeks are kept so bars
+  show gaps honestly. Session/day bucketing uses **local** dates, matching
+  the rest of the date math (§9).
+- **Weekly volume**: per-week sum of §12 session volume (strength logs only),
+  rounded to whole kg. **Weekly running**: per-week sum of logged
+  `distance_km`, rounded to 0.1.
+- **Top-set trends**: per exercise (name case-insensitive), the heaviest
+  set weight per local day; an exercise charts only with **≥ 3 logged
+  sessions**, and the **top 3 exercises by session count** are shown.
+- **Weight series**: measurements ascending, null/zero dropped, rounded to
+  0.1 kg; a line needs **≥ 2 points** to render.
+- **Progress-photo nudge**: shown to **active** users (current streak > 0 OR
+  ≥ 1 log this week) whose newest `progress` photo is **> 28 days** old, or
+  who have none. Quiet by design: a text link, no XP, no badge; it disappears
+  by adding a photo. Photo caps (DB backstop + app): body_photo 5,
+  analysis_report 3, progress 24.
+
 ---
 
 _When behavior here changes, update the referenced source files and re-run
