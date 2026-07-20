@@ -242,5 +242,7 @@ Known intentional behaviors (not bugs): "student" naming in code/DB; weekly
 targets never affecting streaks; plan-item completion gated to its day;
 one active plan per discipline; quotas/volume having no XP effect;
 **community is disabled on purpose** (nav item hidden, /community redirects
-to the dashboard, user discovery API returns 404 — behind a feature flag,
+to the dashboard, user discovery API returns 404, and social mutations —
+clubs, follows, groups — are rejected server-side even if invoked directly;
+coach invite codes and plan assignment still work — behind a feature flag,
 not removed).

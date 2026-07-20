@@ -29,6 +29,12 @@ function shortLabel(date: Date): string {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
+/** Parse a row timestamp in local time. Date-only strings ("2026-07-01")
+ *  would otherwise parse as UTC midnight and can label as the previous day. */
+function localDate(iso: string): Date {
+  return iso.includes("T") ? new Date(iso) : new Date(`${iso}T00:00:00`);
+}
+
 /** Contiguous Monday-anchored week buckets ending at `today` (zeros kept so
  *  bars show gaps honestly). */
 function weekBuckets(today: Date, weeks: number): { start: Date; key: string }[] {
@@ -122,7 +128,9 @@ export function exerciseTopSets(
         display: exercise.name,
         sessions: new Map<string, number>(),
       };
-      const day = log.created_at.slice(0, 10);
+      // Local day, matching the weekly buckets (a UTC slice would shift
+      // evening sessions to the wrong day for users east of UTC).
+      const day = toLocalYMD(new Date(log.created_at));
       entry.sessions.set(day, Math.max(entry.sessions.get(day) ?? 0, top));
       byExercise.set(key, entry);
     }
@@ -154,7 +162,7 @@ export function weightSeries(measurements: MeasurementRow[]): ChartPoint[] {
     )
     .sort((a, b) => a.measured_at.localeCompare(b.measured_at))
     .map((row) => ({
-      label: shortLabel(new Date(row.measured_at)),
+      label: shortLabel(localDate(row.measured_at)),
       value: Math.round(Number(row.weight_kg) * 10) / 10,
     }));
 }
