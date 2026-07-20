@@ -5,6 +5,31 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-07-20 · `fix/review-findings`
+
+**Done**: `4eec4a4` — fixes from a code review of PRs #52/#53:
+
+- Community flag now gates social **server actions** (clubs/follows/groups
+  return "disabled"; coach invite + plan-assign flows stay open) — actions
+  are public endpoints even with UI hidden.
+- `deleteBodyPhotoAction`: DB row deleted before storage object (no more
+  broken-image rows holding a cap slot on partial failure).
+- `lib/progress-charts.ts`: consistent local-time day bucketing
+  (`exerciseTopSets` used a UTC slice; `weightSeries` parsed date-only
+  strings as UTC midnight).
+- Share-card headline fallback is per-builder (empty meal title → "Meal",
+  not "Training day").
+- `ShareCardSheet`: blob-URL revoked on unmount; non-cancel share errors
+  toast + fall back to download; render effect keyed on data content.
+- Dashboard photo-nudge rule → `lib/progress-photo-nudge.ts` (+5 tests);
+  FORMULAS.md §15 added (chart rules + nudge); QA doc + community README
+  updated. tsc/eslint/216 tests green.
+
+**Next steps**: push + PR → develop (gh CLI is UNAUTHENTICATED on this
+machine — `gh auth login` needed, or push/PR manually). Still outstanding
+from #52: verify migration `20260709150000_progress_photos.sql` is applied
+to hosted Supabase. User has follow-up questions/requests pending.
+
 ## 2026-07-10 · `fix/logout-and-community-flag`
 
 **Done**:
