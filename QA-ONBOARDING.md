@@ -45,7 +45,7 @@ inactive; every coach feature checks for an **active** relationship.
 | `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan | [README](app/nutrition/README.md) |
 | `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions | [README](app/coaching/README.md) |
 | `/community` | Social/leaderboard surfaces — **currently disabled** (feature flag; redirects to dashboard, nav item hidden). Coach invite codes are redeemed on `/profile` → "My coach" while off. | [README](app/community/README.md) |
-| `/profile` | Body metrics, goals, measurements, photos, settings (theme, nutrition sharing) | — |
+| `/profile` | Four tabs (`?tab=`): **Overview** (stats, hearts, goals, recent XP), **Progress** (charts, measurements, progress photos), **Body** (body profile, body photos, watch import), **Settings** (theme, nutrition sharing, my coach, logout) | — |
 | `/auth` | Login / signup | [README](app/auth/README.md) |
 
 ## Core journeys to test
@@ -167,7 +167,7 @@ inactive; every coach feature checks for an **active** relationship.
 
 ### 7. Watch-data import (Profile)
 
-1. Profile → **Watch data** → upload .fit/.gpx exports (≤3 files) → parsed
+1. Profile → **Body tab → Watch data** → upload .fit/.gpx exports (≤3 files) → parsed
    runs listed (date · km · min) → "Log N runs" saves them as completed
    workouts with XP (60 × running multiplier each) and they appear on the
    calendar.
@@ -184,13 +184,13 @@ inactive; every coach feature checks for an **active** relationship.
    Verify: the "coachin" watermark is always on the image; **body weight
    never appears on a card**; nothing posts anywhere without the OS share
    sheet or an explicit save.
-2. **Progress photos** (Profile → Progress photos): add photos (they're
+2. **Progress photos** (Profile → Progress tab): add photos (they're
    re-encoded — EXIF/location stripped — and AI-screened; reports are
    rejected here), max 24; Compare → pick two → oldest shows left →
    "Share progress" builds a two-photo card after an explicit consent note.
    Dashboard shows a quiet "add a progress photo" hint for active users
    after 28+ days without one.
-3. **Progress charts** (Profile → Progress): weekly volume bars, weekly km,
+3. **Progress charts** (Profile → Progress tab): weekly volume bars, weekly km,
    body-weight trend (needs ≥2 measurements), and top-set trends for
    exercises logged ≥3 times. Charts hide individually without data; an
    explainer shows when everything is empty. Values must match the raw logs.
