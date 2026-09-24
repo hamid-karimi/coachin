@@ -7,6 +7,10 @@ code to match. Each section lists its **source of truth** file(s) — the code t
 stay in sync. When you change a number here, change it there. When you change it there,
 change it here. They must never disagree.
 
+> **Go rewrite in progress:** the `legacy/…` paths below are today's implementation and the
+> reference for the port. Go paths (`apps/api/internal/domain/…`) are added next to them in
+> Phase 1 and become the only source of truth in Phase 4.
+
 > Values in **bold** are tunable knobs — safe to change. Formulas are the shape of the
 > calculation — changing them is a behavior change, not just a tune.
 
@@ -14,7 +18,7 @@ change it here. They must never disagree.
 
 ## 1. XP & Levels
 
-**Source of truth:** `lib/xp.ts`, and every `award_*` RPC in `supabase/migrations/`.
+**Source of truth:** `legacy/lib/xp.ts`, and every `award_*` RPC in `legacy/supabase/migrations/`.
 
 ### Level from total XP
 
@@ -29,7 +33,7 @@ level = floor(totalXp / 1000) + 1
 
 | Action | XP | Reason key | Idempotent by | Source |
 |---|---|---|---|---|
-| Routine workout log | `round(60 × sport.xp_multiplier)` | `workout_log:<sportId>` | — (one per submit) | `app/dashboard/actions.ts` |
+| Routine workout log | `round(60 × sport.xp_multiplier)` | `workout_log:<sportId>` | — (one per submit) | `legacy/app/dashboard/actions.ts` |
 | Plan item — run | **60** | `plan_item:<id>` | per item (undo compensates) | `complete_plan_item` |
 | Plan item — strength | **60** | `plan_item:<id>` | per item | `complete_plan_item` |
 | Plan item — stretch | **30** | `plan_item:<id>` | per item | `complete_plan_item` |
@@ -56,9 +60,9 @@ level = floor(totalXp / 1000) + 1
 ## 2. Streaks
 
 ### Personal streak + hearts
-**Source of truth:** `lib/streak.ts` (`nextStreakState`, unit-tested in `lib/streak.test.ts`),
+**Source of truth:** `legacy/lib/streak.ts` (`nextStreakState`, unit-tested in `legacy/lib/streak.test.ts`),
 mirrored by `evaluate_user_streak` (latest:
-`supabase/migrations/20260706150000_streak_multi_plan.sql`, superseding the original in
+`legacy/supabase/migrations/20260706150000_streak_multi_plan.sql`, superseding the original in
 `20260706110000_streak_and_league.sql`).
 
 Stored on `profiles.current_streak` / `best_streak` / `hearts` (0–**3**), settled lazily up
@@ -93,7 +97,7 @@ Per settled day, given whether the user **trained** and whether it was a **requi
 - It takes **3 misses to empty hearts, a 4th to reset** the streak.
 
 ### Group streak
-**Source of truth:** `evaluate_group_streak` in `supabase/migrations/20260705140000_training_groups.sql`.
+**Source of truth:** `evaluate_group_streak` in `legacy/supabase/migrations/20260705140000_training_groups.sql`.
 
 - A day counts as a **full day** only when **every** member logged a completed workout.
 - Full day → `streak_count += 1`, `best_streak = max(best_streak, streak_count)`, and each
@@ -110,8 +114,8 @@ Per settled day, given whether the user **trained** and whether it was a **requi
 
 ## 3. Leagues / Tiers
 
-**Source of truth:** `lib/tiers.ts` (`leagueTierFromXp` + `LEAGUE_TIER_MIN_XP`, unit-tested),
-mirrored by `league_tier_for_xp` in `supabase/migrations/20260706110000_streak_and_league.sql`.
+**Source of truth:** `legacy/lib/tiers.ts` (`leagueTierFromXp` + `LEAGUE_TIER_MIN_XP`, unit-tested),
+mirrored by `league_tier_for_xp` in `legacy/supabase/migrations/20260706110000_streak_and_league.sql`.
 
 - Tiers, low→high: `bronze → silver → gold → platinum`.
 - **Tier from lifetime XP (cumulative thresholds — only ever goes up):**
@@ -132,7 +136,7 @@ mirrored by `league_tier_for_xp` in `supabase/migrations/20260706110000_streak_a
 
 ## 4. Running math
 
-**Source of truth:** `lib/running.ts`.
+**Source of truth:** `legacy/lib/running.ts`.
 
 ### Riegel race-time prediction
 ```
@@ -161,7 +165,7 @@ t2 = t1 × (d2 / d1) ^ 1.06
 
 ## 5. Race-plan intake gates
 
-**Source of truth:** `generatePlanAction` in `app/training/actions.ts`.
+**Source of truth:** `generatePlanAction` in `legacy/app/training/actions.ts`.
 
 - Race distance must be **1–500 km**.
 - Race date must be **≥ 4 weeks** away (`weeksUntil = floor(days / 7)`), else rejected.
@@ -174,7 +178,7 @@ t2 = t1 × (d2 / d1) ^ 1.06
 
 ## 6. Goal progress
 
-**Source of truth:** `lib/goals.ts` (`goalProgress`).
+**Source of truth:** `legacy/lib/goals.ts` (`goalProgress`).
 
 - **Direction:** `down` when a usable `start` exists and `target < start` (e.g. weight
   loss); otherwise `up`.
@@ -196,7 +200,7 @@ t2 = t1 × (d2 / d1) ^ 1.06
 
 ## 7. Weekly scorecard & check-in decision
 
-**Source of truth:** `lib/scorecard.ts`.
+**Source of truth:** `legacy/lib/scorecard.ts`.
 
 ### Scorecard
 - **Trainable items** = all items except `meal_note`.
@@ -224,7 +228,7 @@ t2 = t1 × (d2 / d1) ^ 1.06
 
 ## 8. Nutrition
 
-**Source of truth:** `supabase/migrations/20260705120000_nutrition.sql`.
+**Source of truth:** `legacy/supabase/migrations/20260705120000_nutrition.sql`.
 
 - **Meal log XP = 5**, capped at **3 awarded meals/day** (§1).
 - **Calorie-goal bonus = 30 XP/day**, awarded when a *past* day's intake is **within ±10%**
@@ -235,7 +239,7 @@ t2 = t1 × (d2 / d1) ^ 1.06
 
 ## 9. Plan weeks & calendar dates
 
-**Source of truth:** `lib/dates.ts` (unit-tested in `lib/dates.test.ts`).
+**Source of truth:** `legacy/lib/dates.ts` (unit-tested in `legacy/lib/dates.test.ts`).
 
 - **Week 1** = the Monday-anchored week containing the plan's `created_at`. Weeks are
   Monday-first; `day_of_week` still carries the real id (`0=Sun … 6=Sat`).
@@ -254,8 +258,8 @@ t2 = t1 × (d2 / d1) ^ 1.06
 
 ## 10. Nutrition targets (meal plan)
 
-**Source of truth:** `lib/nutrition-targets.ts` (unit-tested in
-`lib/nutrition-targets.test.ts`). The AI meal-plan generator consumes these
+**Source of truth:** `legacy/lib/nutrition-targets.ts` (unit-tested in
+`legacy/lib/nutrition-targets.test.ts`). The AI meal-plan generator consumes these
 targets; it never computes them itself.
 
 - **BMR (Mifflin–St Jeor):** `10·kg + 6.25·cm − 5·age + s`, where `s = +5`
@@ -276,15 +280,15 @@ targets; it never computes them itself.
 
 ## 11. Weekly quotas
 
-**Source of truth:** `lib/weekly-quotas.ts` (`quotaProgress`, unit-tested in
-`lib/weekly-quotas.test.ts`). Stored in `weekly_quotas` (one row per user × sport,
+**Source of truth:** `legacy/lib/weekly-quotas.ts` (`quotaProgress`, unit-tested in
+`legacy/lib/weekly-quotas.test.ts`). Stored in `weekly_quotas` (one row per user × sport,
 `sessions_per_week` 1–14).
 
 - A quota is an **informational weekly target**: sport × N sessions per week, no fixed day.
 - Fulfilled automatically by **completed** logs: `done` = count of **distinct dates** with a
   completed log of that sport within the **Mon–Sun local week** (two logs of the same sport
   on one day count as **1** — mirrors the streak's day-based counting).
-- The week window (Monday-first, `mondayOf` / `toLocalYMD` in `lib/dates.ts`) is applied by
+- The week window (Monday-first, `mondayOf` / `toLocalYMD` in `legacy/lib/dates.ts`) is applied by
   the **caller** — `quotaProgress` only counts the logs it is given, so it works for past
   weeks too. `done` is raw and may exceed the target; capping the display is a UI concern.
 - **v1 has NO gameplay effect:** quotas create no required days and never touch streaks,
@@ -292,9 +296,9 @@ targets; it never computes them itself.
 
 ## 12. Strength session volume (celebration stat)
 
-**Source of truth:** `lib/workout-sets.ts` (`totalVolumeKg`, `volumeEquivalence`,
+**Source of truth:** `legacy/lib/workout-sets.ts` (`totalVolumeKg`, `volumeEquivalence`,
 `parsePrescription`, `normalizeLoggedExercises` — unit-tested in
-`lib/workout-sets.test.ts`). Logged per set in `session_logs.actual.exercises`
+`legacy/lib/workout-sets.test.ts`). Logged per set in `session_logs.actual.exercises`
 as `[{name, sets: [{weight_kg, reps}]}]` (legacy flat rows
 `{name, sets, reps, weight_kg}` are normalized to N identical set entries).
 
@@ -316,9 +320,9 @@ as `[{name, sets: [{weight_kg, reps}]}]` (legacy flat rows
 (`20260708090000_supplements.sql`, schedules in
 `20260709120000_supplement_schedules.sql`, coach read in
 `20260709130000_supplements_coach_read.sql`), dashboard card
-`app/dashboard/components/supplements-card.tsx`, actions in
-`app/dashboard/supplements-actions.ts`, due-day + rate helpers
-`lib/supplement-schedule.ts` and `lib/supplement-adherence.ts`.
+`legacy/app/dashboard/components/supplements-card.tsx`, actions in
+`legacy/app/dashboard/supplements-actions.ts`, due-day + rate helpers
+`legacy/lib/supplement-schedule.ts` and `legacy/lib/supplement-adherence.ts`.
 
 - A supplement is a user-defined habit (name + optional dose text).
   Taking one inserts a `supplement_logs` row for the local date; the
@@ -342,8 +346,8 @@ as `[{name, sets: [{weight_kg, reps}]}]` (legacy flat rows
 
 ### Meal adherence (calendar, informational)
 
-**Source of truth:** `lib/meal-adherence.ts` (`mealAdherenceForDay`, unit-tested),
-consumed by `app/calendar/page.tsx` + `app/calendar/components/day-meals-line.tsx`.
+**Source of truth:** `legacy/lib/meal-adherence.ts` (`mealAdherenceForDay`, unit-tested),
+consumed by `legacy/app/calendar/page.tsx` + `legacy/app/calendar/components/day-meals-line.tsx`.
 
 - For a date with an active meal plan, adherence compares the plan's meals for
   that weekday against the day's `meal_logs`: **slots** = distinct planned
@@ -359,9 +363,9 @@ consumed by `app/calendar/page.tsx` + `app/calendar/components/day-meals-line.ts
 
 ## 14. Watch-file activity import
 
-**Source of truth:** `lib/activity-import.ts` (`sanitizeActivities`,
+**Source of truth:** `legacy/lib/activity-import.ts` (`sanitizeActivities`,
 `splitImportableActivities`, unit-tested), `importActivitiesAction`
-(`app/profile/actions.ts`), parser `lib/activity-parse.ts`.
+(`legacy/app/profile/actions.ts`), parser `legacy/lib/activity-parse.ts`.
 
 - Uploaded .fit/.gpx files are parsed to run summaries (≤3 files/upload,
   ≤20 activities) and logged as **completed runs** (`logs` rows) from the
@@ -378,8 +382,8 @@ consumed by `app/calendar/page.tsx` + `app/calendar/components/day-meals-line.ts
 
 ## 15. Progress charts & photo nudge
 
-**Source of truth:** `lib/progress-charts.ts` (`weeklyVolume`, `weeklyKm`,
-`exerciseTopSets`, `weightSeries`) and `lib/progress-photo-nudge.ts`
+**Source of truth:** `legacy/lib/progress-charts.ts` (`weeklyVolume`, `weeklyKm`,
+`exerciseTopSets`, `weightSeries`) and `legacy/lib/progress-photo-nudge.ts`
 (`isProgressPhotoDue`) — both unit-tested. Rendered on Profile → Progress;
 the nudge renders on the dashboard.
 

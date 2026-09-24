@@ -37,16 +37,16 @@ inactive; every coach feature checks for an **active** relationship.
 
 | Route | What it does | Docs |
 | --- | --- | --- |
-| `/onboarding` | "My week" editor: fixed weekly sessions (anchors) + weekly targets (quotas). Also the first-run flow. | [README](app/onboarding/README.md) |
-| `/dashboard` | "Today": today's routine + plan items, logging, streaks, hearts, XP | [README](app/dashboard/README.md) |
-| `/calendar` | Week view blending routine + all active plan items + logged state | [README](app/calendar/README.md) |
-| `/training` | Program manager: create (AI wizards), archive, weekly check-ins | [README](app/training/README.md) |
-| `/training/new` | Plan wizards (running / muscle building); coach mode via `?student=<id>` | [README](app/training/README.md) |
-| `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan | [README](app/nutrition/README.md) |
-| `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions | [README](app/coaching/README.md) |
-| `/community` | Social/leaderboard surfaces — **currently disabled** (feature flag; redirects to dashboard, nav item hidden). Coach invite codes are redeemed on `/profile` → "My coach" while off. | [README](app/community/README.md) |
+| `/onboarding` | "My week" editor: fixed weekly sessions (anchors) + weekly targets (quotas). Also the first-run flow. | [README](legacy/app/onboarding/README.md) |
+| `/dashboard` | "Today": today's routine + plan items, logging, streaks, hearts, XP | [README](legacy/app/dashboard/README.md) |
+| `/calendar` | Week view blending routine + all active plan items + logged state | [README](legacy/app/calendar/README.md) |
+| `/training` | Program manager: create (AI wizards), archive, weekly check-ins | [README](legacy/app/training/README.md) |
+| `/training/new` | Plan wizards (running / muscle building); coach mode via `?student=<id>` | [README](legacy/app/training/README.md) |
+| `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan | [README](legacy/app/nutrition/README.md) |
+| `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions | [README](legacy/app/coaching/README.md) |
+| `/community` | Social/leaderboard surfaces — **currently disabled** (feature flag; redirects to dashboard, nav item hidden). Coach invite codes are redeemed on `/profile` → "My coach" while off. | [README](legacy/app/community/README.md) |
 | `/profile` | Four tabs (`?tab=`): **Overview** (stats, hearts, goals, recent XP), **Progress** (charts, measurements, progress photos), **Body** (body profile, body photos, watch import), **Settings** (theme, nutrition sharing, my coach, logout) | — |
-| `/auth` | Login / signup | [README](app/auth/README.md) |
+| `/auth` | Login / signup | [README](legacy/app/auth/README.md) |
 
 ## Core journeys to test
 
@@ -220,7 +220,7 @@ pnpm storybook      # component workbench on :6006
 - Env: `.env.local` needs the Supabase URL/key plus AI keys (Gemini /
   Anthropic; USDA key for food search). Ask a developer for a filled file —
   there is no `.env.example` yet.
-- Database: Supabase migrations live in `supabase/migrations/` and are
+- Database: Supabase migrations live in `legacy/supabase/migrations/` and are
   applied with the Supabase CLI. There is **no seed script**; create test
   accounts by signing up. For a coach account, have a developer set
   `profiles.role = 'coach'` (or `'both'`) on your user, then exercise the

@@ -1,0 +1,75 @@
+package main
+
+import (
+	"context"
+	"errors"
+	"log/slog"
+	"net/http"
+	"os"
+	"time"
+
+	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/objectstore"
+	"github.com/hamid-karimi/coachin/apps/api/internal/config"
+	"github.com/hamid-karimi/coachin/apps/api/internal/store"
+	"github.com/hamid-karimi/coachin/apps/api/internal/transport/httpapi"
+)
+
+const shutdownGrace = 15 * time.Second
+
+// serve builds its own logger: the level comes from config, which the
+// default logger passed in by main doesn't know yet.
+func serve(ctx context.Context, _ []string, _ *slog.Logger) error {
+	cfg, err := config.LoadServer(os.Getenv)
+	if err != nil {
+		return err
+	}
+	logger := slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{Level: cfg.LogLevel}))
+
+	pool, err := store.Open(ctx, cfg.DatabaseURL)
+	if err != nil {
+		return err
+	}
+	defer pool.Close()
+
+	objects := objectstore.New(cfg.S3)
+
+	handler, _ := httpapi.New(httpapi.Deps{
+		Logger: logger,
+		Checks: httpapi.ReadinessChecks{
+			"database": pool.Ping,
+			"storage":  objects.Ping,
+		},
+	})
+
+	server := &http.Server{
+		Addr:              cfg.HTTPAddr,
+		Handler:           handler,
+		ReadHeaderTimeout: 10 * time.Second,
+		// Long enough for AI generation calls (time-boxed at 60 s upstream).
+		WriteTimeout: 90 * time.Second,
+		IdleTimeout:  2 * time.Minute,
+	}
+
+	errs := make(chan error, 1)
+	go func() {
+		logger.Info("api listening", "addr", cfg.HTTPAddr)
+		errs <- server.ListenAndServe()
+	}()
+
+	select {
+	case err := <-errs:
+		return err
+	case <-ctx.Done():
+	}
+
+	logger.Info("shutting down")
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownGrace)
+	defer cancel()
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		return err
+	}
+	if err := <-errs; !errors.Is(err, http.ErrServerClosed) {
+		return err
+	}
+	return nil
+}

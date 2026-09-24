@@ -1,0 +1,8 @@
+node_modules/
+.next/
+out/
+coverage/
+storybook-static/
+*.tsbuildinfo
+next-env.d.ts
+*storybook.log

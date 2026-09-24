@@ -1,100 +1,61 @@
 # CoachIn
 
-CoachIn is a Next.js fitness app for weekly planning, workout logging, social leaderboards, and coach-student collaboration.
+Training + gamification app: plan your week, log workouts and meals, earn XP, streaks, and
+league tiers; coaches follow their trainees.
 
-## Tech Stack
+This branch (`feat/backend-rewrite-with-go`) rebuilds it as a **Go API + frontend-only
+Next.js**, fully self-hosted with Docker. The current production app (Next.js + Supabase on
+Vercel) lives on `main` / `develop`, with a read-only copy in [`legacy/`](legacy/) as the
+reference for the port.
 
-- Next.js 16 (App Router)
-- TypeScript
-- Tailwind CSS v4
-- Supabase (Auth, Postgres, RLS)
-- Sonner (toast notifications)
-- Storybook 10 (`@storybook/nextjs-vite`)
+- Plan, spec, architecture: [`plans/go-backend-rewrite/`](plans/go-backend-rewrite/)
+- Formulas (XP, streaks, tiers…): [`FORMULAS.md`](FORMULAS.md)
+- How to test it: [`QA-ONBOARDING.md`](QA-ONBOARDING.md)
+- Where the work stands: [`WORKLOG.md`](WORKLOG.md)
 
-## Core Features
+## Stack
 
-- Authentication (`/auth/login`, `/auth/register`)
-- Weekly schedule onboarding (`/onboarding`)
-- Daily dashboard with workout logging and XP progression (`/dashboard`)
-- Community module (`/community`):
-  - Leaderboards: `Global League`, `My Club`, `My Circle`
-  - Coach-student management via invite codes
-  - Club memberships (create/join/leave/set primary)
-  - Following and user discovery
+| Service | What | Local URL |
+| --- | --- | --- |
+| `caddy` | Single entry point: `/api/*` → API, everything else → web. Automatic HTTPS on the VPS | http://localhost:8080 |
+| `web` | Next.js 16 (App Router), TanStack Query, nuqs, Tailwind 4 | via Caddy |
+| `api` | Go 1.27 (chi + huma, OpenAPI 3.1), pgx, goose | http://localhost:8080/api/v1/docs |
+| `postgres` | PostgreSQL 18 | `localhost:5432` (dev only) |
+| `garage` | S3-compatible object storage (private; the API serves files) | internal |
+| `mailpit` | Catches every email the app sends (dev only) | http://localhost:8025 |
 
-## Recent Updates (February 2026)
+## Run it on your Mac
 
-### 1) Add-Coach reliability fix
-
-A root-cause fix was applied for the case where students saw success but no coach was actually added.
-
-- Added deterministic join statuses in DB RPC:
-  - `created`
-  - `already_connected`
-  - `reactivated`
-- App actions now map statuses correctly:
-  - New connection => success toast
-  - Existing connection => info toast (no false positive)
-
-Migration:
-- `supabase/migrations/20260215143000_fix_join_coach_statuses.sql`
-
-### 2) English-only user messaging
-
-User-visible messages were standardized to English across:
-
-- UI labels and placeholders
-- Server action messages
-- API error payloads
-- RPC fallback errors
-
-Migration:
-- `supabase/migrations/20260215144500_translate_rpc_error_messages.sql`
-
-### 3) Unified toast system (shadcn-compatible Sonner)
-
-- Global toaster mounted in `app/layout.tsx`
-- Shared hook for action results: `components/hooks/use-action-toast.ts`
-- Success/error/info feedback migrated from inline transient messages to toast in auth, onboarding, dashboard, and community flows
-
-### 4) Storybook baseline and component stories
-
-Storybook setup:
-- `.storybook/main.ts`
-- `.storybook/preview.js`
-- `npm run storybook`
-- `npm run build-storybook`
-
-Initial stories are available for key UI modules, including interactive component previews.
-
-## Project Structure
-
-- `app/auth`: authentication pages + server actions
-- `app/onboarding`: weekly schedule setup flow
-- `app/dashboard`: daily missions + workout logging
-- `app/community`: social + coaching module
-- `components/ui`: shared UI primitives
-- `components/hooks`: shared client hooks
-- `lib/supabase`: server/client Supabase helpers
-- `supabase/migrations`: schema + RLS + RPC migrations
-
-## Setup
+Prerequisite: [OrbStack](https://orbstack.dev) (lighter on Apple Silicon) or Docker Desktop.
 
 ```bash
-npm install
-npm run dev
+make up        # first run copies .env.example → .env, builds, starts, hot-reloads
 ```
 
-## Quality Checks
+Open http://localhost:8080. The status page shows the API, database, and storage as
+healthy. Edit files under `apps/web` or `apps/api` and the stack reloads on its own.
 
-```bash
-npm run lint
-npm run build
+`make help` lists everything else (`down`, `logs`, `migrate`, `reset-db`, `gen`, `test`,
+`lint`, `infra`).
+
+For `make gen`, `make test`, and `make lint` you also need these on the Mac itself:
+Go 1.27, Node 24 with `corepack enable` (pnpm 12), and
+[golangci-lint](https://golangci-lint.run) v2.
+
+## Repository layout
+
+```
+apps/api/        Go API — cmd/api (serve, migrate, storage-init, openapi, healthcheck)
+apps/web/        Next.js frontend — typed client generated from openapi/openapi.json
+openapi/         The API contract, generated from Go (`make gen`); CI checks it is current
+deploy/          Caddyfile, Garage config, Postgres init script
+compose.yaml     The whole stack (also what runs on the VPS)
+compose.dev.yaml Local-only additions: hot reload, Mailpit, Postgres port
+legacy/          Old Next.js + Supabase app — reference only, deleted at cutover
+plans/           Rewrite spec, architecture, and phased plan
 ```
 
-## Storybook
+## Branches
 
-```bash
-npm run storybook
-npm run build-storybook
-```
+All rewrite work merges into `feat/backend-rewrite-with-go` through pull requests.
+`main` and `develop` keep the current app and never receive rewrite changes.

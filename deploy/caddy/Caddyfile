@@ -1,0 +1,18 @@
+{
+	# Nothing reconfigures Caddy at runtime; keep its admin endpoint closed.
+	admin off
+}
+
+# Locally SITE_ADDRESS is ":80" (plain http, published on :8080).
+# On the VPS set it to your domain and Caddy obtains HTTPS certificates itself.
+{$SITE_ADDRESS::80} {
+	encode zstd gzip
+
+	handle /api/* {
+		reverse_proxy api:8080
+	}
+
+	handle {
+		reverse_proxy web:3000
+	}
+}

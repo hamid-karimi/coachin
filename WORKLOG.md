@@ -5,6 +5,37 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-24 · `claude/lucid-tesla-3737vk` → PR into `feat/backend-rewrite-with-go` — Phase 0 done
+
+**Done** (plan Phase 0, all boxes ticked in `plan.md`):
+- Old app `git mv`'d to `legacy/` (read-only reference); FORMULAS/QA paths → `legacy/…`.
+- `apps/api` (Go 1.27.1): chi + huma (OpenAPI 3.1), env config, `/api/v1/healthz`,
+  `/readyz` (DB + Garage), subcommands `serve|migrate|storage-init|openapi|healthcheck`,
+  migration `00001_app_schema.sql` (`app.current_user_id()`, grants to `coachin_app`),
+  Garage bootstrap via admin API v2 (idempotent). Tests: unit + testcontainers migration test.
+- `apps/web`: fresh Next 16.3.6 / React 19.3 / TS 6.0.3 / Tailwind 4.3.3 / TanStack Query /
+  nuqs / Storybook 10.6 / vitest 5 / ESLint 10; design system copied (nav trio waits for
+  Phase 2.6); status page renders `/readyz` server-side via the generated client.
+- `compose.yaml` (+ `compose.dev.yaml`), `deploy/` (Caddy, Garage, Postgres init),
+  `.env.example`, `Makefile`, CI `.github/workflows/rewrite-ci.yml`, README, CLAUDE.md.
+
+**Verified in the cloud sandbox**: go vet / golangci-lint / `go test -race` (incl. real
+Postgres 18.6), web typecheck / lint / test / build / Storybook build; full compose stack
+healthy through Caddy (API ↔ Postgres as `coachin_app`, ↔ Garage), storage degrade→recover,
+idempotent re-`up`, dev mode `next dev` + file-sync hot reload (~4 s).
+**Not verified here**: the Dockerfiles' own build stages (sandbox containers have no
+internet) — CI's stack job builds them for real; first CI run is the check.
+
+**Decisions**: migrations live in `apps/api/db/migrations` (embedded); package
+`internal/transport/httpapi`; `compose.dev.yaml` instead of an auto-loaded override (the
+VPS runs `compose.yaml` alone); no root pnpm workspace; `eslint-plugin-react` needs
+`settings.react.version` under ESLint 10; pnpm 12 needs `allowBuilds` for esbuild +
+unrs-resolver; Garage binds IPv4 (`0.0.0.0`).
+
+**Next steps**: watch CI on the PR → merge into `feat/backend-rewrite-with-go` → Phase 1
+(clean baseline schema `00002_baseline.sql`, seed + `make seed`, RLS smoke test, golden
+vectors, domain port).
+
 ## 2026-09-24 (latest) · branch setup — `feat/backend-rewrite-with-go`
 
 **Done**: created **`feat/backend-rewrite-with-go`** from `develop` (`ddf833a`) as the

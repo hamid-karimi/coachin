@@ -1,0 +1,132 @@
+# The whole CoachIn stack. Production runs this file alone; local development
+# layers compose.dev.yaml on top (see Makefile). Only Caddy publishes ports.
+name: coachin
+
+x-api-image: &api-image
+  image: coachin/api:local
+  build: ./apps/api
+
+x-storage-env: &storage-env
+  TZ: UTC
+  S3_ENDPOINT: http://garage:3900
+  S3_REGION: garage
+  S3_BUCKET: ${S3_BUCKET:-coachin-photos}
+  S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:?set S3_ACCESS_KEY_ID in .env}
+  S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:?set S3_SECRET_ACCESS_KEY in .env}
+
+services:
+  postgres:
+    image: postgres:18.6-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: coachin
+      POSTGRES_USER: coachin_owner
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?set APP_DB_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ./deploy/postgres/initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U coachin_owner -d coachin"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  garage:
+    image: dxflrs/garage:v2.4.1
+    restart: unless-stopped
+    environment:
+      GARAGE_RPC_SECRET: ${GARAGE_RPC_SECRET:?set GARAGE_RPC_SECRET in .env}
+      GARAGE_ADMIN_TOKEN: ${GARAGE_ADMIN_TOKEN:?set GARAGE_ADMIN_TOKEN in .env}
+    volumes:
+      - ./deploy/garage/garage.toml:/etc/garage.toml:ro
+      - garage-meta:/var/lib/garage/meta
+      - garage-data:/var/lib/garage/data
+
+  # One-shot: assigns the Garage layout, creates the bucket, imports the API's
+  # key. Idempotent — safe on every `up`.
+  storage-init:
+    <<: *api-image
+    command: ["storage-init"]
+    restart: "no"
+    environment:
+      <<: *storage-env
+      GARAGE_ADMIN_URL: http://garage:3903
+      GARAGE_ADMIN_TOKEN: ${GARAGE_ADMIN_TOKEN}
+    depends_on:
+      - garage
+
+  # One-shot: applies pending migrations as the owner role.
+  migrate:
+    <<: *api-image
+    command: ["migrate", "up"]
+    restart: "no"
+    environment:
+      MIGRATE_DATABASE_URL: postgres://coachin_owner:${POSTGRES_PASSWORD}@postgres:5432/coachin?sslmode=disable
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    <<: *api-image
+    restart: unless-stopped
+    environment:
+      <<: *storage-env
+      DATABASE_URL: postgres://coachin_app:${APP_DB_PASSWORD}@postgres:5432/coachin?sslmode=disable
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      storage-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "/api", "healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  web:
+    image: coachin/web:local
+    build: ./apps/web
+    restart: unless-stopped
+    environment:
+      API_INTERNAL_URL: http://api:8080
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      # A static route: proves Next.js is serving without touching the API.
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/manifest.webmanifest"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+      start_interval: 1s
+
+  caddy:
+    image: caddy:2.11.4-alpine
+    restart: unless-stopped
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-:80}
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+      - "${HTTPS_PORT:-8443}:443"
+    volumes:
+      - ./deploy/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    # Accept traffic only once both upstreams answer, so a fresh `up` never
+    # serves 502s while Next.js is still starting.
+    depends_on:
+      web:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  garage-meta:
+  garage-data:
+  caddy-data:
+  caddy-config:

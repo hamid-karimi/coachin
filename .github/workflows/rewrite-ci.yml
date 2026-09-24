@@ -1,0 +1,95 @@
+name: rewrite-ci
+
+# The Go rewrite lives on its own long-lived branch; main/develop keep the
+# legacy app and are not built here.
+on:
+  pull_request:
+    branches: [feat/backend-rewrite-with-go]
+  push:
+    branches: [feat/backend-rewrite-with-go]
+
+concurrency:
+  group: rewrite-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  api:
+    name: API (Go)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: apps/api/go.mod
+          cache-dependency-path: apps/api/go.sum
+      - name: Lint
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.14.0
+          working-directory: apps/api
+      - name: Vet
+        run: go vet ./...
+      - name: Test (integration tests use Docker via testcontainers)
+        run: go test -race ./...
+      - name: OpenAPI document is up to date
+        run: |
+          go run ./cmd/api openapi > ../../openapi/openapi.json
+          git diff --exit-code -- ../../openapi/openapi.json
+
+  web:
+    name: Web (Next.js)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    env:
+      COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: corepack enable
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Typed API client is up to date
+        run: |
+          pnpm gen:api
+          git diff --exit-code -- lib/api/schema.d.ts
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm build
+      - run: pnpm build-storybook --quiet
+
+  stack:
+    name: Docker stack smoke test
+    runs-on: ubuntu-latest
+    needs: [api, web]
+    steps:
+      - uses: actions/checkout@v7
+      - run: cp .env.example .env
+      - name: Build and start (production compose file)
+        run: docker compose up -d --build
+      - name: Web renders the status page through Caddy
+        run: |
+          for i in $(seq 1 60); do
+            curl -fsS http://localhost:8080/ | grep -q "All systems go" && exit 0
+            sleep 2
+          done
+          exit 1
+      - name: API ready through Caddy
+        run: curl -fsS http://localhost:8080/api/v1/readyz
+      - name: Logs on failure
+        if: failure()
+        run: docker compose logs --no-color
+      - name: Tear down
+        if: always()
+        run: docker compose down -v

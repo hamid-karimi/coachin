@@ -1,0 +1,40 @@
+# Local development on top of compose.yaml: hot reload, Mailpit, and a
+# Postgres port for DB GUIs. Bound to 127.0.0.1 so nothing leaks onto the LAN.
+services:
+  postgres:
+    ports:
+      - "127.0.0.1:5432:5432"
+
+  # Catches every email the API sends; read them at http://localhost:8025.
+  mailpit:
+    image: axllent/mailpit:v1.31.2
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8025:8025"
+
+  api:
+    environment:
+      LOG_LEVEL: debug
+    develop:
+      watch:
+        # Go compiles in seconds with the build cache; rebuild on any change.
+        - action: rebuild
+          path: ./apps/api
+
+  web:
+    image: coachin/web:dev
+    build:
+      context: ./apps/web
+      target: dev
+    develop:
+      watch:
+        - action: sync
+          path: ./apps/web
+          target: /app
+          ignore:
+            - node_modules/
+            - .next/
+        - action: rebuild
+          path: ./apps/web/package.json
+        - action: rebuild
+          path: ./apps/web/pnpm-lock.yaml
