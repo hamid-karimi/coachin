@@ -1,15 +1,9 @@
-import { connection } from "next/server";
-import { getSystemStatus } from "@/app/lib/system-status-data";
-import { SystemStatusCard } from "@/app/components/system-status-card";
+import { redirect } from "next/navigation";
+import { getMe } from "@/app/lib/me-data";
+import { homeFor } from "@/lib/roles";
 
-export default async function Home() {
-  // Render per request: the status must reflect the live stack, not the
-  // moment the image was built.
-  await connection();
-  const status = await getSystemStatus();
-  return (
-    <main className='flex min-h-dvh items-center justify-center p-6'>
-      <SystemStatusCard status={status} />
-    </main>
-  );
+/** Entry point: sends the viewer to their home, or to sign in. */
+export default async function RootPage() {
+  const me = await getMe();
+  redirect(me ? homeFor(me.role) : "/auth/login");
 }

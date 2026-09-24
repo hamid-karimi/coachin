@@ -32,7 +32,7 @@ Prerequisite: [OrbStack](https://orbstack.dev) (lighter on Apple Silicon) or Doc
 make up        # first run copies .env.example → .env, builds, starts, hot-reloads
 ```
 
-Open http://localhost:8080. The status page shows the API, database, and storage as
+Open http://localhost:8080 to sign in; http://localhost:8080/status shows the API, database, and storage as
 healthy. Edit files under `apps/web` or `apps/api` and the stack reloads on its own.
 
 `make seed` adds demo accounts: `trainee@coachin.local` and `coach@coachin.local`, both
