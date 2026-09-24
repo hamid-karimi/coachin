@@ -5,6 +5,32 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-24 (late night) · #65 merged (Phase 2 done) · Phase 3.1 — My week
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR into `feat/backend-rewrite-with-go`):
+- API: `app/routine` (sport types, week view, add/remove fixed sessions, save/remove weekly
+  targets) on `store.RoutineStore` (sqlc `db/queries/routine.sql`, every query also filters
+  by user; `WithUser` for RLS). Endpoints `GET /sport-types`, `GET /routine`,
+  `POST /routine/schedules`, `DELETE /routine/schedules/{id}`,
+  `PUT|DELETE /routine/quotas/{sportTypeId}`. Legacy validation messages kept.
+- Shared pieces for every later module: `app/apperr` (use-case errors → problem+json via
+  `httpapi/problem.go`), `domain/planitem.ParseDetails` (lenient AI details),
+  `xp.Multiplier` / `xp.EstimatedWeeklyXP`, OpenAPI arrays are non-nullable
+  (`huma.DefaultArrayNullable = false` — handlers must return non-nil slices).
+- Web: `/onboarding` ported (server prefetch → `HydrationBoundary`, suspense queries,
+  `useMutationFeedback` toasts + refetch, `prefetchQueries` helper, `serverQueries()`),
+  lib `sports` / `week-days` / `plan-items` ported with tests; Today placeholder links to it.
+- Verified: go vet/lint/race tests (incl. Postgres integration: RLS isolation, upsert,
+  plan week), web typecheck/lint/97 tests/build; Playwright on the compose stack (add
+  session with validation, weekly target, removes, AI plan sheet, finish).
+
+**Decisions**: quotas are addressed by sport (`/routine/quotas/{sportTypeId}`), one per
+user × sport; deletes are idempotent; unported: unused legacy `DaySportPicker`.
+
+**Next steps**: merge 3.1 → 3.2 Today (`GET /today`, streak settle, workout log,
+supplements, optimistic toggles). Remember: mutations there must also invalidate
+`["get","/routine"]` (quota progress) once logs change.
+
 ## 2026-09-24 (late night) · Phase 2 PR 2B — web auth
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR into `feat/backend-rewrite-with-go`):

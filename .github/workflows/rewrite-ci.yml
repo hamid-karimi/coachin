@@ -114,6 +114,12 @@ jobs:
           # Signed in: / lands on the trainee home, which renders the shell.
           test "$(curl -sS -b jar -o /dev/null -w '%{redirect_url}' http://localhost:8080/)" = "http://localhost:8080/dashboard"
           curl -fsS -b jar http://localhost:8080/dashboard | grep -q "Signed in as CI"
+      - name: My week through Caddy
+        run: |
+          curl -fsS -b jar -H 'Content-Type: application/json' -X POST \
+            http://localhost:8080/api/v1/routine/schedules -d '{"sportTypeId":1,"days":[1]}' | grep -q "1 session added"
+          curl -fsS -b jar http://localhost:8080/api/v1/routine | grep -q '"dayOfWeek":1'
+          curl -fsS -b jar http://localhost:8080/onboarding | grep -q "My week"
       - name: Logs on failure
         if: failure()
         run: docker compose logs --no-color

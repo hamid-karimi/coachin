@@ -126,12 +126,12 @@ type CoachInviteCode struct {
 }
 
 type CoachingRelationship struct {
-	ID          uuid.UUID   `json:"id"`
-	CoachID     uuid.UUID   `json:"coach_id"`
-	StudentID   uuid.UUID   `json:"student_id"`
-	SportTypeID pgtype.Int8 `json:"sport_type_id"`
-	Status      *string     `json:"status"`
-	CreatedAt   *time.Time  `json:"created_at"`
+	ID          uuid.UUID  `json:"id"`
+	CoachID     uuid.UUID  `json:"coach_id"`
+	StudentID   uuid.UUID  `json:"student_id"`
+	SportTypeID *int64     `json:"sport_type_id"`
+	Status      *string    `json:"status"`
+	CreatedAt   *time.Time `json:"created_at"`
 }
 
 type DailyPlan struct {
@@ -188,7 +188,7 @@ type Log struct {
 	ID          uuid.UUID   `json:"id"`
 	UserID      *uuid.UUID  `json:"user_id"`
 	Date        pgtype.Date `json:"date"`
-	SportTypeID pgtype.Int8 `json:"sport_type_id"`
+	SportTypeID *int64      `json:"sport_type_id"`
 	Status      LogStatus   `json:"status"`
 	Notes       *string     `json:"notes"`
 	CreatedAt   *time.Time  `json:"created_at"`
@@ -288,7 +288,7 @@ type Schedule struct {
 	ID          uuid.UUID   `json:"id"`
 	UserID      *uuid.UUID  `json:"user_id"`
 	DayOfWeek   int16       `json:"day_of_week"`
-	SportTypeID pgtype.Int8 `json:"sport_type_id"`
+	SportTypeID *int64      `json:"sport_type_id"`
 	Time        pgtype.Time `json:"time"`
 	CreatedAt   *time.Time  `json:"created_at"`
 	StartsOn    pgtype.Date `json:"starts_on"`
@@ -315,10 +315,10 @@ type SocialGraph struct {
 }
 
 type SportType struct {
-	ID           int64         `json:"id"`
-	CreatedAt    time.Time     `json:"created_at"`
-	Name         *string       `json:"name"`
-	XpMultiplier pgtype.Float4 `json:"xp_multiplier"`
+	ID           int64     `json:"id"`
+	CreatedAt    time.Time `json:"created_at"`
+	Name         *string   `json:"name"`
+	XpMultiplier *float32  `json:"xp_multiplier"`
 }
 
 type Supplement struct {

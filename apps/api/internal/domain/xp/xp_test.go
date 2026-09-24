@@ -26,3 +26,34 @@ func TestLevel(t *testing.T) {
 		}
 	}
 }
+
+func TestMultiplier(t *testing.T) {
+	half, zero := 1.5, 0.0
+	cases := []struct {
+		raw  *float64
+		want float64
+	}{{nil, 1}, {&zero, 1}, {&half, 1.5}}
+	for _, c := range cases {
+		if got := Multiplier(c.raw); got != c.want {
+			t.Errorf("Multiplier(%v) = %v, want %v", c.raw, got, c.want)
+		}
+	}
+}
+
+func TestEstimatedWeeklyXP(t *testing.T) {
+	cases := []struct {
+		multipliers []float64
+		want        int64
+	}{
+		{nil, 0},
+		{[]float64{1, 1, 1}, 180},
+		{[]float64{1.2, 1}, 132},
+		// Rounded once: 3 × 60.5 = 181.5 → 182 (per-session rounding would give 183).
+		{[]float64{1.0083333333333333, 1.0083333333333333, 1.0083333333333333}, 182},
+	}
+	for _, c := range cases {
+		if got := EstimatedWeeklyXP(c.multipliers); got != c.want {
+			t.Errorf("EstimatedWeeklyXP(%v) = %d, want %d", c.multipliers, got, c.want)
+		}
+	}
+}

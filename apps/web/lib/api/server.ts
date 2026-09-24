@@ -1,4 +1,5 @@
 import createClient from "openapi-fetch";
+import createQueryClient from "openapi-react-query";
 import { cookies } from "next/headers";
 import type { paths } from "./schema";
 
@@ -20,4 +21,13 @@ export async function serverApi() {
     headers: cookieHeader ? { cookie: cookieHeader } : undefined,
     cache: "no-store",
   });
+}
+
+/**
+ * Query options built on the server client, for prefetching in Server
+ * Components. Keys match the browser's `$api` ones, so hydrated data is
+ * picked up without a refetch.
+ */
+export async function serverQueries() {
+  return createQueryClient(await serverApi());
 }

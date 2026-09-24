@@ -24,6 +24,7 @@ type Deps struct {
 	Logger           *slog.Logger
 	Checks           ReadinessChecks
 	Auth             AuthService
+	Routine          RoutineService
 	Cookies          CookieSettings
 	CommunityEnabled bool
 }
@@ -56,6 +57,7 @@ func New(deps Deps) (http.Handler, huma.API) {
 
 	registerHealth(api, deps.Checks)
 	registerAuth(api, deps)
+	registerRoutine(api, deps)
 
 	// Rejects cross-site state-changing requests (Sec-Fetch-Site / Origin),
 	// the CSRF guard for cookie sessions.
@@ -79,6 +81,9 @@ func proxiedClientIP(next http.Handler) http.Handler {
 }
 
 func apiConfig() huma.Config {
+	// Responses always carry arrays (possibly empty), never null, so the
+	// generated client needs no null checks. Handlers must return non-nil slices.
+	huma.DefaultArrayNullable = false
 	cfg := huma.DefaultConfig("CoachIn API", "0.1.0")
 	cfg.Servers = []*huma.Server{{URL: BasePath}}
 	// No `$schema` fields or Link headers in responses: the contract lives in

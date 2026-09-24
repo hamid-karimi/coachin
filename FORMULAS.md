@@ -51,6 +51,12 @@ level = floor(totalXp / 1000) + 1
 
 - **Base workout XP = 60** (a "60-minute session" unit); routine workouts scale it by the
   sport's `xp_multiplier`, plan items use fixed per-type values above.
+- **Multiplier default:** a sport with no (or zero) `xp_multiplier` counts as **1**
+  (`xp.Multiplier`).
+- **"My week" estimate** (display only, awards nothing):
+  `round(Σ over fixed sessions of 60 × multiplier)` — rounded once over the sum, not per
+  session. Go: `apps/api/internal/domain/xp` (`EstimatedWeeklyXP`); legacy:
+  `legacy/app/onboarding/page.tsx`.
 - **Plan-item XP is per item** (idempotent by `plan_item:<id>`), so with **multiple active
   plans** each item's award stands on its own and the totals simply **sum across plans** —
   no double-counting, nothing special per discipline.
@@ -302,6 +308,9 @@ targets; it never computes them itself.
 - The week window (Monday-first, `mondayOf` / `toLocalYMD` in `legacy/lib/dates.ts`) is applied by
   the **caller** — `quotaProgress` only counts the logs it is given, so it works for past
   weeks too. `done` is raw and may exceed the target; capping the display is a UI concern.
+- On the rewrite, `GET /routine` applies the window in `apps/api/internal/app/routine`
+  (`MondayOf(now)` … +6 days, server time = UTC, as the legacy Vercel server did) and
+  returns `doneThisWeek` per quota.
 - **v1 has NO gameplay effect:** quotas create no required days and never touch streaks,
   hearts, or XP — progress display only.
 
