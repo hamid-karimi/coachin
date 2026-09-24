@@ -267,6 +267,7 @@ t2 = t1 × (d2 / d1) ^ 1.06
 
 ## 10. Nutrition targets (meal plan)
 
+**Go:** `apps/api/internal/domain/nutrition` (`ComputeTargets`, `CanComputeTargets`).
 **Source of truth:** `legacy/lib/nutrition-targets.ts` (unit-tested in
 `legacy/lib/nutrition-targets.test.ts`). The AI meal-plan generator consumes these
 targets; it never computes them itself.
@@ -327,6 +328,7 @@ as `[{name, sets: [{weight_kg, reps}]}]` (legacy flat rows
 
 ## 13. Supplements (daily stack)
 
+**Go:** `apps/api/internal/domain/supplements` (`IsDue`, `Label`, `TakenRateOver`).
 **Source of truth:** `supplements` + `supplement_logs` tables
 (`20260708090000_supplements.sql`, schedules in
 `20260709120000_supplement_schedules.sql`, coach read in
@@ -357,6 +359,7 @@ as `[{name, sets: [{weight_kg, reps}]}]` (legacy flat rows
 
 ### Meal adherence (calendar, informational)
 
+**Go:** `apps/api/internal/domain/nutrition` (`AdherenceForDay`; also `ToGrams`, `SummarizePeriod`, `BuildGroceryList`).
 **Source of truth:** `legacy/lib/meal-adherence.ts` (`mealAdherenceForDay`, unit-tested),
 consumed by `legacy/app/calendar/page.tsx` + `legacy/app/calendar/components/day-meals-line.tsx`.
 

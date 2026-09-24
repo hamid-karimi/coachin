@@ -49,6 +49,14 @@ import {
   type ScorecardSessionLog,
 } from "@/lib/scorecard";
 
+import { computeTargets, canComputeTargets, type NutritionGoal } from "@/lib/nutrition-targets";
+import { FOOD_UNIT_OPTIONS, isFoodUnit, toGrams } from "@/lib/food-units";
+import { mealAdherenceForDay } from "@/lib/meal-adherence";
+import { isSupplementDue, scheduleLabel, type SupplementScheduleType } from "@/lib/supplement-schedule";
+import { supplementTakenRate } from "@/lib/supplement-adherence";
+import { buildGroceryList } from "@/lib/meal-plan-grocery";
+import { summarizePeriod, type DatedNutrients } from "@/lib/nutrition-trends";
+
 if (process.env.TZ !== "UTC") {
   throw new Error("run with TZ=UTC (the API's pinned zone) — use `make golden`");
 }
@@ -391,6 +399,130 @@ function scorecardCases(): Case[] {
   return cases;
 }
 
+// ---- nutrition targets (FORMULAS §10) ----------------------------------------
+function nutritionTargetCases(): Case[] {
+  const next = rng(10);
+  const goals: NutritionGoal[] = ["lose", "maintain", "gain", "recomp"];
+  const sexes = ["male", "Female", "m", "F", "other", "", null];
+  const cases: Case[] = [];
+  const fixed = [
+    { sex: "male", age: 35, heightCm: 180, weightKg: 82, trainingDaysPerWeek: 4, goal: "lose" as NutritionGoal },
+    { sex: "female", age: 42, heightCm: 165, weightKg: 70, trainingDaysPerWeek: 0, goal: "maintain" as NutritionGoal },
+    { sex: null, age: 30, heightCm: 175, weightKg: 75, trainingDaysPerWeek: 7, goal: "gain" as NutritionGoal },
+    { sex: "male", age: null, heightCm: 180, weightKg: 82, trainingDaysPerWeek: 3, goal: "lose" as NutritionGoal },
+    { sex: "male", age: 30, heightCm: 0, weightKg: 82, trainingDaysPerWeek: 3, goal: "lose" as NutritionGoal },
+    { sex: "female", age: 80, heightCm: 150, weightKg: 45, trainingDaysPerWeek: 2.5, goal: "lose" as NutritionGoal },
+    { sex: "male", age: 25, heightCm: 190, weightKg: 100, trainingDaysPerWeek: 12, goal: "recomp" as NutritionGoal },
+    { sex: "male", age: 25, heightCm: 190, weightKg: 100, trainingDaysPerWeek: -3, goal: "gain" as NutritionGoal },
+  ];
+  for (const input of fixed) {
+    cases.push({ input, can: canComputeTargets(input), want: computeTargets(input) });
+  }
+  for (let i = 0; i < 60; i++) {
+    const input = {
+      sex: sexes[Math.floor(next() * sexes.length)],
+      age: 18 + Math.floor(next() * 60),
+      heightCm: 150 + Math.round(next() * 500) / 10,
+      weightKg: 45 + Math.round(next() * 800) / 10,
+      trainingDaysPerWeek: Math.floor(next() * 8),
+      goal: goals[Math.floor(next() * goals.length)],
+    };
+    cases.push({ input, can: canComputeTargets(input), want: computeTargets(input) });
+  }
+  return cases;
+}
+
+// ---- nutrition: units, meal adherence, trends, grocery (FORMULAS §8, §13) ---
+function nutritionCases(): Case[] {
+  const next = rng(11);
+  const cases: Case[] = [{ fn: "FOOD_UNIT_OPTIONS", want: FOOD_UNIT_OPTIONS }];
+  // (No "toString"-style names: legacy isFoodUnit uses `in`, so inherited
+  // Object.prototype keys count as units and convert to NaN — a bug the Go
+  // port fixes by treating every unknown unit as grams, as documented.)
+  const units = ["g", "kg", "ml", "l", "tsp", "tbsp", "cup", "oz", "lb", "slice", "piece", "handful", "serving", "bowl", "", "G"];
+  for (const unit of units) {
+    cases.push({ fn: "isFoodUnit", unit, want: isFoodUnit(unit) });
+    for (const qty of [0, -1, 0.5, 1, 2.25, 3, 150]) {
+      cases.push({ fn: "toGrams", qty, unit, want: toGrams(qty, unit) });
+    }
+  }
+  const mealTypes = ["breakfast", "lunch", "dinner", "snack"];
+  for (let i = 0; i < 25; i++) {
+    const slot = () => ({ meal_type: mealTypes[Math.floor(next() * 4)], kcal: Math.round(next() * 9000) / 10 });
+    const planned = Array.from({ length: Math.floor(next() * 5) }, slot);
+    const logged = Array.from({ length: Math.floor(next() * 6) }, slot);
+    cases.push({ fn: "mealAdherenceForDay", planned, logged, want: mealAdherenceForDay(planned, logged) });
+  }
+  for (let i = 0; i < 20; i++) {
+    const today = `2026-0${1 + Math.floor(next() * 9)}-${String(1 + Math.floor(next() * 28)).padStart(2, "0")}`;
+    const days = [1, 7, 14, 30][Math.floor(next() * 4)];
+    const rows: DatedNutrients[] = Array.from({ length: Math.floor(next() * 20) }, () => {
+      const d = new Date(`${today}T12:00:00Z`);
+      d.setUTCDate(d.getUTCDate() - Math.floor(next() * (days + 3)));
+      return {
+        date: d.toISOString().slice(0, 10),
+        kcal: Math.round(next() * 9000) / 10,
+        protein_g: Math.round(next() * 600) / 10,
+        carbs_g: Math.round(next() * 900) / 10,
+        fat_g: Math.round(next() * 400) / 10,
+        sugar_g: Math.round(next() * 300) / 10,
+        fiber_g: Math.round(next() * 150) / 10,
+        sodium_mg: Math.round(next() * 20000) / 10,
+      };
+    });
+    cases.push({ fn: "summarizePeriod", rows, days, today, want: summarizePeriod(rows, days, today) });
+  }
+  const groceryPlans = [
+    [],
+    [{ ingredients: null }, {}],
+    [
+      { ingredients: [{ name: "Oats", qty: "80g" }, { name: "banana" }, { name: "  " }] },
+      { ingredients: [{ name: "oats" }, { name: "Banana" }, { name: "Éclair" }, { name: "apple" }, { name: "Zucchini" }] },
+      { ingredients: [{ name: "eggs" }, { name: "Eggs" }, { name: "égg noodles" }, { name: "Apple" }, { name: "10 almonds" }, { name: "2 limes" }] },
+    ],
+  ];
+  for (const items of groceryPlans) {
+    cases.push({ fn: "buildGroceryList", items, want: buildGroceryList(items) });
+  }
+  return cases;
+}
+
+// ---- supplements (FORMULAS §13) ---------------------------------------------
+function supplementCases(): Case[] {
+  const next = rng(12);
+  const cases: Case[] = [];
+  const types: SupplementScheduleType[] = ["daily", "training_days", "custom"];
+  const dayLists = [null, [], [0], [1, 3, 5], [6, 0, 2], [0, 1, 2, 3, 4, 5, 6]];
+  for (const scheduleType of [...types, "unknown" as SupplementScheduleType]) {
+    for (const daysOfWeek of dayLists) {
+      const schedule = { scheduleType, daysOfWeek };
+      cases.push({ fn: "scheduleLabel", schedule, want: scheduleLabel(schedule) });
+      for (let weekday = 0; weekday <= 6; weekday++) {
+        for (const isTrainingDay of [true, false]) {
+          cases.push({ fn: "isSupplementDue", schedule, weekday, isTrainingDay, want: isSupplementDue(schedule, { weekday, isTrainingDay }) });
+        }
+      }
+    }
+  }
+  for (let i = 0; i < 25; i++) {
+    const schedule = { scheduleType: types[Math.floor(next() * 3)], daysOfWeek: dayLists[Math.floor(next() * dayLists.length)] };
+    const window = Array.from({ length: 14 }, (_, d) => {
+      const date = new Date(Date.UTC(2026, 6, 1 + d));
+      return { ymd: date.toISOString().slice(0, 10), weekday: date.getUTCDay(), isTrainingDay: next() < 0.5 };
+    });
+    const createdYmd = `2026-07-${String(1 + Math.floor(next() * 16)).padStart(2, "0")}`;
+    const taken = window.filter(() => next() < 0.6).map((day) => day.ymd);
+    cases.push({
+      fn: "supplementTakenRate", schedule, createdYmd, window, taken,
+      want: supplementTakenRate(schedule, createdYmd, window, new Set(taken)),
+    });
+  }
+  return cases;
+}
+
+write("nutrition-targets", nutritionTargetCases());
+write("nutrition", nutritionCases());
+write("supplements", supplementCases());
 write("goals", goalCases());
 write("quotas", quotaCases());
 write("workout-sets", workoutCases());

@@ -63,11 +63,16 @@ Goal: `make up` on your Mac starts an empty but working stack.
       regenerates and fails on drift.
 - [ ] 1.5 Port to `apps/api/internal/domain/` with table-driven tests on the vectors. Done:
       xp §1, streak §2, tiers §3, running §4, goals §6, scorecard / check-in / stall §7,
-      dates §9, quotas §11, workout sets / volume §12 (+ `jsnum`: JavaScript `Math.round`,
-      `Number()`, `String()`, `trim`/`slice` parity). Remaining: race intake §5 ·
-      nutrition §8/§10 · supplements + meal adherence §13 · activity summary §14 · charts + photo nudge §15 ·
-      plan-items, schedule-inserts, food-units, grocery, share-card privacy, sports,
-      user-country, AI extract-json / schema-hint / anchors.
+      dates §9, nutrition targets §10, quotas §11, workout sets / volume §12, supplements +
+      meal adherence §13, food units, nutrition trends, grocery list (+ `jsnum`: JavaScript
+      `Math.round`, `Number()`, `String()`, `trim`/`slice` parity). Remaining (server-side):
+      race intake §5 (in `generatePlanAction`), activity import §14, progress charts +
+      photo nudge §15, schedule inserts, user country, AI extract-json / schema-hint /
+      anchors.
+      **Stay TypeScript, move to `apps/web/lib` with their vitest tests in Phase 3** (pure
+      presentation): `share-card` (canvas + privacy rules, runs in the browser),
+      `plan-items` labels, `plan-title`, `sports` (icon mapping), `week-days`,
+      `training-day` (collision warning). `goal-achievements` does I/O → a Phase 3 use case.
 - [ ] 1.6 FORMULAS.md: add the Go path next to each "source of truth" (done for every
       ported section).
 - **Gate**: `go test ./...` passes every vector; RLS smoke test green.

@@ -5,6 +5,22 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-24 (night, later) · #61 merged · Phase 1 PR B3 — nutrition + supplements
+
+**Done**: #61 merged. This PR ports nutrition targets §10, food units, nutrition trends,
+meal adherence + grocery list (§8/§13) → `domain/nutrition`, and supplement due rules +
+taken rate (§13) → `domain/supplements`. 630 new vectors, all matching (grocery order via
+`golang.org/x/text/collate`, matching JS `localeCompare`).
+
+**Decisions**: legacy `isFoodUnit` treats `Object.prototype` keys ("toString") as units → NaN;
+the Go port treats every unknown unit as grams (documented intent), probe removed from
+vectors. Presentation helpers (share-card, labels, plan titles, sport icons, weekdays,
+collision warning) stay TypeScript and move to `apps/web/lib` in Phase 3 — listed in plan 1.5.
+
+**Next steps**: merge B3 → B4: activity import §14, progress charts + photo nudge §15,
+schedule inserts, user country, race intake §5, AI JSON helpers. Then Phase 1 is done →
+Phase 2 (auth).
+
 ## 2026-09-24 (night) · #60 merged · Phase 1 PR B2 — goals, scorecard, quotas, workout sets
 
 **Done**: #60 (golden vectors + xp/tiers/streak/running/dates) merged, CI green incl. the
