@@ -156,6 +156,10 @@ Order (dependencies first, risk front-loaded):
 
 ## Working agreements for every PR
 
+- **Branching**: all rewrite work merges into `feat/backend-rewrite-with-go` (the rewrite's
+  mother branch, cut from `develop` on 2026-09-24). `main` and `develop` keep the current
+  Vercel + Supabase app untouched. Each task gets a short-lived branch off the mother
+  branch and a PR back into it.
 - One module or concern per PR; `main` always builds and `make up` always works.
 - Before commit: `pnpm exec tsc --noEmit`, `pnpm exec eslint <changed>`, `pnpm test`,
   `go vet ./...`, `golangci-lint run`, `go test ./...` — never commit on red.

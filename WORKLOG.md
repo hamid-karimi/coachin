@@ -5,6 +5,16 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-24 (latest) · branch setup — `feat/backend-rewrite-with-go`
+
+**Done**: created **`feat/backend-rewrite-with-go`** from `develop` (`ddf833a`) as the
+rewrite's mother branch. Rule recorded in `CLAUDE.md` § "Go rewrite — branch workflow" and
+in `plan.md`: `main`/`develop` stay on Vercel + Supabase untouched; every rewrite PR
+targets the mother branch. The rewrite docs land there via PR from
+`claude/lucid-tesla-3737vk`.
+
+**Next steps**: owner confirms spec §10 → Phase 0 on a new branch off the mother branch.
+
 ## 2026-09-24 (later) · `claude/lucid-tesla-3737vk` — rewrite docs revised: no Supabase, no Vercel
 
 **Done**: rewrote `plans/go-backend-rewrite/{spec,architecture,plan}.md` for the owner's
