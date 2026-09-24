@@ -402,6 +402,63 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/training/intake-context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Whose plan the wizard builds, and their body profile */
+        get: operations["getIntakeContext"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/training/plans/hypertrophy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate a muscle-building plan with AI and save it
+         * @description Replaces the athlete's active hypertrophy plan. Takes ~15-60 s.
+         */
+        post: operations["generateHypertrophyPlan"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/training/plans/running": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate a running plan (base-building or race) with AI and save it
+         * @description Replaces the athlete's active running plan. Takes ~15-60 s.
+         */
+        post: operations["generateRunningPlan"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/training/plans/{id}/archive": {
         parameters: {
             query?: never;
@@ -520,6 +577,34 @@ export interface components {
              */
             status: "ok";
         };
+        HypertrophyPlanInputBody: {
+            /** Format: int64 */
+            daysPerWeek: number;
+            /** @enum {string} */
+            equipment: "gym" | "home" | "bodyweight";
+            experienceLevel?: string;
+            /** @enum {string} */
+            goal: "muscle_gain" | "recomp";
+            injuries?: string;
+            /** @description Coach mode */
+            targetStudentId?: string;
+            /** Format: int64 */
+            weeksTotal: number;
+        };
+        IntakeContextBody: {
+            /** Format: int64 */
+            age: number | null;
+            /** @description The trainee's name in coach mode; empty otherwise */
+            athleteName: string;
+            /** @description Coach mode: generating for a trainee */
+            forStudent: boolean;
+            /** Format: double */
+            heightCm: number | null;
+            sex: string | null;
+            trainingHistory: string | null;
+            /** Format: double */
+            weightKg: number | null;
+        };
         LogWorkoutInputBody: {
             /** Format: int64 */
             sportTypeId: number;
@@ -536,6 +621,13 @@ export interface components {
             id: string;
             /** @enum {string} */
             role: "student" | "coach" | "both" | "admin";
+        };
+        PlanCreatedBody: {
+            forStudent: boolean;
+            message: string;
+            planId: string;
+            /** @enum {string} */
+            status: "success" | "info";
         };
         PlanItemBody: {
             /** Format: int64 */
@@ -644,6 +736,37 @@ export interface components {
             planItems: components["schemas"]["PlanItemBody"][];
             quotas: components["schemas"]["QuotaBody"][];
             schedules: components["schemas"]["ScheduleBody"][];
+        };
+        RunningPlanInputBody: {
+            /** @description Parsed watch-file summaries */
+            activities?: unknown[];
+            /** Format: double */
+            baseWeeks?: number;
+            /**
+             * Format: double
+             * @description ultra/other only
+             */
+            customDistanceKm?: number;
+            /** Format: int64 */
+            daysPerWeek: number;
+            experienceLevel?: string;
+            goalTime?: string;
+            injuries?: string;
+            /** Format: double */
+            longestRunKm?: number;
+            /** @enum {string} */
+            mode: "base" | "race";
+            pb10k?: string;
+            pb5k?: string;
+            pbFull?: string;
+            pbHalf?: string;
+            raceDate?: string;
+            /** @description 5k, 10k, half, full, ultra, other */
+            raceTarget?: string;
+            /** @description Coach mode */
+            targetStudentId?: string;
+            /** Format: double */
+            weeklyKm?: number;
         };
         SaveQuotaInputBody: {
             /** Format: int64 */
@@ -2062,6 +2185,239 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getIntakeContext: {
+        parameters: {
+            query?: {
+                /** @description Coach mode: the trainee's id */
+                student?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntakeContextBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    generateHypertrophyPlan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HypertrophyPlanInputBody"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanCreatedBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    generateRunningPlan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RunningPlanInputBody"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanCreatedBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
                 headers: {
                     [name: string]: unknown;
                 };

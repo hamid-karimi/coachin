@@ -51,6 +51,16 @@ type Server struct {
 	CommunityEnabled bool
 	SMTP             SMTP
 	S3               S3
+	AI               AI
+}
+
+// AI selects the generation providers. An empty key disables a provider;
+// with neither, AI features answer "temporarily unavailable".
+type AI struct {
+	ClaudeAPIKey string
+	ClaudeModel  string // "" = the adapter's default
+	GeminiAPIKey string
+	GeminiModel  string
 }
 
 // Garage is everything `api storage-init` needs to bootstrap a Garage node.
@@ -83,6 +93,12 @@ func LoadServer(getenv Getenv) (Server, error) {
 			From:     r.required("MAIL_FROM"),
 		},
 		S3: r.s3(),
+		AI: AI{
+			ClaudeAPIKey: r.optional("CLAUDE_API_KEY", ""),
+			ClaudeModel:  r.optional("CLAUDE_MODEL", ""),
+			GeminiAPIKey: r.optional("GEMINI_API_KEY", ""),
+			GeminiModel:  r.optional("GEMINI_MODEL", ""),
+		},
 	}
 	return cfg, r.err()
 }

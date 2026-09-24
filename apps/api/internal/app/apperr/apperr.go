@@ -15,6 +15,8 @@ const (
 	Forbidden
 	// Conflict is a clash with existing state.
 	Conflict
+	// Unavailable is a dependency (e.g. the AI providers) failing; retry later.
+	Unavailable
 )
 
 // Error is an expected failure with a message safe to show the user.

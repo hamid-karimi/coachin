@@ -218,7 +218,10 @@ FORMULAS.md, QA-ONBOARDING.md, WORKLOG.md, CLAUDE.md, README.md
 | ICS | small stdlib writer | `calendar.ics/route.ts` |
 
 AI prompts and schemas are copied verbatim first; improvements come after cutover. Models
-stay configurable (`CLAUDE_MODEL`, `GEMINI_MODEL`).
+stay configurable (`CLAUDE_MODEL`, default `claude-sonnet-5`; `GEMINI_MODEL`, default
+`gemini-2.5-flash`). Claude calls are streamed (the Go SDK requires it for 24k-token
+plan outputs) and each provider call is time-boxed at 80 s; the server write timeout is
+180 s so the fallback still fits.
 
 ### ADR-10 — Local development on macOS
 - **Runtime**: Docker Desktop or OrbStack (lighter on Apple Silicon); all images are

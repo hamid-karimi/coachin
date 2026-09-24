@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/ai"
 	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/mail"
 	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/objectstore"
 	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/password"
@@ -46,6 +47,14 @@ func serve(ctx context.Context, _ []string, _ *slog.Logger) error {
 
 	objects := objectstore.New(cfg.S3)
 
+	generator, err := ai.New(ctx, ai.Config{
+		ClaudeAPIKey: cfg.AI.ClaudeAPIKey, ClaudeModel: cfg.AI.ClaudeModel,
+		GeminiAPIKey: cfg.AI.GeminiAPIKey, GeminiModel: cfg.AI.GeminiModel,
+	}, logger)
+	if err != nil {
+		return err
+	}
+
 	authService, err := auth.NewService(
 		store.NewAuthStore(authPool),
 		password.New(password.DefaultParams),
@@ -69,6 +78,7 @@ func serve(ctx context.Context, _ []string, _ *slog.Logger) error {
 		PlanItems:        training.NewService(store.NewTrainingStore(pool), nil),
 		Supplements:      supplements.NewService(store.NewSupplementStore(pool), nil),
 		Programs:         training.NewPrograms(store.NewTrainingStore(pool), nil),
+		Generation:       training.NewGeneration(store.NewTrainingStore(pool), generator, nil),
 		Cookies:          httpapi.CookieSettings{Secure: cfg.CookieSecure},
 		CommunityEnabled: cfg.CommunityEnabled,
 	})
@@ -77,8 +87,9 @@ func serve(ctx context.Context, _ []string, _ *slog.Logger) error {
 		Addr:              cfg.HTTPAddr,
 		Handler:           handler,
 		ReadHeaderTimeout: 10 * time.Second,
-		// Long enough for AI generation calls (time-boxed at 60 s upstream).
-		WriteTimeout: 90 * time.Second,
+		// Long enough for an AI generation call plus its fallback (each
+		// time-boxed at 80 s in adapters/ai).
+		WriteTimeout: 180 * time.Second,
 		IdleTimeout:  2 * time.Minute,
 	}
 

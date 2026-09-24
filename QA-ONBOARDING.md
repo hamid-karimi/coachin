@@ -136,8 +136,29 @@ first, as before) with "Race in N days · Week X of Y · goal …", "By your coa
 coach generated it, and the "Week N review ready" banner when last week ended without a
 check-in. "Add to calendar" downloads `coachin-training-plan.ics` (all-day events, meal
 notes excluded). "Archive plan" (confirm) → "Plan archived."; with no plans the page
-shows "Create a plan" and Today shows "Train for a marathon". Plan creation and the
-check-in screen are placeholders until 3.3b/3.3c.
+shows "Create a plan" and Today shows "Train for a marathon".
+
+**Rewrite stack — plan generation (3.3b)**: New plan → Running / Build muscle.
+- AI needs `CLAUDE_API_KEY` and/or `GEMINI_API_KEY` in `.env` (Claude first, Gemini
+  fallback). Without keys, "Generate my plan" shows "AI plan generation is temporarily
+  unavailable (quota or network) — try again later" — expected locally.
+- Running wizard, 4 steps: About you (profile summary; "incomplete" hint links to
+  Profile) → Running background (PBs, weekly km, longest run, days/week 2–7, injuries)
+  → Your goal ("Just start running": 6/8/12 weeks; "Train for a race": distance, race
+  date, goal time + **Suggest** from PBs) → Review → "Your plan is ready." and back to
+  My programs. **Watch-file upload is not in the rewrite yet** (arrives with the watch
+  import).
+- Validation (legacy copy): "Pick your race distance", "Enter the race distance in km
+  (1-500)", "Pick your race date", "Race must be at least 4 weeks away for a useful
+  plan", "Pick 2-7 training days per week"; strength: "Pick 2-6 training days per week".
+- Build muscle: goal, experience, equipment, days/week (2–6), length (8/10/12 weeks).
+- A new plan replaces only the **same-discipline** active plan (running and muscle
+  plans coexist). Generation is rate limited (a burst of 3, then one per 20 s).
+- Coach mode: `/training/new?student=<trainee id>` titles the page "… for <name>" and
+  saves the plan to the trainee ("By your coach" on their card); a non-coach or a coach
+  without an active relationship is sent away.
+
+The check-in screen is a placeholder until 3.3c.
 
 ### 3. Logging on Today (dashboard)
 

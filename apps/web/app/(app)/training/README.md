@@ -10,6 +10,9 @@ card; the day-by-day schedule lives in Calendar, logging happens on Today.
 | `GET /training/programs` | Active plans (ordered by plan kind: hypertrophy, then race) with `currentWeek`, `daysUntilRace`, `fromCoach` (creator ≠ owner), `reviewWeek` (last fully elapsed week), `checkinDue` (a next week exists and no check-in yet) |
 | `POST /training/plans/{id}/archive` | Archive (progress kept); a no-op for other users' or already archived plans |
 | `GET /training/calendar.ics` | All active plans' sessions as all-day events (meal notes excluded); 404 without an active plan |
+| `GET /training/intake-context?student=` | Whose plan the wizard builds (self or a coached trainee) and their body profile; 403 for coach mode without an active relationship |
+| `POST /training/plans/running` | Validates the wizard (legacy messages), generates with AI (Claude → Gemini), saves via `create_training_plan`; replaces the same-discipline active plan. 502 when AI is unavailable |
+| `POST /training/plans/hypertrophy` | Same for muscle building |
 | `PUT /plan-items/{id}/completion` | Done/undo (see the dashboard README) |
 
 ## Structure
@@ -24,5 +27,16 @@ card; the day-by-day schedule lives in Calendar, logging happens on Today.
     or the "Create a plan" empty state
   - `program-card.tsx` — title, meta, "By your coach", check-in banner, calendar link
   - `archive-plan-button.tsx` — confirm dialog → archive
-- `new/page.tsx`, `checkin/page.tsx` — placeholders until 3.3b (plan wizards) and 3.3c
-  (check-ins)
+- `new/page.tsx` — server page: loads the intake context (`app/lib/intake-data.ts`),
+  redirects coach-mode misuse, renders the chooser or a wizard
+- `components/plan-kind-chooser.tsx`, `running-wizard.tsx` (+ `running-background-step`,
+  `running-goal-step`), `hypertrophy-wizard.tsx`, `profile-card.tsx`, `wizard-fields.tsx`
+- `lib/running-wizard.ts` (draft reducer, derived labels, request body),
+  `lib/hypertrophy-wizard.ts`, `lib/intake.ts` (profile summary) — unit-tested;
+  `lib/running.ts` (goal suggestion) replays the API's `running.json` golden vectors
+- `hooks/use-generate-plan.ts` — generation mutations (toast, refetch, go to programs or
+  Coaching)
+- `checkin/page.tsx` — placeholder until 3.3c
+
+The watch-file upload step of the legacy running wizard returns with FIT/GPX parsing
+(3.3d).

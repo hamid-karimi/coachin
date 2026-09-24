@@ -130,6 +130,10 @@ jobs:
           curl -fsS -b jar http://localhost:8080/api/v1/training/programs | grep -qx '\[\]'
           test "$(curl -sS -b jar -o /dev/null -w '%{http_code}' http://localhost:8080/api/v1/training/calendar.ics)" = 404
           curl -fsS -b jar http://localhost:8080/training | grep -q "Create a plan"
+          # No AI keys in CI: generation must fail cleanly with 502, not 500.
+          test "$(curl -sS -b jar -o /dev/null -w '%{http_code}' -H 'Content-Type: application/json' -X POST \
+            http://localhost:8080/api/v1/training/plans/hypertrophy \
+            -d '{"goal":"recomp","equipment":"home","daysPerWeek":3,"weeksTotal":8}')" = 502
       - name: Logs on failure
         if: failure()
         run: docker compose logs --no-color

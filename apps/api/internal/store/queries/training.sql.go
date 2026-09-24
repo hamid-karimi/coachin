@@ -13,6 +13,19 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const activeCalorieGoal = `-- name: ActiveCalorieGoal :one
+SELECT target_value::float8 AS target_value FROM public.goals
+WHERE user_id = $1 AND goal_type = 'calorie_intake' AND status = 'active'
+LIMIT 1
+`
+
+func (q *Queries) ActiveCalorieGoal(ctx context.Context, userID uuid.UUID) (float64, error) {
+	row := q.db.QueryRow(ctx, activeCalorieGoal, userID)
+	var target_value float64
+	err := row.Scan(&target_value)
+	return target_value, err
+}
+
 const archivePlan = `-- name: ArchivePlan :execrows
 UPDATE public.training_plans SET status = 'archived'
 WHERE id = $1 AND user_id = $2 AND status = 'active'
@@ -31,6 +44,56 @@ func (q *Queries) ArchivePlan(ctx context.Context, arg ArchivePlanParams) (int64
 	return result.RowsAffected(), nil
 }
 
+const athleteProfile = `-- name: AthleteProfile :one
+SELECT birth_date, sex, height_cm, weight_kg, training_history, full_name, email
+FROM public.profiles WHERE id = $1
+`
+
+type AthleteProfileRow struct {
+	BirthDate       pgtype.Date    `json:"birth_date"`
+	Sex             *string        `json:"sex"`
+	HeightCm        pgtype.Numeric `json:"height_cm"`
+	WeightKg        pgtype.Numeric `json:"weight_kg"`
+	TrainingHistory *string        `json:"training_history"`
+	FullName        *string        `json:"full_name"`
+	Email           *string        `json:"email"`
+}
+
+// numeric as stored: 61.00 reads 61, as the legacy JSON API returned it.
+func (q *Queries) AthleteProfile(ctx context.Context, id uuid.UUID) (AthleteProfileRow, error) {
+	row := q.db.QueryRow(ctx, athleteProfile, id)
+	var i AthleteProfileRow
+	err := row.Scan(
+		&i.BirthDate,
+		&i.Sex,
+		&i.HeightCm,
+		&i.WeightKg,
+		&i.TrainingHistory,
+		&i.FullName,
+		&i.Email,
+	)
+	return i, err
+}
+
+const coachesStudent = `-- name: CoachesStudent :one
+SELECT EXISTS (
+  SELECT 1 FROM public.coaching_relationships
+  WHERE coach_id = $1 AND student_id = $2 AND status = 'active'
+)
+`
+
+type CoachesStudentParams struct {
+	CoachID   uuid.UUID `json:"coach_id"`
+	StudentID uuid.UUID `json:"student_id"`
+}
+
+func (q *Queries) CoachesStudent(ctx context.Context, arg CoachesStudentParams) (bool, error) {
+	row := q.db.QueryRow(ctx, coachesStudent, arg.CoachID, arg.StudentID)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
 const completePlanItem = `-- name: CompletePlanItem :one
 SELECT public.complete_plan_item($1, $2, CAST($3::text AS date))::text AS result
 `
@@ -45,6 +108,47 @@ type CompletePlanItemParams struct {
 // linked log, and awards or compensates XP idempotently.
 func (q *Queries) CompletePlanItem(ctx context.Context, arg CompletePlanItemParams) (string, error) {
 	row := q.db.QueryRow(ctx, completePlanItem, arg.ItemID, arg.Completed, arg.OnDate)
+	var result string
+	err := row.Scan(&result)
+	return result, err
+}
+
+const createTrainingPlan = `-- name: CreateTrainingPlan :one
+SELECT public.create_training_plan(
+  CAST($1::text AS date), $2::text, $3::int,
+  $4::text, $5::jsonb, $6::jsonb, $7::text,
+  $8::jsonb, $9::text, $10::uuid
+)::text AS result
+`
+
+type CreateTrainingPlanParams struct {
+	RaceDate     *string    `json:"race_date"`
+	GoalTime     *string    `json:"goal_time"`
+	WeeksTotal   int32      `json:"weeks_total"`
+	Summary      string     `json:"summary"`
+	Intake       []byte     `json:"intake"`
+	Raw          []byte     `json:"raw"`
+	Model        string     `json:"model"`
+	Items        []byte     `json:"items"`
+	PlanKind     string     `json:"plan_kind"`
+	TargetUserID *uuid.UUID `json:"target_user_id"`
+}
+
+// Step A (ADR-5): archives the same-discipline plan and saves this one,
+// re-verifying the coaching relationship for coach-generated plans.
+func (q *Queries) CreateTrainingPlan(ctx context.Context, arg CreateTrainingPlanParams) (string, error) {
+	row := q.db.QueryRow(ctx, createTrainingPlan,
+		arg.RaceDate,
+		arg.GoalTime,
+		arg.WeeksTotal,
+		arg.Summary,
+		arg.Intake,
+		arg.Raw,
+		arg.Model,
+		arg.Items,
+		arg.PlanKind,
+		arg.TargetUserID,
+	)
 	var result string
 	err := row.Scan(&result)
 	return result, err
@@ -84,6 +188,20 @@ func (q *Queries) GetPlanItemRef(ctx context.Context, arg GetPlanItemRefParams) 
 		&i.PlanCreatedAt,
 	)
 	return i, err
+}
+
+const latestBodyAnalysis = `-- name: LatestBodyAnalysis :one
+SELECT analysis FROM public.body_photos
+WHERE user_id = $1 AND analysis IS NOT NULL
+ORDER BY analyzed_at DESC NULLS LAST
+LIMIT 1
+`
+
+func (q *Queries) LatestBodyAnalysis(ctx context.Context, userID uuid.UUID) ([]byte, error) {
+	row := q.db.QueryRow(ctx, latestBodyAnalysis, userID)
+	var analysis []byte
+	err := row.Scan(&analysis)
+	return analysis, err
 }
 
 const listActivePlanItems = `-- name: ListActivePlanItems :many
@@ -182,6 +300,49 @@ func (q *Queries) ListActivePrograms(ctx context.Context, userID uuid.UUID) ([]L
 	return items, nil
 }
 
+const listAnchors = `-- name: ListAnchors :many
+SELECT s.day_of_week, s."time", st.name AS sport_name
+FROM public.schedules s
+LEFT JOIN public.sport_types st ON st.id = s.sport_type_id
+WHERE s.user_id = $1::uuid
+  AND (s.starts_on IS NULL OR s.starts_on <= CAST($2::text AS date))
+  AND (s.ends_on IS NULL OR s.ends_on >= CAST($2::text AS date))
+ORDER BY s.created_at, s.id
+LIMIT 21
+`
+
+type ListAnchorsParams struct {
+	UserID uuid.UUID `json:"user_id"`
+	OnDate string    `json:"on_date"`
+}
+
+type ListAnchorsRow struct {
+	DayOfWeek int16       `json:"day_of_week"`
+	Time      pgtype.Time `json:"time"`
+	SportName *string     `json:"sport_name"`
+}
+
+// The athlete's fixed sessions active on a date (max 21, as the legacy app).
+func (q *Queries) ListAnchors(ctx context.Context, arg ListAnchorsParams) ([]ListAnchorsRow, error) {
+	rows, err := q.db.Query(ctx, listAnchors, arg.UserID, arg.OnDate)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListAnchorsRow{}
+	for rows.Next() {
+		var i ListAnchorsRow
+		if err := rows.Scan(&i.DayOfWeek, &i.Time, &i.SportName); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listReviewedWeeks = `-- name: ListReviewedWeeks :many
 SELECT c.plan_id, c.week
 FROM public.weekly_checkins c
@@ -217,4 +378,15 @@ func (q *Queries) ListReviewedWeeks(ctx context.Context, arg ListReviewedWeeksPa
 		return nil, err
 	}
 	return items, nil
+}
+
+const profileRole = `-- name: ProfileRole :one
+SELECT COALESCE(role, 'student')::text AS role FROM public.profiles WHERE id = $1
+`
+
+func (q *Queries) ProfileRole(ctx context.Context, id uuid.UUID) (string, error) {
+	row := q.db.QueryRow(ctx, profileRole, id)
+	var role string
+	err := row.Scan(&role)
+	return role, err
 }

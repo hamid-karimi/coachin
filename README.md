@@ -35,6 +35,10 @@ make up        # first run copies .env.example → .env, builds, starts, hot-rel
 Open http://localhost:8080 to sign in; http://localhost:8080/status shows the API, database, and storage as
 healthy. Edit files under `apps/web` or `apps/api` and the stack reloads on its own.
 
+AI features (training plans; later meal plans and photo estimates) need
+`CLAUDE_API_KEY` and/or `GEMINI_API_KEY` in `.env` — Claude first, Gemini as the fallback.
+Without them those features answer "temporarily unavailable"; everything else works.
+
 `make seed` adds demo accounts: `trainee@coachin.local` and `coach@coachin.local`, both
 with password `Coachin-demo1`. Emails the app sends (sign-up confirmation, password
 reset) show up in Mailpit at http://localhost:8025.
