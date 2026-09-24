@@ -1,0 +1,349 @@
+{
+ "generatedBy": "scripts/golden/generate.ts",
+ "topic": "xp",
+ "cases": [
+  {
+   "xp": -5,
+   "want": {
+    "currentXp": 0,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 0,
+   "want": {
+    "currentXp": 0,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 1,
+   "want": {
+    "currentXp": 1,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 999,
+   "want": {
+    "currentXp": 999,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 1000,
+   "want": {
+    "currentXp": 0,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 1001,
+   "want": {
+    "currentXp": 1,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 2500,
+   "want": {
+    "currentXp": 500,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 12345,
+   "want": {
+    "currentXp": 345,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 999999,
+   "want": {
+    "currentXp": 999,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 125414,
+   "want": {
+    "currentXp": 414,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 547,
+   "want": {
+    "currentXp": 547,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 105489,
+   "want": {
+    "currentXp": 489,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 196210,
+   "want": {
+    "currentXp": 210,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 193675,
+   "want": {
+    "currentXp": 675,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 56220,
+   "want": {
+    "currentXp": 220,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 122567,
+   "want": {
+    "currentXp": 567,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 144148,
+   "want": {
+    "currentXp": 148,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 85159,
+   "want": {
+    "currentXp": 159,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 198964,
+   "want": {
+    "currentXp": 964,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 91054,
+   "want": {
+    "currentXp": 54,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 97757,
+   "want": {
+    "currentXp": 757,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 27786,
+   "want": {
+    "currentXp": 786,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 80748,
+   "want": {
+    "currentXp": 748,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 49504,
+   "want": {
+    "currentXp": 504,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 30898,
+   "want": {
+    "currentXp": 898,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 97828,
+   "want": {
+    "currentXp": 828,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 13473,
+   "want": {
+    "currentXp": 473,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 78923,
+   "want": {
+    "currentXp": 923,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 153421,
+   "want": {
+    "currentXp": 421,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 57172,
+   "want": {
+    "currentXp": 172,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 38174,
+   "want": {
+    "currentXp": 174,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 8545,
+   "want": {
+    "currentXp": 545,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 85476,
+   "want": {
+    "currentXp": 476,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 118076,
+   "want": {
+    "currentXp": 76,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 159736,
+   "want": {
+    "currentXp": 736,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 58973,
+   "want": {
+    "currentXp": 973,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 41093,
+   "want": {
+    "currentXp": 93,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 131625,
+   "want": {
+    "currentXp": 625,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 109216,
+   "want": {
+    "currentXp": 216,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 151688,
+   "want": {
+    "currentXp": 688,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 38562,
+   "want": {
+    "currentXp": 562,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 144189,
+   "want": {
+    "currentXp": 189,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 90827,
+   "want": {
+    "currentXp": 827,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 154082,
+   "want": {
+    "currentXp": 82,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 198906,
+   "want": {
+    "currentXp": 906,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 47866,
+   "want": {
+    "currentXp": 866,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 151400,
+   "want": {
+    "currentXp": 400,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 30654,
+   "want": {
+    "currentXp": 654,
+    "nextLevelXp": 1000
+   }
+  },
+  {
+   "xp": 64666,
+   "want": {
+    "currentXp": 666,
+    "nextLevelXp": 1000
+   }
+  }
+ ]
+}

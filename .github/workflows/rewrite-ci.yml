@@ -28,6 +28,14 @@ jobs:
         with:
           go-version-file: apps/api/go.mod
           cache-dependency-path: apps/api/go.sum
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Golden vectors match the legacy formulas
+        working-directory: .
+        run: |
+          make golden
+          git diff --exit-code -- testdata/golden
       - name: Lint
         uses: golangci/golangci-lint-action@v9
         with:

@@ -1,0 +1,2871 @@
+{
+ "generatedBy": "scripts/golden/generate.ts",
+ "topic": "dates",
+ "cases": [
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "date": "2026-07-05T15:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-07-05T14:03:00.123+00:00",
+   "now": "2026-07-05T15:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "date": "2026-07-06T00:00:00Z",
+   "want": 2
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 2
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 2
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-07-05T14:03:00.123+00:00",
+   "now": "2026-07-06T00:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "date": "2026-07-12T23:59:59Z",
+   "want": 2
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 2
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 2
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 1
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-07-05T14:03:00.123+00:00",
+   "now": "2026-07-12T23:59:59Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "date": "2026-07-13T00:00:01Z",
+   "want": 3
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 3
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 2
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 3
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 2
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-07-05T14:03:00.123+00:00",
+   "now": "2026-07-13T00:00:01Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "date": "2026-09-24T18:00:00Z",
+   "want": 13
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 1,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 1,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 8,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 8,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 16,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 13
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 16,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 12
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-07-05T14:03:00.123+00:00",
+   "now": "2026-09-24T18:00:00Z",
+   "want": 11
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "date": "2027-01-04T09:00:00Z",
+   "want": 28
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 1,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 1,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 8,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 8,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 16,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "weeksTotal": 16,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-07-05T14:03:00.123+00:00",
+   "now": "2027-01-04T09:00:00Z",
+   "want": 26
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "week": 1,
+   "dayOfWeek": 0,
+   "want": "2026-07-05"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "week": 1,
+   "dayOfWeek": 1,
+   "want": "2026-06-29"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "week": 1,
+   "dayOfWeek": 2,
+   "want": "2026-06-30"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "week": 1,
+   "dayOfWeek": 3,
+   "want": "2026-07-01"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "week": 1,
+   "dayOfWeek": 4,
+   "want": "2026-07-02"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "week": 1,
+   "dayOfWeek": 5,
+   "want": "2026-07-03"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "week": 1,
+   "dayOfWeek": 6,
+   "want": "2026-07-04"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "week": 2,
+   "dayOfWeek": 0,
+   "want": "2026-07-12"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "week": 2,
+   "dayOfWeek": 1,
+   "want": "2026-07-06"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "week": 2,
+   "dayOfWeek": 2,
+   "want": "2026-07-07"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "week": 2,
+   "dayOfWeek": 3,
+   "want": "2026-07-08"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "week": 2,
+   "dayOfWeek": 4,
+   "want": "2026-07-09"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "week": 2,
+   "dayOfWeek": 5,
+   "want": "2026-07-10"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "week": 2,
+   "dayOfWeek": 6,
+   "want": "2026-07-11"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "week": 8,
+   "dayOfWeek": 0,
+   "want": "2026-08-23"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "week": 8,
+   "dayOfWeek": 1,
+   "want": "2026-08-17"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "week": 8,
+   "dayOfWeek": 2,
+   "want": "2026-08-18"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "week": 8,
+   "dayOfWeek": 3,
+   "want": "2026-08-19"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "week": 8,
+   "dayOfWeek": 4,
+   "want": "2026-08-20"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "week": 8,
+   "dayOfWeek": 5,
+   "want": "2026-08-21"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-05T14:03:00.123+00:00",
+   "week": 8,
+   "dayOfWeek": 6,
+   "want": "2026-08-22"
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "date": "2026-07-05T15:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-07-06T00:00:00+00:00",
+   "now": "2026-07-05T15:00:00Z",
+   "want": -1
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "date": "2026-07-06T00:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-07-06T00:00:00+00:00",
+   "now": "2026-07-06T00:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "date": "2026-07-12T23:59:59Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 0
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-07-06T00:00:00+00:00",
+   "now": "2026-07-12T23:59:59Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "date": "2026-07-13T00:00:01Z",
+   "want": 2
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 2
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 2
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 1
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-07-06T00:00:00+00:00",
+   "now": "2026-07-13T00:00:01Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "date": "2026-09-24T18:00:00Z",
+   "want": 12
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 12
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 11
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-07-06T00:00:00+00:00",
+   "now": "2026-09-24T18:00:00Z",
+   "want": 11
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "date": "2027-01-04T09:00:00Z",
+   "want": 27
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-07-06T00:00:00+00:00",
+   "now": "2027-01-04T09:00:00Z",
+   "want": 26
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "week": 1,
+   "dayOfWeek": 0,
+   "want": "2026-07-12"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "week": 1,
+   "dayOfWeek": 1,
+   "want": "2026-07-06"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "week": 1,
+   "dayOfWeek": 2,
+   "want": "2026-07-07"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "week": 1,
+   "dayOfWeek": 3,
+   "want": "2026-07-08"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "week": 1,
+   "dayOfWeek": 4,
+   "want": "2026-07-09"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "week": 1,
+   "dayOfWeek": 5,
+   "want": "2026-07-10"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "week": 1,
+   "dayOfWeek": 6,
+   "want": "2026-07-11"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "week": 2,
+   "dayOfWeek": 0,
+   "want": "2026-07-19"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "week": 2,
+   "dayOfWeek": 1,
+   "want": "2026-07-13"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "week": 2,
+   "dayOfWeek": 2,
+   "want": "2026-07-14"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "week": 2,
+   "dayOfWeek": 3,
+   "want": "2026-07-15"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "week": 2,
+   "dayOfWeek": 4,
+   "want": "2026-07-16"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "week": 2,
+   "dayOfWeek": 5,
+   "want": "2026-07-17"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "week": 2,
+   "dayOfWeek": 6,
+   "want": "2026-07-18"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "week": 8,
+   "dayOfWeek": 0,
+   "want": "2026-08-30"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "week": 8,
+   "dayOfWeek": 1,
+   "want": "2026-08-24"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "week": 8,
+   "dayOfWeek": 2,
+   "want": "2026-08-25"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "week": 8,
+   "dayOfWeek": 3,
+   "want": "2026-08-26"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "week": 8,
+   "dayOfWeek": 4,
+   "want": "2026-08-27"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "week": 8,
+   "dayOfWeek": 5,
+   "want": "2026-08-28"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-06T00:00:00+00:00",
+   "week": 8,
+   "dayOfWeek": 6,
+   "want": "2026-08-29"
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "date": "2026-07-05T15:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-07-08T23:59:59+00:00",
+   "now": "2026-07-05T15:00:00Z",
+   "want": -1
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "date": "2026-07-06T00:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-07-08T23:59:59+00:00",
+   "now": "2026-07-06T00:00:00Z",
+   "want": -1
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "date": "2026-07-12T23:59:59Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 0
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-07-08T23:59:59+00:00",
+   "now": "2026-07-12T23:59:59Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "date": "2026-07-13T00:00:01Z",
+   "want": 2
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 2
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 2
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 1
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-07-08T23:59:59+00:00",
+   "now": "2026-07-13T00:00:01Z",
+   "want": 0
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "date": "2026-09-24T18:00:00Z",
+   "want": 12
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 1,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 1,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 8,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 8,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 16,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 12
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 16,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 11
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-07-08T23:59:59+00:00",
+   "now": "2026-09-24T18:00:00Z",
+   "want": 11
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "date": "2027-01-04T09:00:00Z",
+   "want": 27
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 1,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 1,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 8,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 8,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 16,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "weeksTotal": 16,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-07-08T23:59:59+00:00",
+   "now": "2027-01-04T09:00:00Z",
+   "want": 25
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "week": 1,
+   "dayOfWeek": 0,
+   "want": "2026-07-12"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "week": 1,
+   "dayOfWeek": 1,
+   "want": "2026-07-06"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "week": 1,
+   "dayOfWeek": 2,
+   "want": "2026-07-07"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "week": 1,
+   "dayOfWeek": 3,
+   "want": "2026-07-08"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "week": 1,
+   "dayOfWeek": 4,
+   "want": "2026-07-09"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "week": 1,
+   "dayOfWeek": 5,
+   "want": "2026-07-10"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "week": 1,
+   "dayOfWeek": 6,
+   "want": "2026-07-11"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "week": 2,
+   "dayOfWeek": 0,
+   "want": "2026-07-19"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "week": 2,
+   "dayOfWeek": 1,
+   "want": "2026-07-13"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "week": 2,
+   "dayOfWeek": 2,
+   "want": "2026-07-14"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "week": 2,
+   "dayOfWeek": 3,
+   "want": "2026-07-15"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "week": 2,
+   "dayOfWeek": 4,
+   "want": "2026-07-16"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "week": 2,
+   "dayOfWeek": 5,
+   "want": "2026-07-17"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "week": 2,
+   "dayOfWeek": 6,
+   "want": "2026-07-18"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "week": 8,
+   "dayOfWeek": 0,
+   "want": "2026-08-30"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "week": 8,
+   "dayOfWeek": 1,
+   "want": "2026-08-24"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "week": 8,
+   "dayOfWeek": 2,
+   "want": "2026-08-25"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "week": 8,
+   "dayOfWeek": 3,
+   "want": "2026-08-26"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "week": 8,
+   "dayOfWeek": 4,
+   "want": "2026-08-27"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "week": 8,
+   "dayOfWeek": 5,
+   "want": "2026-08-28"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-07-08T23:59:59+00:00",
+   "week": 8,
+   "dayOfWeek": 6,
+   "want": "2026-08-29"
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "date": "2026-07-05T15:00:00Z",
+   "want": 27
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2025-12-31T12:00:00+00:00",
+   "now": "2026-07-05T15:00:00Z",
+   "want": 26
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "date": "2026-07-06T00:00:00Z",
+   "want": 28
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2025-12-31T12:00:00+00:00",
+   "now": "2026-07-06T00:00:00Z",
+   "want": 26
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "date": "2026-07-12T23:59:59Z",
+   "want": 28
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 8
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 8
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 16
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 16
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2025-12-31T12:00:00+00:00",
+   "now": "2026-07-12T23:59:59Z",
+   "want": 27
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "date": "2026-07-13T00:00:01Z",
+   "want": 29
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 8
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 8
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 16
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 16
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2025-12-31T12:00:00+00:00",
+   "now": "2026-07-13T00:00:01Z",
+   "want": 27
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "date": "2026-09-24T18:00:00Z",
+   "want": 39
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2025-12-31T12:00:00+00:00",
+   "now": "2026-09-24T18:00:00Z",
+   "want": 38
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "date": "2027-01-04T09:00:00Z",
+   "want": 54
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2025-12-31T12:00:00+00:00",
+   "now": "2027-01-04T09:00:00Z",
+   "want": 52
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "week": 1,
+   "dayOfWeek": 0,
+   "want": "2026-01-04"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "week": 1,
+   "dayOfWeek": 1,
+   "want": "2025-12-29"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "week": 1,
+   "dayOfWeek": 2,
+   "want": "2025-12-30"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "week": 1,
+   "dayOfWeek": 3,
+   "want": "2025-12-31"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "week": 1,
+   "dayOfWeek": 4,
+   "want": "2026-01-01"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "week": 1,
+   "dayOfWeek": 5,
+   "want": "2026-01-02"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "week": 1,
+   "dayOfWeek": 6,
+   "want": "2026-01-03"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "week": 2,
+   "dayOfWeek": 0,
+   "want": "2026-01-11"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "week": 2,
+   "dayOfWeek": 1,
+   "want": "2026-01-05"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "week": 2,
+   "dayOfWeek": 2,
+   "want": "2026-01-06"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "week": 2,
+   "dayOfWeek": 3,
+   "want": "2026-01-07"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "week": 2,
+   "dayOfWeek": 4,
+   "want": "2026-01-08"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "week": 2,
+   "dayOfWeek": 5,
+   "want": "2026-01-09"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "week": 2,
+   "dayOfWeek": 6,
+   "want": "2026-01-10"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "week": 8,
+   "dayOfWeek": 0,
+   "want": "2026-02-22"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "week": 8,
+   "dayOfWeek": 1,
+   "want": "2026-02-16"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "week": 8,
+   "dayOfWeek": 2,
+   "want": "2026-02-17"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "week": 8,
+   "dayOfWeek": 3,
+   "want": "2026-02-18"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "week": 8,
+   "dayOfWeek": 4,
+   "want": "2026-02-19"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "week": 8,
+   "dayOfWeek": 5,
+   "want": "2026-02-20"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2025-12-31T12:00:00+00:00",
+   "week": 8,
+   "dayOfWeek": 6,
+   "want": "2026-02-21"
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "date": "2026-07-05T15:00:00Z",
+   "want": 19
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-05T15:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-03-01T08:00:00+00:00",
+   "now": "2026-07-05T15:00:00Z",
+   "want": 18
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "date": "2026-07-06T00:00:00Z",
+   "want": 20
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-06T00:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-03-01T08:00:00+00:00",
+   "now": "2026-07-06T00:00:00Z",
+   "want": 18
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "date": "2026-07-12T23:59:59Z",
+   "want": 20
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 8
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 8
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 16
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-12T23:59:59Z",
+   "want": 16
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-03-01T08:00:00+00:00",
+   "now": "2026-07-12T23:59:59Z",
+   "want": 19
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "date": "2026-07-13T00:00:01Z",
+   "want": 21
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 8
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 8
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 16
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-07-13T00:00:01Z",
+   "want": 16
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-03-01T08:00:00+00:00",
+   "now": "2026-07-13T00:00:01Z",
+   "want": 19
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "date": "2026-09-24T18:00:00Z",
+   "want": 31
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2026-09-24T18:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-03-01T08:00:00+00:00",
+   "now": "2026-09-24T18:00:00Z",
+   "want": 29
+  },
+  {
+   "fn": "planWeekForDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "date": "2027-01-04T09:00:00Z",
+   "want": 46
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 1,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 1
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 8,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "planWeekOf",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "lastElapsedPlanWeek",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "weeksTotal": 16,
+   "now": "2027-01-04T09:00:00Z",
+   "want": 16
+  },
+  {
+   "fn": "weeksSince",
+   "timestamp": "2026-03-01T08:00:00+00:00",
+   "now": "2027-01-04T09:00:00Z",
+   "want": 44
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "week": 1,
+   "dayOfWeek": 0,
+   "want": "2026-03-01"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "week": 1,
+   "dayOfWeek": 1,
+   "want": "2026-02-23"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "week": 1,
+   "dayOfWeek": 2,
+   "want": "2026-02-24"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "week": 1,
+   "dayOfWeek": 3,
+   "want": "2026-02-25"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "week": 1,
+   "dayOfWeek": 4,
+   "want": "2026-02-26"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "week": 1,
+   "dayOfWeek": 5,
+   "want": "2026-02-27"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "week": 1,
+   "dayOfWeek": 6,
+   "want": "2026-02-28"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "week": 2,
+   "dayOfWeek": 0,
+   "want": "2026-03-08"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "week": 2,
+   "dayOfWeek": 1,
+   "want": "2026-03-02"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "week": 2,
+   "dayOfWeek": 2,
+   "want": "2026-03-03"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "week": 2,
+   "dayOfWeek": 3,
+   "want": "2026-03-04"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "week": 2,
+   "dayOfWeek": 4,
+   "want": "2026-03-05"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "week": 2,
+   "dayOfWeek": 5,
+   "want": "2026-03-06"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "week": 2,
+   "dayOfWeek": 6,
+   "want": "2026-03-07"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "week": 8,
+   "dayOfWeek": 0,
+   "want": "2026-04-19"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "week": 8,
+   "dayOfWeek": 1,
+   "want": "2026-04-13"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "week": 8,
+   "dayOfWeek": 2,
+   "want": "2026-04-14"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "week": 8,
+   "dayOfWeek": 3,
+   "want": "2026-04-15"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "week": 8,
+   "dayOfWeek": 4,
+   "want": "2026-04-16"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "week": 8,
+   "dayOfWeek": 5,
+   "want": "2026-04-17"
+  },
+  {
+   "fn": "planItemDate",
+   "createdAt": "2026-03-01T08:00:00+00:00",
+   "week": 8,
+   "dayOfWeek": 6,
+   "want": "2026-04-18"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2026-07-06T18:32:45.018Z",
+   "want": "2026-07-06"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2025-06-25T14:57:22.650Z",
+   "want": "2025-06-23"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2025-03-10T14:12:43.050Z",
+   "want": "2025-03-10"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2026-07-31T10:59:40.203Z",
+   "want": "2026-07-27"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2026-12-26T05:30:22.663Z",
+   "want": "2026-12-21"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2026-09-16T17:46:28.947Z",
+   "want": "2026-09-14"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2026-06-13T00:19:54.170Z",
+   "want": "2026-06-08"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2026-01-08T07:12:39.318Z",
+   "want": "2026-01-05"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2026-12-19T06:54:53.211Z",
+   "want": "2026-12-14"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2026-08-28T17:21:48.957Z",
+   "want": "2026-08-24"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2025-07-22T00:27:23.186Z",
+   "want": "2025-07-21"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2026-09-27T04:59:56.036Z",
+   "want": "2026-09-21"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2025-08-07T02:57:29.830Z",
+   "want": "2025-08-04"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2026-01-12T23:47:57.988Z",
+   "want": "2026-01-12"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2025-07-16T01:56:33.636Z",
+   "want": "2025-07-14"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2026-11-10T07:36:30.894Z",
+   "want": "2026-11-09"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2025-11-23T23:39:27.710Z",
+   "want": "2025-11-17"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2025-08-06T09:15:59.250Z",
+   "want": "2025-08-04"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2025-06-23T20:51:40.987Z",
+   "want": "2025-06-23"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2026-08-01T21:05:29.397Z",
+   "want": "2026-07-27"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2026-02-14T19:19:17.928Z",
+   "want": "2026-02-09"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2026-06-04T03:21:03.986Z",
+   "want": "2026-06-01"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2026-05-24T13:51:46.282Z",
+   "want": "2026-05-18"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2025-09-10T18:41:35.714Z",
+   "want": "2025-09-08"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2026-05-03T00:11:42.164Z",
+   "want": "2026-04-27"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2027-01-16T08:11:47.267Z",
+   "want": "2027-01-11"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2025-10-08T20:59:25.651Z",
+   "want": "2025-10-06"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2025-07-19T04:12:19.032Z",
+   "want": "2025-07-14"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2026-10-29T06:41:36.145Z",
+   "want": "2026-10-26"
+  },
+  {
+   "fn": "mondayOf",
+   "date": "2027-03-10T00:19:45.884Z",
+   "want": "2027-03-08"
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2026-07-05",
+   "now": "2026-07-05T15:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2026-07-13",
+   "now": "2026-07-05T15:00:00Z",
+   "want": 8
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2026-12-25",
+   "now": "2026-07-05T15:00:00Z",
+   "want": 173
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2020-01-01",
+   "now": "2026-07-05T15:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "yearsSince",
+   "date": "1990-07-06",
+   "now": "2026-07-05T15:00:00Z",
+   "want": 35
+  },
+  {
+   "fn": "yearsSince",
+   "date": "1990-07-05",
+   "now": "2026-07-05T15:00:00Z",
+   "want": 36
+  },
+  {
+   "fn": "yearsSince",
+   "date": "2000-02-29",
+   "now": "2026-07-05T15:00:00Z",
+   "want": 26
+  },
+  {
+   "fn": "yearsSince",
+   "date": "",
+   "now": "2026-07-05T15:00:00Z",
+   "want": null
+  },
+  {
+   "fn": "yearsSince",
+   "date": null,
+   "now": "2026-07-05T15:00:00Z",
+   "want": null
+  },
+  {
+   "fn": "yearsSince",
+   "date": "not-a-date",
+   "now": "2026-07-05T15:00:00Z",
+   "want": null
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2026-07-05",
+   "now": "2026-07-06T00:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2026-07-13",
+   "now": "2026-07-06T00:00:00Z",
+   "want": 7
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2026-12-25",
+   "now": "2026-07-06T00:00:00Z",
+   "want": 172
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2020-01-01",
+   "now": "2026-07-06T00:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "yearsSince",
+   "date": "1990-07-06",
+   "now": "2026-07-06T00:00:00Z",
+   "want": 36
+  },
+  {
+   "fn": "yearsSince",
+   "date": "1990-07-05",
+   "now": "2026-07-06T00:00:00Z",
+   "want": 36
+  },
+  {
+   "fn": "yearsSince",
+   "date": "2000-02-29",
+   "now": "2026-07-06T00:00:00Z",
+   "want": 26
+  },
+  {
+   "fn": "yearsSince",
+   "date": "",
+   "now": "2026-07-06T00:00:00Z",
+   "want": null
+  },
+  {
+   "fn": "yearsSince",
+   "date": null,
+   "now": "2026-07-06T00:00:00Z",
+   "want": null
+  },
+  {
+   "fn": "yearsSince",
+   "date": "not-a-date",
+   "now": "2026-07-06T00:00:00Z",
+   "want": null
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2026-07-05",
+   "now": "2026-07-12T23:59:59Z",
+   "want": 0
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2026-07-13",
+   "now": "2026-07-12T23:59:59Z",
+   "want": 1
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2026-12-25",
+   "now": "2026-07-12T23:59:59Z",
+   "want": 166
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2020-01-01",
+   "now": "2026-07-12T23:59:59Z",
+   "want": 0
+  },
+  {
+   "fn": "yearsSince",
+   "date": "1990-07-06",
+   "now": "2026-07-12T23:59:59Z",
+   "want": 36
+  },
+  {
+   "fn": "yearsSince",
+   "date": "1990-07-05",
+   "now": "2026-07-12T23:59:59Z",
+   "want": 36
+  },
+  {
+   "fn": "yearsSince",
+   "date": "2000-02-29",
+   "now": "2026-07-12T23:59:59Z",
+   "want": 26
+  },
+  {
+   "fn": "yearsSince",
+   "date": "",
+   "now": "2026-07-12T23:59:59Z",
+   "want": null
+  },
+  {
+   "fn": "yearsSince",
+   "date": null,
+   "now": "2026-07-12T23:59:59Z",
+   "want": null
+  },
+  {
+   "fn": "yearsSince",
+   "date": "not-a-date",
+   "now": "2026-07-12T23:59:59Z",
+   "want": null
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2026-07-05",
+   "now": "2026-07-13T00:00:01Z",
+   "want": 0
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2026-07-13",
+   "now": "2026-07-13T00:00:01Z",
+   "want": 0
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2026-12-25",
+   "now": "2026-07-13T00:00:01Z",
+   "want": 165
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2020-01-01",
+   "now": "2026-07-13T00:00:01Z",
+   "want": 0
+  },
+  {
+   "fn": "yearsSince",
+   "date": "1990-07-06",
+   "now": "2026-07-13T00:00:01Z",
+   "want": 36
+  },
+  {
+   "fn": "yearsSince",
+   "date": "1990-07-05",
+   "now": "2026-07-13T00:00:01Z",
+   "want": 36
+  },
+  {
+   "fn": "yearsSince",
+   "date": "2000-02-29",
+   "now": "2026-07-13T00:00:01Z",
+   "want": 26
+  },
+  {
+   "fn": "yearsSince",
+   "date": "",
+   "now": "2026-07-13T00:00:01Z",
+   "want": null
+  },
+  {
+   "fn": "yearsSince",
+   "date": null,
+   "now": "2026-07-13T00:00:01Z",
+   "want": null
+  },
+  {
+   "fn": "yearsSince",
+   "date": "not-a-date",
+   "now": "2026-07-13T00:00:01Z",
+   "want": null
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2026-07-05",
+   "now": "2026-09-24T18:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2026-07-13",
+   "now": "2026-09-24T18:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2026-12-25",
+   "now": "2026-09-24T18:00:00Z",
+   "want": 92
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2020-01-01",
+   "now": "2026-09-24T18:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "yearsSince",
+   "date": "1990-07-06",
+   "now": "2026-09-24T18:00:00Z",
+   "want": 36
+  },
+  {
+   "fn": "yearsSince",
+   "date": "1990-07-05",
+   "now": "2026-09-24T18:00:00Z",
+   "want": 36
+  },
+  {
+   "fn": "yearsSince",
+   "date": "2000-02-29",
+   "now": "2026-09-24T18:00:00Z",
+   "want": 26
+  },
+  {
+   "fn": "yearsSince",
+   "date": "",
+   "now": "2026-09-24T18:00:00Z",
+   "want": null
+  },
+  {
+   "fn": "yearsSince",
+   "date": null,
+   "now": "2026-09-24T18:00:00Z",
+   "want": null
+  },
+  {
+   "fn": "yearsSince",
+   "date": "not-a-date",
+   "now": "2026-09-24T18:00:00Z",
+   "want": null
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2026-07-05",
+   "now": "2027-01-04T09:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2026-07-13",
+   "now": "2027-01-04T09:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2026-12-25",
+   "now": "2027-01-04T09:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "daysUntil",
+   "date": "2020-01-01",
+   "now": "2027-01-04T09:00:00Z",
+   "want": 0
+  },
+  {
+   "fn": "yearsSince",
+   "date": "1990-07-06",
+   "now": "2027-01-04T09:00:00Z",
+   "want": 36
+  },
+  {
+   "fn": "yearsSince",
+   "date": "1990-07-05",
+   "now": "2027-01-04T09:00:00Z",
+   "want": 36
+  },
+  {
+   "fn": "yearsSince",
+   "date": "2000-02-29",
+   "now": "2027-01-04T09:00:00Z",
+   "want": 26
+  },
+  {
+   "fn": "yearsSince",
+   "date": "",
+   "now": "2027-01-04T09:00:00Z",
+   "want": null
+  },
+  {
+   "fn": "yearsSince",
+   "date": null,
+   "now": "2027-01-04T09:00:00Z",
+   "want": null
+  },
+  {
+   "fn": "yearsSince",
+   "date": "not-a-date",
+   "now": "2027-01-04T09:00:00Z",
+   "want": null
+  }
+ ]
+}
