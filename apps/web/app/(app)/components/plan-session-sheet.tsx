@@ -6,7 +6,9 @@ import { BottomSheet } from "@/components/design-system/bottom-sheet";
 import { planItemDetailLine, planItemTypeLabel, planItemVideoUrl } from "@/lib/plan-items";
 import { weekDayOf } from "@/lib/week-days";
 import { PlanTypeIcon } from "./plan-type-icon";
-import type { PlanItem } from "./types";
+import type { components } from "@/lib/api/schema";
+
+type PlanItem = components["schemas"]["PlanItemBody"];
 
 function DetailRow({ label, value, icon }: { label: string; value: string; icon?: ReactNode }) {
   return (

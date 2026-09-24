@@ -144,6 +144,143 @@
         ],
         "type": "object"
       },
+      "CalendarBody": {
+        "additionalProperties": false,
+        "properties": {
+          "days": {
+            "items": {
+              "$ref": "#/components/schemas/CalendarDayBody"
+            },
+            "type": "array"
+          },
+          "isCurrentWeek": {
+            "type": "boolean"
+          },
+          "nextWeek": {
+            "format": "date",
+            "type": "string"
+          },
+          "prevWeek": {
+            "format": "date",
+            "type": "string"
+          },
+          "quotas": {
+            "description": "Weekly targets scored on the viewed week",
+            "items": {
+              "$ref": "#/components/schemas/QuotaBody"
+            },
+            "type": "array"
+          },
+          "today": {
+            "format": "date",
+            "type": "string"
+          },
+          "weekEnd": {
+            "format": "date",
+            "type": "string"
+          },
+          "weekStart": {
+            "format": "date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "weekStart",
+          "weekEnd",
+          "prevWeek",
+          "nextWeek",
+          "today",
+          "isCurrentWeek",
+          "quotas",
+          "days"
+        ],
+        "type": "object"
+      },
+      "CalendarDayBody": {
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "format": "date",
+            "type": "string"
+          },
+          "dayOfWeek": {
+            "format": "int64",
+            "maximum": 6,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "hardCollision": {
+            "description": "2+ run/strength items that day",
+            "type": "boolean"
+          },
+          "isToday": {
+            "type": "boolean"
+          },
+          "logged": {
+            "description": "Any completed log that day",
+            "type": "boolean"
+          },
+          "planItems": {
+            "description": "Blended across every active plan, each in its own week",
+            "items": {
+              "$ref": "#/components/schemas/PlanItemBody"
+            },
+            "type": "array"
+          },
+          "routines": {
+            "items": {
+              "$ref": "#/components/schemas/CalendarRoutineBody"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "date",
+          "dayOfWeek",
+          "isToday",
+          "logged",
+          "routines",
+          "planItems",
+          "hardCollision"
+        ],
+        "type": "object"
+      },
+      "CalendarRoutineBody": {
+        "additionalProperties": false,
+        "properties": {
+          "done": {
+            "description": "A completed log of the sport that day",
+            "type": "boolean"
+          },
+          "sportName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "sportTypeId": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "time": {
+            "description": "HH:MM",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "sportTypeId",
+          "sportName",
+          "time",
+          "done"
+        ],
+        "type": "object"
+      },
       "ChangeInputBody": {
         "additionalProperties": false,
         "properties": {
@@ -2300,6 +2437,69 @@
         "summary": "Confirm an email address from the emailed link",
         "tags": [
           "auth"
+        ]
+      }
+    },
+    "/calendar": {
+      "get": {
+        "operationId": "getCalendar",
+        "parameters": [
+          {
+            "description": "Any date of the week (YYYY-MM-DD); this week when missing or invalid",
+            "explode": false,
+            "in": "query",
+            "name": "week",
+            "schema": {
+              "description": "Any date of the week (YYYY-MM-DD); this week when missing or invalid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendarBody"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "A week of routine, plan items, and logged workouts on real dates",
+        "tags": [
+          "calendar"
         ]
       }
     },

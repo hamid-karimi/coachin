@@ -5,6 +5,19 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-24 (night, final+2) · #72 merged (3.3d) · Phase 3.4 — Calendar
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): `app/calendar`
++ `CalendarStore` (schedules overlapping the week, items of every active plan's week in
+one query — plan and calendar weeks are both Monday-anchored), `GET /calendar?week=`;
+web `/calendar` (week nav, weekly targets, day cards with routine/plan sheets, rest
+days, collision chip); plan sheet + type icon moved to `app/(app)/components`; plan
+progress mutations refetch the calendar. e2e: this week, plan sheet, Next/Prev.
+
+**Next steps**: merge the 3.4 PR; then 3.5 Nutrition (largest remaining
+module: USDA proxy, meal logs, photo estimate, meal plans — also adds the calendar's
+meal-plan line and Today's menu).
+
 ## 2026-09-24 (night, final+1) · #71 merged (3.3c) · Phase 3.3d — watch-file parsing
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): `adapters/watchfile`

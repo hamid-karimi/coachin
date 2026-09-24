@@ -7,7 +7,7 @@ import { WEEK_DAYS } from "@/lib/week-days";
 import { useDeleteSchedule, useRoutine } from "../hooks/use-routine";
 import { useTodayDow } from "../hooks/use-today-dow";
 import { PlanSessionCard } from "./plan-session-card";
-import { PlanSessionSheet } from "./plan-session-sheet";
+import { PlanSessionSheet } from "../../components/plan-session-sheet";
 import { RoutineSessionCard } from "./routine-session-card";
 import type { PlanItem } from "./types";
 

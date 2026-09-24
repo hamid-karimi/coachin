@@ -15,6 +15,7 @@ export function useConfirmCheckin() {
         ["get", "/training/programs"],
         ["get", "/today"],
         ["get", "/routine"],
+        ["get", "/calendar"],
       ],
       () => router.push("/training"),
     ),

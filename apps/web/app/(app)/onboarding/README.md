@@ -49,8 +49,9 @@ are the legacy ones ("Please pick at least one day.", "Sessions per week must be
   - `add-weekly-target-form.tsx` — 1–14 stepper
   - `weekly-target-list.tsx` — "n/m this week" rows with remove
   - `week-agenda.tsx` — Monday-first day rows: routine cards (remove) + AI plan cards
-    (open `plan-session-sheet.tsx`); empty-week guidance
-  - `routine-session-card.tsx`, `plan-session-card.tsx`, `plan-type-icon.tsx`
+    (open the shared `app/(app)/components/plan-session-sheet.tsx`); empty-week guidance
+  - `routine-session-card.tsx`, `plan-session-card.tsx` (icon: shared
+    `app/(app)/components/plan-type-icon.tsx`)
   - `complete-onboarding-button.tsx` — "N days planned · est. ~X XP / week" + Finish
   - `page-header.tsx`, `types.ts` (API schema aliases)
 

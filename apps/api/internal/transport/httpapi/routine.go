@@ -129,14 +129,18 @@ func routineBody(week routine.Week) RoutineBody {
 		}
 	}
 	for i, q := range week.Quotas {
-		body.Quotas[i] = QuotaBody{
-			ID: q.ID, SportTypeID: q.SportTypeID, SportName: q.SportName, SessionsPerWeek: q.SessionsPerWeek, DoneThisWeek: q.DoneThisWeek,
-		}
+		body.Quotas[i] = quotaBody(q)
 	}
 	for i, item := range week.PlanItems {
 		body.PlanItems[i] = planItemBody(item)
 	}
 	return body
+}
+
+func quotaBody(q routine.QuotaProgress) QuotaBody {
+	return QuotaBody{
+		ID: q.ID, SportTypeID: q.SportTypeID, SportName: q.SportName, SessionsPerWeek: q.SessionsPerWeek, DoneThisWeek: q.DoneThisWeek,
+	}
 }
 
 func sessionsAdded(n int) string {

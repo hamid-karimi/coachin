@@ -43,7 +43,7 @@ inactive; every coach feature checks for an **active** relationship.
 | --- | --- | --- |
 | `/onboarding` | "My week" editor: fixed weekly sessions (anchors) + weekly targets (quotas). Also the first-run flow. **Ported to the rewrite.** | [README](apps/web/app/(app)/onboarding/README.md) |
 | `/dashboard` | "Today": today's routine + plan items, logging, streaks, hearts, XP. **Ported to the rewrite**, including the daily stack. | [README](apps/web/app/(app)/dashboard/README.md) |
-| `/calendar` | Week view blending routine + all active plan items + logged state | [README](legacy/app/calendar/README.md) |
+| `/calendar` | Week view blending routine + all active plan items + logged state. **Rewrite: ported** (meal-plan line arrives with Nutrition) | [README](apps/web/app/(app)/calendar/README.md) |
 | `/training` | Program manager: create (AI wizards), archive, weekly check-ins. **Rewrite: list, archive, .ics export, AI wizards (with watch-file upload), check-ins ported**. | [README](apps/web/app/(app)/training/README.md) |
 | `/training/new` | Plan wizards (running / muscle building); coach mode via `?student=<id>` | [README](legacy/app/training/README.md) |
 | `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan | [README](legacy/app/nutrition/README.md) |
@@ -223,8 +223,7 @@ arrive with their modules; the daily stack is journey 5, steps 5–7):
 - No plan → "Train for a marathon" card; with plans → "Training plan(s) · n items today".
 - Weekly targets show as "This week" chips; a progress-photo link appears when you've
   been active and have no progress photo in 28 days.
-- Training, Calendar, and Nutrition tabs show placeholders until those modules land
-  (Training links to My week).
+- The Nutrition tab shows a placeholder until that module lands.
 
 ### 4. Calendar
 
@@ -241,6 +240,20 @@ arrive with their modules; the daily stack is journey 5, steps 5–7):
    of plan kcal" ("No meals logged" when nothing was logged). Future days keep
    the plain "N meals planned" link with no adherence. It's informational —
    never changes XP, streaks, or hearts (FORMULAS.md §13, Meal adherence).
+
+**Rewrite stack — Calendar (3.4)**: steps 1–3 as above; step 4 (meal plan line and
+adherence) arrives with Nutrition.
+- Header: "Edit routine" → My week, "Manage programs" → `/training`.
+- "Prev" / "Next" move a week (`/calendar?week=<Monday>`); the label reads
+  "Sep 21 – Sep 27 · this week" on the current week. A bad `?week=` shows this week.
+- "Weekly targets" chips score the **viewed** week's completed logs (hidden without
+  targets).
+- Each day lists routine sessions active that date (respecting "repeat until" and start
+  dates; struck through once that sport is logged that day, "routine" tag) and every
+  active plan's items for that date — two plans can sit on one day, each in its own
+  week — or "Rest". A done plan item is struck through.
+- Marking a plan item done/undone on Today (or logging a session) is reflected on the
+  calendar right away.
 
 ### 5. Nutrition
 

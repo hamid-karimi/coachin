@@ -165,7 +165,11 @@ Order (dependencies first, risk front-loaded):
         +20 XP); `domain/aigen` feedback/adjustment ports (golden `ai.json`); web "Log
         details" sheet (RPE, run fields, per-set strength editor replaying
         `workout-sets.json`), check-in page, `components/ui/textarea`.
-- [ ] 3.4 **Calendar** — `GET /calendar?week=`, ICS endpoint (S)
+- [x] 3.4 **Calendar** — `GET /calendar?week=` (`app/calendar`: schedules in their date
+      window, every active plan's week — plan and calendar weeks are both Monday-anchored,
+      so one query covers the week — logged/done state, viewed-week quota progress,
+      collision chip); web `/calendar`; the shared plan sheet/icon moved to
+      `app/(app)/components`. ICS export shipped in 3.3a. Meal-plan line → 3.5.
 - [ ] 3.5 **Nutrition** — USDA proxy, meal logs, photo estimate + batch confirm, day/trends,
       meal plans (M)
 - [ ] 3.6 **Profile** — profile/measurements, goals, activity import, photos (Garage
