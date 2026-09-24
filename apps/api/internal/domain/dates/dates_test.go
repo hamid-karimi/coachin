@@ -72,3 +72,17 @@ func TestDatesMatchLegacy(t *testing.T) {
 		}
 	}
 }
+
+func TestWeekRange(t *testing.T) {
+	cases := map[string][2]string{
+		"2026-09-24": {"2026-09-21", "2026-09-27"}, // Thursday
+		"2026-09-21": {"2026-09-21", "2026-09-27"}, // Monday
+		"2026-09-27": {"2026-09-21", "2026-09-27"}, // Sunday
+	}
+	for day, want := range cases {
+		d, _ := time.Parse(YMDLayout, day)
+		if mon, sun := WeekRange(d); [2]string{mon, sun} != want {
+			t.Errorf("WeekRange(%s) = %s..%s, want %v", day, mon, sun, want)
+		}
+	}
+}

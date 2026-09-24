@@ -1,21 +1,44 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { HydrationBoundary } from "@tanstack/react-query";
+import { CalendarRange, UtensilsCrossed } from "lucide-react";
 import { getMe } from "@/app/lib/me-data";
-import { ComingSoon } from "../components/coming-soon";
+import { prefetchQueries } from "@/app/lib/prefetch";
+import { EntryCard } from "./components/entry-card";
+import { PlanAndTargets } from "./components/plan-and-targets";
+import { ProgressOverview } from "./components/progress-overview";
+import { ProgressPhotoNudge } from "./components/progress-photo-nudge";
+import { TodayHeader } from "./components/today-header";
+import { TodaysPlan } from "./components/todays-plan";
 
 export const metadata: Metadata = { title: "Today · CoachIn" };
 
 export default async function DashboardPage() {
-  const me = await getMe();
+  const [me, state] = await Promise.all([
+    getMe(),
+    prefetchQueries((api, qc) => [qc.prefetchQuery(api.queryOptions("get", "/today"))]),
+  ]);
   return (
-    <ComingSoon
-      title='Today'
-      greeting={`Signed in as ${me?.fullName || me?.email}`}
-      next='Your plan, streak, and XP arrive here with the dashboard module.'>
-      <Button asChild variant='outline' className='self-start'>
-        <Link href='/onboarding'>Edit my week</Link>
-      </Button>
-    </ComingSoon>
+    <HydrationBoundary state={state}>
+      <div className='mx-auto flex w-full max-w-4xl flex-col gap-5'>
+        <TodayHeader name={me?.fullName || me?.email || "athlete"} />
+        <ProgressOverview />
+        <PlanAndTargets />
+        <EntryCard
+          href='/calendar'
+          icon={CalendarRange}
+          title='This week'
+          subtitle='Routine, plan, and logged workouts on real dates'
+        />
+        <EntryCard
+          href='/nutrition'
+          icon={UtensilsCrossed}
+          tone='flame'
+          title='Nutrition'
+          subtitle='Log meals by search or photo · +5 XP each (first 3 daily)'
+        />
+        <ProgressPhotoNudge />
+        <TodaysPlan />
+      </div>
+    </HydrationBoundary>
   );
 }

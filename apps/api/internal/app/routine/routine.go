@@ -155,11 +155,17 @@ func (s *Service) quotaProgress(ctx context.Context, userID uuid.UUID, now time.
 	if err != nil {
 		return nil, fmt.Errorf("load quotas: %w", err)
 	}
-	monday := dates.MondayOf(now)
-	logs, err := s.store.Logs(ctx, userID, dates.ToYMD(monday), dates.ToYMD(monday.AddDate(0, 0, 6)))
+	monday, sunday := dates.WeekRange(now)
+	logs, err := s.store.Logs(ctx, userID, monday, sunday)
 	if err != nil {
 		return nil, fmt.Errorf("load week logs: %w", err)
 	}
+	return ProgressFor(stored, logs), nil
+}
+
+// ProgressFor pairs each weekly target with its completed days among logs
+// (one week's worth; the caller picks the window).
+func ProgressFor(stored []Quota, logs []quotas.Log) []QuotaProgress {
 	targets := make([]quotas.Target, len(stored))
 	for i, q := range stored {
 		targets[i] = quotas.Target{SportTypeID: q.SportTypeID, SessionsPerWeek: q.SessionsPerWeek}
@@ -168,7 +174,7 @@ func (s *Service) quotaProgress(ctx context.Context, userID uuid.UUID, now time.
 	for i, p := range quotas.ProgressOf(targets, logs) {
 		progress[i] = QuotaProgress{Quota: stored[i], DoneThisWeek: p.Done}
 	}
-	return progress, nil
+	return progress
 }
 
 func (s *Service) currentPlanWeek(ctx context.Context, userID uuid.UUID, now time.Time) ([]PlanItem, error) {

@@ -41,3 +41,28 @@ export function planItemTypeLabel(type: string): string {
   const spaced = type.replace(/_/g, " ").trim();
   return spaced ? spaced.charAt(0).toUpperCase() + spaced.slice(1) : "Session";
 }
+
+const RECOVERY_WALK = /walk|jog|hike|stroll|spin|swim|bike|cycle/i;
+
+/**
+ * The visual variant of an item: a recovery that is really a light walk or
+ * spin reads as "recovery_active" (footsteps, not a bed).
+ */
+export function planItemVisualType(item: { itemType: string; title: string }): string {
+  return item.itemType === "recovery" && RECOVERY_WALK.test(item.title) ? "recovery_active" : item.itemType;
+}
+
+/** Whether an item has a done toggle (meal notes don't). */
+export function isCheckable(itemType: string): boolean {
+  return itemType !== "meal_note";
+}
+
+/**
+ * Whether an item dated `date` (YYYY-MM-DD) can be marked done on `today`
+ * (YYYY-MM-DD): its day or the day after. The API enforces the same rule.
+ */
+export function logWindowOpen(date: string, today: string): boolean {
+  const dayAfter = new Date(`${date}T00:00:00Z`);
+  dayAfter.setUTCDate(dayAfter.getUTCDate() + 1);
+  return today >= date && today <= dayAfter.toISOString().slice(0, 10);
+}

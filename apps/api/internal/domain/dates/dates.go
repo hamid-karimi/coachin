@@ -33,6 +33,12 @@ func MondayOf(t time.Time) time.Time {
 	return midnight.AddDate(0, 0, -offset)
 }
 
+// WeekRange is the Monday and Sunday (YYYY-MM-DD) of t's week.
+func WeekRange(t time.Time) (monday, sunday string) {
+	start := MondayOf(t)
+	return ToYMD(start), ToYMD(start.AddDate(0, 0, 6))
+}
+
 // PlanWeekForDate is which 1-based plan week date falls in; week 1 is the
 // Monday-anchored week containing createdAt. May be out of the plan's range.
 func PlanWeekForDate(createdAt, date time.Time) int {

@@ -36,7 +36,7 @@ level = floor(totalXp / 1000) + 1
 
 | Action | XP | Reason key | Idempotent by | Source |
 |---|---|---|---|---|
-| Routine workout log | `round(60 × sport.xp_multiplier)` | `workout_log:<sportId>` | — (one per submit) | `legacy/app/dashboard/actions.ts` |
+| Routine workout log | `round(60 × sport.xp_multiplier)` | `workout_log:<sportId>:<date>` (legacy rows: `workout_log:<sportId>`) | per sport per day | Go: `apps/api/internal/app/today` (`LogWorkout`); legacy `legacy/app/dashboard/actions.ts` |
 | Plan item — run | **60** | `plan_item:<id>` | per item (undo compensates) | `complete_plan_item` |
 | Plan item — strength | **60** | `plan_item:<id>` | per item | `complete_plan_item` |
 | Plan item — stretch | **30** | `plan_item:<id>` | per item | `complete_plan_item` |
@@ -53,6 +53,11 @@ level = floor(totalXp / 1000) + 1
   sport's `xp_multiplier`, plan items use fixed per-type values above.
 - **Multiplier default:** a sport with no (or zero) `xp_multiplier` counts as **1**
   (`xp.Multiplier`).
+- **One routine log per sport per day** (rewrite): the API refuses a second log of the
+  same sport on the same date (legacy only hid the button). Completion on Today is per
+  sport: logging it completes every session of that sport that day.
+- **Plan-item done window**: done only on the item's date or the day after (undo any
+  time) — enforced by the API (`domain/planitem.LogWindowOpen`), not just the button.
 - **"My week" estimate** (display only, awards nothing):
   `round(Σ over fixed sessions of 60 × multiplier)` — rounded once over the sum, not per
   session. Go: `apps/api/internal/domain/xp` (`EstimatedWeeklyXP`); legacy:

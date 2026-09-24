@@ -42,7 +42,7 @@ inactive; every coach feature checks for an **active** relationship.
 | Route | What it does | Docs |
 | --- | --- | --- |
 | `/onboarding` | "My week" editor: fixed weekly sessions (anchors) + weekly targets (quotas). Also the first-run flow. **Ported to the rewrite.** | [README](apps/web/app/(app)/onboarding/README.md) |
-| `/dashboard` | "Today": today's routine + plan items, logging, streaks, hearts, XP | [README](legacy/app/dashboard/README.md) |
+| `/dashboard` | "Today": today's routine + plan items, logging, streaks, hearts, XP. **Ported to the rewrite** (supplements next). | [README](apps/web/app/(app)/dashboard/README.md) |
 | `/calendar` | Week view blending routine + all active plan items + logged state | [README](legacy/app/calendar/README.md) |
 | `/training` | Program manager: create (AI wizards), archive, weekly check-ins | [README](legacy/app/training/README.md) |
 | `/training/new` | Plan wizards (running / muscle building); coach mode via `?student=<id>` | [README](legacy/app/training/README.md) |
@@ -144,6 +144,28 @@ Training tab is highlighted there).
    a <thing> 🚗/🐘" + confetti. **Volume must never change the XP amount.**
 4. Logging the same plan item twice must be rejected ("Session already
    logged").
+
+**Rewrite stack** (Today is ported; the per-set editor / "Log details" arrives with
+Training, and supplements, meals, goal strip, coaching card, and group nudge arrive
+with their modules):
+- Header shows the date, "Hi, <first name>", the streak badge, and initials. Level
+  ring + XP bar, hearts ("N hearts · a missed day costs one"), and (desktop) the
+  Level / Streak / Total XP / League stat row.
+- Opening Today settles the streak for past days first: a missed required day spends
+  a heart (streak frozen); with 0 hearts the streak resets and hearts refill to 3.
+- "Log it" → toast "+N XP earned", the card turns into the reward state (XP, next
+  streak) with confetti, and "x of y done" updates. **A sport can be logged once per
+  day** — a second log (e.g. from another tab) is refused ("Already logged today —
+  nice work."); two sessions of the same sport on one day both show done.
+- Plan item toggle: done → "+60/+30/+20 XP earned" (by type), undo → "Undone · -N XP";
+  done → undo → done nets the XP once. The API refuses "done" outside the item's day
+  and the day after, even if the button were forced.
+- 2+ run/strength items today show "2 intense workouts today — consider spacing them."
+- No plan → "Train for a marathon" card; with plans → "Training plan(s) · n items today".
+- Weekly targets show as "This week" chips; a progress-photo link appears when you've
+  been active and have no progress photo in 28 days.
+- Training, Calendar, and Nutrition tabs show placeholders until those modules land
+  (Training links to My week).
 
 ### 4. Calendar
 
