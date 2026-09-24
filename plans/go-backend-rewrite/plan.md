@@ -61,20 +61,20 @@ Goal: `make up` on your Mac starts an empty but working stack.
       the legacy `@/` imports): runs the legacy `lib/*` functions over edge cases + seeded
       random inputs (clock pinned per case, `TZ=UTC`) → `testdata/golden/<topic>.json`. CI
       regenerates and fails on drift.
-- [ ] 1.5 Port to `apps/api/internal/domain/` with table-driven tests on the vectors. Done:
+- [x] 1.5 Ported to `apps/api/internal/domain/`, each package replaying its legacy vectors:
       xp §1, streak §2, tiers §3, running §4, goals §6, scorecard / check-in / stall §7,
       dates §9, nutrition targets §10, quotas §11, workout sets / volume §12, supplements +
-      meal adherence §13, food units, nutrition trends, grocery list (+ `jsnum`: JavaScript
-      `Math.round`, `Number()`, `String()`, `trim`/`slice` parity). Remaining (server-side):
-      race intake §5 (in `generatePlanAction`), activity import §14, progress charts +
-      photo nudge §15, schedule inserts, user country, AI extract-json / schema-hint /
-      anchors.
+      meal adherence + food units + trends + grocery §8/§13, activity import §14, progress
+      charts + photo nudge §15, schedule rows + country (`profile`). `jsnum` carries the
+      JavaScript number/string semantics the formulas depended on.
+      **Moved to Phase 3.3** (they live next to the AI adapter / training use case, not in
+      `lib/`): race-intake gates §5 (`generatePlanAction`), AI `extract-json`,
+      `schema-hint` (Gemini SDK types), `anchors` (prompt text).
       **Stay TypeScript, move to `apps/web/lib` with their vitest tests in Phase 3** (pure
       presentation): `share-card` (canvas + privacy rules, runs in the browser),
       `plan-items` labels, `plan-title`, `sports` (icon mapping), `week-days`,
       `training-day` (collision warning). `goal-achievements` does I/O → a Phase 3 use case.
-- [ ] 1.6 FORMULAS.md: add the Go path next to each "source of truth" (done for every
-      ported section).
+- [x] 1.6 FORMULAS.md names the Go package next to every ported section.
 - **Gate**: `go test ./...` passes every vector; RLS smoke test green.
 
 ## Phase 2 — Auth + platform slice (L)
@@ -116,7 +116,8 @@ Order (dependencies first, risk front-loaded):
 - [ ] 3.1 **Onboarding / My week** — sport types, schedules, weekly quotas, complete (S)
 - [ ] 3.2 **Today** — `GET /today`, streak settle, workout log, supplements + logs,
       optimistic toggles (M)
-- [ ] 3.3 **Training** — AI adapters (Claude → Gemini, prompts verbatim), plan generation,
+- [ ] 3.3 **Training** — AI adapters (Claude → Gemini, prompts verbatim; port `extract-json`,
+      `schema-hint`, `anchors` with golden vectors), race-intake gates §5, plan generation,
       archive, plan-item completion, session logs, check-ins, FIT/GPX parse (L)
 - [ ] 3.4 **Calendar** — `GET /calendar?week=`, ICS endpoint (S)
 - [ ] 3.5 **Nutrition** — USDA proxy, meal logs, photo estimate + batch confirm, day/trends,

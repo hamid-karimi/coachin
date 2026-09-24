@@ -1,0 +1,1712 @@
+{
+ "generatedBy": "scripts/golden/generate.ts",
+ "topic": "activity-import",
+ "cases": [
+  {
+   "fn": "sanitizeActivities",
+   "raw": null,
+   "want": []
+  },
+  {
+   "fn": "sanitizeActivities",
+   "raw": "nope",
+   "want": []
+  },
+  {
+   "fn": "sanitizeActivities",
+   "raw": [],
+   "want": []
+  },
+  {
+   "fn": "sanitizeActivities",
+   "raw": [
+    {
+     "date": "2026-07-01",
+     "distance_km": 10.123,
+     "duration_min": 55.55,
+     "avg_hr": 151.6,
+     "source": "fit"
+    },
+    {
+     "date": "2026-07-02",
+     "distance_km": "5",
+     "duration_min": "30",
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026/07/03",
+     "distance_km": 5,
+     "duration_min": 30
+    },
+    {
+     "date": "2026-07-04",
+     "distance_km": 0,
+     "duration_min": 30
+    },
+    {
+     "date": "2026-07-05",
+     "distance_km": 501,
+     "duration_min": 30
+    },
+    {
+     "date": "2026-07-06",
+     "distance_km": 8,
+     "duration_min": -1
+    },
+    {
+     "date": "2026-07-07",
+     "distance_km": 8,
+     "duration_min": 40,
+     "avg_hr": -5,
+     "source": "strava"
+    },
+    null,
+    "junk",
+    {
+     "date": 20260708,
+     "distance_km": 8,
+     "duration_min": 40
+    }
+   ],
+   "want": [
+    {
+     "date": "2026-07-01",
+     "distance_km": 10.12,
+     "duration_min": 55.6,
+     "avg_pace_min_km": null,
+     "avg_hr": 152,
+     "source": "fit"
+    },
+    {
+     "date": "2026-07-02",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-07",
+     "distance_km": 8,
+     "duration_min": 40,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    }
+   ]
+  },
+  {
+   "fn": "sanitizeActivities",
+   "raw": [
+    {
+     "date": "2026-07-01",
+     "distance_km": 3,
+     "duration_min": 20
+    },
+    {
+     "date": "2026-07-02",
+     "distance_km": 4,
+     "duration_min": 21
+    },
+    {
+     "date": "2026-07-03",
+     "distance_km": 5,
+     "duration_min": 22
+    },
+    {
+     "date": "2026-07-04",
+     "distance_km": 6,
+     "duration_min": 23
+    },
+    {
+     "date": "2026-07-05",
+     "distance_km": 7,
+     "duration_min": 24
+    },
+    {
+     "date": "2026-07-06",
+     "distance_km": 8,
+     "duration_min": 25
+    },
+    {
+     "date": "2026-07-07",
+     "distance_km": 9,
+     "duration_min": 26
+    },
+    {
+     "date": "2026-07-08",
+     "distance_km": 10,
+     "duration_min": 27
+    },
+    {
+     "date": "2026-07-09",
+     "distance_km": 11,
+     "duration_min": 28
+    },
+    {
+     "date": "2026-07-10",
+     "distance_km": 12,
+     "duration_min": 29
+    },
+    {
+     "date": "2026-07-11",
+     "distance_km": 13,
+     "duration_min": 30
+    },
+    {
+     "date": "2026-07-12",
+     "distance_km": 14,
+     "duration_min": 31
+    },
+    {
+     "date": "2026-07-13",
+     "distance_km": 15,
+     "duration_min": 32
+    },
+    {
+     "date": "2026-07-14",
+     "distance_km": 16,
+     "duration_min": 33
+    },
+    {
+     "date": "2026-07-15",
+     "distance_km": 17,
+     "duration_min": 34
+    },
+    {
+     "date": "2026-07-16",
+     "distance_km": 18,
+     "duration_min": 35
+    },
+    {
+     "date": "2026-07-17",
+     "distance_km": 19,
+     "duration_min": 36
+    },
+    {
+     "date": "2026-07-18",
+     "distance_km": 20,
+     "duration_min": 37
+    },
+    {
+     "date": "2026-07-19",
+     "distance_km": 21,
+     "duration_min": 38
+    },
+    {
+     "date": "2026-07-20",
+     "distance_km": 22,
+     "duration_min": 39
+    },
+    {
+     "date": "2026-07-21",
+     "distance_km": 23,
+     "duration_min": 40
+    },
+    {
+     "date": "2026-07-22",
+     "distance_km": 24,
+     "duration_min": 41
+    },
+    {
+     "date": "2026-07-23",
+     "distance_km": 25,
+     "duration_min": 42
+    },
+    {
+     "date": "2026-07-24",
+     "distance_km": 26,
+     "duration_min": 43
+    },
+    {
+     "date": "2026-07-25",
+     "distance_km": 27,
+     "duration_min": 44
+    }
+   ],
+   "want": [
+    {
+     "date": "2026-07-01",
+     "distance_km": 3,
+     "duration_min": 20,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-02",
+     "distance_km": 4,
+     "duration_min": 21,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-03",
+     "distance_km": 5,
+     "duration_min": 22,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-04",
+     "distance_km": 6,
+     "duration_min": 23,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-05",
+     "distance_km": 7,
+     "duration_min": 24,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-06",
+     "distance_km": 8,
+     "duration_min": 25,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-07",
+     "distance_km": 9,
+     "duration_min": 26,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-08",
+     "distance_km": 10,
+     "duration_min": 27,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-09",
+     "distance_km": 11,
+     "duration_min": 28,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-10",
+     "distance_km": 12,
+     "duration_min": 29,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-11",
+     "distance_km": 13,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-12",
+     "distance_km": 14,
+     "duration_min": 31,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-13",
+     "distance_km": 15,
+     "duration_min": 32,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-14",
+     "distance_km": 16,
+     "duration_min": 33,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-15",
+     "distance_km": 17,
+     "duration_min": 34,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-16",
+     "distance_km": 18,
+     "duration_min": 35,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-17",
+     "distance_km": 19,
+     "duration_min": 36,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-18",
+     "distance_km": 20,
+     "duration_min": 37,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-19",
+     "distance_km": 21,
+     "duration_min": 38,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-20",
+     "distance_km": 22,
+     "duration_min": 39,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    }
+   ]
+  },
+  {
+   "fn": "splitImportableActivities",
+   "activities": [],
+   "existing": [],
+   "today": "2026-07-11",
+   "want": {
+    "importable": [],
+    "duplicates": [],
+    "outOfWindow": []
+   }
+  },
+  {
+   "fn": "splitImportableActivities",
+   "activities": [],
+   "existing": [
+    "2025-12-25"
+   ],
+   "today": "2026-01-01",
+   "want": {
+    "importable": [],
+    "duplicates": [],
+    "outOfWindow": []
+   }
+  },
+  {
+   "fn": "splitImportableActivities",
+   "activities": [
+    {
+     "date": "2026-11-16",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-11-18",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-11-10",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-11-14",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-11-10",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-11-09",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-11-19",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    }
+   ],
+   "existing": [
+    "2026-11-13",
+    "2026-11-10"
+   ],
+   "today": "2026-11-19",
+   "want": {
+    "importable": [
+     {
+      "date": "2026-11-16",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-11-18",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-11-14",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-11-09",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-11-19",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     }
+    ],
+    "duplicates": [
+     "2026-11-10",
+     "2026-11-10"
+    ],
+    "outOfWindow": []
+   }
+  },
+  {
+   "fn": "splitImportableActivities",
+   "activities": [
+    {
+     "date": "2026-04-27",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-05-04",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-04-29",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-05-05",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-05-04",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-04-30",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-04-17",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    }
+   ],
+   "existing": [
+    "2026-04-23"
+   ],
+   "today": "2026-05-03",
+   "want": {
+    "importable": [
+     {
+      "date": "2026-04-27",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-04-29",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-04-30",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     }
+    ],
+    "duplicates": [],
+    "outOfWindow": [
+     "2026-05-04",
+     "2026-05-05",
+     "2026-05-04",
+     "2026-04-17"
+    ]
+   }
+  },
+  {
+   "fn": "splitImportableActivities",
+   "activities": [
+    {
+     "date": "2026-02-27",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-03-13",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    }
+   ],
+   "existing": [
+    "2026-03-10",
+    "2026-03-09"
+   ],
+   "today": "2026-03-11",
+   "want": {
+    "importable": [
+     {
+      "date": "2026-02-27",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     }
+    ],
+    "duplicates": [],
+    "outOfWindow": [
+     "2026-03-13"
+    ]
+   }
+  },
+  {
+   "fn": "splitImportableActivities",
+   "activities": [
+    {
+     "date": "2026-05-01",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    }
+   ],
+   "existing": [
+    "2026-05-03",
+    "2026-05-02",
+    "2026-04-24"
+   ],
+   "today": "2026-05-04",
+   "want": {
+    "importable": [
+     {
+      "date": "2026-05-01",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     }
+    ],
+    "duplicates": [],
+    "outOfWindow": []
+   }
+  },
+  {
+   "fn": "splitImportableActivities",
+   "activities": [
+    {
+     "date": "2026-01-18",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-01-17",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    }
+   ],
+   "existing": [
+    "2026-02-02",
+    "2026-01-29",
+    "2026-02-03"
+   ],
+   "today": "2026-02-03",
+   "want": {
+    "importable": [],
+    "duplicates": [],
+    "outOfWindow": [
+     "2026-01-18",
+     "2026-01-17"
+    ]
+   }
+  },
+  {
+   "fn": "splitImportableActivities",
+   "activities": [
+    {
+     "date": "2026-10-05",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-09-24",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    }
+   ],
+   "existing": [
+    "2026-09-22",
+    "2026-09-30",
+    "2026-09-30"
+   ],
+   "today": "2026-10-05",
+   "want": {
+    "importable": [
+     {
+      "date": "2026-10-05",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-09-24",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     }
+    ],
+    "duplicates": [],
+    "outOfWindow": []
+   }
+  },
+  {
+   "fn": "splitImportableActivities",
+   "activities": [
+    {
+     "date": "2026-09-14",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-09-14",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-09-10",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-09-18",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-09-13",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-09-18",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    }
+   ],
+   "existing": [
+    "2026-09-23",
+    "2026-09-17",
+    "2026-09-24"
+   ],
+   "today": "2026-09-26",
+   "want": {
+    "importable": [
+     {
+      "date": "2026-09-14",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-09-18",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-09-13",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     }
+    ],
+    "duplicates": [
+     "2026-09-14",
+     "2026-09-18"
+    ],
+    "outOfWindow": [
+     "2026-09-10"
+    ]
+   }
+  },
+  {
+   "fn": "splitImportableActivities",
+   "activities": [
+    {
+     "date": "2026-04-18",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-04-19",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-04-05",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-04-18",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    }
+   ],
+   "existing": [
+    "2026-04-07",
+    "2026-04-13",
+    "2026-04-06"
+   ],
+   "today": "2026-04-18",
+   "want": {
+    "importable": [
+     {
+      "date": "2026-04-18",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-04-05",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     }
+    ],
+    "duplicates": [
+     "2026-04-18"
+    ],
+    "outOfWindow": [
+     "2026-04-19"
+    ]
+   }
+  },
+  {
+   "fn": "splitImportableActivities",
+   "activities": [
+    {
+     "date": "2026-11-05",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-10-29",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-11-01",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    }
+   ],
+   "existing": [
+    "2026-11-03"
+   ],
+   "today": "2026-11-05",
+   "want": {
+    "importable": [
+     {
+      "date": "2026-11-05",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-10-29",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-11-01",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     }
+    ],
+    "duplicates": [],
+    "outOfWindow": []
+   }
+  },
+  {
+   "fn": "splitImportableActivities",
+   "activities": [
+    {
+     "date": "2026-08-08",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-08-05",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-08-13",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    }
+   ],
+   "existing": [],
+   "today": "2026-08-22",
+   "want": {
+    "importable": [
+     {
+      "date": "2026-08-13",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     }
+    ],
+    "duplicates": [],
+    "outOfWindow": [
+     "2026-08-08",
+     "2026-08-05"
+    ]
+   }
+  },
+  {
+   "fn": "splitImportableActivities",
+   "activities": [
+    {
+     "date": "2026-02-01",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-02-06",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    }
+   ],
+   "existing": [
+    "2026-02-05",
+    "2026-02-03",
+    "2026-02-03"
+   ],
+   "today": "2026-02-15",
+   "want": {
+    "importable": [
+     {
+      "date": "2026-02-06",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     }
+    ],
+    "duplicates": [],
+    "outOfWindow": [
+     "2026-02-01"
+    ]
+   }
+  },
+  {
+   "fn": "splitImportableActivities",
+   "activities": [
+    {
+     "date": "2026-01-26",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-01-25",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-01-27",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-01-11",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-01-24",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-01-21",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-01-25",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    }
+   ],
+   "existing": [
+    "2026-01-24"
+   ],
+   "today": "2026-01-25",
+   "want": {
+    "importable": [
+     {
+      "date": "2026-01-25",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-01-21",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     }
+    ],
+    "duplicates": [
+     "2026-01-24",
+     "2026-01-25"
+    ],
+    "outOfWindow": [
+     "2026-01-26",
+     "2026-01-27",
+     "2026-01-11"
+    ]
+   }
+  },
+  {
+   "fn": "splitImportableActivities",
+   "activities": [
+    {
+     "date": "2026-07-12",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-18",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-14",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-30",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-26",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-17",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-15",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-28",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-20",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    }
+   ],
+   "existing": [
+    "2026-07-18",
+    "2026-07-26"
+   ],
+   "today": "2026-07-28",
+   "want": {
+    "importable": [
+     {
+      "date": "2026-07-17",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-07-15",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-07-28",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-07-20",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     }
+    ],
+    "duplicates": [
+     "2026-07-18",
+     "2026-07-26"
+    ],
+    "outOfWindow": [
+     "2026-07-12",
+     "2026-07-14",
+     "2026-07-30"
+    ]
+   }
+  },
+  {
+   "fn": "splitImportableActivities",
+   "activities": [
+    {
+     "date": "2026-10-05",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-10-14",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-10-22",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-10-11",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    }
+   ],
+   "existing": [
+    "2026-10-18",
+    "2026-10-11",
+    "2026-10-18"
+   ],
+   "today": "2026-10-22",
+   "want": {
+    "importable": [
+     {
+      "date": "2026-10-14",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-10-22",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     }
+    ],
+    "duplicates": [
+     "2026-10-11"
+    ],
+    "outOfWindow": [
+     "2026-10-05"
+    ]
+   }
+  },
+  {
+   "fn": "splitImportableActivities",
+   "activities": [
+    {
+     "date": "2026-06-22",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-08",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-06-26",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-06-27",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-06-25",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-06-29",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-07-09",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    }
+   ],
+   "existing": [],
+   "today": "2026-07-09",
+   "want": {
+    "importable": [
+     {
+      "date": "2026-07-08",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-06-26",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-06-27",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-06-29",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-07-09",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     }
+    ],
+    "duplicates": [],
+    "outOfWindow": [
+     "2026-06-22",
+     "2026-06-25"
+    ]
+   }
+  },
+  {
+   "fn": "splitImportableActivities",
+   "activities": [
+    {
+     "date": "2026-09-07",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    }
+   ],
+   "existing": [],
+   "today": "2026-09-19",
+   "want": {
+    "importable": [
+     {
+      "date": "2026-09-07",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     }
+    ],
+    "duplicates": [],
+    "outOfWindow": []
+   }
+  },
+  {
+   "fn": "splitImportableActivities",
+   "activities": [
+    {
+     "date": "2026-11-21",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-11-24",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-11-12",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-11-10",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-11-09",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    }
+   ],
+   "existing": [
+    "2026-11-22",
+    "2026-11-18"
+   ],
+   "today": "2026-11-25",
+   "want": {
+    "importable": [
+     {
+      "date": "2026-11-21",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-11-24",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-11-12",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     }
+    ],
+    "duplicates": [],
+    "outOfWindow": [
+     "2026-11-10",
+     "2026-11-09"
+    ]
+   }
+  },
+  {
+   "fn": "splitImportableActivities",
+   "activities": [
+    {
+     "date": "2026-02-18",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-02-19",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-02-01",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-02-10",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-02-03",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    },
+    {
+     "date": "2026-02-17",
+     "distance_km": 5,
+     "duration_min": 30,
+     "avg_pace_min_km": null,
+     "avg_hr": null,
+     "source": "gpx"
+    }
+   ],
+   "existing": [
+    "2026-02-09"
+   ],
+   "today": "2026-02-18",
+   "want": {
+    "importable": [
+     {
+      "date": "2026-02-18",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-02-10",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     },
+     {
+      "date": "2026-02-17",
+      "distance_km": 5,
+      "duration_min": 30,
+      "avg_pace_min_km": null,
+      "avg_hr": null,
+      "source": "gpx"
+     }
+    ],
+    "duplicates": [],
+    "outOfWindow": [
+     "2026-02-19",
+     "2026-02-01",
+     "2026-02-03"
+    ]
+   }
+  }
+ ]
+}

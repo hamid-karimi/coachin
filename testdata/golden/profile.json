@@ -1,0 +1,3562 @@
+{
+ "generatedBy": "scripts/golden/generate.ts",
+ "topic": "profile",
+ "cases": [
+  {
+   "fn": "buildScheduleInserts",
+   "params": {
+    "userId": "u1",
+    "sportTypeId": 4,
+    "days": [
+     1,
+     3,
+     5
+    ],
+    "time": "07:30",
+    "endsOn": null
+   },
+   "want": [
+    {
+     "user_id": "u1",
+     "sport_type_id": 4,
+     "day_of_week": 1,
+     "time": "07:30",
+     "ends_on": null
+    },
+    {
+     "user_id": "u1",
+     "sport_type_id": 4,
+     "day_of_week": 3,
+     "time": "07:30",
+     "ends_on": null
+    },
+    {
+     "user_id": "u1",
+     "sport_type_id": 4,
+     "day_of_week": 5,
+     "time": "07:30",
+     "ends_on": null
+    }
+   ]
+  },
+  {
+   "fn": "buildScheduleInserts",
+   "params": {
+    "userId": "u1",
+    "sportTypeId": 4,
+    "days": [
+     1,
+     1,
+     3
+    ],
+    "time": "  ",
+    "endsOn": "2026-12-31"
+   },
+   "want": [
+    {
+     "user_id": "u1",
+     "sport_type_id": 4,
+     "day_of_week": 1,
+     "time": null,
+     "ends_on": "2026-12-31"
+    },
+    {
+     "user_id": "u1",
+     "sport_type_id": 4,
+     "day_of_week": 3,
+     "time": null,
+     "ends_on": "2026-12-31"
+    }
+   ]
+  },
+  {
+   "fn": "buildScheduleInserts",
+   "params": {
+    "userId": "u1",
+    "sportTypeId": 4,
+    "days": [
+     0,
+     6,
+     7,
+     -1,
+     2.5
+    ],
+    "time": null,
+    "endsOn": "  2026-09-01  "
+   },
+   "want": [
+    {
+     "user_id": "u1",
+     "sport_type_id": 4,
+     "day_of_week": 0,
+     "time": null,
+     "ends_on": "2026-09-01"
+    },
+    {
+     "user_id": "u1",
+     "sport_type_id": 4,
+     "day_of_week": 6,
+     "time": null,
+     "ends_on": "2026-09-01"
+    }
+   ]
+  },
+  {
+   "fn": "buildScheduleInserts",
+   "params": {
+    "userId": "u1",
+    "sportTypeId": 4,
+    "days": [],
+    "time": "18:00",
+    "endsOn": null
+   },
+   "want": []
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AA",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AB",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AC",
+   "want": "Ascension Island"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AD",
+   "want": "Andorra"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AE",
+   "want": "United Arab Emirates"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AF",
+   "want": "Afghanistan"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AG",
+   "want": "Antigua & Barbuda"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AH",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AI",
+   "want": "Anguilla"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AJ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AK",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AL",
+   "want": "Albania"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AM",
+   "want": "Armenia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AN",
+   "want": "Curaçao"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AO",
+   "want": "Angola"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AP",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AQ",
+   "want": "Antarctica"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AR",
+   "want": "Argentina"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AS",
+   "want": "American Samoa"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AT",
+   "want": "Austria"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AU",
+   "want": "Australia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AV",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AW",
+   "want": "Aruba"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AX",
+   "want": "Åland Islands"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AY",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "AZ",
+   "want": "Azerbaijan"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BA",
+   "want": "Bosnia & Herzegovina"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BB",
+   "want": "Barbados"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BC",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BD",
+   "want": "Bangladesh"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BE",
+   "want": "Belgium"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BF",
+   "want": "Burkina Faso"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BG",
+   "want": "Bulgaria"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BH",
+   "want": "Bahrain"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BI",
+   "want": "Burundi"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BJ",
+   "want": "Benin"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BK",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BL",
+   "want": "St. Barthélemy"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BM",
+   "want": "Bermuda"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BN",
+   "want": "Brunei"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BO",
+   "want": "Bolivia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BP",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BQ",
+   "want": "Caribbean Netherlands"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BR",
+   "want": "Brazil"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BS",
+   "want": "Bahamas"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BT",
+   "want": "Bhutan"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BU",
+   "want": "Myanmar (Burma)"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BV",
+   "want": "Bouvet Island"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BW",
+   "want": "Botswana"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BX",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BY",
+   "want": "Belarus"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "BZ",
+   "want": "Belize"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CA",
+   "want": "Canada"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CB",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CC",
+   "want": "Cocos (Keeling) Islands"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CD",
+   "want": "Congo - Kinshasa"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CE",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CF",
+   "want": "Central African Republic"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CG",
+   "want": "Congo - Brazzaville"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CH",
+   "want": "Switzerland"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CI",
+   "want": "Côte d’Ivoire"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CJ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CK",
+   "want": "Cook Islands"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CL",
+   "want": "Chile"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CM",
+   "want": "Cameroon"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CN",
+   "want": "China"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CO",
+   "want": "Colombia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CP",
+   "want": "Clipperton Island"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CQ",
+   "want": "Sark"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CR",
+   "want": "Costa Rica"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CS",
+   "want": "Serbia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CT",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CU",
+   "want": "Cuba"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CV",
+   "want": "Cape Verde"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CW",
+   "want": "Curaçao"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CX",
+   "want": "Christmas Island"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CY",
+   "want": "Cyprus"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "CZ",
+   "want": "Czechia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DA",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DB",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DC",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DD",
+   "want": "Germany"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DE",
+   "want": "Germany"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DF",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DG",
+   "want": "Diego Garcia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DH",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DI",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DJ",
+   "want": "Djibouti"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DK",
+   "want": "Denmark"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DL",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DM",
+   "want": "Dominica"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DN",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DO",
+   "want": "Dominican Republic"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DP",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DQ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DR",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DS",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DT",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DU",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DV",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DW",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DX",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DY",
+   "want": "Benin"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "DZ",
+   "want": "Algeria"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EA",
+   "want": "Ceuta & Melilla"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EB",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EC",
+   "want": "Ecuador"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ED",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EE",
+   "want": "Estonia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EF",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EG",
+   "want": "Egypt"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EH",
+   "want": "Western Sahara"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EI",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EJ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EK",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EL",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EM",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EN",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EO",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EP",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EQ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ER",
+   "want": "Eritrea"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ES",
+   "want": "Spain"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ET",
+   "want": "Ethiopia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EU",
+   "want": "European Union"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EV",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EW",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EX",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EY",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "EZ",
+   "want": "Eurozone"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FA",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FB",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FC",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FD",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FE",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FF",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FG",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FH",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FI",
+   "want": "Finland"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FJ",
+   "want": "Fiji"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FK",
+   "want": "Falkland Islands"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FL",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FM",
+   "want": "Micronesia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FN",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FO",
+   "want": "Faroe Islands"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FP",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FQ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FR",
+   "want": "France"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FS",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FT",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FU",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FV",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FW",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FX",
+   "want": "France"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FY",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "FZ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GA",
+   "want": "Gabon"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GB",
+   "want": "United Kingdom"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GC",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GD",
+   "want": "Grenada"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GE",
+   "want": "Georgia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GF",
+   "want": "French Guiana"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GG",
+   "want": "Guernsey"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GH",
+   "want": "Ghana"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GI",
+   "want": "Gibraltar"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GJ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GK",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GL",
+   "want": "Greenland"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GM",
+   "want": "Gambia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GN",
+   "want": "Guinea"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GO",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GP",
+   "want": "Guadeloupe"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GQ",
+   "want": "Equatorial Guinea"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GR",
+   "want": "Greece"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GS",
+   "want": "South Georgia & South Sandwich Islands"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GT",
+   "want": "Guatemala"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GU",
+   "want": "Guam"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GV",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GW",
+   "want": "Guinea-Bissau"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GX",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GY",
+   "want": "Guyana"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "GZ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HA",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HB",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HC",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HD",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HE",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HF",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HG",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HH",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HI",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HJ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HK",
+   "want": "Hong Kong SAR China"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HL",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HM",
+   "want": "Heard & McDonald Islands"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HN",
+   "want": "Honduras"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HO",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HP",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HQ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HR",
+   "want": "Croatia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HS",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HT",
+   "want": "Haiti"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HU",
+   "want": "Hungary"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HV",
+   "want": "Burkina Faso"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HW",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HX",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HY",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "HZ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IA",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IB",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IC",
+   "want": "Canary Islands"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ID",
+   "want": "Indonesia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IE",
+   "want": "Ireland"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IF",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IG",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IH",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "II",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IJ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IK",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IL",
+   "want": "Israel"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IM",
+   "want": "Isle of Man"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IN",
+   "want": "India"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IO",
+   "want": "British Indian Ocean Territory"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IP",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IQ",
+   "want": "Iraq"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IR",
+   "want": "Iran"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IS",
+   "want": "Iceland"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IT",
+   "want": "Italy"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IU",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IV",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IW",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IX",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IY",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "IZ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JA",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JB",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JC",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JD",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JE",
+   "want": "Jersey"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JF",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JG",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JH",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JI",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JJ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JK",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JL",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JM",
+   "want": "Jamaica"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JN",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JO",
+   "want": "Jordan"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JP",
+   "want": "Japan"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JQ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JR",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JS",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JT",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JU",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JV",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JW",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JX",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JY",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "JZ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KA",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KB",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KC",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KD",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KE",
+   "want": "Kenya"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KF",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KG",
+   "want": "Kyrgyzstan"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KH",
+   "want": "Cambodia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KI",
+   "want": "Kiribati"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KJ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KK",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KL",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KM",
+   "want": "Comoros"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KN",
+   "want": "St. Kitts & Nevis"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KO",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KP",
+   "want": "North Korea"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KQ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KR",
+   "want": "South Korea"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KS",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KT",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KU",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KV",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KW",
+   "want": "Kuwait"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KX",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KY",
+   "want": "Cayman Islands"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "KZ",
+   "want": "Kazakhstan"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LA",
+   "want": "Laos"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LB",
+   "want": "Lebanon"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LC",
+   "want": "St. Lucia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LD",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LE",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LF",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LG",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LH",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LI",
+   "want": "Liechtenstein"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LJ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LK",
+   "want": "Sri Lanka"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LL",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LM",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LN",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LO",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LP",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LQ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LR",
+   "want": "Liberia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LS",
+   "want": "Lesotho"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LT",
+   "want": "Lithuania"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LU",
+   "want": "Luxembourg"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LV",
+   "want": "Latvia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LW",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LX",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LY",
+   "want": "Libya"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "LZ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MA",
+   "want": "Morocco"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MB",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MC",
+   "want": "Monaco"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MD",
+   "want": "Moldova"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ME",
+   "want": "Montenegro"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MF",
+   "want": "St. Martin"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MG",
+   "want": "Madagascar"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MH",
+   "want": "Marshall Islands"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MI",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MJ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MK",
+   "want": "North Macedonia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ML",
+   "want": "Mali"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MM",
+   "want": "Myanmar (Burma)"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MN",
+   "want": "Mongolia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MO",
+   "want": "Macao SAR China"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MP",
+   "want": "Northern Mariana Islands"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MQ",
+   "want": "Martinique"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MR",
+   "want": "Mauritania"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MS",
+   "want": "Montserrat"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MT",
+   "want": "Malta"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MU",
+   "want": "Mauritius"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MV",
+   "want": "Maldives"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MW",
+   "want": "Malawi"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MX",
+   "want": "Mexico"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MY",
+   "want": "Malaysia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "MZ",
+   "want": "Mozambique"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NA",
+   "want": "Namibia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NB",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NC",
+   "want": "New Caledonia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ND",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NE",
+   "want": "Niger"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NF",
+   "want": "Norfolk Island"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NG",
+   "want": "Nigeria"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NH",
+   "want": "Vanuatu"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NI",
+   "want": "Nicaragua"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NJ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NK",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NL",
+   "want": "Netherlands"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NM",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NN",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NO",
+   "want": "Norway"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NP",
+   "want": "Nepal"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NQ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NR",
+   "want": "Nauru"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NS",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NT",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NU",
+   "want": "Niue"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NV",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NW",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NX",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NY",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "NZ",
+   "want": "New Zealand"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OA",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OB",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OC",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OD",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OE",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OF",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OG",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OH",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OI",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OJ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OK",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OL",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OM",
+   "want": "Oman"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ON",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OO",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OP",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OQ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OR",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OS",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OT",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OU",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OV",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OW",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OX",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OY",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "OZ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PA",
+   "want": "Panama"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PB",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PC",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PD",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PE",
+   "want": "Peru"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PF",
+   "want": "French Polynesia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PG",
+   "want": "Papua New Guinea"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PH",
+   "want": "Philippines"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PI",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PJ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PK",
+   "want": "Pakistan"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PL",
+   "want": "Poland"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PM",
+   "want": "St. Pierre & Miquelon"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PN",
+   "want": "Pitcairn Islands"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PO",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PP",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PQ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PR",
+   "want": "Puerto Rico"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PS",
+   "want": "Palestinian Territories"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PT",
+   "want": "Portugal"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PU",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PV",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PW",
+   "want": "Palau"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PX",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PY",
+   "want": "Paraguay"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "PZ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QA",
+   "want": "Qatar"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QB",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QC",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QD",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QE",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QF",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QG",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QH",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QI",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QJ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QK",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QL",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QM",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QN",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QO",
+   "want": "Outlying Oceania"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QP",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QQ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QR",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QS",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QT",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QU",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QV",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QW",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QX",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QY",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "QZ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RA",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RB",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RC",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RD",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RE",
+   "want": "Réunion"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RF",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RG",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RH",
+   "want": "Zimbabwe"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RI",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RJ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RK",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RL",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RM",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RN",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RO",
+   "want": "Romania"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RP",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RQ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RR",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RS",
+   "want": "Serbia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RT",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RU",
+   "want": "Russia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RV",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RW",
+   "want": "Rwanda"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RX",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RY",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "RZ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SA",
+   "want": "Saudi Arabia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SB",
+   "want": "Solomon Islands"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SC",
+   "want": "Seychelles"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SD",
+   "want": "Sudan"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SE",
+   "want": "Sweden"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SF",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SG",
+   "want": "Singapore"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SH",
+   "want": "St. Helena"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SI",
+   "want": "Slovenia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SJ",
+   "want": "Svalbard & Jan Mayen"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SK",
+   "want": "Slovakia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SL",
+   "want": "Sierra Leone"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SM",
+   "want": "San Marino"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SN",
+   "want": "Senegal"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SO",
+   "want": "Somalia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SP",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SQ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SR",
+   "want": "Suriname"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SS",
+   "want": "South Sudan"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ST",
+   "want": "São Tomé & Príncipe"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SU",
+   "want": "Russia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SV",
+   "want": "El Salvador"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SW",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SX",
+   "want": "Sint Maarten"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SY",
+   "want": "Syria"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "SZ",
+   "want": "Eswatini"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TA",
+   "want": "Tristan da Cunha"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TB",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TC",
+   "want": "Turks & Caicos Islands"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TD",
+   "want": "Chad"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TE",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TF",
+   "want": "French Southern Territories"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TG",
+   "want": "Togo"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TH",
+   "want": "Thailand"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TI",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TJ",
+   "want": "Tajikistan"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TK",
+   "want": "Tokelau"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TL",
+   "want": "Timor-Leste"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TM",
+   "want": "Turkmenistan"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TN",
+   "want": "Tunisia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TO",
+   "want": "Tonga"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TP",
+   "want": "Timor-Leste"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TQ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TR",
+   "want": "Türkiye"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TS",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TT",
+   "want": "Trinidad & Tobago"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TU",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TV",
+   "want": "Tuvalu"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TW",
+   "want": "Taiwan"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TX",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TY",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "TZ",
+   "want": "Tanzania"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UA",
+   "want": "Ukraine"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UB",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UC",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UD",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UE",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UF",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UG",
+   "want": "Uganda"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UH",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UI",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UJ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UK",
+   "want": "United Kingdom"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UL",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UM",
+   "want": "U.S. Outlying Islands"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UN",
+   "want": "United Nations"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UO",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UP",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UQ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UR",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "US",
+   "want": "United States"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UT",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UU",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UV",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UW",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UX",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UY",
+   "want": "Uruguay"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "UZ",
+   "want": "Uzbekistan"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VA",
+   "want": "Vatican City"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VB",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VC",
+   "want": "St. Vincent & Grenadines"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VD",
+   "want": "Vietnam"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VE",
+   "want": "Venezuela"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VF",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VG",
+   "want": "British Virgin Islands"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VH",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VI",
+   "want": "U.S. Virgin Islands"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VJ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VK",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VL",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VM",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VN",
+   "want": "Vietnam"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VO",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VP",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VQ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VR",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VS",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VT",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VU",
+   "want": "Vanuatu"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VV",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VW",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VX",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VY",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "VZ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WA",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WB",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WC",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WD",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WE",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WF",
+   "want": "Wallis & Futuna"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WG",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WH",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WI",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WJ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WK",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WL",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WM",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WN",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WO",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WP",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WQ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WR",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WS",
+   "want": "Samoa"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WT",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WU",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WV",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WW",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WX",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WY",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "WZ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XA",
+   "want": "Pseudo-Accents"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XB",
+   "want": "Pseudo-Bidi"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XC",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XD",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XE",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XF",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XG",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XH",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XI",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XJ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XK",
+   "want": "Kosovo"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XL",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XM",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XN",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XO",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XP",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XQ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XR",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XS",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XT",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XU",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XV",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XW",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XX",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XY",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "XZ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YA",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YB",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YC",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YD",
+   "want": "Yemen"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YE",
+   "want": "Yemen"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YF",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YG",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YH",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YI",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YJ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YK",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YL",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YM",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YN",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YO",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YP",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YQ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YR",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YS",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YT",
+   "want": "Mayotte"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YU",
+   "want": "Serbia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YV",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YW",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YX",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YY",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "YZ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZA",
+   "want": "South Africa"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZB",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZC",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZD",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZE",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZF",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZG",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZH",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZI",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZJ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZK",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZL",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZM",
+   "want": "Zambia"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZN",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZO",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZP",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZQ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZR",
+   "want": "Congo - Kinshasa"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZS",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZT",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZU",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZV",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZW",
+   "want": "Zimbabwe"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZX",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZY",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "ZZ",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": null,
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": " de ",
+   "want": "Germany"
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "deu",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "1A",
+   "want": null
+  },
+  {
+   "fn": "countryNameFromCode",
+   "code": "x",
+   "want": null
+  },
+  {
+   "fn": "resolveUserCountry",
+   "profile": "Germany",
+   "header": "FR",
+   "want": "Germany"
+  },
+  {
+   "fn": "resolveUserCountry",
+   "profile": "  ",
+   "header": "FR",
+   "want": "France"
+  },
+  {
+   "fn": "resolveUserCountry",
+   "profile": null,
+   "header": "IR",
+   "want": "Iran"
+  },
+  {
+   "fn": "resolveUserCountry",
+   "profile": null,
+   "header": null,
+   "want": null
+  },
+  {
+   "fn": "resolveUserCountry",
+   "profile": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "header": null,
+   "want": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  },
+  {
+   "fn": "resolveUserCountry",
+   "profile": "",
+   "header": "ZZ",
+   "want": null
+  }
+ ]
+}
