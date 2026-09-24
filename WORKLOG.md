@@ -5,6 +5,50 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-24 (latest) · branch setup — `feat/backend-rewrite-with-go`
+
+**Done**: created **`feat/backend-rewrite-with-go`** from `develop` (`ddf833a`) as the
+rewrite's mother branch. Rule recorded in `CLAUDE.md` § "Go rewrite — branch workflow" and
+in `plan.md`: `main`/`develop` stay on Vercel + Supabase untouched; every rewrite PR
+targets the mother branch. The rewrite docs land there via PR from
+`claude/lucid-tesla-3737vk`.
+
+**Next steps**: owner confirms spec §10 → Phase 0 on a new branch off the mother branch.
+
+## 2026-09-24 (later) · `claude/lucid-tesla-3737vk` — rewrite docs revised: no Supabase, no Vercel
+
+**Done**: rewrote `plans/go-backend-rewrite/{spec,architecture,plan}.md` for the owner's
+decisions: **zero Supabase, zero Vercel**, everything local in Docker on macOS first, a
+single VPS later. Docs only; no code changed.
+
+**Decisions**: PostgreSQL 18.6; auth built into the Go API (argon2id, opaque session
+cookie, email verify + password reset via SMTP; Mailpit locally); clean schema with our
+own `users` table and `app.current_user_id()` replacing `auth.uid()`, RLS kept, API runs as
+non-owner `coachin_app`; object storage **Garage v2.4.1** (MinIO community is
+maintenance-only with no official images; RustFS 1.0 judged too fresh) behind an S3
+interface, private, photos streamed by the API; Caddy 2.11 as the single entry point
+(local :8080, VPS automatic HTTPS). Old app moves to `legacy/` as reference; Supabase data
+imported once at go-live (Phase 7).
+
+**Next steps**: owner confirms spec §10 defaults (import existing data? SMTP provider?
+domain) → Phase 0 (legacy move, compose stack, Go + web scaffolds, Makefile, CI).
+
+## 2026-09-24 · `claude/lucid-tesla-3737vk` — Go backend rewrite: spec + architecture + plan (docs only)
+
+**Done**: `plans/go-backend-rewrite/` — `spec.md` (problem, goals, endpoint map for all 54
+server actions + 3 routes, acceptance criteria, risks), `architecture.md` (8 ADRs + latest
+version matrix as of today), `plan.md` (Phases 0–6, strangler per module). No code changed.
+
+**Decisions proposed (not yet approved)**: monorepo `apps/web` + `apps/api`; Go 1.27 with
+chi + huma (OpenAPI 3.1 → generated TS client via openapi-fetch/openapi-react-query);
+pgx + sqlc + goose; Go-owned opaque session cookie with pluggable credential store (GoTrue
+first, native bcrypt→argon2id later); **RLS kept** by setting `request.jwt.claims` per tx;
+RPCs called from Go first, then ported to Go and dropped; Next rewrites `/api/*` → Go;
+TanStack Query + nuqs + RHF/zod on web. TS pinned to 6.0.3 (typescript-eslint lacks TS 7).
+
+**Next steps**: user reviews spec §10 open questions + ADRs → start Phase 0.1–0.3
+(git mv to `apps/web`, dep upgrades, Go scaffold).
+
 ## 2026-07-20 · `fix/review-findings`
 
 **Done**: `4eec4a4` — fixes from a code review of PRs #52/#53:

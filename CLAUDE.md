@@ -19,6 +19,18 @@ Full rules in `.claude/skills/coding-style/SKILL.md`. Read it before writing or 
 11. Follow the design system: existing components + tokens from `globals.css`; no raw hex/px — add missing tokens to the system instead
 12. No overengineering: no single-use abstractions, no new deps without need, follow existing precedent
 
+## Go rewrite — branch workflow
+
+The Go backend rewrite (`plans/go-backend-rewrite/`) lives on its own long-lived
+branch. `main` and `develop` stay as they are (Next.js + Supabase on Vercel) and
+receive **no** rewrite work.
+
+- **Mother branch**: `feat/backend-rewrite-with-go` — treat it as the rewrite's main.
+- Every rewrite change goes on a short-lived branch cut from it and lands through a
+  pull request whose **base is `feat/backend-rewrite-with-go`** — never `main` or
+  `develop`.
+- Never open rewrite PRs against, or push rewrite commits to, `main` / `develop`.
+
 ## Verify before every commit and push
 
 `pnpm exec tsc --noEmit` · `pnpm exec eslint <changed files>` · `pnpm test` — never commit on red.
