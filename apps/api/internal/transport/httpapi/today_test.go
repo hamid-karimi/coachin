@@ -11,6 +11,7 @@ import (
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/apperr"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/routine"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/today"
+	"github.com/hamid-karimi/coachin/apps/api/internal/app/training"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/tiers"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/xp"
 )
@@ -96,5 +97,35 @@ func TestPlanItemCompletionRoute(t *testing.T) {
 	}
 	if got := completionFeedback(0); got.Message != "" {
 		t.Errorf("no-op toggle message = %q", got.Message)
+	}
+}
+
+type fakePrograms struct{}
+
+func (fakePrograms) List(context.Context, uuid.UUID) ([]training.Program, error) {
+	target := "half"
+	return []training.Program{{ProgramRow: training.ProgramRow{PlanKind: "race", RaceTarget: &target, WeeksTotal: 8}, CurrentWeek: 3}}, nil
+}
+func (fakePrograms) Archive(context.Context, uuid.UUID, uuid.UUID) error { return nil }
+func (fakePrograms) CalendarExport(context.Context, uuid.UUID) (string, error) {
+	return "BEGIN:VCALENDAR\r\nEND:VCALENDAR", nil
+}
+
+func TestTrainingRoutes(t *testing.T) {
+	h, _ := New(Deps{Auth: &fakeAuth{user: uuid.New(), liveToken: "live-token"}, Programs: fakePrograms{}})
+	cookie := map[string]string{"Cookie": "coachin_session=live-token"}
+	rec := send(t, h, http.MethodGet, BasePath+"/training/programs", "", cookie)
+	var programs []ProgramBody
+	_ = json.Unmarshal(rec.Body.Bytes(), &programs)
+	if rec.Code != http.StatusOK || len(programs) != 1 || *programs[0].RaceTarget != "half" || programs[0].CurrentWeek != 3 {
+		t.Fatalf("programs: %d %s", rec.Code, rec.Body)
+	}
+	rec = send(t, h, http.MethodGet, BasePath+"/training/calendar.ics", "", cookie)
+	if rec.Code != http.StatusOK || rec.Header().Get("Content-Type") != "text/calendar; charset=utf-8" ||
+		rec.Header().Get("Content-Disposition") == "" || rec.Body.String() != "BEGIN:VCALENDAR\r\nEND:VCALENDAR" {
+		t.Fatalf("ics: %d %v %q", rec.Code, rec.Header(), rec.Body)
+	}
+	if rec := send(t, h, http.MethodPost, BasePath+"/training/plans/"+uuid.NewString()+"/archive", "", cookie); rec.Code != http.StatusOK {
+		t.Fatalf("archive: %d", rec.Code)
 	}
 }

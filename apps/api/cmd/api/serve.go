@@ -68,6 +68,7 @@ func serve(ctx context.Context, _ []string, _ *slog.Logger) error {
 		Today:            today.NewService(store.NewTodayStore(pool), nil),
 		PlanItems:        training.NewService(store.NewTrainingStore(pool), nil),
 		Supplements:      supplements.NewService(store.NewSupplementStore(pool), nil),
+		Programs:         training.NewPrograms(store.NewTrainingStore(pool), nil),
 		Cookies:          httpapi.CookieSettings{Secure: cfg.CookieSecure},
 		CommunityEnabled: cfg.CommunityEnabled,
 	})

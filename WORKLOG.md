@@ -5,6 +5,19 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-24 (night, latest) · #67, #68 merged (3.2 done) · Phase 3.3a — programs page
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): `GET /training/programs`,
+`POST /training/plans/{id}/archive`, `GET /training/calendar.ics` (`domain/ics`,
+`planitem.DetailLine`/`VideoURL` with JS number formatting + `encodeURIComponent`);
+web `/training` (cards, check-in banner, archive confirm, .ics download), `lib/plan-title`;
+placeholders for `/training/new` and `/training/checkin`. CI smoke covers training.
+Verified: unit/HTTP/Postgres tests; Playwright (ICS download, check-in link, archive).
+
+**Next steps**: 3.3b — AI adapters in Go (`adapters/ai`: Claude primary → Gemini fallback,
+prompts verbatim from `legacy/lib/ai/*`, `extract-json`/`schema-hint`/`anchors` with
+golden vectors), plan generation endpoints + the two wizards, FIT/GPX parsing.
+
 ## 2026-09-24 (night, later) · Phase 3.2b — daily supplements (Today complete)
 
 **Done** (branch `claude/lucid-tesla-3737vk`, after #67): `app/supplements` (add with

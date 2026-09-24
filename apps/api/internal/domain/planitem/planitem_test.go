@@ -57,3 +57,22 @@ func TestLogWindowOpen(t *testing.T) {
 		}
 	}
 }
+
+func TestDetailLineAndVideo(t *testing.T) {
+	full := Details{DistanceKm: f(6.5), PaceMinKm: s("7:45"), DurationMin: f(45), VideoQuery: s("cat cow stretch & more")}
+	if got := DetailLine(full); got != "6.5km · @ 7:45/km · 45min" {
+		t.Errorf("DetailLine = %q", got)
+	}
+	if got := DetailLine(Details{DurationMin: f(30)}); got != "30min" {
+		t.Errorf("DetailLine = %q", got)
+	}
+	if got := DetailLine(Details{DistanceKm: f(0)}); got != "" {
+		t.Errorf("zero distance: %q", got)
+	}
+	if got := VideoURL(full); got != "https://www.youtube.com/results?search_query=cat%20cow%20stretch%20%26%20more" {
+		t.Errorf("VideoURL = %q", got)
+	}
+	if VideoURL(Details{}) != "" {
+		t.Error("no query should give no URL")
+	}
+}

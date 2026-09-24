@@ -44,7 +44,7 @@ inactive; every coach feature checks for an **active** relationship.
 | `/onboarding` | "My week" editor: fixed weekly sessions (anchors) + weekly targets (quotas). Also the first-run flow. **Ported to the rewrite.** | [README](apps/web/app/(app)/onboarding/README.md) |
 | `/dashboard` | "Today": today's routine + plan items, logging, streaks, hearts, XP. **Ported to the rewrite**, including the daily stack. | [README](apps/web/app/(app)/dashboard/README.md) |
 | `/calendar` | Week view blending routine + all active plan items + logged state | [README](legacy/app/calendar/README.md) |
-| `/training` | Program manager: create (AI wizards), archive, weekly check-ins | [README](legacy/app/training/README.md) |
+| `/training` | Program manager: create (AI wizards), archive, weekly check-ins. **Rewrite: list, archive, .ics export ported**; wizards and check-ins next. | [README](apps/web/app/(app)/training/README.md) |
 | `/training/new` | Plan wizards (running / muscle building); coach mode via `?student=<id>` | [README](legacy/app/training/README.md) |
 | `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan | [README](legacy/app/nutrition/README.md) |
 | `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions | [README](legacy/app/coaching/README.md) |
@@ -130,6 +130,14 @@ Training tab is highlighted there).
 4. Weekly check-in appears on the program card once a plan week fully
    elapses; it produces a scorecard and an advance/repeat/deload decision
    (FORMULAS.md §7).
+
+**Rewrite stack — `/training` (3.3a)**: "My programs" lists active plans (hypertrophy
+first, as before) with "Race in N days · Week X of Y · goal …", "By your coach" when a
+coach generated it, and the "Week N review ready" banner when last week ended without a
+check-in. "Add to calendar" downloads `coachin-training-plan.ics` (all-day events, meal
+notes excluded). "Archive plan" (confirm) → "Plan archived."; with no plans the page
+shows "Create a plan" and Today shows "Train for a marathon". Plan creation and the
+check-in screen are placeholders until 3.3b/3.3c.
 
 ### 3. Logging on Today (dashboard)
 

@@ -4,9 +4,12 @@ package planitem
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/hamid-karimi/coachin/apps/api/internal/domain/jsnum"
 )
 
 // Details are the display fields of plan_items.details. The JSON comes from
@@ -81,4 +84,42 @@ func Checkable(itemType string) bool { return itemType != "meal_note" }
 // not checked here.
 func LogWindowOpen(itemDate, today time.Time) bool {
 	return !today.Before(itemDate) && !today.After(itemDate.AddDate(0, 0, 1))
+}
+
+// DetailLine is the compact stat line, e.g. "6km · @ 7:45/km · 45min"
+// (numbers formatted as JavaScript would, as the legacy app did).
+func DetailLine(d Details) string {
+	var parts []string
+	if d.DistanceKm != nil && *d.DistanceKm != 0 {
+		parts = append(parts, jsnum.FormatNumber(*d.DistanceKm)+"km")
+	}
+	if d.PaceMinKm != nil {
+		parts = append(parts, "@ "+*d.PaceMinKm+"/km")
+	}
+	if d.DurationMin != nil && *d.DurationMin != 0 {
+		parts = append(parts, jsnum.FormatNumber(*d.DurationMin)+"min")
+	}
+	return strings.Join(parts, " · ")
+}
+
+// VideoURL is the YouTube "how-to" search for the item, or "" when unset.
+func VideoURL(d Details) string {
+	if d.VideoQuery == nil {
+		return ""
+	}
+	return "https://www.youtube.com/results?search_query=" + encodeURIComponent(*d.VideoQuery)
+}
+
+// encodeURIComponent escapes like JavaScript's function of the same name.
+func encodeURIComponent(s string) string {
+	const unreserved = "-_.!~*'()"
+	var b strings.Builder
+	for _, c := range []byte(s) {
+		if ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || ('0' <= c && c <= '9') || strings.IndexByte(unreserved, c) >= 0 {
+			b.WriteByte(c)
+			continue
+		}
+		fmt.Fprintf(&b, "%%%02X", c)
+	}
+	return b.String()
 }

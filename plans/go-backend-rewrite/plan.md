@@ -143,6 +143,14 @@ Order (dependencies first, risk front-loaded):
 - [ ] 3.3 **Training** — AI adapters (Claude → Gemini, prompts verbatim; port `extract-json`,
       `schema-hint`, `anchors` with golden vectors), race-intake gates §5, plan generation,
       archive, plan-item completion, session logs, check-ins, FIT/GPX parse (L)
+  - [x] 3.3a Programs page: `GET /training/programs` (week, race countdown, "by your coach",
+        check-in due), `POST /training/plans/{id}/archive`, `GET /training/calendar.ics`
+        (`domain/ics`, `planitem.DetailLine`/`VideoURL`); web `/training` + `lib/plan-title`;
+        placeholders for `/training/new` and `/training/checkin`.
+  - [ ] 3.3b AI adapters (Claude → Gemini) + plan generation (running + hypertrophy
+        wizards, anchors, FIT/GPX intake parsing).
+  - [ ] 3.3c Session logs ("Log details", strength sets, +10 XP, AI feedback) + weekly
+        check-in (scorecard, AI week adjustment, +20 XP).
 - [ ] 3.4 **Calendar** — `GET /calendar?week=`, ICS endpoint (S)
 - [ ] 3.5 **Nutrition** — USDA proxy, meal logs, photo estimate + batch confirm, day/trends,
       meal plans (M)

@@ -91,7 +91,7 @@ func (s *TodayStore) LoggedSportsOn(ctx context.Context, userID uuid.UUID, date 
 	return sports, err
 }
 
-// ActivePlans lists the user's active plans, running before hypertrophy.
+// ActivePlans lists the user's active plans by plan kind (legacy order).
 func (s *TodayStore) ActivePlans(ctx context.Context, userID uuid.UUID) ([]routine.Plan, error) {
 	var rows []queries.ListActivePlansRow
 	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {

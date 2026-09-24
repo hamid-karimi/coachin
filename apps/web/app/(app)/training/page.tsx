@@ -1,19 +1,15 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ComingSoon } from "../components/coming-soon";
+import { HydrationBoundary } from "@tanstack/react-query";
+import { prefetchQueries } from "@/app/lib/prefetch";
+import { ProgramsView } from "./components/programs-view";
 
 export const metadata: Metadata = { title: "Training · CoachIn" };
 
-export default function TrainingPage() {
+export default async function TrainingPage() {
+  const state = await prefetchQueries((api, qc) => [qc.prefetchQuery(api.queryOptions("get", "/training/programs"))]);
   return (
-    <ComingSoon
-      title='Training'
-      greeting='Your programs and weekly routine'
-      next='AI training plans (create, check in, archive) arrive here with the training module.'>
-      <Button asChild variant='outline' className='self-start'>
-        <Link href='/onboarding'>Edit my week</Link>
-      </Button>
-    </ComingSoon>
+    <HydrationBoundary state={state}>
+      <ProgramsView />
+    </HydrationBoundary>
   );
 }
