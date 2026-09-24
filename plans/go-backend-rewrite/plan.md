@@ -127,7 +127,7 @@ Order (dependencies first, risk front-loaded):
       `app/routine` + `GET /routine`, `/sport-types`, schedule/quota mutations; web page
       with prefetch + hydration, `useMutationFeedback`, `prefetchQueries`. Shared
       `apperr` (use-case errors → problem+json) and `domain/planitem` (lenient AI details).
-- [ ] 3.2 **Today** — `GET /today`, streak settle, workout log, supplements + logs,
+- [x] 3.2 **Today** — `GET /today`, streak settle, workout log, supplements + logs,
       optimistic toggles (M)
   - [x] 3.2a Today core: `GET /today` (settles the streak via `evaluate_user_streak`),
         `POST /today/workouts` (log + ledger + balance in one transaction, once per sport
@@ -135,7 +135,11 @@ Order (dependencies first, risk front-loaded):
         enforced in Go); migration `00005` lets the API write `xp_transactions`. Web
         Today page + shared `PlanItemRow` (optimistic); nav placeholders for Training,
         Calendar, Nutrition.
-  - [ ] 3.2b Daily supplements: CRUD + taken toggle (optimistic), due-today rules.
+  - [x] 3.2b Daily supplements: `POST /supplements`, `PUT /supplements/{id}/schedule`,
+        `DELETE /supplements/{id}`, `PUT /supplements/{id}/taken` (ownership checked);
+        the stack with due/taken rides on `GET /today`. Migration `00006` adds the missing
+        UPDATE policy (legacy schedule edits silently did nothing). Web card + manage
+        sheet, optimistic check.
 - [ ] 3.3 **Training** — AI adapters (Claude → Gemini, prompts verbatim; port `extract-json`,
       `schema-hint`, `anchors` with golden vectors), race-intake gates §5, plan generation,
       archive, plan-item completion, session logs, check-ins, FIT/GPX parse (L)

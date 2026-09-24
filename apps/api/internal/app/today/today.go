@@ -19,6 +19,7 @@ import (
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/progress"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/quotas"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/streak"
+	"github.com/hamid-karimi/coachin/apps/api/internal/domain/supplements"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/tiers"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/xp"
 )
@@ -56,6 +57,14 @@ type NewWorkoutLog struct {
 	Reason      string
 }
 
+// SupplementRow is one supplement in the user's stack.
+type SupplementRow struct {
+	ID       uuid.UUID
+	Name     string
+	Dose     *string
+	Schedule supplements.Schedule
+}
+
 // ErrAlreadyLogged means the sport already has a log on that date.
 var ErrAlreadyLogged = errors.New("already logged today")
 
@@ -73,6 +82,9 @@ type Store interface {
 	Quotas(ctx context.Context, userID uuid.UUID) ([]routine.Quota, error)
 	Logs(ctx context.Context, userID uuid.UUID, from, to string) ([]quotas.Log, error)
 	LastProgressPhotoAt(ctx context.Context, userID uuid.UUID) (*time.Time, error)
+	Supplements(ctx context.Context, userID uuid.UUID) ([]SupplementRow, error)
+	TakenSupplementsOn(ctx context.Context, userID uuid.UUID, date string) ([]uuid.UUID, error)
+	HasAnySchedule(ctx context.Context, userID uuid.UUID) (bool, error)
 	// SportMultiplier returns found=false for an unknown sport.
 	SportMultiplier(ctx context.Context, sportTypeID int64) (multiplier *float64, found bool, err error)
 	// LogWorkout records the log, its XP ledger row, and the new balance in
@@ -119,6 +131,14 @@ type PlanItem struct {
 	Date string // YYYY-MM-DD
 }
 
+// Supplement is a stack entry with today's state.
+type Supplement struct {
+	SupplementRow
+	Label string
+	Due   bool // on today's checklist
+	Taken bool // logged today
+}
+
 // Day is everything the Today page shows.
 type Day struct {
 	Date          string
@@ -135,6 +155,8 @@ type Day struct {
 	// ProgressPhotoDue: nudge toward the progress-photo journal.
 	ProgressPhotoDue bool
 	HasProgressPhoto bool
+	// Supplements is the whole stack; the checklist shows the Due ones.
+	Supplements []Supplement
 }
 
 // Today settles the streak, then loads the day.
@@ -192,7 +214,48 @@ func (s *Service) Today(ctx context.Context, userID uuid.UUID) (Day, error) {
 	}
 	day.HasProgressPhoto = lastPhoto != nil
 	day.ProgressPhotoDue = progress.IsPhotoDue(stored.CurrentStreak, len(weekLogs), lastPhoto, now)
+
+	if day.Supplements, err = s.supplements(ctx, userID, &day); err != nil {
+		return Day{}, err
+	}
 	return day, nil
+}
+
+// supplements marks each stack entry due/taken today. "Training days" follow
+// today's sessions and plan items; with no routine and no active plan at all
+// they degrade to daily so they never vanish from the checklist.
+func (s *Service) supplements(ctx context.Context, userID uuid.UUID, day *Day) ([]Supplement, error) {
+	rows, err := s.store.Supplements(ctx, userID)
+	if err != nil {
+		return nil, fmt.Errorf("load supplements: %w", err)
+	}
+	if len(rows) == 0 {
+		return []Supplement{}, nil
+	}
+	takenIDs, err := s.store.TakenSupplementsOn(ctx, userID, day.Date)
+	if err != nil {
+		return nil, fmt.Errorf("load supplement logs: %w", err)
+	}
+	hasRoutine, err := s.store.HasAnySchedule(ctx, userID)
+	if err != nil {
+		return nil, fmt.Errorf("check routine: %w", err)
+	}
+	trainsToday := len(day.Sessions) > 0 || len(day.PlanItems) > 0
+	hasStructure := hasRoutine || day.ActivePlans > 0
+	today := supplements.Day{Weekday: day.Weekday, IsTrainingDay: trainsToday || !hasStructure}
+
+	taken := make(map[uuid.UUID]bool, len(takenIDs))
+	for _, id := range takenIDs {
+		taken[id] = true
+	}
+	list := make([]Supplement, len(rows))
+	for i, row := range rows {
+		list[i] = Supplement{
+			SupplementRow: row, Label: supplements.Label(row.Schedule),
+			Due: supplements.IsDue(row.Schedule, today), Taken: taken[row.ID],
+		}
+	}
+	return list, nil
 }
 
 func statsOf(p ProfileStats) Stats {

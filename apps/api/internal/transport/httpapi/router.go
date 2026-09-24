@@ -27,6 +27,7 @@ type Deps struct {
 	Routine          RoutineService
 	Today            TodayService
 	PlanItems        PlanItemService
+	Supplements      SupplementService
 	Cookies          CookieSettings
 	CommunityEnabled bool
 }
@@ -61,6 +62,7 @@ func New(deps Deps) (http.Handler, huma.API) {
 	registerAuth(api, deps)
 	registerRoutine(api, deps)
 	registerToday(api, deps)
+	registerSupplements(api, deps)
 
 	// Rejects cross-site state-changing requests (Sec-Fetch-Site / Origin),
 	// the CSRF guard for cookie sessions.

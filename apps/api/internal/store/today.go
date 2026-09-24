@@ -13,6 +13,7 @@ import (
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/routine"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/today"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/planitem"
+	"github.com/hamid-karimi/coachin/apps/api/internal/domain/supplements"
 	"github.com/hamid-karimi/coachin/apps/api/internal/store/queries"
 )
 
@@ -184,4 +185,45 @@ func (s *TodayStore) LogWorkout(ctx context.Context, userID uuid.UUID, log today
 		return err
 	})
 	return total, err
+}
+
+// Supplements lists the user's stack in the order it was built.
+func (s *TodayStore) Supplements(ctx context.Context, userID uuid.UUID) ([]today.SupplementRow, error) {
+	var rows []queries.ListSupplementsRow
+	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		rows, err = q.ListSupplements(ctx, userID)
+		return err
+	})
+	list := make([]today.SupplementRow, len(rows))
+	for i, r := range rows {
+		schedule := supplements.Schedule{ScheduleType: supplements.ScheduleType(r.ScheduleType)}
+		if r.DaysOfWeek != nil {
+			schedule.DaysOfWeek = make([]int, len(r.DaysOfWeek))
+			for j, d := range r.DaysOfWeek {
+				schedule.DaysOfWeek[j] = int(d)
+			}
+		}
+		list[i] = today.SupplementRow{ID: r.ID, Name: r.Name, Dose: r.Dose, Schedule: schedule}
+	}
+	return list, err
+}
+
+// TakenSupplementsOn lists the supplements logged on date.
+func (s *TodayStore) TakenSupplementsOn(ctx context.Context, userID uuid.UUID, date string) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
+	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		ids, err = q.ListTakenSupplementsOn(ctx, queries.ListTakenSupplementsOnParams{UserID: userID, OnDate: date})
+		return err
+	})
+	return ids, err
+}
+
+// HasAnySchedule reports whether the user has any fixed session at all.
+func (s *TodayStore) HasAnySchedule(ctx context.Context, userID uuid.UUID) (bool, error) {
+	var has bool
+	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		has, err = q.HasAnySchedule(ctx, userID)
+		return err
+	})
+	return has, err
 }
