@@ -10,7 +10,26 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
+
+const archivePlan = `-- name: ArchivePlan :execrows
+UPDATE public.training_plans SET status = 'archived'
+WHERE id = $1 AND user_id = $2 AND status = 'active'
+`
+
+type ArchivePlanParams struct {
+	ID     uuid.UUID `json:"id"`
+	UserID uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) ArchivePlan(ctx context.Context, arg ArchivePlanParams) (int64, error) {
+	result, err := q.db.Exec(ctx, archivePlan, arg.ID, arg.UserID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
 
 const completePlanItem = `-- name: CompletePlanItem :one
 SELECT public.complete_plan_item($1, $2, CAST($3::text AS date))::text AS result
@@ -65,4 +84,137 @@ func (q *Queries) GetPlanItemRef(ctx context.Context, arg GetPlanItemRefParams) 
 		&i.PlanCreatedAt,
 	)
 	return i, err
+}
+
+const listActivePlanItems = `-- name: ListActivePlanItems :many
+SELECT i.id, i.week, i.day_of_week, i.item_type, i.title, i.description, i.details, p.created_at AS plan_created_at
+FROM public.plan_items i
+JOIN public.training_plans p ON p.id = i.plan_id
+WHERE p.user_id = $1 AND p.status = 'active'
+ORDER BY p.plan_kind, i.week, i.day_of_week, i.id
+`
+
+type ListActivePlanItemsRow struct {
+	ID            uuid.UUID `json:"id"`
+	Week          int32     `json:"week"`
+	DayOfWeek     int16     `json:"day_of_week"`
+	ItemType      string    `json:"item_type"`
+	Title         string    `json:"title"`
+	Description   *string   `json:"description"`
+	Details       []byte    `json:"details"`
+	PlanCreatedAt time.Time `json:"plan_created_at"`
+}
+
+// Every item of every active plan, for the calendar export.
+func (q *Queries) ListActivePlanItems(ctx context.Context, userID uuid.UUID) ([]ListActivePlanItemsRow, error) {
+	rows, err := q.db.Query(ctx, listActivePlanItems, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListActivePlanItemsRow{}
+	for rows.Next() {
+		var i ListActivePlanItemsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Week,
+			&i.DayOfWeek,
+			&i.ItemType,
+			&i.Title,
+			&i.Description,
+			&i.Details,
+			&i.PlanCreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listActivePrograms = `-- name: ListActivePrograms :many
+SELECT id, race_date, goal_time, weeks_total, created_at, plan_kind, intake, created_by
+FROM public.training_plans
+WHERE user_id = $1 AND status = 'active'
+ORDER BY plan_kind, created_at
+`
+
+type ListActiveProgramsRow struct {
+	ID         uuid.UUID   `json:"id"`
+	RaceDate   pgtype.Date `json:"race_date"`
+	GoalTime   *string     `json:"goal_time"`
+	WeeksTotal int32       `json:"weeks_total"`
+	CreatedAt  time.Time   `json:"created_at"`
+	PlanKind   string      `json:"plan_kind"`
+	Intake     []byte      `json:"intake"`
+	CreatedBy  *uuid.UUID  `json:"created_by"`
+}
+
+func (q *Queries) ListActivePrograms(ctx context.Context, userID uuid.UUID) ([]ListActiveProgramsRow, error) {
+	rows, err := q.db.Query(ctx, listActivePrograms, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListActiveProgramsRow{}
+	for rows.Next() {
+		var i ListActiveProgramsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.RaceDate,
+			&i.GoalTime,
+			&i.WeeksTotal,
+			&i.CreatedAt,
+			&i.PlanKind,
+			&i.Intake,
+			&i.CreatedBy,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listReviewedWeeks = `-- name: ListReviewedWeeks :many
+SELECT c.plan_id, c.week
+FROM public.weekly_checkins c
+JOIN public.training_plans p ON p.id = c.plan_id
+WHERE p.user_id = $1 AND c.plan_id = ANY($2::uuid[])
+`
+
+type ListReviewedWeeksParams struct {
+	UserID  uuid.UUID   `json:"user_id"`
+	PlanIds []uuid.UUID `json:"plan_ids"`
+}
+
+type ListReviewedWeeksRow struct {
+	PlanID uuid.UUID `json:"plan_id"`
+	Week   int32     `json:"week"`
+}
+
+func (q *Queries) ListReviewedWeeks(ctx context.Context, arg ListReviewedWeeksParams) ([]ListReviewedWeeksRow, error) {
+	rows, err := q.db.Query(ctx, listReviewedWeeks, arg.UserID, arg.PlanIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListReviewedWeeksRow{}
+	for rows.Next() {
+		var i ListReviewedWeeksRow
+		if err := rows.Scan(&i.PlanID, &i.Week); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
