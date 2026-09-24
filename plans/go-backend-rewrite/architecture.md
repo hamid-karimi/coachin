@@ -270,7 +270,7 @@ stay configurable (`CLAUDE_MODEL`, `GEMINI_MODEL`).
 | openapi-typescript / openapi-fetch / openapi-react-query | 7.13.0 / 0.17.0 / 0.5.4 | |
 | zod | 4.6.5 | |
 | react-hook-form / @hookform/resolvers | 7.88.0 / 5.9.1 | |
-| lucide-react | 1.48.0 | |
+| lucide-react | 1.47.0 | 1.48.0 is < 1 day old (see note below) |
 | sonner / next-themes | 2.0.8 / 0.4.6 | |
 | storybook / @storybook/nextjs-vite / eslint-plugin-storybook | 10.6.0 | |
 | vitest | 5.0.1 | |
@@ -299,3 +299,8 @@ stay configurable (`CLAUDE_MODEL`, `GEMINI_MODEL`).
 
 Re-check with `pnpm outdated` / `go list -m -u all` / image tags at the start of each
 phase; bump in a dedicated commit.
+
+**"Latest" means latest release that is at least one day old.** pnpm 12 enforces
+`minimumReleaseAge` (1 day) when installing in CI, a guard against compromised fresh
+releases. A version published today fails `pnpm install --frozen-lockfile` in CI; pick the
+previous release and regenerate the lockfile (`pnpm clean --lockfile && pnpm install`).
