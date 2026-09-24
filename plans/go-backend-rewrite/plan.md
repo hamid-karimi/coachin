@@ -57,15 +57,19 @@ Goal: `make up` on your Mac starts an empty but working stack.
       sees only their own private rows and account; no user context → no rows.
       `store.WithUser` (transaction-local `app.user_id`) added here, used by everything
       after.
-- [ ] 1.4 `scripts/export-golden.ts` (runs in `legacy/`): pure `lib/*` functions over the
-      inputs in `lib/*.test.ts` → `testdata/golden/<topic>.json`.
-- [ ] 1.5 Port to `apps/api/internal/domain/` with table-driven tests on the vectors: xp §1 ·
-      streak §2 · tiers §3 · running §4 · race intake §5 · goals §6 · scorecard / check-in /
-      stall §7 · nutrition §8/§10 · plan weeks & dates §9 · quotas §11 · volume §12 ·
+- [x] 1.4 `scripts/golden/generate.ts` (`make golden`, plain Node 22+ with a resolve hook for
+      the legacy `@/` imports): runs the legacy `lib/*` functions over edge cases + seeded
+      random inputs (clock pinned per case, `TZ=UTC`) → `testdata/golden/<topic>.json`. CI
+      regenerates and fails on drift.
+- [ ] 1.5 Port to `apps/api/internal/domain/` with table-driven tests on the vectors. Done:
+      xp §1, streak §2, tiers §3, running §4, dates §9 (+ `jsnum` for JavaScript rounding /
+      `Number()` parity). Remaining: race intake §5 · goals §6 · scorecard / check-in /
+      stall §7 · nutrition §8/§10 · quotas §11 · volume §12 ·
       supplements + meal adherence §13 · activity summary §14 · charts + photo nudge §15 ·
       plan-items, schedule-inserts, food-units, grocery, share-card privacy, sports,
       user-country, AI extract-json / schema-hint / anchors.
-- [ ] 1.6 FORMULAS.md: add the Go path next to each "source of truth".
+- [ ] 1.6 FORMULAS.md: add the Go path next to each "source of truth" (done for every
+      ported section).
 - **Gate**: `go test ./...` passes every vector; RLS smoke test green.
 
 ## Phase 2 — Auth + platform slice (L)

@@ -1,0 +1,251 @@
+{
+ "generatedBy": "scripts/golden/generate.ts",
+ "topic": "tiers",
+ "cases": [
+  {
+   "fn": "leagueTierFromXp",
+   "xp": -1,
+   "want": "bronze"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 0,
+   "want": "bronze"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 4999,
+   "want": "bronze"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 5000,
+   "want": "silver"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 5001,
+   "want": "silver"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 19999,
+   "want": "silver"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 20000,
+   "want": "gold"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 49999,
+   "want": "gold"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 50000,
+   "want": "platinum"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 1000000,
+   "want": "platinum"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 58740,
+   "want": "platinum"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 25999,
+   "want": "gold"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 22823,
+   "want": "gold"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 43036,
+   "want": "gold"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 70023,
+   "want": "platinum"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 50466,
+   "want": "platinum"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 39936,
+   "want": "gold"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 28579,
+   "want": "gold"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 62527,
+   "want": "platinum"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 9122,
+   "want": "silver"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 62869,
+   "want": "platinum"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 16123,
+   "want": "silver"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 33938,
+   "want": "gold"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 66799,
+   "want": "platinum"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 46505,
+   "want": "gold"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 11280,
+   "want": "silver"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 53778,
+   "want": "platinum"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 29335,
+   "want": "gold"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 77729,
+   "want": "platinum"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 3136,
+   "want": "bronze"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 73215,
+   "want": "platinum"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 4974,
+   "want": "bronze"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 10241,
+   "want": "silver"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 15354,
+   "want": "silver"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 568,
+   "want": "bronze"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 75208,
+   "want": "platinum"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 36165,
+   "want": "gold"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 50772,
+   "want": "platinum"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 79072,
+   "want": "platinum"
+  },
+  {
+   "fn": "leagueTierFromXp",
+   "xp": 18623,
+   "want": "silver"
+  },
+  {
+   "fn": "tierFromLeague",
+   "league": "bronze",
+   "want": "bronze"
+  },
+  {
+   "fn": "tierFromLeague",
+   "league": "silver",
+   "want": "silver"
+  },
+  {
+   "fn": "tierFromLeague",
+   "league": "gold",
+   "want": "gold"
+  },
+  {
+   "fn": "tierFromLeague",
+   "league": "platinum",
+   "want": "platinum"
+  },
+  {
+   "fn": "tierFromLeague",
+   "league": "GOLD",
+   "want": "gold"
+  },
+  {
+   "fn": "tierFromLeague",
+   "league": " Silver ",
+   "want": "silver"
+  },
+  {
+   "fn": "tierFromLeague",
+   "league": "diamond",
+   "want": "bronze"
+  },
+  {
+   "fn": "tierFromLeague",
+   "league": "",
+   "want": "bronze"
+  },
+  {
+   "fn": "tierFromLeague",
+   "league": null,
+   "want": "bronze"
+  }
+ ]
+}

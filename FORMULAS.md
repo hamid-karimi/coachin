@@ -8,8 +8,10 @@ stay in sync. When you change a number here, change it there. When you change it
 change it here. They must never disagree.
 
 > **Go rewrite in progress:** the `legacy/…` paths below are today's implementation and the
-> reference for the port. Go paths (`apps/api/internal/domain/…`) are added next to them in
-> Phase 1 and become the only source of truth in Phase 4.
+> reference for the port. Go paths (`apps/api/internal/domain/…`) are added next to them as
+> each section is ported, and become the only source of truth in Phase 4. Each Go port
+> replays golden vectors produced by the legacy code (`make golden` → `testdata/golden/`),
+> so a formula change must land in both until the legacy copy is deleted.
 
 > Values in **bold** are tunable knobs — safe to change. Formulas are the shape of the
 > calculation — changing them is a behavior change, not just a tune.
@@ -19,6 +21,7 @@ change it here. They must never disagree.
 ## 1. XP & Levels
 
 **Source of truth:** `legacy/lib/xp.ts`, and every `award_*` RPC in `legacy/supabase/migrations/`.
+**Go:** `apps/api/internal/domain/xp` (`LevelProgress`, `Level`).
 
 ### Level from total XP
 
@@ -60,6 +63,7 @@ level = floor(totalXp / 1000) + 1
 ## 2. Streaks
 
 ### Personal streak + hearts
+**Go:** `apps/api/internal/domain/streak` (`Next`).
 **Source of truth:** `legacy/lib/streak.ts` (`nextStreakState`, unit-tested in `legacy/lib/streak.test.ts`),
 mirrored by `evaluate_user_streak` (latest:
 `legacy/supabase/migrations/20260706150000_streak_multi_plan.sql`, superseding the original in
@@ -114,6 +118,7 @@ Per settled day, given whether the user **trained** and whether it was a **requi
 
 ## 3. Leagues / Tiers
 
+**Go:** `apps/api/internal/domain/tiers` (`FromXP`, `MinXP`, `FromLeague`).
 **Source of truth:** `legacy/lib/tiers.ts` (`leagueTierFromXp` + `LEAGUE_TIER_MIN_XP`, unit-tested),
 mirrored by `league_tier_for_xp` in `legacy/supabase/migrations/20260706110000_streak_and_league.sql`.
 
@@ -137,6 +142,7 @@ mirrored by `league_tier_for_xp` in `legacy/supabase/migrations/20260706110000_s
 ## 4. Running math
 
 **Source of truth:** `legacy/lib/running.ts`.
+**Go:** `apps/api/internal/domain/running`.
 
 ### Riegel race-time prediction
 ```
@@ -240,6 +246,7 @@ t2 = t1 × (d2 / d1) ^ 1.06
 ## 9. Plan weeks & calendar dates
 
 **Source of truth:** `legacy/lib/dates.ts` (unit-tested in `legacy/lib/dates.test.ts`).
+**Go:** `apps/api/internal/domain/dates` (takes `now` explicitly).
 
 - **Week 1** = the Monday-anchored week containing the plan's `created_at`. Weeks are
   Monday-first; `day_of_week` still carries the real id (`0=Sun … 6=Sat`).

@@ -5,6 +5,22 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-24 (late) · #59 merged · Phase 1 PR B1 — golden vectors + first domain ports
+
+**Done**: #59 (baseline schema) merged. This PR:
+- `scripts/golden/` + `make golden`: runs the legacy TS formulas directly with Node (type
+  stripping + a resolve hook for `@/` imports), clock pinned per case, `TZ=UTC`, seeded
+  PRNG → `testdata/golden/*.json` (1,003 vectors). CI regenerates and fails on drift.
+- Go ports, each replaying its vectors: `domain/xp`, `tiers`, `streak`, `running`, `dates`
+  (+ `jsnum`: JS `Math.round` / `Number()` semantics — Go's `math.Round` differs on
+  negative halves). All vectors pass. FORMULAS.md §1–4, §9 now name the Go files.
+
+**Decisions**: one Go package per formula topic (`xp.Level`, `streak.Next`, …); date
+functions take `now` explicitly; hearts is an int in Go (fractional-hearts vector dropped).
+
+**Next steps**: merge B1 → B2: goals §6, scorecard/check-in §7, quotas §11, volume §12
+(workout-sets), then nutrition/supplements/charts/share-card/AI helpers.
+
 ## 2026-09-24 (evening) · Phase 0 merged (#58) · Phase 1 PR A — clean schema
 
 **Done**: #58 merged into `feat/backend-rewrite-with-go` after 2 CI fixes (pnpm 12

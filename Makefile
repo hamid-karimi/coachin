@@ -2,7 +2,7 @@
 COMPOSE := docker compose -f compose.yaml -f compose.dev.yaml
 
 .DEFAULT_GOAL := help
-.PHONY: help up infra down logs ps migrate migrate-status reset-db gen test lint
+.PHONY: help up infra down logs ps migrate migrate-status reset-db gen golden test lint
 
 help: ## List the available commands
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  make %-15s %s\n", $$1, $$2}'
@@ -40,6 +40,9 @@ reset-db: .env ## Delete the local database and re-create it from migrations
 gen: ## Regenerate openapi/openapi.json and the web app's typed API client
 	cd apps/api && go run ./cmd/api openapi > ../../openapi/openapi.json
 	cd apps/web && pnpm gen:api
+
+golden: ## Regenerate testdata/golden from the legacy TypeScript formulas (Node 22+)
+	TZ=UTC node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/golden/register.mjs scripts/golden/generate.ts
 
 test: ## Run Go and web unit/integration tests (Go tests need Docker)
 	cd apps/api && go test ./...
