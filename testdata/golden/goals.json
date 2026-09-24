@@ -1,0 +1,846 @@
+{
+ "generatedBy": "scripts/golden/generate.ts",
+ "topic": "goals",
+ "cases": [
+  {
+   "fn": "GOAL_TYPE_META",
+   "want": {
+    "weight": {
+     "label": "Weight",
+     "unit": "kg",
+     "source": "measurement"
+    },
+    "body_fat_pct": {
+     "label": "Body fat",
+     "unit": "%",
+     "source": "measurement"
+    },
+    "calorie_intake": {
+     "label": "Daily calorie intake",
+     "unit": "kcal",
+     "source": "nutrition"
+    },
+    "calories_burned": {
+     "label": "Daily calories burned",
+     "unit": "kcal",
+     "source": "nutrition"
+    },
+    "weekly_run_km": {
+     "label": "Weekly running",
+     "unit": "km",
+     "source": "activity"
+    },
+    "monthly_run_km": {
+     "label": "Monthly running",
+     "unit": "km",
+     "source": "activity"
+    }
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 90,
+   "target": 80,
+   "current": 85,
+   "want": {
+    "pct": 50,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 90,
+   "target": 80,
+   "current": 80,
+   "want": {
+    "pct": 100,
+    "direction": "down",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 90,
+   "target": 80,
+   "current": 75,
+   "want": {
+    "pct": 100,
+    "direction": "down",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 90,
+   "target": 80,
+   "current": 95,
+   "want": {
+    "pct": 0,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 80,
+   "target": 80,
+   "current": 79,
+   "want": {
+    "pct": 99,
+    "direction": "up",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": null,
+   "target": 80,
+   "current": 85,
+   "want": {
+    "pct": 100,
+    "direction": "up",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": null,
+   "target": 80,
+   "current": 75,
+   "want": {
+    "pct": 94,
+    "direction": "up",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": null,
+   "target": 50,
+   "current": 25,
+   "want": {
+    "pct": 50,
+    "direction": "up",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": null,
+   "target": 50,
+   "current": 60,
+   "want": {
+    "pct": 100,
+    "direction": "up",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 20,
+   "target": 50,
+   "current": null,
+   "want": null
+  },
+  {
+   "fn": "goalProgress",
+   "start": 10,
+   "target": 50,
+   "current": 30,
+   "want": {
+    "pct": 50,
+    "direction": "up",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 10,
+   "target": 50,
+   "current": 50,
+   "want": {
+    "pct": 100,
+    "direction": "up",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 10,
+   "target": 50,
+   "current": 5,
+   "want": {
+    "pct": 0,
+    "direction": "up",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 25,
+   "target": 20,
+   "current": 22.5,
+   "want": {
+    "pct": 50,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": null,
+   "target": 1500,
+   "current": 1800,
+   "want": {
+    "pct": 100,
+    "direction": "up",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 1.2,
+   "target": 67.3,
+   "current": 65.6,
+   "want": {
+    "pct": 97,
+    "direction": "up",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": null,
+   "target": 1.5,
+   "current": 117,
+   "want": {
+    "pct": 100,
+    "direction": "up",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 94.4,
+   "target": 39.3,
+   "current": null,
+   "want": null
+  },
+  {
+   "fn": "goalProgress",
+   "start": null,
+   "target": 46.3,
+   "current": 76.3,
+   "want": {
+    "pct": 100,
+    "direction": "up",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 41.7,
+   "target": 20.9,
+   "current": 113.9,
+   "want": {
+    "pct": 0,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 95.5,
+   "target": 86.3,
+   "current": 84.3,
+   "want": {
+    "pct": 100,
+    "direction": "down",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 97.2,
+   "target": 95.4,
+   "current": 66.8,
+   "want": {
+    "pct": 100,
+    "direction": "down",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 30.2,
+   "target": 22.3,
+   "current": 49.1,
+   "want": {
+    "pct": 0,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 58.8,
+   "target": 89.5,
+   "current": 105.6,
+   "want": {
+    "pct": 100,
+    "direction": "up",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 58.3,
+   "target": 28.3,
+   "current": 97.7,
+   "want": {
+    "pct": 0,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 42.9,
+   "target": 37.2,
+   "current": 3.1,
+   "want": {
+    "pct": 100,
+    "direction": "down",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 30.2,
+   "target": 26.7,
+   "current": 32.1,
+   "want": {
+    "pct": 0,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 10,
+   "target": 37.1,
+   "current": null,
+   "want": null
+  },
+  {
+   "fn": "goalProgress",
+   "start": 51,
+   "target": 12.5,
+   "current": 57.4,
+   "want": {
+    "pct": 0,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": null,
+   "target": 45.3,
+   "current": 35.8,
+   "want": {
+    "pct": 79,
+    "direction": "up",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 93.7,
+   "target": 13.1,
+   "current": 70.9,
+   "want": {
+    "pct": 28,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 74.5,
+   "target": 90.8,
+   "current": 71.6,
+   "want": {
+    "pct": 0,
+    "direction": "up",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 73.6,
+   "target": 15.9,
+   "current": 101.1,
+   "want": {
+    "pct": 0,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": null,
+   "target": 11.1,
+   "current": 36.5,
+   "want": {
+    "pct": 100,
+    "direction": "up",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 51.3,
+   "target": 88.9,
+   "current": 23.4,
+   "want": {
+    "pct": 0,
+    "direction": "up",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 53.6,
+   "target": 34.6,
+   "current": 20,
+   "want": {
+    "pct": 100,
+    "direction": "down",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": null,
+   "target": 20.1,
+   "current": 18,
+   "want": {
+    "pct": 90,
+    "direction": "up",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 73.9,
+   "target": 1.6,
+   "current": 7,
+   "want": {
+    "pct": 93,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 43.2,
+   "target": 83.3,
+   "current": 112.7,
+   "want": {
+    "pct": 100,
+    "direction": "up",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 70.7,
+   "target": 3.2,
+   "current": 107.9,
+   "want": {
+    "pct": 0,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 69.8,
+   "target": 10.5,
+   "current": 10.7,
+   "want": {
+    "pct": 100,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": null,
+   "target": 78.6,
+   "current": 60.5,
+   "want": {
+    "pct": 77,
+    "direction": "up",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 97.2,
+   "target": 94.1,
+   "current": 72,
+   "want": {
+    "pct": 100,
+    "direction": "down",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 29.6,
+   "target": 27.2,
+   "current": 65.2,
+   "want": {
+    "pct": 0,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 86.2,
+   "target": 11.9,
+   "current": 104.6,
+   "want": {
+    "pct": 0,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": null,
+   "target": 13.7,
+   "current": 63.6,
+   "want": {
+    "pct": 100,
+    "direction": "up",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 9.1,
+   "target": 92.2,
+   "current": 60.5,
+   "want": {
+    "pct": 62,
+    "direction": "up",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 32.8,
+   "target": 24.6,
+   "current": 34.2,
+   "want": {
+    "pct": 0,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 51.6,
+   "target": 60.1,
+   "current": 57.5,
+   "want": {
+    "pct": 69,
+    "direction": "up",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 95.4,
+   "target": 78.4,
+   "current": null,
+   "want": null
+  },
+  {
+   "fn": "goalProgress",
+   "start": 41.6,
+   "target": 65,
+   "current": 16.2,
+   "want": {
+    "pct": 0,
+    "direction": "up",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 3.6,
+   "target": 3.5,
+   "current": 92.9,
+   "want": {
+    "pct": 0,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": null,
+   "target": 64.7,
+   "current": 34.5,
+   "want": {
+    "pct": 53,
+    "direction": "up",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 36.3,
+   "target": 29.1,
+   "current": 115.9,
+   "want": {
+    "pct": 0,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 53.5,
+   "target": 79.2,
+   "current": 108.4,
+   "want": {
+    "pct": 100,
+    "direction": "up",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": null,
+   "target": 57.4,
+   "current": null,
+   "want": null
+  },
+  {
+   "fn": "goalProgress",
+   "start": 90.7,
+   "target": 61.9,
+   "current": 15,
+   "want": {
+    "pct": 100,
+    "direction": "down",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 58.7,
+   "target": 36.7,
+   "current": 118.2,
+   "want": {
+    "pct": 0,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 52.9,
+   "target": 9.4,
+   "current": 109.6,
+   "want": {
+    "pct": 0,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 78.6,
+   "target": 19,
+   "current": 106,
+   "want": {
+    "pct": 0,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 23.8,
+   "target": 33.4,
+   "current": 82.8,
+   "want": {
+    "pct": 100,
+    "direction": "up",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 26,
+   "target": 91.4,
+   "current": 45.5,
+   "want": {
+    "pct": 30,
+    "direction": "up",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 19.9,
+   "target": 94.7,
+   "current": 26.7,
+   "want": {
+    "pct": 9,
+    "direction": "up",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 94.3,
+   "target": 70.8,
+   "current": 61.4,
+   "want": {
+    "pct": 100,
+    "direction": "down",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": null,
+   "target": 9,
+   "current": 35.8,
+   "want": {
+    "pct": 100,
+    "direction": "up",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 46.6,
+   "target": 34.8,
+   "current": 118.8,
+   "want": {
+    "pct": 0,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 69.8,
+   "target": 2.6,
+   "current": 32.1,
+   "want": {
+    "pct": 56,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 39.9,
+   "target": 31.2,
+   "current": 66.6,
+   "want": {
+    "pct": 0,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": null,
+   "target": 5.4,
+   "current": 94.9,
+   "want": {
+    "pct": 100,
+    "direction": "up",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 90,
+   "target": 19.3,
+   "current": 73.6,
+   "want": {
+    "pct": 23,
+    "direction": "down",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 63.9,
+   "target": 67,
+   "current": 81.3,
+   "want": {
+    "pct": 100,
+    "direction": "up",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 71.6,
+   "target": 39.8,
+   "current": 12.8,
+   "want": {
+    "pct": 100,
+    "direction": "down",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 42.4,
+   "target": 88.6,
+   "current": 47.9,
+   "want": {
+    "pct": 12,
+    "direction": "up",
+    "achieved": false
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 36,
+   "target": 95.6,
+   "current": 113.4,
+   "want": {
+    "pct": 100,
+    "direction": "up",
+    "achieved": true
+   }
+  },
+  {
+   "fn": "goalProgress",
+   "start": 69.2,
+   "target": 15,
+   "current": 17,
+   "want": {
+    "pct": 96,
+    "direction": "down",
+    "achieved": false
+   }
+  }
+ ]
+}

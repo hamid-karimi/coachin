@@ -1,0 +1,3856 @@
+{
+ "generatedBy": "scripts/golden/generate.ts",
+ "topic": "scorecard",
+ "cases": [
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "recovery",
+     "is_completed": false,
+     "details": null
+    }
+   ],
+   "logs": [
+    null
+   ],
+   "want": {
+    "adherence_pct": 0,
+    "planned_items": 1,
+    "completed_items": 0,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 10.5
+     }
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "mobility",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 7.3
+     }
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": false,
+     "details": null
+    }
+   ],
+   "logs": [
+    {
+     "actual": {
+      "distance_km": 11
+     },
+     "ai_feedback": null,
+     "note": "   "
+    },
+    null,
+    {
+     "actual": {
+      "distance_km": 1.1
+     },
+     "ai_feedback": null,
+     "note": null
+    },
+    null,
+    null,
+    {
+     "actual": {
+      "distance_km": 2.7
+     },
+     "ai_feedback": {
+      "flag": "green",
+      "message": ""
+     },
+     "note": null
+    },
+    {
+     "actual": {
+      "distance_km": 10
+     },
+     "ai_feedback": null,
+     "note": null
+    }
+   ],
+   "want": {
+    "adherence_pct": 57.1,
+    "planned_items": 7,
+    "completed_items": 4,
+    "planned_km": 17.8,
+    "actual_km": 18.3,
+    "red_flags": [],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "meal_note",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "meal_note",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 10.3
+     }
+    }
+   ],
+   "logs": [
+    null,
+    null,
+    null,
+    {
+     "actual": {
+      "distance_km": 14.2
+     },
+     "ai_feedback": {
+      "flag": "red",
+      "message": ""
+     },
+     "note": "Felt sharp pain"
+    },
+    {
+     "actual": {
+      "distance_km": 0
+     },
+     "ai_feedback": null,
+     "note": "   "
+    }
+   ],
+   "want": {
+    "adherence_pct": 100,
+    "planned_items": 3,
+    "completed_items": 3,
+    "planned_km": 10.3,
+    "actual_km": 10.3,
+    "red_flags": [
+     "Felt sharp pain"
+    ],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 2.9
+     }
+    }
+   ],
+   "logs": [
+    null
+   ],
+   "want": {
+    "adherence_pct": 100,
+    "planned_items": 1,
+    "completed_items": 1,
+    "planned_km": 2.9,
+    "actual_km": 2.9,
+    "red_flags": [],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "mobility",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "meal_note",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "meal_note",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": false,
+     "details": null
+    }
+   ],
+   "logs": [
+    {
+     "actual": null,
+     "ai_feedback": {
+      "flag": "green",
+      "message": "  Watch the knee  "
+     },
+     "note": "Felt sharp pain"
+    },
+    {
+     "actual": {
+      "distance_km": 6.3
+     },
+     "ai_feedback": null,
+     "note": null
+    },
+    {
+     "actual": null,
+     "ai_feedback": {
+      "flag": "red",
+      "message": ""
+     },
+     "note": null
+    },
+    null,
+    null,
+    null
+   ],
+   "want": {
+    "adherence_pct": 50,
+    "planned_items": 4,
+    "completed_items": 2,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [
+     "Flagged session"
+    ],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "strength",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": 7.9
+     }
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "mobility",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": true,
+     "details": null
+    }
+   ],
+   "logs": [
+    null,
+    null,
+    {
+     "actual": {
+      "distance_km": 2
+     },
+     "ai_feedback": {
+      "flag": "green",
+      "message": "  Watch the knee  "
+     },
+     "note": "Felt sharp pain"
+    },
+    {
+     "actual": {
+      "distance_km": 4.8
+     },
+     "ai_feedback": {
+      "flag": "caution",
+      "message": ""
+     },
+     "note": "   "
+    },
+    null
+   ],
+   "want": {
+    "adherence_pct": 60,
+    "planned_items": 5,
+    "completed_items": 3,
+    "planned_km": 7.9,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": [
+     "Flagged session"
+    ]
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "stretch",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "meal_note",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": null
+     }
+    },
+    {
+     "item_type": "strength",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "mobility",
+     "is_completed": true,
+     "details": null
+    }
+   ],
+   "logs": [
+    null,
+    {
+     "actual": {
+      "distance_km": 13.3
+     },
+     "ai_feedback": null,
+     "note": null
+    },
+    null,
+    null,
+    {
+     "actual": {
+      "distance_km": 5.2
+     },
+     "ai_feedback": {
+      "flag": "caution",
+      "message": ""
+     },
+     "note": null
+    }
+   ],
+   "want": {
+    "adherence_pct": 50,
+    "planned_items": 4,
+    "completed_items": 2,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": [
+     "Flagged session"
+    ]
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "recovery",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "mobility",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": 4
+     }
+    },
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 5
+     }
+    },
+    {
+     "item_type": "strength",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": false,
+     "details": null
+    }
+   ],
+   "logs": [
+    {
+     "actual": null,
+     "ai_feedback": null,
+     "note": "Felt sharp pain"
+    },
+    {
+     "actual": {
+      "distance_km": 12
+     },
+     "ai_feedback": {
+      "flag": "red",
+      "message": "  Watch the knee  "
+     },
+     "note": "Felt sharp pain"
+    },
+    {
+     "actual": null,
+     "ai_feedback": {
+      "flag": "red",
+      "message": ""
+     },
+     "note": "Felt sharp pain"
+    },
+    null,
+    {
+     "actual": {
+      "distance_km": 8
+     },
+     "ai_feedback": null,
+     "note": null
+    },
+    null,
+    null
+   ],
+   "want": {
+    "adherence_pct": 57.1,
+    "planned_items": 7,
+    "completed_items": 4,
+    "planned_km": 9,
+    "actual_km": 5,
+    "red_flags": [
+     "Felt sharp pain",
+     "Felt sharp pain"
+    ],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": 12.9
+     }
+    },
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": null
+     }
+    },
+    {
+     "item_type": "meal_note",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "strength",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": true,
+     "details": null
+    }
+   ],
+   "logs": [
+    null,
+    {
+     "actual": {
+      "distance_km": 6.1
+     },
+     "ai_feedback": null,
+     "note": "   "
+    },
+    {
+     "actual": {
+      "distance_km": 4
+     },
+     "ai_feedback": null,
+     "note": null
+    },
+    null,
+    {
+     "actual": {
+      "distance_km": 5.9
+     },
+     "ai_feedback": {
+      "flag": "green",
+      "message": "  Watch the knee  "
+     },
+     "note": "   "
+    },
+    null
+   ],
+   "want": {
+    "adherence_pct": 80,
+    "planned_items": 5,
+    "completed_items": 4,
+    "planned_km": 12.9,
+    "actual_km": 6.1,
+    "red_flags": [],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 13
+     }
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "meal_note",
+     "is_completed": false,
+     "details": null
+    }
+   ],
+   "logs": [
+    null,
+    {
+     "actual": {
+      "distance_km": 7
+     },
+     "ai_feedback": {
+      "flag": "red",
+      "message": "  Watch the knee  "
+     },
+     "note": "   "
+    },
+    {
+     "actual": {
+      "distance_km": 1.8
+     },
+     "ai_feedback": {
+      "flag": "green",
+      "message": "  Watch the knee  "
+     },
+     "note": null
+    }
+   ],
+   "want": {
+    "adherence_pct": 100,
+    "planned_items": 2,
+    "completed_items": 2,
+    "planned_km": 13,
+    "actual_km": 13,
+    "red_flags": [
+     "Watch the knee"
+    ],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": 11.2
+     }
+    },
+    {
+     "item_type": "strength",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "strength",
+     "is_completed": true,
+     "details": null
+    }
+   ],
+   "logs": [
+    null,
+    {
+     "actual": null,
+     "ai_feedback": {
+      "flag": "red",
+      "message": ""
+     },
+     "note": null
+    },
+    null
+   ],
+   "want": {
+    "adherence_pct": 33.3,
+    "planned_items": 3,
+    "completed_items": 1,
+    "planned_km": 11.2,
+    "actual_km": 0,
+    "red_flags": [
+     "Flagged session"
+    ],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 3.1
+     }
+    },
+    {
+     "item_type": "strength",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "strength",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": "10"
+     }
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": true,
+     "details": null
+    }
+   ],
+   "logs": [
+    null,
+    {
+     "actual": {
+      "distance_km": 4
+     },
+     "ai_feedback": null,
+     "note": null
+    },
+    {
+     "actual": {
+      "distance_km": 1.8
+     },
+     "ai_feedback": {
+      "flag": "red",
+      "message": ""
+     },
+     "note": "Felt sharp pain"
+    },
+    null,
+    {
+     "actual": null,
+     "ai_feedback": null,
+     "note": "Felt sharp pain"
+    }
+   ],
+   "want": {
+    "adherence_pct": 80,
+    "planned_items": 5,
+    "completed_items": 4,
+    "planned_km": 3.1,
+    "actual_km": 3.1,
+    "red_flags": [
+     "Felt sharp pain"
+    ],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 1.4
+     }
+    },
+    {
+     "item_type": "mobility",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": false,
+     "details": null
+    }
+   ],
+   "logs": [
+    {
+     "actual": {
+      "distance_km": 4.7
+     },
+     "ai_feedback": null,
+     "note": "   "
+    },
+    {
+     "actual": null,
+     "ai_feedback": null,
+     "note": "   "
+    },
+    null,
+    {
+     "actual": {
+      "distance_km": 5
+     },
+     "ai_feedback": {
+      "flag": "red",
+      "message": ""
+     },
+     "note": "Felt sharp pain"
+    }
+   ],
+   "want": {
+    "adherence_pct": 75,
+    "planned_items": 4,
+    "completed_items": 3,
+    "planned_km": 1.4,
+    "actual_km": 4.7,
+    "red_flags": [
+     "Felt sharp pain"
+    ],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "mobility",
+     "is_completed": true,
+     "details": null
+    }
+   ],
+   "logs": [
+    {
+     "actual": {
+      "distance_km": 1.9
+     },
+     "ai_feedback": {
+      "flag": "red",
+      "message": "  Watch the knee  "
+     },
+     "note": "   "
+    }
+   ],
+   "want": {
+    "adherence_pct": 100,
+    "planned_items": 1,
+    "completed_items": 1,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [
+     "Watch the knee"
+    ],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "recovery",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 2.7
+     }
+    }
+   ],
+   "logs": [
+    {
+     "actual": null,
+     "ai_feedback": null,
+     "note": null
+    },
+    {
+     "actual": null,
+     "ai_feedback": {
+      "flag": "red",
+      "message": ""
+     },
+     "note": null
+    }
+   ],
+   "want": {
+    "adherence_pct": 100,
+    "planned_items": 2,
+    "completed_items": 2,
+    "planned_km": 2.7,
+    "actual_km": 2.7,
+    "red_flags": [
+     "Flagged session"
+    ],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": "10"
+     }
+    },
+    {
+     "item_type": "mobility",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": 9.6
+     }
+    },
+    {
+     "item_type": "strength",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "mobility",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": "10"
+     }
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": true,
+     "details": null
+    }
+   ],
+   "logs": [
+    null,
+    {
+     "actual": {
+      "distance_km": 5.9
+     },
+     "ai_feedback": null,
+     "note": "   "
+    },
+    null,
+    null,
+    {
+     "actual": null,
+     "ai_feedback": null,
+     "note": "   "
+    },
+    null,
+    {
+     "actual": {
+      "distance_km": 3.1
+     },
+     "ai_feedback": {
+      "flag": "red",
+      "message": ""
+     },
+     "note": "   "
+    }
+   ],
+   "want": {
+    "adherence_pct": 42.9,
+    "planned_items": 7,
+    "completed_items": 3,
+    "planned_km": 9.6,
+    "actual_km": 0,
+    "red_flags": [
+     "Flagged session"
+    ],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": 6
+     }
+    },
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 10.9
+     }
+    }
+   ],
+   "logs": [
+    null,
+    {
+     "actual": null,
+     "ai_feedback": {
+      "flag": "red",
+      "message": ""
+     },
+     "note": null
+    }
+   ],
+   "want": {
+    "adherence_pct": 50,
+    "planned_items": 2,
+    "completed_items": 1,
+    "planned_km": 16.9,
+    "actual_km": 10.9,
+    "red_flags": [
+     "Flagged session"
+    ],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": 13.3
+     }
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "strength",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "strength",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "mobility",
+     "is_completed": true,
+     "details": null
+    }
+   ],
+   "logs": [
+    null,
+    null,
+    {
+     "actual": null,
+     "ai_feedback": {
+      "flag": "green",
+      "message": ""
+     },
+     "note": "   "
+    },
+    {
+     "actual": {
+      "distance_km": 4.6
+     },
+     "ai_feedback": null,
+     "note": null
+    },
+    {
+     "actual": {
+      "distance_km": 11.6
+     },
+     "ai_feedback": {
+      "flag": "red",
+      "message": ""
+     },
+     "note": "Felt sharp pain"
+    }
+   ],
+   "want": {
+    "adherence_pct": 60,
+    "planned_items": 5,
+    "completed_items": 3,
+    "planned_km": 13.3,
+    "actual_km": 0,
+    "red_flags": [
+     "Felt sharp pain"
+    ],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": 7.5
+     }
+    }
+   ],
+   "logs": [
+    {
+     "actual": null,
+     "ai_feedback": {
+      "flag": "green",
+      "message": ""
+     },
+     "note": "Felt sharp pain"
+    }
+   ],
+   "want": {
+    "adherence_pct": 0,
+    "planned_items": 1,
+    "completed_items": 0,
+    "planned_km": 7.5,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 15
+     }
+    },
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 12.6
+     }
+    },
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 6.6
+     }
+    }
+   ],
+   "logs": [
+    null,
+    {
+     "actual": {
+      "distance_km": 7.5
+     },
+     "ai_feedback": null,
+     "note": "   "
+    },
+    {
+     "actual": {
+      "distance_km": 0.2
+     },
+     "ai_feedback": {
+      "flag": "red",
+      "message": ""
+     },
+     "note": null
+    }
+   ],
+   "want": {
+    "adherence_pct": 100,
+    "planned_items": 3,
+    "completed_items": 3,
+    "planned_km": 34.2,
+    "actual_km": 22.7,
+    "red_flags": [
+     "Flagged session"
+    ],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "meal_note",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "meal_note",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "mobility",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 12.9
+     }
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": true,
+     "details": null
+    }
+   ],
+   "logs": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    {
+     "actual": {
+      "distance_km": 6.9
+     },
+     "ai_feedback": null,
+     "note": "   "
+    },
+    null
+   ],
+   "want": {
+    "adherence_pct": 100,
+    "planned_items": 5,
+    "completed_items": 5,
+    "planned_km": 12.9,
+    "actual_km": 12.9,
+    "red_flags": [],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [],
+   "logs": [],
+   "want": {
+    "adherence_pct": 100,
+    "planned_items": 0,
+    "completed_items": 0,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": 2.1
+     }
+    },
+    {
+     "item_type": "meal_note",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 11.2
+     }
+    }
+   ],
+   "logs": [
+    {
+     "actual": {
+      "distance_km": 0
+     },
+     "ai_feedback": null,
+     "note": "   "
+    },
+    null,
+    {
+     "actual": {
+      "distance_km": 2.5
+     },
+     "ai_feedback": {
+      "flag": "green",
+      "message": "  Watch the knee  "
+     },
+     "note": "   "
+    },
+    null
+   ],
+   "want": {
+    "adherence_pct": 66.7,
+    "planned_items": 3,
+    "completed_items": 2,
+    "planned_km": 13.3,
+    "actual_km": 11.2,
+    "red_flags": [],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "stretch",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 8.1
+     }
+    },
+    {
+     "item_type": "meal_note",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "strength",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "strength",
+     "is_completed": true,
+     "details": null
+    }
+   ],
+   "logs": [
+    null,
+    null,
+    null,
+    {
+     "actual": {
+      "distance_km": 9.9
+     },
+     "ai_feedback": {
+      "flag": "caution",
+      "message": "  Watch the knee  "
+     },
+     "note": null
+    },
+    null,
+    null
+   ],
+   "want": {
+    "adherence_pct": 100,
+    "planned_items": 5,
+    "completed_items": 5,
+    "planned_km": 8.1,
+    "actual_km": 8.1,
+    "red_flags": [],
+    "caution_flags": [
+     "Watch the knee"
+    ]
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 8.6
+     }
+    }
+   ],
+   "logs": [
+    {
+     "actual": null,
+     "ai_feedback": {
+      "flag": "caution",
+      "message": ""
+     },
+     "note": null
+    }
+   ],
+   "want": {
+    "adherence_pct": 100,
+    "planned_items": 1,
+    "completed_items": 1,
+    "planned_km": 8.6,
+    "actual_km": 8.6,
+    "red_flags": [],
+    "caution_flags": [
+     "Flagged session"
+    ]
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": "10"
+     }
+    }
+   ],
+   "logs": [
+    null
+   ],
+   "want": {
+    "adherence_pct": 0,
+    "planned_items": 1,
+    "completed_items": 0,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "stretch",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 13.8
+     }
+    },
+    {
+     "item_type": "mobility",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": null
+     }
+    },
+    {
+     "item_type": "strength",
+     "is_completed": false,
+     "details": null
+    }
+   ],
+   "logs": [
+    null,
+    {
+     "actual": null,
+     "ai_feedback": null,
+     "note": "Felt sharp pain"
+    },
+    null,
+    null,
+    null
+   ],
+   "want": {
+    "adherence_pct": 40,
+    "planned_items": 5,
+    "completed_items": 2,
+    "planned_km": 13.8,
+    "actual_km": 13.8,
+    "red_flags": [],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 2.8
+     }
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": true,
+     "details": null
+    }
+   ],
+   "logs": [
+    null,
+    null
+   ],
+   "want": {
+    "adherence_pct": 100,
+    "planned_items": 2,
+    "completed_items": 2,
+    "planned_km": 2.8,
+    "actual_km": 2.8,
+    "red_flags": [],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": 12.9
+     }
+    },
+    {
+     "item_type": "meal_note",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 8
+     }
+    },
+    {
+     "item_type": "strength",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": true,
+     "details": null
+    }
+   ],
+   "logs": [
+    null,
+    {
+     "actual": {
+      "distance_km": 9.1
+     },
+     "ai_feedback": null,
+     "note": null
+    },
+    {
+     "actual": {
+      "distance_km": 2.3
+     },
+     "ai_feedback": {
+      "flag": "red",
+      "message": ""
+     },
+     "note": "   "
+    },
+    {
+     "actual": null,
+     "ai_feedback": null,
+     "note": "   "
+    },
+    {
+     "actual": {
+      "distance_km": 2.7
+     },
+     "ai_feedback": {
+      "flag": "red",
+      "message": ""
+     },
+     "note": "   "
+    }
+   ],
+   "want": {
+    "adherence_pct": 75,
+    "planned_items": 4,
+    "completed_items": 3,
+    "planned_km": 20.9,
+    "actual_km": 2.3,
+    "red_flags": [
+     "Flagged session",
+     "Flagged session"
+    ],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "stretch",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "meal_note",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "mobility",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "meal_note",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": true,
+     "details": null
+    }
+   ],
+   "logs": [
+    null,
+    {
+     "actual": null,
+     "ai_feedback": null,
+     "note": "Felt sharp pain"
+    },
+    {
+     "actual": {
+      "distance_km": 11.9
+     },
+     "ai_feedback": {
+      "flag": "caution",
+      "message": ""
+     },
+     "note": null
+    },
+    null,
+    {
+     "actual": null,
+     "ai_feedback": null,
+     "note": null
+    },
+    null,
+    null
+   ],
+   "want": {
+    "adherence_pct": 60,
+    "planned_items": 5,
+    "completed_items": 3,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": [
+     "Flagged session"
+    ]
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": 0.5
+     }
+    },
+    {
+     "item_type": "strength",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 6.3
+     }
+    }
+   ],
+   "logs": [
+    {
+     "actual": null,
+     "ai_feedback": {
+      "flag": "red",
+      "message": ""
+     },
+     "note": "Felt sharp pain"
+    },
+    {
+     "actual": {
+      "distance_km": 5.9
+     },
+     "ai_feedback": null,
+     "note": "Felt sharp pain"
+    },
+    null,
+    null
+   ],
+   "want": {
+    "adherence_pct": 50,
+    "planned_items": 4,
+    "completed_items": 2,
+    "planned_km": 6.8,
+    "actual_km": 6.3,
+    "red_flags": [
+     "Felt sharp pain"
+    ],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "mobility",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "mobility",
+     "is_completed": true,
+     "details": null
+    }
+   ],
+   "logs": [
+    {
+     "actual": null,
+     "ai_feedback": null,
+     "note": null
+    },
+    {
+     "actual": {
+      "distance_km": 1.4
+     },
+     "ai_feedback": {
+      "flag": "green",
+      "message": "  Watch the knee  "
+     },
+     "note": null
+    },
+    null,
+    {
+     "actual": null,
+     "ai_feedback": null,
+     "note": "   "
+    },
+    {
+     "actual": {
+      "distance_km": 14.3
+     },
+     "ai_feedback": {
+      "flag": "caution",
+      "message": ""
+     },
+     "note": "   "
+    }
+   ],
+   "want": {
+    "adherence_pct": 100,
+    "planned_items": 5,
+    "completed_items": 5,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": [
+     "Flagged session"
+    ]
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "strength",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "mobility",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": 14.2
+     }
+    }
+   ],
+   "logs": [
+    null,
+    {
+     "actual": {
+      "distance_km": 3.2
+     },
+     "ai_feedback": {
+      "flag": "green",
+      "message": "  Watch the knee  "
+     },
+     "note": "Felt sharp pain"
+    },
+    {
+     "actual": {
+      "distance_km": 14.1
+     },
+     "ai_feedback": null,
+     "note": "   "
+    },
+    null,
+    {
+     "actual": {
+      "distance_km": 9.4
+     },
+     "ai_feedback": {
+      "flag": "green",
+      "message": "  Watch the knee  "
+     },
+     "note": null
+    }
+   ],
+   "want": {
+    "adherence_pct": 60,
+    "planned_items": 5,
+    "completed_items": 3,
+    "planned_km": 14.2,
+    "actual_km": 9.4,
+    "red_flags": [],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "strength",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "meal_note",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "mobility",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "mobility",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 14.9
+     }
+    }
+   ],
+   "logs": [
+    {
+     "actual": {
+      "distance_km": 2.4
+     },
+     "ai_feedback": {
+      "flag": "caution",
+      "message": ""
+     },
+     "note": null
+    },
+    {
+     "actual": null,
+     "ai_feedback": {
+      "flag": "green",
+      "message": "  Watch the knee  "
+     },
+     "note": "Felt sharp pain"
+    },
+    null,
+    null,
+    null
+   ],
+   "want": {
+    "adherence_pct": 75,
+    "planned_items": 4,
+    "completed_items": 3,
+    "planned_km": 14.9,
+    "actual_km": 14.9,
+    "red_flags": [],
+    "caution_flags": [
+     "Flagged session"
+    ]
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "recovery",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "strength",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": true,
+     "details": {
+      "distance_km": 6.6
+     }
+    },
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": 0.3
+     }
+    }
+   ],
+   "logs": [
+    {
+     "actual": null,
+     "ai_feedback": null,
+     "note": "Felt sharp pain"
+    },
+    null,
+    {
+     "actual": {
+      "distance_km": 9.2
+     },
+     "ai_feedback": null,
+     "note": "Felt sharp pain"
+    },
+    {
+     "actual": {
+      "distance_km": 0.8
+     },
+     "ai_feedback": {
+      "flag": "caution",
+      "message": "  Watch the knee  "
+     },
+     "note": null
+    }
+   ],
+   "want": {
+    "adherence_pct": 75,
+    "planned_items": 4,
+    "completed_items": 3,
+    "planned_km": 6.9,
+    "actual_km": 10,
+    "red_flags": [],
+    "caution_flags": [
+     "Watch the knee"
+    ]
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "mobility",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "strength",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "meal_note",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "mobility",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": 3.2
+     }
+    },
+    {
+     "item_type": "strength",
+     "is_completed": false,
+     "details": null
+    }
+   ],
+   "logs": [
+    {
+     "actual": {
+      "distance_km": 13.1
+     },
+     "ai_feedback": null,
+     "note": "   "
+    },
+    {
+     "actual": null,
+     "ai_feedback": {
+      "flag": "red",
+      "message": "  Watch the knee  "
+     },
+     "note": null
+    },
+    null,
+    {
+     "actual": {
+      "distance_km": 5.2
+     },
+     "ai_feedback": {
+      "flag": "red",
+      "message": "  Watch the knee  "
+     },
+     "note": "   "
+    },
+    {
+     "actual": null,
+     "ai_feedback": null,
+     "note": "Felt sharp pain"
+    },
+    {
+     "actual": null,
+     "ai_feedback": null,
+     "note": "   "
+    },
+    null
+   ],
+   "want": {
+    "adherence_pct": 33.3,
+    "planned_items": 6,
+    "completed_items": 2,
+    "planned_km": 3.2,
+    "actual_km": 0,
+    "red_flags": [
+     "Watch the knee",
+     "Watch the knee"
+    ],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "mobility",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "strength",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": "10"
+     }
+    },
+    {
+     "item_type": "mobility",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "strength",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": true,
+     "details": null
+    }
+   ],
+   "logs": [
+    null,
+    null,
+    null,
+    {
+     "actual": {
+      "distance_km": 11.3
+     },
+     "ai_feedback": null,
+     "note": "   "
+    },
+    null,
+    null,
+    null
+   ],
+   "want": {
+    "adherence_pct": 85.7,
+    "planned_items": 7,
+    "completed_items": 6,
+    "planned_km": 0,
+    "actual_km": 11.3,
+    "red_flags": [],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": null
+     }
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": 8.1
+     }
+    },
+    {
+     "item_type": "meal_note",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "stretch",
+     "is_completed": false,
+     "details": null
+    }
+   ],
+   "logs": [
+    null,
+    {
+     "actual": {
+      "distance_km": 1.3
+     },
+     "ai_feedback": {
+      "flag": "red",
+      "message": "  Watch the knee  "
+     },
+     "note": "Felt sharp pain"
+    },
+    {
+     "actual": {
+      "distance_km": 6.4
+     },
+     "ai_feedback": null,
+     "note": "Felt sharp pain"
+    },
+    null,
+    {
+     "actual": {
+      "distance_km": 5.8
+     },
+     "ai_feedback": {
+      "flag": "green",
+      "message": "  Watch the knee  "
+     },
+     "note": "Felt sharp pain"
+    },
+    null
+   ],
+   "want": {
+    "adherence_pct": 0,
+    "planned_items": 5,
+    "completed_items": 0,
+    "planned_km": 8.1,
+    "actual_km": 6.4,
+    "red_flags": [
+     "Felt sharp pain"
+    ],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "meal_note",
+     "is_completed": true,
+     "details": null
+    }
+   ],
+   "logs": [
+    null
+   ],
+   "want": {
+    "adherence_pct": 100,
+    "planned_items": 0,
+    "completed_items": 0,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": []
+   }
+  },
+  {
+   "fn": "computeWeekScorecard",
+   "items": [
+    {
+     "item_type": "meal_note",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "recovery",
+     "is_completed": true,
+     "details": null
+    },
+    {
+     "item_type": "meal_note",
+     "is_completed": false,
+     "details": null
+    },
+    {
+     "item_type": "run",
+     "is_completed": false,
+     "details": {
+      "distance_km": 4.1
+     }
+    },
+    {
+     "item_type": "meal_note",
+     "is_completed": true,
+     "details": null
+    }
+   ],
+   "logs": [
+    null,
+    null,
+    {
+     "actual": {
+      "distance_km": 11.6
+     },
+     "ai_feedback": {
+      "flag": "caution",
+      "message": "  Watch the knee  "
+     },
+     "note": null
+    },
+    null,
+    null
+   ],
+   "want": {
+    "adherence_pct": 50,
+    "planned_items": 2,
+    "completed_items": 1,
+    "planned_km": 4.1,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": [
+     "Watch the knee"
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 0,
+    "planned_items": 1,
+    "completed_items": 0,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "previous": null,
+   "want": {
+    "decision": "repeat",
+    "reasons": [
+     "Only 0 of 1 sessions done (0%) — repeating the week instead of advancing."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 57.1,
+    "planned_items": 7,
+    "completed_items": 4,
+    "planned_km": 17.8,
+    "actual_km": 18.3,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "previous": {
+    "adherence_pct": 0,
+    "planned_items": 1,
+    "completed_items": 0,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "want": {
+    "decision": "advance",
+    "reasons": [
+     "4 of 7 sessions done (57.1%) — on track to advance."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 100,
+    "planned_items": 3,
+    "completed_items": 3,
+    "planned_km": 10.3,
+    "actual_km": 10.3,
+    "red_flags": [
+     "Felt sharp pain"
+    ],
+    "caution_flags": []
+   },
+   "previous": {
+    "adherence_pct": 57.1,
+    "planned_items": 7,
+    "completed_items": 4,
+    "planned_km": 17.8,
+    "actual_km": 18.3,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "want": {
+    "decision": "deload",
+    "reasons": [
+     "A session was red-flagged: \"Felt sharp pain\" — easing off to recover."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 100,
+    "planned_items": 1,
+    "completed_items": 1,
+    "planned_km": 2.9,
+    "actual_km": 2.9,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "previous": null,
+   "want": {
+    "decision": "advance",
+    "reasons": [
+     "1 of 1 sessions done (100%) — on track to advance."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 50,
+    "planned_items": 4,
+    "completed_items": 2,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [
+     "Flagged session"
+    ],
+    "caution_flags": []
+   },
+   "previous": {
+    "adherence_pct": 100,
+    "planned_items": 1,
+    "completed_items": 1,
+    "planned_km": 2.9,
+    "actual_km": 2.9,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "want": {
+    "decision": "deload",
+    "reasons": [
+     "A session was red-flagged: \"Flagged session\" — easing off to recover."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 60,
+    "planned_items": 5,
+    "completed_items": 3,
+    "planned_km": 7.9,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": [
+     "Flagged session"
+    ]
+   },
+   "previous": {
+    "adherence_pct": 50,
+    "planned_items": 4,
+    "completed_items": 2,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [
+     "Flagged session"
+    ],
+    "caution_flags": []
+   },
+   "want": {
+    "decision": "advance",
+    "reasons": [
+     "3 of 5 sessions done (60%) — on track to advance.",
+     "Heads up: 1 session flagged for caution."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 50,
+    "planned_items": 4,
+    "completed_items": 2,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": [
+     "Flagged session"
+    ]
+   },
+   "previous": null,
+   "want": {
+    "decision": "advance",
+    "reasons": [
+     "2 of 4 sessions done (50%) — on track to advance.",
+     "Heads up: 1 session flagged for caution."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 57.1,
+    "planned_items": 7,
+    "completed_items": 4,
+    "planned_km": 9,
+    "actual_km": 5,
+    "red_flags": [
+     "Felt sharp pain",
+     "Felt sharp pain"
+    ],
+    "caution_flags": []
+   },
+   "previous": {
+    "adherence_pct": 50,
+    "planned_items": 4,
+    "completed_items": 2,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": [
+     "Flagged session"
+    ]
+   },
+   "want": {
+    "decision": "deload",
+    "reasons": [
+     "A session was red-flagged: \"Felt sharp pain\" — easing off to recover."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 80,
+    "planned_items": 5,
+    "completed_items": 4,
+    "planned_km": 12.9,
+    "actual_km": 6.1,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "previous": {
+    "adherence_pct": 57.1,
+    "planned_items": 7,
+    "completed_items": 4,
+    "planned_km": 9,
+    "actual_km": 5,
+    "red_flags": [
+     "Felt sharp pain",
+     "Felt sharp pain"
+    ],
+    "caution_flags": []
+   },
+   "want": {
+    "decision": "advance",
+    "reasons": [
+     "4 of 5 sessions done (80%) — on track to advance."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 100,
+    "planned_items": 2,
+    "completed_items": 2,
+    "planned_km": 13,
+    "actual_km": 13,
+    "red_flags": [
+     "Watch the knee"
+    ],
+    "caution_flags": []
+   },
+   "previous": null,
+   "want": {
+    "decision": "deload",
+    "reasons": [
+     "A session was red-flagged: \"Watch the knee\" — easing off to recover."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 33.3,
+    "planned_items": 3,
+    "completed_items": 1,
+    "planned_km": 11.2,
+    "actual_km": 0,
+    "red_flags": [
+     "Flagged session"
+    ],
+    "caution_flags": []
+   },
+   "previous": {
+    "adherence_pct": 100,
+    "planned_items": 2,
+    "completed_items": 2,
+    "planned_km": 13,
+    "actual_km": 13,
+    "red_flags": [
+     "Watch the knee"
+    ],
+    "caution_flags": []
+   },
+   "want": {
+    "decision": "deload",
+    "reasons": [
+     "A session was red-flagged: \"Flagged session\" — easing off to recover."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 80,
+    "planned_items": 5,
+    "completed_items": 4,
+    "planned_km": 3.1,
+    "actual_km": 3.1,
+    "red_flags": [
+     "Felt sharp pain"
+    ],
+    "caution_flags": []
+   },
+   "previous": {
+    "adherence_pct": 33.3,
+    "planned_items": 3,
+    "completed_items": 1,
+    "planned_km": 11.2,
+    "actual_km": 0,
+    "red_flags": [
+     "Flagged session"
+    ],
+    "caution_flags": []
+   },
+   "want": {
+    "decision": "deload",
+    "reasons": [
+     "A session was red-flagged: \"Felt sharp pain\" — easing off to recover."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 75,
+    "planned_items": 4,
+    "completed_items": 3,
+    "planned_km": 1.4,
+    "actual_km": 4.7,
+    "red_flags": [
+     "Felt sharp pain"
+    ],
+    "caution_flags": []
+   },
+   "previous": null,
+   "want": {
+    "decision": "deload",
+    "reasons": [
+     "A session was red-flagged: \"Felt sharp pain\" — easing off to recover."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 100,
+    "planned_items": 1,
+    "completed_items": 1,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [
+     "Watch the knee"
+    ],
+    "caution_flags": []
+   },
+   "previous": {
+    "adherence_pct": 75,
+    "planned_items": 4,
+    "completed_items": 3,
+    "planned_km": 1.4,
+    "actual_km": 4.7,
+    "red_flags": [
+     "Felt sharp pain"
+    ],
+    "caution_flags": []
+   },
+   "want": {
+    "decision": "deload",
+    "reasons": [
+     "A session was red-flagged: \"Watch the knee\" — easing off to recover."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 100,
+    "planned_items": 2,
+    "completed_items": 2,
+    "planned_km": 2.7,
+    "actual_km": 2.7,
+    "red_flags": [
+     "Flagged session"
+    ],
+    "caution_flags": []
+   },
+   "previous": {
+    "adherence_pct": 100,
+    "planned_items": 1,
+    "completed_items": 1,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [
+     "Watch the knee"
+    ],
+    "caution_flags": []
+   },
+   "want": {
+    "decision": "deload",
+    "reasons": [
+     "A session was red-flagged: \"Flagged session\" — easing off to recover."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 42.9,
+    "planned_items": 7,
+    "completed_items": 3,
+    "planned_km": 9.6,
+    "actual_km": 0,
+    "red_flags": [
+     "Flagged session"
+    ],
+    "caution_flags": []
+   },
+   "previous": null,
+   "want": {
+    "decision": "deload",
+    "reasons": [
+     "A session was red-flagged: \"Flagged session\" — easing off to recover."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 50,
+    "planned_items": 2,
+    "completed_items": 1,
+    "planned_km": 16.9,
+    "actual_km": 10.9,
+    "red_flags": [
+     "Flagged session"
+    ],
+    "caution_flags": []
+   },
+   "previous": {
+    "adherence_pct": 42.9,
+    "planned_items": 7,
+    "completed_items": 3,
+    "planned_km": 9.6,
+    "actual_km": 0,
+    "red_flags": [
+     "Flagged session"
+    ],
+    "caution_flags": []
+   },
+   "want": {
+    "decision": "deload",
+    "reasons": [
+     "A session was red-flagged: \"Flagged session\" — easing off to recover."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 60,
+    "planned_items": 5,
+    "completed_items": 3,
+    "planned_km": 13.3,
+    "actual_km": 0,
+    "red_flags": [
+     "Felt sharp pain"
+    ],
+    "caution_flags": []
+   },
+   "previous": {
+    "adherence_pct": 50,
+    "planned_items": 2,
+    "completed_items": 1,
+    "planned_km": 16.9,
+    "actual_km": 10.9,
+    "red_flags": [
+     "Flagged session"
+    ],
+    "caution_flags": []
+   },
+   "want": {
+    "decision": "deload",
+    "reasons": [
+     "A session was red-flagged: \"Felt sharp pain\" — easing off to recover."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 0,
+    "planned_items": 1,
+    "completed_items": 0,
+    "planned_km": 7.5,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "previous": null,
+   "want": {
+    "decision": "repeat",
+    "reasons": [
+     "Only 0 of 1 sessions done (0%) — repeating the week instead of advancing."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 100,
+    "planned_items": 3,
+    "completed_items": 3,
+    "planned_km": 34.2,
+    "actual_km": 22.7,
+    "red_flags": [
+     "Flagged session"
+    ],
+    "caution_flags": []
+   },
+   "previous": {
+    "adherence_pct": 0,
+    "planned_items": 1,
+    "completed_items": 0,
+    "planned_km": 7.5,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "want": {
+    "decision": "deload",
+    "reasons": [
+     "A session was red-flagged: \"Flagged session\" — easing off to recover."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 100,
+    "planned_items": 5,
+    "completed_items": 5,
+    "planned_km": 12.9,
+    "actual_km": 12.9,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "previous": {
+    "adherence_pct": 100,
+    "planned_items": 3,
+    "completed_items": 3,
+    "planned_km": 34.2,
+    "actual_km": 22.7,
+    "red_flags": [
+     "Flagged session"
+    ],
+    "caution_flags": []
+   },
+   "want": {
+    "decision": "advance",
+    "reasons": [
+     "5 of 5 sessions done (100%) — on track to advance."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 100,
+    "planned_items": 0,
+    "completed_items": 0,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "previous": null,
+   "want": {
+    "decision": "advance",
+    "reasons": [
+     "0 of 0 sessions done (100%) — on track to advance."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 66.7,
+    "planned_items": 3,
+    "completed_items": 2,
+    "planned_km": 13.3,
+    "actual_km": 11.2,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "previous": {
+    "adherence_pct": 100,
+    "planned_items": 0,
+    "completed_items": 0,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "want": {
+    "decision": "advance",
+    "reasons": [
+     "2 of 3 sessions done (66.7%) — on track to advance."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 100,
+    "planned_items": 5,
+    "completed_items": 5,
+    "planned_km": 8.1,
+    "actual_km": 8.1,
+    "red_flags": [],
+    "caution_flags": [
+     "Watch the knee"
+    ]
+   },
+   "previous": {
+    "adherence_pct": 66.7,
+    "planned_items": 3,
+    "completed_items": 2,
+    "planned_km": 13.3,
+    "actual_km": 11.2,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "want": {
+    "decision": "advance",
+    "reasons": [
+     "5 of 5 sessions done (100%) — on track to advance.",
+     "Heads up: 1 session flagged for caution."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 100,
+    "planned_items": 1,
+    "completed_items": 1,
+    "planned_km": 8.6,
+    "actual_km": 8.6,
+    "red_flags": [],
+    "caution_flags": [
+     "Flagged session"
+    ]
+   },
+   "previous": null,
+   "want": {
+    "decision": "advance",
+    "reasons": [
+     "1 of 1 sessions done (100%) — on track to advance.",
+     "Heads up: 1 session flagged for caution."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 0,
+    "planned_items": 1,
+    "completed_items": 0,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "previous": {
+    "adherence_pct": 100,
+    "planned_items": 1,
+    "completed_items": 1,
+    "planned_km": 8.6,
+    "actual_km": 8.6,
+    "red_flags": [],
+    "caution_flags": [
+     "Flagged session"
+    ]
+   },
+   "want": {
+    "decision": "repeat",
+    "reasons": [
+     "Only 0 of 1 sessions done (0%) — repeating the week instead of advancing."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 40,
+    "planned_items": 5,
+    "completed_items": 2,
+    "planned_km": 13.8,
+    "actual_km": 13.8,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "previous": {
+    "adherence_pct": 0,
+    "planned_items": 1,
+    "completed_items": 0,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "want": {
+    "decision": "deload",
+    "reasons": [
+     "Two weeks in a row under 50% adherence (0% then 40%) — a lighter deload week rebuilds momentum."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 100,
+    "planned_items": 2,
+    "completed_items": 2,
+    "planned_km": 2.8,
+    "actual_km": 2.8,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "previous": null,
+   "want": {
+    "decision": "advance",
+    "reasons": [
+     "2 of 2 sessions done (100%) — on track to advance."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 75,
+    "planned_items": 4,
+    "completed_items": 3,
+    "planned_km": 20.9,
+    "actual_km": 2.3,
+    "red_flags": [
+     "Flagged session",
+     "Flagged session"
+    ],
+    "caution_flags": []
+   },
+   "previous": {
+    "adherence_pct": 100,
+    "planned_items": 2,
+    "completed_items": 2,
+    "planned_km": 2.8,
+    "actual_km": 2.8,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "want": {
+    "decision": "deload",
+    "reasons": [
+     "A session was red-flagged: \"Flagged session\" — easing off to recover."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 60,
+    "planned_items": 5,
+    "completed_items": 3,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": [
+     "Flagged session"
+    ]
+   },
+   "previous": {
+    "adherence_pct": 75,
+    "planned_items": 4,
+    "completed_items": 3,
+    "planned_km": 20.9,
+    "actual_km": 2.3,
+    "red_flags": [
+     "Flagged session",
+     "Flagged session"
+    ],
+    "caution_flags": []
+   },
+   "want": {
+    "decision": "advance",
+    "reasons": [
+     "3 of 5 sessions done (60%) — on track to advance.",
+     "Heads up: 1 session flagged for caution."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 50,
+    "planned_items": 4,
+    "completed_items": 2,
+    "planned_km": 6.8,
+    "actual_km": 6.3,
+    "red_flags": [
+     "Felt sharp pain"
+    ],
+    "caution_flags": []
+   },
+   "previous": null,
+   "want": {
+    "decision": "deload",
+    "reasons": [
+     "A session was red-flagged: \"Felt sharp pain\" — easing off to recover."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 100,
+    "planned_items": 5,
+    "completed_items": 5,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": [
+     "Flagged session"
+    ]
+   },
+   "previous": {
+    "adherence_pct": 50,
+    "planned_items": 4,
+    "completed_items": 2,
+    "planned_km": 6.8,
+    "actual_km": 6.3,
+    "red_flags": [
+     "Felt sharp pain"
+    ],
+    "caution_flags": []
+   },
+   "want": {
+    "decision": "advance",
+    "reasons": [
+     "5 of 5 sessions done (100%) — on track to advance.",
+     "Heads up: 1 session flagged for caution."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 60,
+    "planned_items": 5,
+    "completed_items": 3,
+    "planned_km": 14.2,
+    "actual_km": 9.4,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "previous": {
+    "adherence_pct": 100,
+    "planned_items": 5,
+    "completed_items": 5,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": [
+     "Flagged session"
+    ]
+   },
+   "want": {
+    "decision": "advance",
+    "reasons": [
+     "3 of 5 sessions done (60%) — on track to advance."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 75,
+    "planned_items": 4,
+    "completed_items": 3,
+    "planned_km": 14.9,
+    "actual_km": 14.9,
+    "red_flags": [],
+    "caution_flags": [
+     "Flagged session"
+    ]
+   },
+   "previous": null,
+   "want": {
+    "decision": "advance",
+    "reasons": [
+     "3 of 4 sessions done (75%) — on track to advance.",
+     "Heads up: 1 session flagged for caution."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 75,
+    "planned_items": 4,
+    "completed_items": 3,
+    "planned_km": 6.9,
+    "actual_km": 10,
+    "red_flags": [],
+    "caution_flags": [
+     "Watch the knee"
+    ]
+   },
+   "previous": {
+    "adherence_pct": 75,
+    "planned_items": 4,
+    "completed_items": 3,
+    "planned_km": 14.9,
+    "actual_km": 14.9,
+    "red_flags": [],
+    "caution_flags": [
+     "Flagged session"
+    ]
+   },
+   "want": {
+    "decision": "advance",
+    "reasons": [
+     "3 of 4 sessions done (75%) — on track to advance.",
+     "Heads up: 1 session flagged for caution."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 33.3,
+    "planned_items": 6,
+    "completed_items": 2,
+    "planned_km": 3.2,
+    "actual_km": 0,
+    "red_flags": [
+     "Watch the knee",
+     "Watch the knee"
+    ],
+    "caution_flags": []
+   },
+   "previous": {
+    "adherence_pct": 75,
+    "planned_items": 4,
+    "completed_items": 3,
+    "planned_km": 6.9,
+    "actual_km": 10,
+    "red_flags": [],
+    "caution_flags": [
+     "Watch the knee"
+    ]
+   },
+   "want": {
+    "decision": "deload",
+    "reasons": [
+     "A session was red-flagged: \"Watch the knee\" — easing off to recover."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 85.7,
+    "planned_items": 7,
+    "completed_items": 6,
+    "planned_km": 0,
+    "actual_km": 11.3,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "previous": null,
+   "want": {
+    "decision": "advance",
+    "reasons": [
+     "6 of 7 sessions done (85.7%) — on track to advance."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 0,
+    "planned_items": 5,
+    "completed_items": 0,
+    "planned_km": 8.1,
+    "actual_km": 6.4,
+    "red_flags": [
+     "Felt sharp pain"
+    ],
+    "caution_flags": []
+   },
+   "previous": {
+    "adherence_pct": 85.7,
+    "planned_items": 7,
+    "completed_items": 6,
+    "planned_km": 0,
+    "actual_km": 11.3,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "want": {
+    "decision": "deload",
+    "reasons": [
+     "A session was red-flagged: \"Felt sharp pain\" — easing off to recover."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 100,
+    "planned_items": 0,
+    "completed_items": 0,
+    "planned_km": 0,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": []
+   },
+   "previous": {
+    "adherence_pct": 0,
+    "planned_items": 5,
+    "completed_items": 0,
+    "planned_km": 8.1,
+    "actual_km": 6.4,
+    "red_flags": [
+     "Felt sharp pain"
+    ],
+    "caution_flags": []
+   },
+   "want": {
+    "decision": "advance",
+    "reasons": [
+     "0 of 0 sessions done (100%) — on track to advance."
+    ]
+   }
+  },
+  {
+   "fn": "decideWeek",
+   "current": {
+    "adherence_pct": 50,
+    "planned_items": 2,
+    "completed_items": 1,
+    "planned_km": 4.1,
+    "actual_km": 0,
+    "red_flags": [],
+    "caution_flags": [
+     "Watch the knee"
+    ]
+   },
+   "previous": null,
+   "want": {
+    "decision": "advance",
+    "reasons": [
+     "1 of 2 sessions done (50%) — on track to advance.",
+     "Heads up: 1 session flagged for caution."
+    ]
+   }
+  },
+  {
+   "fn": "detectStalledLifts",
+   "weeks": [],
+   "want": []
+  },
+  {
+   "fn": "detectStalledLifts",
+   "weeks": [
+    [
+     {
+      "actual": {
+       "exercises": [
+        {
+         "name": "Squat",
+         "sets": [
+          {
+           "weight_kg": 100,
+           "reps": 5
+          }
+         ]
+        }
+       ]
+      },
+      "ai_feedback": null,
+      "note": null
+     }
+    ],
+    [
+     {
+      "actual": {
+       "exercises": [
+        {
+         "name": "Squat",
+         "sets": [
+          {
+           "weight_kg": 100,
+           "reps": 5
+          }
+         ]
+        }
+       ]
+      },
+      "ai_feedback": null,
+      "note": null
+     }
+    ]
+   ],
+   "want": []
+  },
+  {
+   "fn": "detectStalledLifts",
+   "weeks": [
+    [
+     {
+      "actual": {
+       "exercises": [
+        {
+         "name": "Squat",
+         "sets": [
+          {
+           "weight_kg": 100,
+           "reps": 5
+          }
+         ]
+        }
+       ]
+      },
+      "ai_feedback": null,
+      "note": null
+     }
+    ],
+    [
+     {
+      "actual": {
+       "exercises": [
+        {
+         "name": "squat",
+         "sets": [
+          {
+           "weight_kg": 100,
+           "reps": 5
+          }
+         ]
+        }
+       ]
+      },
+      "ai_feedback": null,
+      "note": null
+     }
+    ],
+    [
+     {
+      "actual": {
+       "exercises": [
+        {
+         "name": "SQUAT",
+         "sets": [
+          {
+           "weight_kg": 100,
+           "reps": 5
+          }
+         ]
+        }
+       ]
+      },
+      "ai_feedback": null,
+      "note": null
+     }
+    ]
+   ],
+   "want": [
+    "squat"
+   ]
+  },
+  {
+   "fn": "detectStalledLifts",
+   "weeks": [
+    [
+     {
+      "actual": {
+       "exercises": [
+        {
+         "name": "Squat",
+         "sets": [
+          {
+           "weight_kg": 100,
+           "reps": 5
+          }
+         ]
+        }
+       ]
+      },
+      "ai_feedback": null,
+      "note": null
+     }
+    ],
+    [
+     {
+      "actual": {
+       "exercises": [
+        {
+         "name": "Squat",
+         "sets": [
+          {
+           "weight_kg": 100,
+           "reps": 5
+          }
+         ]
+        }
+       ]
+      },
+      "ai_feedback": null,
+      "note": null
+     }
+    ],
+    [
+     {
+      "actual": {
+       "exercises": [
+        {
+         "name": "Squat",
+         "sets": [
+          {
+           "weight_kg": 102.5,
+           "reps": 5
+          }
+         ]
+        }
+       ]
+      },
+      "ai_feedback": null,
+      "note": null
+     }
+    ]
+   ],
+   "want": []
+  },
+  {
+   "fn": "detectStalledLifts",
+   "weeks": [
+    [
+     {
+      "actual": {
+       "exercises": [
+        {
+         "name": "Bench",
+         "sets": [
+          {
+           "weight_kg": 60,
+           "reps": 8
+          }
+         ]
+        }
+       ]
+      },
+      "ai_feedback": null,
+      "note": null
+     }
+    ],
+    [
+     {
+      "actual": {
+       "exercises": [
+        {
+         "name": "Bench",
+         "sets": [
+          {
+           "weight_kg": 60,
+           "reps": 8
+          }
+         ]
+        }
+       ]
+      },
+      "ai_feedback": null,
+      "note": null
+     }
+    ],
+    [
+     {
+      "actual": {
+       "exercises": [
+        {
+         "name": "Bench",
+         "sets": [
+          {
+           "weight_kg": 60,
+           "reps": 9
+          }
+         ]
+        }
+       ]
+      },
+      "ai_feedback": null,
+      "note": null
+     }
+    ]
+   ],
+   "want": []
+  },
+  {
+   "fn": "detectStalledLifts",
+   "weeks": [
+    [
+     {
+      "actual": {
+       "exercises": [
+        {
+         "name": "Row",
+         "sets": [
+          {
+           "weight_kg": 50,
+           "reps": 10
+          }
+         ]
+        }
+       ]
+      },
+      "ai_feedback": null,
+      "note": null
+     }
+    ],
+    [],
+    [
+     {
+      "actual": {
+       "exercises": [
+        {
+         "name": "Row",
+         "sets": [
+          {
+           "weight_kg": 50,
+           "reps": 10
+          }
+         ]
+        }
+       ]
+      },
+      "ai_feedback": null,
+      "note": null
+     }
+    ]
+   ],
+   "want": []
+  },
+  {
+   "fn": "detectStalledLifts",
+   "weeks": [
+    [
+     {
+      "actual": {
+       "exercises": [
+        {
+         "name": "Old",
+         "sets": [
+          {
+           "weight_kg": 1,
+           "reps": 1
+          }
+         ]
+        }
+       ]
+      },
+      "ai_feedback": null,
+      "note": null
+     }
+    ],
+    [
+     {
+      "actual": {
+       "exercises": [
+        {
+         "name": "Curl",
+         "sets": [
+          {
+           "weight_kg": 12,
+           "reps": 10
+          }
+         ]
+        }
+       ]
+      },
+      "ai_feedback": null,
+      "note": null
+     },
+     null
+    ],
+    [
+     {
+      "actual": {
+       "exercises": [
+        {
+         "name": "Curl",
+         "sets": [
+          {
+           "weight_kg": 12,
+           "reps": 10
+          }
+         ]
+        }
+       ]
+      },
+      "ai_feedback": null,
+      "note": null
+     }
+    ],
+    [
+     {
+      "actual": {
+       "exercises": [
+        {
+         "name": "Curl",
+         "sets": [
+          {
+           "weight_kg": 12,
+           "reps": 9
+          }
+         ]
+        }
+       ]
+      },
+      "ai_feedback": null,
+      "note": null
+     }
+    ]
+   ],
+   "want": [
+    "curl"
+   ]
+  },
+  {
+   "fn": "detectStalledLifts",
+   "weeks": [
+    [
+     {
+      "actual": {
+       "exercises": [
+        {
+         "name": "Press",
+         "sets": 3,
+         "reps": 8,
+         "weight_kg": 40
+        }
+       ]
+      },
+      "ai_feedback": null,
+      "note": null
+     }
+    ],
+    [
+     {
+      "actual": {
+       "exercises": [
+        {
+         "name": "Press",
+         "sets": [
+          {
+           "weight_kg": 40,
+           "reps": 8
+          }
+         ]
+        }
+       ]
+      },
+      "ai_feedback": null,
+      "note": null
+     }
+    ],
+    [
+     {
+      "actual": {
+       "exercises": [
+        {
+         "name": "Press",
+         "sets": [
+          {
+           "weight_kg": 40,
+           "reps": 8
+          }
+         ]
+        }
+       ]
+      },
+      "ai_feedback": null,
+      "note": null
+     },
+     {
+      "actual": {
+       "exercises": [
+        {
+         "name": "Dip",
+         "sets": [
+          {
+           "weight_kg": 0,
+           "reps": 12
+          }
+         ]
+        }
+       ]
+      },
+      "ai_feedback": null,
+      "note": null
+     }
+    ]
+   ],
+   "want": [
+    "press"
+   ]
+  }
+ ]
+}

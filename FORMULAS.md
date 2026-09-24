@@ -185,6 +185,7 @@ t2 = t1 × (d2 / d1) ^ 1.06
 ## 6. Goal progress
 
 **Source of truth:** `legacy/lib/goals.ts` (`goalProgress`).
+**Go:** `apps/api/internal/domain/goals` (`ProgressOf`, `TypeMeta`).
 
 - **Direction:** `down` when a usable `start` exists and `target < start` (e.g. weight
   loss); otherwise `up`.
@@ -207,6 +208,7 @@ t2 = t1 × (d2 / d1) ^ 1.06
 ## 7. Weekly scorecard & check-in decision
 
 **Source of truth:** `legacy/lib/scorecard.ts`.
+**Go:** `apps/api/internal/domain/scorecard` (`ComputeWeek`, `Decide`, `StalledLifts`).
 
 ### Scorecard
 - **Trainable items** = all items except `meal_note`.
@@ -287,6 +289,7 @@ targets; it never computes them itself.
 
 ## 11. Weekly quotas
 
+**Go:** `apps/api/internal/domain/quotas` (`ProgressOf`).
 **Source of truth:** `legacy/lib/weekly-quotas.ts` (`quotaProgress`, unit-tested in
 `legacy/lib/weekly-quotas.test.ts`). Stored in `weekly_quotas` (one row per user × sport,
 `sessions_per_week` 1–14).
@@ -303,6 +306,7 @@ targets; it never computes them itself.
 
 ## 12. Strength session volume (celebration stat)
 
+**Go:** `apps/api/internal/domain/workout` (`TotalVolumeKg`, `VolumeEquivalence`, `ParsePrescription`, `NormalizeLoggedExercises`).
 **Source of truth:** `legacy/lib/workout-sets.ts` (`totalVolumeKg`, `volumeEquivalence`,
 `parsePrescription`, `normalizeLoggedExercises` — unit-tested in
 `legacy/lib/workout-sets.test.ts`). Logged per set in `session_logs.actual.exercises`

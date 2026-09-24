@@ -1,0 +1,1567 @@
+{
+ "generatedBy": "scripts/golden/generate.ts",
+ "topic": "workout-sets",
+ "cases": [
+  {
+   "fn": "normalizeLoggedExercises",
+   "raw": null,
+   "want": []
+  },
+  {
+   "fn": "totalVolumeKg",
+   "exercises": [],
+   "want": 0
+  },
+  {
+   "fn": "normalizeLoggedExercises",
+   "raw": "not an array",
+   "want": []
+  },
+  {
+   "fn": "totalVolumeKg",
+   "exercises": [],
+   "want": 0
+  },
+  {
+   "fn": "normalizeLoggedExercises",
+   "raw": [],
+   "want": []
+  },
+  {
+   "fn": "totalVolumeKg",
+   "exercises": [],
+   "want": 0
+  },
+  {
+   "fn": "normalizeLoggedExercises",
+   "raw": [
+    {
+     "name": "Squat",
+     "sets": [
+      {
+       "weight_kg": 100,
+       "reps": 5
+      },
+      {
+       "weight_kg": 102.55,
+       "reps": 5
+      }
+     ]
+    }
+   ],
+   "want": [
+    {
+     "name": "Squat",
+     "sets": [
+      {
+       "weight_kg": 100,
+       "reps": 5
+      },
+      {
+       "weight_kg": 102.6,
+       "reps": 5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "fn": "totalVolumeKg",
+   "exercises": [
+    {
+     "name": "Squat",
+     "sets": [
+      {
+       "weight_kg": 100,
+       "reps": 5
+      },
+      {
+       "weight_kg": 102.6,
+       "reps": 5
+      }
+     ]
+    }
+   ],
+   "want": 1013
+  },
+  {
+   "fn": "normalizeLoggedExercises",
+   "raw": [
+    {
+     "name": "  Bench  ",
+     "sets": 3,
+     "reps": 10,
+     "weight_kg": 60
+    }
+   ],
+   "want": [
+    {
+     "name": "Bench",
+     "sets": [
+      {
+       "weight_kg": 60,
+       "reps": 10
+      },
+      {
+       "weight_kg": 60,
+       "reps": 10
+      },
+      {
+       "weight_kg": 60,
+       "reps": 10
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "fn": "totalVolumeKg",
+   "exercises": [
+    {
+     "name": "Bench",
+     "sets": [
+      {
+       "weight_kg": 60,
+       "reps": 10
+      },
+      {
+       "weight_kg": 60,
+       "reps": 10
+      },
+      {
+       "weight_kg": 60,
+       "reps": 10
+      }
+     ]
+    }
+   ],
+   "want": 1800
+  },
+  {
+   "fn": "normalizeLoggedExercises",
+   "raw": [
+    {
+     "name": "Row",
+     "sets": 3,
+     "reps": 10
+    }
+   ],
+   "want": [
+    {
+     "name": "Row",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 10
+      },
+      {
+       "weight_kg": 0,
+       "reps": 10
+      },
+      {
+       "weight_kg": 0,
+       "reps": 10
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "fn": "totalVolumeKg",
+   "exercises": [
+    {
+     "name": "Row",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 10
+      },
+      {
+       "weight_kg": 0,
+       "reps": 10
+      },
+      {
+       "weight_kg": 0,
+       "reps": 10
+      }
+     ]
+    }
+   ],
+   "want": 0
+  },
+  {
+   "fn": "normalizeLoggedExercises",
+   "raw": [
+    {
+     "name": "Legacy",
+     "sets": 12,
+     "reps": 8,
+     "weight_kg": "40"
+    }
+   ],
+   "want": [
+    {
+     "name": "Legacy",
+     "sets": [
+      {
+       "weight_kg": 40,
+       "reps": 8
+      },
+      {
+       "weight_kg": 40,
+       "reps": 8
+      },
+      {
+       "weight_kg": 40,
+       "reps": 8
+      },
+      {
+       "weight_kg": 40,
+       "reps": 8
+      },
+      {
+       "weight_kg": 40,
+       "reps": 8
+      },
+      {
+       "weight_kg": 40,
+       "reps": 8
+      },
+      {
+       "weight_kg": 40,
+       "reps": 8
+      },
+      {
+       "weight_kg": 40,
+       "reps": 8
+      },
+      {
+       "weight_kg": 40,
+       "reps": 8
+      },
+      {
+       "weight_kg": 40,
+       "reps": 8
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "fn": "totalVolumeKg",
+   "exercises": [
+    {
+     "name": "Legacy",
+     "sets": [
+      {
+       "weight_kg": 40,
+       "reps": 8
+      },
+      {
+       "weight_kg": 40,
+       "reps": 8
+      },
+      {
+       "weight_kg": 40,
+       "reps": 8
+      },
+      {
+       "weight_kg": 40,
+       "reps": 8
+      },
+      {
+       "weight_kg": 40,
+       "reps": 8
+      },
+      {
+       "weight_kg": 40,
+       "reps": 8
+      },
+      {
+       "weight_kg": 40,
+       "reps": 8
+      },
+      {
+       "weight_kg": 40,
+       "reps": 8
+      },
+      {
+       "weight_kg": 40,
+       "reps": 8
+      },
+      {
+       "weight_kg": 40,
+       "reps": 8
+      }
+     ]
+    }
+   ],
+   "want": 3200
+  },
+  {
+   "fn": "normalizeLoggedExercises",
+   "raw": [
+    {
+     "name": "Bad reps",
+     "sets": [
+      {
+       "weight_kg": 50,
+       "reps": 0
+      },
+      {
+       "weight_kg": 50,
+       "reps": 100
+      },
+      {
+       "weight_kg": 50,
+       "reps": 7.5
+      }
+     ]
+    }
+   ],
+   "want": []
+  },
+  {
+   "fn": "totalVolumeKg",
+   "exercises": [],
+   "want": 0
+  },
+  {
+   "fn": "normalizeLoggedExercises",
+   "raw": [
+    {
+     "name": "",
+     "sets": [
+      {
+       "weight_kg": 20,
+       "reps": 10
+      }
+     ]
+    },
+    null,
+    5,
+    {
+     "sets": []
+    }
+   ],
+   "want": []
+  },
+  {
+   "fn": "totalVolumeKg",
+   "exercises": [],
+   "want": 0
+  },
+  {
+   "fn": "normalizeLoggedExercises",
+   "raw": [
+    {
+     "name": 42,
+     "sets": [
+      {
+       "weight_kg": -5,
+       "reps": "12"
+      },
+      {
+       "weight_kg": null,
+       "reps": 3
+      },
+      {
+       "reps": 4
+      }
+     ]
+    }
+   ],
+   "want": [
+    {
+     "name": "42",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 12
+      },
+      {
+       "weight_kg": 0,
+       "reps": 3
+      },
+      {
+       "weight_kg": 0,
+       "reps": 4
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "fn": "totalVolumeKg",
+   "exercises": [
+    {
+     "name": "42",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 12
+      },
+      {
+       "weight_kg": 0,
+       "reps": 3
+      },
+      {
+       "weight_kg": 0,
+       "reps": 4
+      }
+     ]
+    }
+   ],
+   "want": 0
+  },
+  {
+   "fn": "normalizeLoggedExercises",
+   "raw": [
+    {
+     "name": "Curl",
+     "sets": [
+      {
+       "weight_kg": 12.34,
+       "reps": 12
+      },
+      "junk",
+      null
+     ]
+    }
+   ],
+   "want": [
+    {
+     "name": "Curl",
+     "sets": [
+      {
+       "weight_kg": 12.3,
+       "reps": 12
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "fn": "totalVolumeKg",
+   "exercises": [
+    {
+     "name": "Curl",
+     "sets": [
+      {
+       "weight_kg": 12.3,
+       "reps": 12
+      }
+     ]
+    }
+   ],
+   "want": 147.6
+  },
+  {
+   "fn": "normalizeLoggedExercises",
+   "raw": [
+    {
+     "name": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+     "sets": 2,
+     "reps": 5,
+     "weight_kg": 10
+    }
+   ],
+   "want": [
+    {
+     "name": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+     "sets": [
+      {
+       "weight_kg": 10,
+       "reps": 5
+      },
+      {
+       "weight_kg": 10,
+       "reps": 5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "fn": "totalVolumeKg",
+   "exercises": [
+    {
+     "name": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+     "sets": [
+      {
+       "weight_kg": 10,
+       "reps": 5
+      },
+      {
+       "weight_kg": 10,
+       "reps": 5
+      }
+     ]
+    }
+   ],
+   "want": 100
+  },
+  {
+   "fn": "normalizeLoggedExercises",
+   "raw": [
+    {
+     "name": "Deadlift 💪",
+     "sets": [
+      {
+       "weight_kg": 180,
+       "reps": 3
+      }
+     ]
+    }
+   ],
+   "want": [
+    {
+     "name": "Deadlift 💪",
+     "sets": [
+      {
+       "weight_kg": 180,
+       "reps": 3
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "fn": "totalVolumeKg",
+   "exercises": [
+    {
+     "name": "Deadlift 💪",
+     "sets": [
+      {
+       "weight_kg": 180,
+       "reps": 3
+      }
+     ]
+    }
+   ],
+   "want": 540
+  },
+  {
+   "fn": "normalizeLoggedExercises",
+   "raw": [
+    {
+     "name": "Many",
+     "sets": [
+      {
+       "weight_kg": 10,
+       "reps": 8
+      },
+      {
+       "weight_kg": 11,
+       "reps": 8
+      },
+      {
+       "weight_kg": 12,
+       "reps": 8
+      },
+      {
+       "weight_kg": 13,
+       "reps": 8
+      },
+      {
+       "weight_kg": 14,
+       "reps": 8
+      },
+      {
+       "weight_kg": 15,
+       "reps": 8
+      },
+      {
+       "weight_kg": 16,
+       "reps": 8
+      },
+      {
+       "weight_kg": 17,
+       "reps": 8
+      },
+      {
+       "weight_kg": 18,
+       "reps": 8
+      },
+      {
+       "weight_kg": 19,
+       "reps": 8
+      },
+      {
+       "weight_kg": 20,
+       "reps": 8
+      },
+      {
+       "weight_kg": 21,
+       "reps": 8
+      },
+      {
+       "weight_kg": 22,
+       "reps": 8
+      },
+      {
+       "weight_kg": 23,
+       "reps": 8
+      }
+     ]
+    }
+   ],
+   "want": [
+    {
+     "name": "Many",
+     "sets": [
+      {
+       "weight_kg": 10,
+       "reps": 8
+      },
+      {
+       "weight_kg": 11,
+       "reps": 8
+      },
+      {
+       "weight_kg": 12,
+       "reps": 8
+      },
+      {
+       "weight_kg": 13,
+       "reps": 8
+      },
+      {
+       "weight_kg": 14,
+       "reps": 8
+      },
+      {
+       "weight_kg": 15,
+       "reps": 8
+      },
+      {
+       "weight_kg": 16,
+       "reps": 8
+      },
+      {
+       "weight_kg": 17,
+       "reps": 8
+      },
+      {
+       "weight_kg": 18,
+       "reps": 8
+      },
+      {
+       "weight_kg": 19,
+       "reps": 8
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "fn": "totalVolumeKg",
+   "exercises": [
+    {
+     "name": "Many",
+     "sets": [
+      {
+       "weight_kg": 10,
+       "reps": 8
+      },
+      {
+       "weight_kg": 11,
+       "reps": 8
+      },
+      {
+       "weight_kg": 12,
+       "reps": 8
+      },
+      {
+       "weight_kg": 13,
+       "reps": 8
+      },
+      {
+       "weight_kg": 14,
+       "reps": 8
+      },
+      {
+       "weight_kg": 15,
+       "reps": 8
+      },
+      {
+       "weight_kg": 16,
+       "reps": 8
+      },
+      {
+       "weight_kg": 17,
+       "reps": 8
+      },
+      {
+       "weight_kg": 18,
+       "reps": 8
+      },
+      {
+       "weight_kg": 19,
+       "reps": 8
+      }
+     ]
+    }
+   ],
+   "want": 1160
+  },
+  {
+   "fn": "normalizeLoggedExercises",
+   "raw": [
+    {
+     "name": "Ex 0",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 1",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 2",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 3",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 4",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 5",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 6",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 7",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 8",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 9",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 10",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 11",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 12",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 13",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 14",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 15",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 16",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 17",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 18",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 19",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 20",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 21",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 22",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 23",
+     "sets": 1,
+     "reps": 5
+    },
+    {
+     "name": "Ex 24",
+     "sets": 1,
+     "reps": 5
+    }
+   ],
+   "want": [
+    {
+     "name": "Ex 0",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 1",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 2",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 3",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 4",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 5",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 6",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 7",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 8",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 9",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 10",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 11",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 12",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 13",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 14",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 15",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 16",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 17",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 18",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 19",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "fn": "totalVolumeKg",
+   "exercises": [
+    {
+     "name": "Ex 0",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 1",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 2",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 3",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 4",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 5",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 6",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 7",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 8",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 9",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 10",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 11",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 12",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 13",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 14",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 15",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 16",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 17",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 18",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Ex 19",
+     "sets": [
+      {
+       "weight_kg": 0,
+       "reps": 5
+      }
+     ]
+    }
+   ],
+   "want": 0
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 0,
+   "want": null
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 79.9,
+   "want": null
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 80,
+   "want": {
+    "label": "a washing machine",
+    "emoji": "🧺"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 179,
+   "want": {
+    "label": "a washing machine",
+    "emoji": "🧺"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 180,
+   "want": {
+    "label": "a refrigerator",
+    "emoji": "🧊"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 400,
+   "want": {
+    "label": "a horse",
+    "emoji": "🐎"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 699,
+   "want": {
+    "label": "a horse",
+    "emoji": "🐎"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 700,
+   "want": {
+    "label": "a grand piano",
+    "emoji": "🎹"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 1500,
+   "want": {
+    "label": "a small car",
+    "emoji": "🚗"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 3999,
+   "want": {
+    "label": "a small car",
+    "emoji": "🚗"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 4000,
+   "want": {
+    "label": "an adult elephant",
+    "emoji": "🐘"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 25000,
+   "want": {
+    "label": "an adult elephant",
+    "emoji": "🐘"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": -1,
+   "want": null
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 937,
+   "want": {
+    "label": "a grand piano",
+    "emoji": "🎹"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 3751,
+   "want": {
+    "label": "a small car",
+    "emoji": "🚗"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 1803,
+   "want": {
+    "label": "a small car",
+    "emoji": "🚗"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 4175,
+   "want": {
+    "label": "an adult elephant",
+    "emoji": "🐘"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 3510,
+   "want": {
+    "label": "a small car",
+    "emoji": "🚗"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 2696,
+   "want": {
+    "label": "a small car",
+    "emoji": "🚗"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 4912,
+   "want": {
+    "label": "an adult elephant",
+    "emoji": "🐘"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 1432,
+   "want": {
+    "label": "a grand piano",
+    "emoji": "🎹"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 3039,
+   "want": {
+    "label": "a small car",
+    "emoji": "🚗"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 360,
+   "want": {
+    "label": "a refrigerator",
+    "emoji": "🧊"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 3085,
+   "want": {
+    "label": "a small car",
+    "emoji": "🚗"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 440,
+   "want": {
+    "label": "a horse",
+    "emoji": "🐎"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 3416,
+   "want": {
+    "label": "a small car",
+    "emoji": "🚗"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 1322,
+   "want": {
+    "label": "a grand piano",
+    "emoji": "🎹"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 963,
+   "want": {
+    "label": "a grand piano",
+    "emoji": "🎹"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 5728,
+   "want": {
+    "label": "an adult elephant",
+    "emoji": "🐘"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 4160,
+   "want": {
+    "label": "an adult elephant",
+    "emoji": "🐘"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 545,
+   "want": {
+    "label": "a horse",
+    "emoji": "🐎"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 766,
+   "want": {
+    "label": "a grand piano",
+    "emoji": "🎹"
+   }
+  },
+  {
+   "fn": "volumeEquivalence",
+   "kg": 236,
+   "want": {
+    "label": "a refrigerator",
+    "emoji": "🧊"
+   }
+  },
+  {
+   "fn": "parsePrescription",
+   "text": "",
+   "want": []
+  },
+  {
+   "fn": "parsePrescription",
+   "text": "DB Goblet Squat 3x10-12 + DB Floor Press 3x10-12",
+   "want": [
+    {
+     "name": "DB Goblet Squat",
+     "sets": 3,
+     "repsLow": 10,
+     "repsHigh": 12
+    },
+    {
+     "name": "DB Floor Press",
+     "sets": 3,
+     "repsLow": 10,
+     "repsHigh": 12
+    }
+   ]
+  },
+  {
+   "fn": "parsePrescription",
+   "text": "Back Squat 5x5\nBench Press 4 × 8–10\nPull-ups: 3x8",
+   "want": [
+    {
+     "name": "Back Squat",
+     "sets": 5,
+     "repsLow": 5,
+     "repsHigh": null
+    },
+    {
+     "name": "Bench Press",
+     "sets": 4,
+     "repsLow": 8,
+     "repsHigh": 10
+    },
+    {
+     "name": "Pull-ups",
+     "sets": 3,
+     "repsLow": 8,
+     "repsHigh": null
+    }
+   ]
+  },
+  {
+   "fn": "parsePrescription",
+   "text": "Plank 3x60",
+   "want": [
+    {
+     "name": "Plank",
+     "sets": 3,
+     "repsLow": 60,
+     "repsHigh": null
+    }
+   ]
+  },
+  {
+   "fn": "parsePrescription",
+   "text": "Warm-up jog\nRow 3X12",
+   "want": [
+    {
+     "name": "Row",
+     "sets": 3,
+     "repsLow": 12,
+     "repsHigh": null
+    }
+   ]
+  },
+  {
+   "fn": "parsePrescription",
+   "text": "Squat 0x5 + Lunge 3x0 + Curl 3x100",
+   "want": []
+  },
+  {
+   "fn": "parsePrescription",
+   "text": "Press 12x10",
+   "want": [
+    {
+     "name": "Press",
+     "sets": 10,
+     "repsLow": 10,
+     "repsHigh": null
+    }
+   ]
+  },
+  {
+   "fn": "parsePrescription",
+   "text": "3x10",
+   "want": []
+  },
+  {
+   "fn": "parsePrescription",
+   "text": "Deadlift · 1x5",
+   "want": [
+    {
+     "name": "Deadlift",
+     "sets": 1,
+     "repsLow": 5,
+     "repsHigh": null
+    }
+   ]
+  }
+ ]
+}

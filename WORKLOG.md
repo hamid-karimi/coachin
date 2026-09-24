@@ -5,6 +5,22 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-24 (night) · #60 merged · Phase 1 PR B2 — goals, scorecard, quotas, workout sets
+
+**Done**: #60 (golden vectors + xp/tiers/streak/running/dates) merged, CI green incl. the
+golden-drift check. This PR ports FORMULAS §6 goals, §7 scorecard/check-in/stall
+detection, §11 weekly quotas, §12 workout sets/volume — 266 new vectors, all matching,
+including deliberately malformed session-log JSON. `jsnum` gained JS `Number()`/`String()`
+on decoded JSON (null vs missing key), `Number.isInteger`, UTF-16 `slice`, Unicode `trim`.
+
+**Decisions**: loosely-typed JSON (plan details, session logs) is ported as `any` with JS
+coercion helpers so behavior on bad data is identical; Go regexes use an explicit JS
+whitespace class; stall-detection output keeps first-logged order like the JS Map.
+
+**Next steps**: merge B2 → B3: nutrition §8/§10, supplements + meal adherence §13, race
+intake §5, then activity summary §14, charts/photo nudge §15, share-card, plan-items,
+schedule-inserts, food-units, grocery, sports, user-country, AI helpers.
+
 ## 2026-09-24 (late) · #59 merged · Phase 1 PR B1 — golden vectors + first domain ports
 
 **Done**: #59 (baseline schema) merged. This PR:
