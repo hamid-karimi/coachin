@@ -129,6 +129,13 @@ Order (dependencies first, risk front-loaded):
       `apperr` (use-case errors → problem+json) and `domain/planitem` (lenient AI details).
 - [ ] 3.2 **Today** — `GET /today`, streak settle, workout log, supplements + logs,
       optimistic toggles (M)
+  - [x] 3.2a Today core: `GET /today` (settles the streak via `evaluate_user_streak`),
+        `POST /today/workouts` (log + ledger + balance in one transaction, once per sport
+        per day), `PUT /plan-items/{id}/completion` (`complete_plan_item`, log window
+        enforced in Go); migration `00005` lets the API write `xp_transactions`. Web
+        Today page + shared `PlanItemRow` (optimistic); nav placeholders for Training,
+        Calendar, Nutrition.
+  - [ ] 3.2b Daily supplements: CRUD + taken toggle (optimistic), due-today rules.
 - [ ] 3.3 **Training** — AI adapters (Claude → Gemini, prompts verbatim; port `extract-json`,
       `schema-hint`, `anchors` with golden vectors), race-intake gates §5, plan generation,
       archive, plan-item completion, session logs, check-ins, FIT/GPX parse (L)
@@ -145,7 +152,10 @@ Order (dependencies first, risk front-loaded):
 
 ## Phase 4 — Retire SQL business logic (M)
 
-- [ ] 4.1 Migration: unique index `xp_transactions (user_id, reason)`.
+- [ ] 4.1 Migration: unique index `xp_transactions (user_id, reason)`. Imported legacy
+      rows repeat reasons (`workout_log:<sportId>` has no date; `plan_item:<id>` repeats
+      after an undo) — rewrite them to unique keys (or index only new-format reasons)
+      before creating the index.
 - [ ] 4.2 Replace each SQL function with a Go use case in one transaction (Step B), one PR
       per group: plan items + session logs · meals + calorie day · goals · streak settle ·
       check-ins / week adjustment · coaching joins/assign · clubs/groups/leaderboard.

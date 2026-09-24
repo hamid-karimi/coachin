@@ -157,6 +157,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/plan-items/{id}/completion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Mark a plan item done or not done
+         * @description Done only on the item's day or the day after; undo any time. XP is awarded once and compensated on undo.
+         */
+        put: operations["setPlanItemCompletion"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/readyz": {
         parameters: {
             query?: never;
@@ -260,6 +280,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/today": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Today: stats, today's sessions and plan items, weekly targets
+         * @description Settles the streak for every past day first (idempotent).
+         */
+        get: operations["getToday"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/today/workouts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Log today's workout for a sport and earn its XP (once per sport per day) */
+        post: operations["logWorkout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -333,6 +390,10 @@ export interface components {
              */
             status: "ok";
         };
+        LogWorkoutInputBody: {
+            /** Format: int64 */
+            sportTypeId: number;
+        };
         LoginInputBody: {
             email: string;
             password: string;
@@ -356,6 +417,20 @@ export interface components {
             itemType: string;
             title: string;
         };
+        PlanItemCompletionBody: {
+            /**
+             * Format: int64
+             * @description Positive on completion, negative on undo, 0 otherwise
+             */
+            awardedXp: number;
+            /** @description Empty when nothing changed */
+            message: string;
+            /** @enum {string} */
+            status: "success" | "info";
+        };
+        PlanItemCompletionInputBody: {
+            completed: boolean;
+        };
         PlanItemDetailsBody: {
             /** Format: double */
             distanceKm?: number;
@@ -364,6 +439,10 @@ export interface components {
             notes?: string;
             paceMinKm?: string;
             videoQuery?: string;
+        };
+        ProgressPhotoBody: {
+            due: boolean;
+            hasPhotos: boolean;
         };
         QuotaBody: {
             /**
@@ -439,8 +518,97 @@ export interface components {
              */
             xpMultiplier: number;
         };
+        StatsBody: {
+            /** Format: int64 */
+            bestStreak: number;
+            /** Format: int64 */
+            currentStreak: number;
+            /**
+             * Format: int64
+             * @description XP into the current level
+             */
+            currentXp: number;
+            /** Format: int64 */
+            hearts: number;
+            /** Format: int64 */
+            level: number;
+            /** Format: int64 */
+            nextLevelXp: number;
+            /** @enum {string} */
+            tier: "bronze" | "silver" | "gold" | "platinum";
+            /** Format: int64 */
+            xp: number;
+        };
+        TodayBody: {
+            /** Format: int64 */
+            activePlans: number;
+            /** Format: date */
+            date: string;
+            /** Format: int64 */
+            doneCount: number;
+            /** @description 2+ run/strength sessions today */
+            hardCollision: boolean;
+            /** @description Today's items across every active plan */
+            planItems: components["schemas"]["TodayPlanItemBody"][];
+            /**
+             * Format: int64
+             * @description Week of the first plan covering today; 0 when none
+             */
+            planWeek: number;
+            progressPhoto: components["schemas"]["ProgressPhotoBody"];
+            quotas: components["schemas"]["QuotaBody"][];
+            sessions: components["schemas"]["TodaySessionBody"][];
+            stats: components["schemas"]["StatsBody"];
+            /**
+             * Format: int64
+             * @description Sessions + plan items with a done toggle
+             */
+            totalCount: number;
+            /** Format: int64 */
+            weekday: number;
+        };
+        TodayPlanItemBody: {
+            /** Format: date */
+            date: string;
+            /** Format: int64 */
+            dayOfWeek: number;
+            description: string | null;
+            details: components["schemas"]["PlanItemDetailsBody"];
+            id: string;
+            isCompleted: boolean;
+            itemType: string;
+            planId: string;
+            title: string;
+            /** Format: int64 */
+            week: number;
+        };
+        TodaySessionBody: {
+            /** @description The sport has a log today */
+            completed: boolean;
+            /** Format: int64 */
+            estimatedXp: number;
+            /** Format: double */
+            multiplier: number;
+            scheduleId: string;
+            sportName: string | null;
+            /** Format: int64 */
+            sportTypeId: number | null;
+            /** @description HH:MM */
+            time: string | null;
+        };
         TokenInputBody: {
             token: string;
+        };
+        WorkoutLoggedBody: {
+            /** Format: int64 */
+            earnedXp: number;
+            message: string;
+            /** Format: double */
+            multiplier: number;
+            /** @enum {string} */
+            status: "success" | "info";
+            /** Format: int64 */
+            totalXp: number;
         };
     };
     responses: never;
@@ -935,6 +1103,77 @@ export interface operations {
             };
         };
     };
+    setPlanItemCompletion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlanItemCompletionInputBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanItemCompletionBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
     readyz: {
         parameters: {
             query?: never;
@@ -1242,6 +1481,113 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getToday: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TodayBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    logWorkout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LogWorkoutInputBody"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkoutLoggedBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };

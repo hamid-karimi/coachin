@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  isCheckable,
+  logWindowOpen,
   planItemDetailLine,
+  planItemVisualType,
   planItemTypeLabel,
   planItemVideoUrl,
 } from "./plan-items";
@@ -51,5 +54,29 @@ describe("planItemTypeLabel", () => {
 
   it("falls back to a generic label for empty input", () => {
     expect(planItemTypeLabel("")).toBe("Session");
+  });
+});
+
+describe("planItemVisualType", () => {
+  it("shows walk-like recovery as active recovery", () => {
+    expect(planItemVisualType({ itemType: "recovery", title: "Easy walk" })).toBe("recovery_active");
+    expect(planItemVisualType({ itemType: "recovery", title: "Rest" })).toBe("recovery");
+    expect(planItemVisualType({ itemType: "run", title: "Jog" })).toBe("run");
+  });
+});
+
+describe("isCheckable", () => {
+  it("excludes meal notes", () => {
+    expect(isCheckable("run")).toBe(true);
+    expect(isCheckable("meal_note")).toBe(false);
+  });
+});
+
+describe("logWindowOpen", () => {
+  it("opens on the item's day and the day after", () => {
+    expect(logWindowOpen("2026-09-30", "2026-09-29")).toBe(false);
+    expect(logWindowOpen("2026-09-30", "2026-09-30")).toBe(true);
+    expect(logWindowOpen("2026-09-30", "2026-10-01")).toBe(true);
+    expect(logWindowOpen("2026-09-30", "2026-10-02")).toBe(false);
   });
 });

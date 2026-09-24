@@ -5,6 +5,31 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-24 (night, late) · #66 merged (3.1) · Phase 3.2a — Today
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR into `feat/backend-rewrite-with-go`):
+- API: `app/today` (`GET /today`: streak settle via `evaluate_user_streak`, stats,
+  today's sessions + completion, plan items across all active plans, collision flag,
+  done/total, quota chips, progress-photo nudge; `POST /today/workouts`: log + ledger +
+  balance in one transaction under a profile row lock, once per sport per day) and
+  `app/training` (`PUT /plan-items/{id}/completion` → `complete_plan_item`, log window
+  checked in Go). Migration `00005_xp_awards.sql`: INSERT policy on `xp_transactions`
+  for `coachin_app`. `routine.ProgressFor`, `dates.WeekRange`, `planitem`
+  collision/window rules.
+- Web: Today page (header, level/XP, hearts, stats, plan card, quota chips, entry
+  cards, photo nudge, today's plan with workout cards + confetti), shared optimistic
+  `PlanItemRow`, `use-confetti-burst` (theme-token colors; `canvas-confetti` 1.9.4),
+  placeholders for Training / Calendar / Nutrition.
+- Verified: vet/lint/race tests incl. Postgres (log once, XP ledger = balance, plan
+  item +60/0/-60/+60, window, meal note, other user 404); web 103 tests + build;
+  Playwright on the stack (log it → reward + tally, plan item done/undo toasts, reload).
+
+**Decisions**: workout XP reason is now `workout_log:<sportId>:<date>`; plan 4.1 notes the
+legacy-reason cleanup needed before the unique index.
+
+**Next steps**: merge 3.2a → 3.2b supplements (CRUD, taken toggle, due-today using
+`domain/supplements`; Today card + manage sheet), then 3.3 Training.
+
 ## 2026-09-24 (late night) · #65 merged (Phase 2 done) · Phase 3.1 — My week
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR into `feat/backend-rewrite-with-go`):

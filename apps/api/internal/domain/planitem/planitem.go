@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Details are the display fields of plan_items.details. The JSON comes from
@@ -53,4 +54,31 @@ func text(value any) *string {
 		return &s
 	}
 	return nil
+}
+
+// hardTypes are the sessions that count toward a "too intense" day.
+var hardTypes = map[string]bool{"run": true, "strength": true}
+
+// HasHardCollision reports 2+ hard sessions (run/strength) on one day — the
+// signal for the soft "consider spacing them" warning when several active
+// plans land on the same date.
+func HasHardCollision(itemTypes []string) bool {
+	hard := 0
+	for _, t := range itemTypes {
+		if hardTypes[t] {
+			hard++
+		}
+	}
+	return hard >= 2
+}
+
+// Checkable reports whether an item type has a done toggle (meal notes don't).
+func Checkable(itemType string) bool { return itemType != "meal_note" }
+
+// LogWindowOpen reports whether an item dated itemDate can be marked done
+// today: on its day or the day after. Both are calendar dates (YYYY-MM-DD
+// times at midnight in the same location). Undoing is always allowed and is
+// not checked here.
+func LogWindowOpen(itemDate, today time.Time) bool {
+	return !today.Before(itemDate) && !today.After(itemDate.AddDate(0, 0, 1))
 }

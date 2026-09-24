@@ -19,7 +19,8 @@ export function useMutationFeedback(invalidate: QueryKey[], onDone?: () => void)
   const queryClient = useQueryClient();
   return {
     onSuccess: async (result: Result | undefined) => {
-      if (result) TOAST_BY_STATUS[result.status](result.message);
+      // An empty message means nothing worth announcing (e.g. a no-op toggle).
+      if (result?.message) TOAST_BY_STATUS[result.status](result.message);
       onDone?.();
       await Promise.all(invalidate.map((queryKey) => queryClient.invalidateQueries({ queryKey })));
     },

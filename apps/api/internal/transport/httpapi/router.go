@@ -25,6 +25,8 @@ type Deps struct {
 	Checks           ReadinessChecks
 	Auth             AuthService
 	Routine          RoutineService
+	Today            TodayService
+	PlanItems        PlanItemService
 	Cookies          CookieSettings
 	CommunityEnabled bool
 }
@@ -58,6 +60,7 @@ func New(deps Deps) (http.Handler, huma.API) {
 	registerHealth(api, deps.Checks)
 	registerAuth(api, deps)
 	registerRoutine(api, deps)
+	registerToday(api, deps)
 
 	// Rejects cross-site state-changing requests (Sec-Fetch-Site / Origin),
 	// the CSRF guard for cookie sessions.

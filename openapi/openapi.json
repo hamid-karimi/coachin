@@ -167,6 +167,19 @@
         ],
         "type": "object"
       },
+      "LogWorkoutInputBody": {
+        "additionalProperties": false,
+        "properties": {
+          "sportTypeId": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sportTypeId"
+        ],
+        "type": "object"
+      },
       "LoginInputBody": {
         "additionalProperties": false,
         "properties": {
@@ -265,6 +278,45 @@
         ],
         "type": "object"
       },
+      "PlanItemCompletionBody": {
+        "additionalProperties": false,
+        "properties": {
+          "awardedXp": {
+            "description": "Positive on completion, negative on undo, 0 otherwise",
+            "format": "int64",
+            "type": "integer"
+          },
+          "message": {
+            "description": "Empty when nothing changed",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "info"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "message",
+          "awardedXp"
+        ],
+        "type": "object"
+      },
+      "PlanItemCompletionInputBody": {
+        "additionalProperties": false,
+        "properties": {
+          "completed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "completed"
+        ],
+        "type": "object"
+      },
       "PlanItemDetailsBody": {
         "additionalProperties": false,
         "properties": {
@@ -286,6 +338,22 @@
             "type": "string"
           }
         },
+        "type": "object"
+      },
+      "ProgressPhotoBody": {
+        "additionalProperties": false,
+        "properties": {
+          "due": {
+            "type": "boolean"
+          },
+          "hasPhotos": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "due",
+          "hasPhotos"
+        ],
         "type": "object"
       },
       "QuotaBody": {
@@ -540,6 +608,245 @@
         ],
         "type": "object"
       },
+      "StatsBody": {
+        "additionalProperties": false,
+        "properties": {
+          "bestStreak": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "currentStreak": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "currentXp": {
+            "description": "XP into the current level",
+            "format": "int64",
+            "type": "integer"
+          },
+          "hearts": {
+            "format": "int64",
+            "maximum": 3,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "level": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "nextLevelXp": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "tier": {
+            "enum": [
+              "bronze",
+              "silver",
+              "gold",
+              "platinum"
+            ],
+            "type": "string"
+          },
+          "xp": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "xp",
+          "level",
+          "currentXp",
+          "nextLevelXp",
+          "currentStreak",
+          "bestStreak",
+          "hearts",
+          "tier"
+        ],
+        "type": "object"
+      },
+      "TodayBody": {
+        "additionalProperties": false,
+        "properties": {
+          "activePlans": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "date": {
+            "format": "date",
+            "type": "string"
+          },
+          "doneCount": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "hardCollision": {
+            "description": "2+ run/strength sessions today",
+            "type": "boolean"
+          },
+          "planItems": {
+            "description": "Today's items across every active plan",
+            "items": {
+              "$ref": "#/components/schemas/TodayPlanItemBody"
+            },
+            "type": "array"
+          },
+          "planWeek": {
+            "description": "Week of the first plan covering today; 0 when none",
+            "format": "int64",
+            "type": "integer"
+          },
+          "progressPhoto": {
+            "$ref": "#/components/schemas/ProgressPhotoBody"
+          },
+          "quotas": {
+            "items": {
+              "$ref": "#/components/schemas/QuotaBody"
+            },
+            "type": "array"
+          },
+          "sessions": {
+            "items": {
+              "$ref": "#/components/schemas/TodaySessionBody"
+            },
+            "type": "array"
+          },
+          "stats": {
+            "$ref": "#/components/schemas/StatsBody"
+          },
+          "totalCount": {
+            "description": "Sessions + plan items with a done toggle",
+            "format": "int64",
+            "type": "integer"
+          },
+          "weekday": {
+            "format": "int64",
+            "maximum": 6,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "date",
+          "weekday",
+          "stats",
+          "sessions",
+          "planItems",
+          "activePlans",
+          "planWeek",
+          "hardCollision",
+          "doneCount",
+          "totalCount",
+          "quotas",
+          "progressPhoto"
+        ],
+        "type": "object"
+      },
+      "TodayPlanItemBody": {
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "format": "date",
+            "type": "string"
+          },
+          "dayOfWeek": {
+            "format": "int64",
+            "maximum": 6,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "details": {
+            "$ref": "#/components/schemas/PlanItemDetailsBody"
+          },
+          "id": {
+            "type": "string"
+          },
+          "isCompleted": {
+            "type": "boolean"
+          },
+          "itemType": {
+            "type": "string"
+          },
+          "planId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "week": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "planId",
+          "week",
+          "date",
+          "id",
+          "dayOfWeek",
+          "itemType",
+          "title",
+          "description",
+          "isCompleted",
+          "details"
+        ],
+        "type": "object"
+      },
+      "TodaySessionBody": {
+        "additionalProperties": false,
+        "properties": {
+          "completed": {
+            "description": "The sport has a log today",
+            "type": "boolean"
+          },
+          "estimatedXp": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "multiplier": {
+            "format": "double",
+            "type": "number"
+          },
+          "scheduleId": {
+            "type": "string"
+          },
+          "sportName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "sportTypeId": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "time": {
+            "description": "HH:MM",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "scheduleId",
+          "sportTypeId",
+          "sportName",
+          "time",
+          "multiplier",
+          "estimatedXp",
+          "completed"
+        ],
+        "type": "object"
+      },
       "TokenInputBody": {
         "additionalProperties": false,
         "properties": {
@@ -550,6 +857,41 @@
         },
         "required": [
           "token"
+        ],
+        "type": "object"
+      },
+      "WorkoutLoggedBody": {
+        "additionalProperties": false,
+        "properties": {
+          "earnedXp": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "multiplier": {
+            "format": "double",
+            "type": "number"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "info"
+            ],
+            "type": "string"
+          },
+          "totalXp": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "earnedXp",
+          "multiplier",
+          "totalXp",
+          "status",
+          "message"
         ],
         "type": "object"
       }
@@ -1134,6 +1476,98 @@
         ]
       }
     },
+    "/plan-items/{id}/completion": {
+      "put": {
+        "description": "Done only on the item's day or the day after; undo any time. XP is awarded once and compensated on undo.",
+        "operationId": "setPlanItemCompletion",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanItemCompletionInputBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanItemCompletionBody"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Mark a plan item done or not done",
+        "tags": [
+          "training"
+        ]
+      }
+    },
     "/readyz": {
       "get": {
         "operationId": "readyz",
@@ -1521,6 +1955,129 @@
         "summary": "Selectable sports",
         "tags": [
           "routine"
+        ]
+      }
+    },
+    "/today": {
+      "get": {
+        "description": "Settles the streak for every past day first (idempotent).",
+        "operationId": "getToday",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TodayBody"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Today: stats, today's sessions and plan items, weekly targets",
+        "tags": [
+          "today"
+        ]
+      }
+    },
+    "/today/workouts": {
+      "post": {
+        "operationId": "logWorkout",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogWorkoutInputBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkoutLoggedBody"
+                }
+              }
+            },
+            "description": "Created"
+          },
+          "400": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Log today's workout for a sport and earn its XP (once per sport per day)",
+        "tags": [
+          "today"
         ]
       }
     }

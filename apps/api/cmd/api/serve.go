@@ -13,6 +13,8 @@ import (
 	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/password"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/auth"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/routine"
+	"github.com/hamid-karimi/coachin/apps/api/internal/app/today"
+	"github.com/hamid-karimi/coachin/apps/api/internal/app/training"
 	"github.com/hamid-karimi/coachin/apps/api/internal/config"
 	"github.com/hamid-karimi/coachin/apps/api/internal/store"
 	"github.com/hamid-karimi/coachin/apps/api/internal/transport/httpapi"
@@ -62,6 +64,8 @@ func serve(ctx context.Context, _ []string, _ *slog.Logger) error {
 		},
 		Auth:             authService,
 		Routine:          routine.NewService(store.NewRoutineStore(pool), nil),
+		Today:            today.NewService(store.NewTodayStore(pool), nil),
+		PlanItems:        training.NewService(store.NewTrainingStore(pool), nil),
 		Cookies:          httpapi.CookieSettings{Secure: cfg.CookieSecure},
 		CommunityEnabled: cfg.CommunityEnabled,
 	})
