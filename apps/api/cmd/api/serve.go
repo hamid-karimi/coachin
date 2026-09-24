@@ -12,6 +12,8 @@ import (
 	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/mail"
 	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/objectstore"
 	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/password"
+	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/watchfile"
+	"github.com/hamid-karimi/coachin/apps/api/internal/app/activities"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/auth"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/routine"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/supplements"
@@ -81,6 +83,7 @@ func serve(ctx context.Context, _ []string, _ *slog.Logger) error {
 		Generation:       training.NewGeneration(store.NewTrainingStore(pool), generator, nil),
 		Sessions:         training.NewSessions(store.NewTrainingStore(pool), generator),
 		Checkins:         training.NewCheckins(store.NewTrainingStore(pool), generator, nil),
+		Activities:       activities.NewService(watchfile.New(nil)),
 		Cookies:          httpapi.CookieSettings{Secure: cfg.CookieSecure},
 		CommunityEnabled: cfg.CommunityEnabled,
 	})

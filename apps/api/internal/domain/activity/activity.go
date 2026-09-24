@@ -106,3 +106,36 @@ func SplitImportable(activities []Summary, existingLogDates []string, today stri
 	}
 	return split, nil
 }
+
+// Too little to count as a run (legacy parser thresholds).
+const (
+	minDistanceMeters  = 200
+	minDurationSeconds = 60
+)
+
+// FromTotals turns a watch file's totals into a summary: distance to 0.01 km,
+// duration to 0.1 min, pace from the unrounded values, HR rounded. ok is false
+// under 200 m or 60 s. The date is the start's UTC date, today without one.
+func FromTotals(start *time.Time, meters, seconds float64, avgHR *float64, source string, now time.Time) (Summary, bool) {
+	if !jsnum.IsFinite(meters) || meters < minDistanceMeters || !jsnum.IsFinite(seconds) || seconds < minDurationSeconds {
+		return Summary{}, false
+	}
+	day := now
+	if start != nil {
+		day = *start
+	}
+	km, minutes := meters/1000, seconds/60
+	pace := jsnum.Round(minutes/km*100) / 100
+	summary := Summary{
+		Date:         day.UTC().Format(dates.YMDLayout),
+		DistanceKm:   jsnum.Round(km*100) / 100,
+		DurationMin:  jsnum.Round(minutes*10) / 10,
+		AvgPaceMinKm: &pace,
+		Source:       source,
+	}
+	if avgHR != nil && jsnum.IsFinite(*avgHR) {
+		hr := jsnum.Round(*avgHR)
+		summary.AvgHR = &hr
+	}
+	return summary, true
+}

@@ -5,6 +5,20 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-24 (night, final+1) · #71 merged (3.3c) · Phase 3.3d — watch-file parsing
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): `adapters/watchfile`
+(FIT via `muktihari/fit` v0.28.4, GPX via `encoding/xml` raw tokens reproducing
+fast-xml-parser's shapes/quirks) + `activity.FromTotals`; 20 fixtures in
+`testdata/activity/` with expected summaries from the real legacy parser
+(`scripts/golden/activity-files.ts`, `make golden-activity GOLDEN_DEPS=…` — needs
+`@garmin/fitsdk@21 fast-xml-parser@5` installed outside the repo, so it is NOT part of
+`make golden`); `app/activities` + `POST /activities/parse` (multipart, body capped at
+20 MB — huma doesn't cap multipart); wizard step 4 "Watch data" (upload, list, runs sent
+as `activities`). e2e: 2 files parsed + 1 skipped, the generation request carries them.
+
+**Next steps**: 3.4 Calendar (`GET /calendar?week=`), then 3.5 Nutrition.
+
 ## 2026-09-24 (night, final) · #70 merged (3.3b) · Phase 3.3c — session logs + weekly check-in
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): `domain/aigen` session-feedback and

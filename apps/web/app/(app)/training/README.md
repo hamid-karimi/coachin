@@ -13,6 +13,7 @@ card; the day-by-day schedule lives in Calendar, logging happens on Today.
 | `GET /training/intake-context?student=` | Whose plan the wizard builds (self or a coached trainee) and their body profile; 403 for coach mode without an active relationship |
 | `POST /training/plans/running` | Validates the wizard (legacy messages), generates with AI (Claude → Gemini), saves via `create_training_plan`; replaces the same-discipline active plan. 502 when AI is unavailable |
 | `POST /training/plans/hypertrophy` | Same for muscle building |
+| `POST /activities/parse` | Multipart `activities` (≤3 files, 4 MB each, body capped at 20 MB) → run summaries from .fit/.gpx (`adapters/watchfile`, replaying the legacy parser's outputs); nothing is stored. Unreadable files are listed in the message ("info"); 400 when none parse |
 | `PUT /plan-items/{id}/completion` · `POST /plan-items/{id}/session-log` | Done/undo and "Log details" (see the dashboard README) |
 | `GET /training/plans/{id}/checkin` | The check-in proposal, 404 unless one is due (a fully elapsed week that is not the last, not yet reviewed, with a next week): `scorecard` of the reviewed week (+ stalled-lift cautions from week 3), `decision` + `reasons` (FORMULAS.md §7), and next week's `items` rewritten by the AI within that decision — or unchanged with "Keeping week N as planned. …". Each call is an AI call (rate limited) |
 | `POST /training/plans/{id}/checkin` | `{checkinWeek, summary, items}` → `apply_week_adjustment`: records the check-in, rewrites **only** the target week, +20 XP once. The scorecard and decision are recomputed here (legacy trusted the posted ones); items are revalidated like generated plans and forced onto the target week; 409 when the week moved on or was already checked in |
@@ -46,5 +47,7 @@ card; the day-by-day schedule lives in Calendar, logging happens on Today.
   Today, My week, then back to `/training`); `lib/checkin.ts` (decision copy, flag list,
   confirm body; unit-tested)
 
-The watch-file upload step of the legacy running wizard returns with FIT/GPX parsing
-(3.3d).
+Watch data (step 4): `components/watch-data-upload.tsx` + `hooks/use-parse-activities.ts`
+(multipart `POST /activities/parse`), `lib/watch-files.ts` (run line, review note, the
+intake's snake_case shape; unit-tested). The last successful parse rides along in the
+generation request as `activities`.

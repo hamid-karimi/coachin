@@ -153,8 +153,11 @@ Order (dependencies first, risk front-loaded):
         modules), `POST /training/plans/{running,hypertrophy}` (`create_training_plan`,
         coach mode), `GET /training/intake-context`; web wizards + `lib/running` (replays
         `running.json`).
-  - [ ] 3.3d FIT/GPX parsing (`muktihari/fit`, `encoding/xml`) for the running wizard's
-        upload step and the profile watch import.
+  - [x] 3.3d FIT/GPX parsing: `adapters/watchfile` (`muktihari/fit` v0.28.4; GPX via
+        `encoding/xml` raw tokens shaped like fast-xml-parser's output) + `activity.FromTotals`,
+        replaying `activity-files.json` (legacy parser run over generated fixtures —
+        `make golden-activity`); `POST /activities/parse`; wizard "Watch data" step. The
+        profile watch import reuses it in 3.6.
   - [x] 3.3c Session logs: `POST /plan-items/{id}/session-log` (insert + done + +10 XP in
         one tx, AI feedback non-fatal, flagged-note fallback persisted); weekly check-in:
         `GET/POST /training/plans/{id}/checkin` (scorecard, stalls, decision recomputed on

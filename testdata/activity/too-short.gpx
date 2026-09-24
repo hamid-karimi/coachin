@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="test" xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1"><trk><name>Run</name><trkseg><trkpt lat="52.370000" lon="4.890000"><time>2026-09-19T06:00:00.000Z</time></trkpt>
+<trkpt lat="52.370100" lon="4.890050"><time>2026-09-19T06:00:10.000Z</time></trkpt>
+<trkpt lat="52.370200" lon="4.890100"><time>2026-09-19T06:00:20.000Z</time></trkpt>
+<trkpt lat="52.370300" lon="4.890150"><time>2026-09-19T06:00:30.000Z</time></trkpt>
+<trkpt lat="52.370400" lon="4.890200"><time>2026-09-19T06:00:40.000Z</time></trkpt>
+<trkpt lat="52.370500" lon="4.890250"><time>2026-09-19T06:00:50.000Z</time></trkpt>
+<trkpt lat="52.370600" lon="4.890300"><time>2026-09-19T06:01:00.000Z</time></trkpt>
+<trkpt lat="52.370700" lon="4.890350"><time>2026-09-19T06:01:10.000Z</time></trkpt>
+<trkpt lat="52.370800" lon="4.890400"><time>2026-09-19T06:01:20.000Z</time></trkpt>
+<trkpt lat="52.370900" lon="4.890450"><time>2026-09-19T06:01:30.000Z</time></trkpt>
+<trkpt lat="52.371000" lon="4.890500"><time>2026-09-19T06:01:40.000Z</time></trkpt>
+<trkpt lat="52.371100" lon="4.890550"><time>2026-09-19T06:01:50.000Z</time></trkpt>
+<trkpt lat="52.371200" lon="4.890600"><time>2026-09-19T06:02:00.000Z</time></trkpt>
+<trkpt lat="52.371300" lon="4.890650"><time>2026-09-19T06:02:10.000Z</time></trkpt>
+<trkpt lat="52.371400" lon="4.890700"><time>2026-09-19T06:02:20.000Z</time></trkpt></trkseg></trk></gpx>

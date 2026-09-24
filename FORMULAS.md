@@ -404,6 +404,13 @@ consumed by `legacy/app/calendar/page.tsx` + `legacy/app/calendar/components/day
 - Uploaded .fit/.gpx files are parsed to run summaries (≤3 files/upload,
   ≤20 activities) and logged as **completed runs** (`logs` rows) from the
   Profile page.
+- **Parsing** (Go: `adapters/watchfile` + `activity.FromTotals`; vectors
+  `testdata/golden/activity-files.json` over `testdata/activity/`): FIT = the first
+  session's total distance and timer time (elapsed time without one), average HR;
+  GPX = haversine distance (R = 6,371,000 m) over the first track's points, first →
+  last timestamp, mean point HR. A file is a run only at **≥ 200 m and ≥ 60 s**;
+  distance to 0.01 km, duration to 0.1 min, pace = duration ÷ distance (unrounded
+  inputs) to 0.01 min/km, HR rounded; the date is the start's UTC date.
 - **XP = 60 × running sport multiplier per imported run** — the exact
   routine-log formula (§1), summed into one profile update.
 - **Window**: only dates within the last **14 days** (and not in the future)

@@ -14,7 +14,9 @@ import {
 import { ProfileCard } from "./profile-card";
 import { RunningBackgroundStep } from "./running-background-step";
 import { RunningGoalStep } from "./running-goal-step";
+import { WatchDataUpload } from "./watch-data-upload";
 import { WizardCard } from "./wizard-fields";
+import { watchDataNote, type ActivitySummary } from "../lib/watch-files";
 
 interface RunningWizardProps {
   profileSummary: string;
@@ -23,17 +25,18 @@ interface RunningWizardProps {
   targetStudentId?: string;
 }
 
-/** Four steps: about you → running background → goal → review + generate. */
+/** Four steps: about you → running background → goal → watch data + generate. */
 export function RunningWizard({ profileSummary, hasBodyProfile, targetStudentId }: RunningWizardProps) {
   const [step, setStep] = useState(1);
   const [draft, dispatch] = useReducer(runningDraftReducer, INITIAL_RUNNING_DRAFT);
+  const [activities, setActivities] = useState<ActivitySummary[]>([]);
   const generate = useGenerateRunningPlan();
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        generate.mutate({ body: runningBody(draft, targetStudentId) });
+        generate.mutate({ body: runningBody(draft, targetStudentId, activities) });
       }}
       className='space-y-4'>
       <div className='flex items-center justify-between'>
@@ -51,13 +54,16 @@ export function RunningWizard({ profileSummary, hasBodyProfile, targetStudentId 
       {step === 2 && <RunningBackgroundStep draft={draft} dispatch={dispatch} />}
       {step === 3 && <RunningGoalStep draft={draft} dispatch={dispatch} />}
       {step === 4 && (
-        <WizardCard>
-          <p className='text-foreground text-sm font-semibold'>Ready to generate your {planLabel(draft)} plan</p>
-          <p className='text-muted-foreground text-sm'>
-            The plan uses your answers and PBs. Generation takes ~15 seconds and replaces any existing active running
-            plan.
-          </p>
-        </WizardCard>
+        <>
+          <WatchDataUpload activities={activities} onParsed={setActivities} />
+          <WizardCard>
+            <p className='text-foreground text-sm font-semibold'>Ready to generate your {planLabel(draft)} plan</p>
+            <p className='text-muted-foreground text-sm'>
+              {watchDataNote(activities.length)} Generation takes ~15 seconds and replaces any existing active running
+              plan.
+            </p>
+          </WizardCard>
+        </>
       )}
 
       <div className='flex items-center justify-between'>
