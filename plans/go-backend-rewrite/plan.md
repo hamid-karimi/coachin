@@ -178,7 +178,10 @@ Order (dependencies first, risk front-loaded):
         `award_meal_xp` + `award_day_adherence` in one tx under the profile lock),
         `DELETE /meals/{id}` (refunds the meal XP); web `/nutrition` (`lib/food-units`
         replays `nutrition.json`).
-  - [ ] 3.5b Photo estimate (AI vision, up to 3 photos + hint, review sheet, batch confirm).
+  - [x] 3.5b Photo estimate: `aigen.Request.Images` (Claude image blocks / Gemini inline
+        data), `aigen.MealPhotoRequest` + `ParseMealEstimate` (golden `ai.json`, 15 new
+        cases), `POST /meals/photo-estimate` (multipart, content-sniffed, profile country),
+        `POST /meals/batch`; web Photo tab (device compression, review with search-to-add).
   - [ ] 3.5c AI meal plan (`/nutrition/plan`, grocery list), Today's menu card, the
         calendar's meal line + adherence.
 - [ ] 3.6 **Profile** — profile/measurements, goals, activity import, photos (Garage

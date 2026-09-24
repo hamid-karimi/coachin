@@ -6,6 +6,7 @@ package ai
 
 import (
 	"context"
+	"encoding/base64"
 	"log/slog"
 	"strings"
 	"time"
@@ -120,7 +121,7 @@ func (c *Client) claudeJSON(ctx context.Context, req aigen.Request) (string, boo
 		// Latency-sensitive, well-scoped generation: no extended thinking.
 		Thinking: anthropic.ThinkingConfigParamUnion{OfDisabled: &disabled},
 		System:   []anthropic.TextBlockParam{{Text: claudeSystem(req.Schema)}},
-		Messages: []anthropic.MessageParam{anthropic.NewUserMessage(anthropic.NewTextBlock(req.Prompt))},
+		Messages: []anthropic.MessageParam{anthropic.NewUserMessage(claudeContent(req)...)},
 	})
 	defer func() { _ = stream.Close() }()
 	var message anthropic.Message
@@ -154,7 +155,7 @@ func (c *Client) geminiJSON(ctx context.Context, req aigen.Request) (string, boo
 	ctx, cancel := context.WithTimeout(ctx, callTimeout)
 	defer cancel()
 	response, err := c.gemini.Models.GenerateContent(ctx, c.geminiModel,
-		[]*genai.Content{genai.NewContentFromText(req.Prompt, genai.RoleUser)},
+		[]*genai.Content{genai.NewContentFromParts(geminiParts(req), genai.RoleUser)},
 		&genai.GenerateContentConfig{ResponseMIMEType: "application/json", ResponseSchema: geminiSchema(req.Schema)},
 	)
 	if err != nil {
@@ -166,6 +167,24 @@ func (c *Client) geminiJSON(ctx context.Context, req aigen.Request) (string, boo
 		return json, true
 	}
 	return text, text != ""
+}
+
+// claudeContent is the images (base64) followed by the prompt.
+func claudeContent(req aigen.Request) []anthropic.ContentBlockParamUnion {
+	blocks := make([]anthropic.ContentBlockParamUnion, 0, len(req.Images)+1)
+	for _, image := range req.Images {
+		blocks = append(blocks, anthropic.NewImageBlockBase64(image.MIMEType, base64.StdEncoding.EncodeToString(image.Data)))
+	}
+	return append(blocks, anthropic.NewTextBlock(req.Prompt))
+}
+
+// geminiParts is the images (inline data) followed by the prompt.
+func geminiParts(req aigen.Request) []*genai.Part {
+	parts := make([]*genai.Part, 0, len(req.Images)+1)
+	for _, image := range req.Images {
+		parts = append(parts, genai.NewPartFromBytes(image.Data, image.MIMEType))
+	}
+	return append(parts, genai.NewPartFromText(req.Prompt))
 }
 
 // geminiSchema converts the domain schema to the SDK's (property order kept).

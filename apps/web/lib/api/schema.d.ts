@@ -251,6 +251,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/meals/batch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Log reviewed photo items (each earns meal XP, 3 a day)
+         * @description Rows over 5000 kcal or without calories are skipped; at most 10 are read.
+         */
+        post: operations["confirmPhotoMeal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/meals/photo-estimate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Estimate a meal from 1–3 photos (AI); nothing is saved
+         * @description The items come back for review; confirm them with POST /meals/batch.
+         */
+        post: operations["estimateMealPhoto"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/meals/{id}": {
         parameters: {
             query?: never;
@@ -793,6 +833,11 @@ export interface components {
             items: components["schemas"]["ProposedItemBody"][];
             summary?: string;
         };
+        ConfirmPhotoMealInputBody: {
+            items: components["schemas"]["ReviewedItemBody"][];
+            /** @enum {string} */
+            mealType: "breakfast" | "lunch" | "dinner" | "snack";
+        };
         ErrorDetail: {
             /** @description Where the error occurred, e.g. 'body.items[3].tags' or 'path.thing-id' */
             location?: string;
@@ -833,6 +878,25 @@ export interface components {
              * @example https://example.com/errors/example
              */
             type: string;
+        };
+        EstimateItemBody: {
+            /** Format: double */
+            carbsG: number;
+            /** Format: double */
+            estKcal: number;
+            /** Format: double */
+            estQuantityG: number;
+            /** Format: double */
+            fatG: number;
+            /** Format: double */
+            fiberG: number;
+            name: string;
+            /** Format: double */
+            proteinG: number;
+            /** Format: double */
+            sodiumMg: number;
+            /** Format: double */
+            sugarG: number;
         };
         Features: {
             community: boolean;
@@ -987,6 +1051,12 @@ export interface components {
             usdaEnabled: boolean;
             week: components["schemas"]["TrendBody"];
         };
+        PhotoEstimateBody: {
+            items: components["schemas"]["EstimateItemBody"][];
+            message: string;
+            /** @enum {string} */
+            status: "success" | "info";
+        };
         PlanCreatedBody: {
             forStudent: boolean;
             message: string;
@@ -1101,6 +1171,30 @@ export interface components {
             message: string;
             /** @enum {string} */
             status: "success" | "info";
+        };
+        ReviewedItemBody: {
+            /** Format: double */
+            carbsG?: number;
+            /** Format: double */
+            estKcal: number;
+            /** Format: double */
+            estQuantityG?: number;
+            /** Format: double */
+            fatG?: number;
+            /** Format: double */
+            fiberG?: number;
+            name: string;
+            /** Format: double */
+            proteinG?: number;
+            /** Format: double */
+            sodiumMg?: number;
+            /**
+             * @description search: added from food search in the review
+             * @enum {string}
+             */
+            source?: "photo" | "search";
+            /** Format: double */
+            sugarG?: number;
         };
         RoutineBody: {
             /** Format: int64 */
@@ -2120,6 +2214,157 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    confirmPhotoMeal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmPhotoMealInputBody"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    estimateMealPhoto: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** @description Optional hint, e.g. restaurant pizza, large */
+                    context?: string;
+                    photos: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhotoEstimateBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };

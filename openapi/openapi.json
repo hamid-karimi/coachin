@@ -411,6 +411,32 @@
         ],
         "type": "object"
       },
+      "ConfirmPhotoMealInputBody": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewedItemBody"
+            },
+            "maxItems": 20,
+            "type": "array"
+          },
+          "mealType": {
+            "enum": [
+              "breakfast",
+              "lunch",
+              "dinner",
+              "snack"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "mealType",
+          "items"
+        ],
+        "type": "object"
+      },
       "ErrorDetail": {
         "additionalProperties": false,
         "properties": {
@@ -478,6 +504,59 @@
             "type": "string"
           }
         },
+        "type": "object"
+      },
+      "EstimateItemBody": {
+        "additionalProperties": false,
+        "properties": {
+          "carbsG": {
+            "format": "double",
+            "type": "number"
+          },
+          "estKcal": {
+            "format": "double",
+            "type": "number"
+          },
+          "estQuantityG": {
+            "format": "double",
+            "type": "number"
+          },
+          "fatG": {
+            "format": "double",
+            "type": "number"
+          },
+          "fiberG": {
+            "format": "double",
+            "type": "number"
+          },
+          "name": {
+            "maxLength": 200,
+            "type": "string"
+          },
+          "proteinG": {
+            "format": "double",
+            "type": "number"
+          },
+          "sodiumMg": {
+            "format": "double",
+            "type": "number"
+          },
+          "sugarG": {
+            "format": "double",
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "estQuantityG",
+          "estKcal",
+          "proteinG",
+          "carbsG",
+          "fatG",
+          "sugarG",
+          "fiberG",
+          "sodiumMg"
+        ],
         "type": "object"
       },
       "Features": {
@@ -969,6 +1048,33 @@
         ],
         "type": "object"
       },
+      "PhotoEstimateBody": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/EstimateItemBody"
+            },
+            "type": "array"
+          },
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "info"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "items",
+          "status",
+          "message"
+        ],
+        "type": "object"
+      },
       "PlanCreatedBody": {
         "additionalProperties": false,
         "properties": {
@@ -1364,6 +1470,60 @@
         "required": [
           "status",
           "message"
+        ],
+        "type": "object"
+      },
+      "ReviewedItemBody": {
+        "additionalProperties": false,
+        "properties": {
+          "carbsG": {
+            "format": "double",
+            "type": "number"
+          },
+          "estKcal": {
+            "format": "double",
+            "type": "number"
+          },
+          "estQuantityG": {
+            "format": "double",
+            "type": "number"
+          },
+          "fatG": {
+            "format": "double",
+            "type": "number"
+          },
+          "fiberG": {
+            "format": "double",
+            "type": "number"
+          },
+          "name": {
+            "maxLength": 200,
+            "type": "string"
+          },
+          "proteinG": {
+            "format": "double",
+            "type": "number"
+          },
+          "sodiumMg": {
+            "format": "double",
+            "type": "number"
+          },
+          "source": {
+            "description": "search: added from food search in the review",
+            "enum": [
+              "photo",
+              "search"
+            ],
+            "type": "string"
+          },
+          "sugarG": {
+            "format": "double",
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "estKcal"
         ],
         "type": "object"
       },
@@ -3129,6 +3289,206 @@
           }
         },
         "summary": "Log a meal (search, USDA, or manual)",
+        "tags": [
+          "nutrition"
+        ]
+      }
+    },
+    "/meals/batch": {
+      "post": {
+        "description": "Rows over 5000 kcal or without calories are skipped; at most 10 are read.",
+        "operationId": "confirmPhotoMeal",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmPhotoMealInputBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultBody"
+                }
+              }
+            },
+            "description": "Created"
+          },
+          "400": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Log reviewed photo items (each earns meal XP, 3 a day)",
+        "tags": [
+          "nutrition"
+        ]
+      }
+    },
+    "/meals/photo-estimate": {
+      "post": {
+        "description": "The items come back for review; confirm them with POST /meals/batch.",
+        "operationId": "estimateMealPhoto",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "encoding": {
+                "context": {
+                  "contentType": "text/plain"
+                },
+                "photos": {
+                  "contentType": "application/octet-stream"
+                }
+              },
+              "schema": {
+                "properties": {
+                  "context": {
+                    "description": "Optional hint, e.g. restaurant pizza, large",
+                    "type": "string"
+                  },
+                  "photos": {
+                    "items": {
+                      "contentEncoding": "binary",
+                      "contentMediaType": "application/octet-stream",
+                      "description": "1–3 photos of the same meal (JPEG/PNG/WebP/GIF, 2 MB each)",
+                      "format": "binary",
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "photos"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhotoEstimateBody"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "502": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        },
+        "summary": "Estimate a meal from 1–3 photos (AI); nothing is saved",
         "tags": [
           "nutrition"
         ]

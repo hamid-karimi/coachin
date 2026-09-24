@@ -73,6 +73,7 @@ import { generateWeekAdjustment } from "@/lib/ai/week-adjustment";
 // Resolved to scripts/golden/stubs/text-json.mjs by hooks.mjs.
 // @ts-expect-error -- the stub's helpers are not in the legacy module's types
 import { calls as aiCalls, setReply as setAiReply } from "@/lib/ai/text-json";
+import { estimateMealFromPhoto } from "@/lib/ai/nutrition";
 
 if (process.env.TZ !== "UTC") {
   throw new Error("run with TZ=UTC (the API's pinned zone) — use `make golden`");
@@ -900,6 +901,40 @@ async function aiCases(): Promise<Case[]> {
       cases.push({
         fn: "weekAdjustment", input, reply, want,
         prompt: request.prompt, maxTokens: request.maxTokens ?? null,
+        schemaHint: JSON.stringify(geminiSchemaToHint(request.schema)),
+      });
+    }
+  }
+  // Meal photo estimate: the vision prompt per photo count / hint / country,
+  // and the reply parsing (clamps, rounding, dropped zero-kcal items).
+  const image = { base64: "AAAA", mimeType: "image/jpeg" };
+  const photoInputs = [
+    { images: [image], context: null, country: null },
+    { images: [image, image], context: "restaurant pizza, large", country: "Iran" },
+    { images: [image, image, image], context: null, country: "Germany" },
+  ];
+  const photoReplies = [
+    null,
+    JSON.stringify({ items: [
+      { name: "  Grilled chicken  ", est_quantity_g: 151.6, est_kcal: 247.5, protein_g: 46.4, carbs_g: -2, fat_g: "5.6", sugar_g: null, fiber_g: 0.4, sodium_mg: 120.5 },
+      { name: "Rice", est_quantity_g: -10, est_kcal: 4000, protein_g: 5 },
+      { name: "Water", est_quantity_g: 250, est_kcal: 0 },
+      { est_quantity_g: 30, est_kcal: 90 },
+      { name: "N".repeat(140), est_quantity_g: "abc", est_kcal: "120" },
+    ] }),
+    JSON.stringify({ items: Array.from({ length: 12 }, (_, i) => ({ name: `Item ${i}`, est_quantity_g: 50, est_kcal: 100 + i })) }),
+    JSON.stringify({ items: "none" }),
+    "not json",
+  ];
+  for (const input of photoInputs) {
+    for (const reply of photoReplies) {
+      aiCalls.length = 0;
+      setAiReply(reply === null ? null : { text: reply, model: "test-model" });
+      const want = await estimateMealFromPhoto(input);
+      const request = aiCalls[0];
+      cases.push({
+        fn: "mealPhoto", input: { photos: input.images.length, context: input.context, country: input.country }, reply, want,
+        prompt: request.prompt, maxTokens: request.maxTokens ?? null, images: request.images.length,
         schemaHint: JSON.stringify(geminiSchemaToHint(request.schema)),
       });
     }

@@ -7522,6 +7522,696 @@
    "prompt": "You are adjusting ONE week of an existing training plan after a weekly review.\nPlan context: 21.0975km race plan · regular runner · 4 days/week · Summary.\nReviewed week scorecard: {\"adherence_pct\":60,\"planned_items\":5,\"completed_items\":3,\"planned_km\":32.5,\"actual_km\":20,\"red_flags\":[],\"caution_flags\":[\"Long run: RPE 9\"]}.\nDeterministic decision (already made — do NOT change it): deload.\nReasons: Adherence 60%. One caution flag.\nCurrent items of the week to rewrite (week 5):\n[{\"week\":4,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Easy run 6k\",\"details\":{\"distance_km\":6,\"pace_min_km\":\"6:00\",\"notes\":\"Easy\"}},{\"week\":4,\"day_of_week\":6,\"item_type\":\"run\",\"title\":\"Long run 14k\",\"details\":{\"distance_km\":14}},{\"week\":4,\"day_of_week\":4,\"item_type\":\"strength\",\"title\":\"Strength\",\"details\":{}}]\nRules:\n- DELOAD: reduce total volume by roughly 30-40% (shorter runs, easier paces, lighter strength). Keep the athlete moving but recovering.\n- Rewrite ONLY these items; keep the same number of training days and the same day_of_week pattern.\n- Every item: week = 5, same item schema (run items keep details.distance_km, details.pace_min_km, details.notes).\n- summary: at most 2 sentences explaining what changed and why, in plain language.",
    "maxTokens": null,
    "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}"
+  },
+  {
+   "fn": "mealPhoto",
+   "input": {
+    "photos": 1,
+    "context": null,
+    "country": null
+   },
+   "reply": null,
+   "want": {
+    "error": "AI estimation is temporarily unavailable — try again later"
+   },
+   "prompt": "Identify the food items in this meal photo.\nFor each item estimate the portion in grams and, for THAT portion (not per 100g): calories, protein, carbs, fat, sugar, fiber (all in grams) and sodium (in mg). If it is not food, return an empty items array.",
+   "maxTokens": null,
+   "images": 1,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"est_quantity_g\":{\"type\":\"number\"},\"est_kcal\":{\"type\":\"number\"},\"protein_g\":{\"type\":\"number\"},\"carbs_g\":{\"type\":\"number\"},\"fat_g\":{\"type\":\"number\"},\"sugar_g\":{\"type\":\"number\"},\"fiber_g\":{\"type\":\"number\"},\"sodium_mg\":{\"type\":\"number\"}},\"required\":[\"name\",\"est_quantity_g\",\"est_kcal\"]}}},\"required\":[\"items\"]}"
+  },
+  {
+   "fn": "mealPhoto",
+   "input": {
+    "photos": 1,
+    "context": null,
+    "country": null
+   },
+   "reply": "{\"items\":[{\"name\":\"  Grilled chicken  \",\"est_quantity_g\":151.6,\"est_kcal\":247.5,\"protein_g\":46.4,\"carbs_g\":-2,\"fat_g\":\"5.6\",\"sugar_g\":null,\"fiber_g\":0.4,\"sodium_mg\":120.5},{\"name\":\"Rice\",\"est_quantity_g\":-10,\"est_kcal\":4000,\"protein_g\":5},{\"name\":\"Water\",\"est_quantity_g\":250,\"est_kcal\":0},{\"est_quantity_g\":30,\"est_kcal\":90},{\"name\":\"NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN\",\"est_quantity_g\":\"abc\",\"est_kcal\":\"120\"}]}",
+   "want": [
+    {
+     "name": "  Grilled chicken  ",
+     "est_quantity_g": 152,
+     "est_kcal": 248,
+     "protein_g": 46,
+     "carbs_g": 0,
+     "fat_g": 6,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 121
+    },
+    {
+     "name": "Rice",
+     "est_quantity_g": 100,
+     "est_kcal": 3000,
+     "protein_g": 5,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Food item",
+     "est_quantity_g": 30,
+     "est_kcal": 90,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN",
+     "est_quantity_g": 100,
+     "est_kcal": 120,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    }
+   ],
+   "prompt": "Identify the food items in this meal photo.\nFor each item estimate the portion in grams and, for THAT portion (not per 100g): calories, protein, carbs, fat, sugar, fiber (all in grams) and sodium (in mg). If it is not food, return an empty items array.",
+   "maxTokens": null,
+   "images": 1,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"est_quantity_g\":{\"type\":\"number\"},\"est_kcal\":{\"type\":\"number\"},\"protein_g\":{\"type\":\"number\"},\"carbs_g\":{\"type\":\"number\"},\"fat_g\":{\"type\":\"number\"},\"sugar_g\":{\"type\":\"number\"},\"fiber_g\":{\"type\":\"number\"},\"sodium_mg\":{\"type\":\"number\"}},\"required\":[\"name\",\"est_quantity_g\",\"est_kcal\"]}}},\"required\":[\"items\"]}"
+  },
+  {
+   "fn": "mealPhoto",
+   "input": {
+    "photos": 1,
+    "context": null,
+    "country": null
+   },
+   "reply": "{\"items\":[{\"name\":\"Item 0\",\"est_quantity_g\":50,\"est_kcal\":100},{\"name\":\"Item 1\",\"est_quantity_g\":50,\"est_kcal\":101},{\"name\":\"Item 2\",\"est_quantity_g\":50,\"est_kcal\":102},{\"name\":\"Item 3\",\"est_quantity_g\":50,\"est_kcal\":103},{\"name\":\"Item 4\",\"est_quantity_g\":50,\"est_kcal\":104},{\"name\":\"Item 5\",\"est_quantity_g\":50,\"est_kcal\":105},{\"name\":\"Item 6\",\"est_quantity_g\":50,\"est_kcal\":106},{\"name\":\"Item 7\",\"est_quantity_g\":50,\"est_kcal\":107},{\"name\":\"Item 8\",\"est_quantity_g\":50,\"est_kcal\":108},{\"name\":\"Item 9\",\"est_quantity_g\":50,\"est_kcal\":109},{\"name\":\"Item 10\",\"est_quantity_g\":50,\"est_kcal\":110},{\"name\":\"Item 11\",\"est_quantity_g\":50,\"est_kcal\":111}]}",
+   "want": [
+    {
+     "name": "Item 0",
+     "est_quantity_g": 50,
+     "est_kcal": 100,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 1",
+     "est_quantity_g": 50,
+     "est_kcal": 101,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 2",
+     "est_quantity_g": 50,
+     "est_kcal": 102,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 3",
+     "est_quantity_g": 50,
+     "est_kcal": 103,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 4",
+     "est_quantity_g": 50,
+     "est_kcal": 104,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 5",
+     "est_quantity_g": 50,
+     "est_kcal": 105,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 6",
+     "est_quantity_g": 50,
+     "est_kcal": 106,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 7",
+     "est_quantity_g": 50,
+     "est_kcal": 107,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 8",
+     "est_quantity_g": 50,
+     "est_kcal": 108,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 9",
+     "est_quantity_g": 50,
+     "est_kcal": 109,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    }
+   ],
+   "prompt": "Identify the food items in this meal photo.\nFor each item estimate the portion in grams and, for THAT portion (not per 100g): calories, protein, carbs, fat, sugar, fiber (all in grams) and sodium (in mg). If it is not food, return an empty items array.",
+   "maxTokens": null,
+   "images": 1,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"est_quantity_g\":{\"type\":\"number\"},\"est_kcal\":{\"type\":\"number\"},\"protein_g\":{\"type\":\"number\"},\"carbs_g\":{\"type\":\"number\"},\"fat_g\":{\"type\":\"number\"},\"sugar_g\":{\"type\":\"number\"},\"fiber_g\":{\"type\":\"number\"},\"sodium_mg\":{\"type\":\"number\"}},\"required\":[\"name\",\"est_quantity_g\",\"est_kcal\"]}}},\"required\":[\"items\"]}"
+  },
+  {
+   "fn": "mealPhoto",
+   "input": {
+    "photos": 1,
+    "context": null,
+    "country": null
+   },
+   "reply": "{\"items\":\"none\"}",
+   "want": [],
+   "prompt": "Identify the food items in this meal photo.\nFor each item estimate the portion in grams and, for THAT portion (not per 100g): calories, protein, carbs, fat, sugar, fiber (all in grams) and sodium (in mg). If it is not food, return an empty items array.",
+   "maxTokens": null,
+   "images": 1,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"est_quantity_g\":{\"type\":\"number\"},\"est_kcal\":{\"type\":\"number\"},\"protein_g\":{\"type\":\"number\"},\"carbs_g\":{\"type\":\"number\"},\"fat_g\":{\"type\":\"number\"},\"sugar_g\":{\"type\":\"number\"},\"fiber_g\":{\"type\":\"number\"},\"sodium_mg\":{\"type\":\"number\"}},\"required\":[\"name\",\"est_quantity_g\",\"est_kcal\"]}}},\"required\":[\"items\"]}"
+  },
+  {
+   "fn": "mealPhoto",
+   "input": {
+    "photos": 1,
+    "context": null,
+    "country": null
+   },
+   "reply": "not json",
+   "want": {
+    "error": "AI estimation is temporarily unavailable — try again later"
+   },
+   "prompt": "Identify the food items in this meal photo.\nFor each item estimate the portion in grams and, for THAT portion (not per 100g): calories, protein, carbs, fat, sugar, fiber (all in grams) and sodium (in mg). If it is not food, return an empty items array.",
+   "maxTokens": null,
+   "images": 1,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"est_quantity_g\":{\"type\":\"number\"},\"est_kcal\":{\"type\":\"number\"},\"protein_g\":{\"type\":\"number\"},\"carbs_g\":{\"type\":\"number\"},\"fat_g\":{\"type\":\"number\"},\"sugar_g\":{\"type\":\"number\"},\"fiber_g\":{\"type\":\"number\"},\"sodium_mg\":{\"type\":\"number\"}},\"required\":[\"name\",\"est_quantity_g\",\"est_kcal\"]}}},\"required\":[\"items\"]}"
+  },
+  {
+   "fn": "mealPhoto",
+   "input": {
+    "photos": 2,
+    "context": "restaurant pizza, large",
+    "country": "Iran"
+   },
+   "reply": null,
+   "want": {
+    "error": "AI estimation is temporarily unavailable — try again later"
+   },
+   "prompt": "These 2 photos show the SAME meal — different angles or a packaging/nutrition-label shot. Merge them into ONE list of items with no duplicates; use the extra angles to judge portion sizes, and when a nutrition label is visible prefer the label's data over visual estimation.\nFor each item estimate the portion in grams and, for THAT portion (not per 100g): calories, protein, carbs, fat, sugar, fiber (all in grams) and sodium (in mg). If it is not food, return an empty items array.\nThe user says: \"restaurant pizza, large\".\nThe user is in Iran — consider dishes and portion conventions common there when identifying the food.",
+   "maxTokens": null,
+   "images": 2,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"est_quantity_g\":{\"type\":\"number\"},\"est_kcal\":{\"type\":\"number\"},\"protein_g\":{\"type\":\"number\"},\"carbs_g\":{\"type\":\"number\"},\"fat_g\":{\"type\":\"number\"},\"sugar_g\":{\"type\":\"number\"},\"fiber_g\":{\"type\":\"number\"},\"sodium_mg\":{\"type\":\"number\"}},\"required\":[\"name\",\"est_quantity_g\",\"est_kcal\"]}}},\"required\":[\"items\"]}"
+  },
+  {
+   "fn": "mealPhoto",
+   "input": {
+    "photos": 2,
+    "context": "restaurant pizza, large",
+    "country": "Iran"
+   },
+   "reply": "{\"items\":[{\"name\":\"  Grilled chicken  \",\"est_quantity_g\":151.6,\"est_kcal\":247.5,\"protein_g\":46.4,\"carbs_g\":-2,\"fat_g\":\"5.6\",\"sugar_g\":null,\"fiber_g\":0.4,\"sodium_mg\":120.5},{\"name\":\"Rice\",\"est_quantity_g\":-10,\"est_kcal\":4000,\"protein_g\":5},{\"name\":\"Water\",\"est_quantity_g\":250,\"est_kcal\":0},{\"est_quantity_g\":30,\"est_kcal\":90},{\"name\":\"NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN\",\"est_quantity_g\":\"abc\",\"est_kcal\":\"120\"}]}",
+   "want": [
+    {
+     "name": "  Grilled chicken  ",
+     "est_quantity_g": 152,
+     "est_kcal": 248,
+     "protein_g": 46,
+     "carbs_g": 0,
+     "fat_g": 6,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 121
+    },
+    {
+     "name": "Rice",
+     "est_quantity_g": 100,
+     "est_kcal": 3000,
+     "protein_g": 5,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Food item",
+     "est_quantity_g": 30,
+     "est_kcal": 90,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN",
+     "est_quantity_g": 100,
+     "est_kcal": 120,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    }
+   ],
+   "prompt": "These 2 photos show the SAME meal — different angles or a packaging/nutrition-label shot. Merge them into ONE list of items with no duplicates; use the extra angles to judge portion sizes, and when a nutrition label is visible prefer the label's data over visual estimation.\nFor each item estimate the portion in grams and, for THAT portion (not per 100g): calories, protein, carbs, fat, sugar, fiber (all in grams) and sodium (in mg). If it is not food, return an empty items array.\nThe user says: \"restaurant pizza, large\".\nThe user is in Iran — consider dishes and portion conventions common there when identifying the food.",
+   "maxTokens": null,
+   "images": 2,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"est_quantity_g\":{\"type\":\"number\"},\"est_kcal\":{\"type\":\"number\"},\"protein_g\":{\"type\":\"number\"},\"carbs_g\":{\"type\":\"number\"},\"fat_g\":{\"type\":\"number\"},\"sugar_g\":{\"type\":\"number\"},\"fiber_g\":{\"type\":\"number\"},\"sodium_mg\":{\"type\":\"number\"}},\"required\":[\"name\",\"est_quantity_g\",\"est_kcal\"]}}},\"required\":[\"items\"]}"
+  },
+  {
+   "fn": "mealPhoto",
+   "input": {
+    "photos": 2,
+    "context": "restaurant pizza, large",
+    "country": "Iran"
+   },
+   "reply": "{\"items\":[{\"name\":\"Item 0\",\"est_quantity_g\":50,\"est_kcal\":100},{\"name\":\"Item 1\",\"est_quantity_g\":50,\"est_kcal\":101},{\"name\":\"Item 2\",\"est_quantity_g\":50,\"est_kcal\":102},{\"name\":\"Item 3\",\"est_quantity_g\":50,\"est_kcal\":103},{\"name\":\"Item 4\",\"est_quantity_g\":50,\"est_kcal\":104},{\"name\":\"Item 5\",\"est_quantity_g\":50,\"est_kcal\":105},{\"name\":\"Item 6\",\"est_quantity_g\":50,\"est_kcal\":106},{\"name\":\"Item 7\",\"est_quantity_g\":50,\"est_kcal\":107},{\"name\":\"Item 8\",\"est_quantity_g\":50,\"est_kcal\":108},{\"name\":\"Item 9\",\"est_quantity_g\":50,\"est_kcal\":109},{\"name\":\"Item 10\",\"est_quantity_g\":50,\"est_kcal\":110},{\"name\":\"Item 11\",\"est_quantity_g\":50,\"est_kcal\":111}]}",
+   "want": [
+    {
+     "name": "Item 0",
+     "est_quantity_g": 50,
+     "est_kcal": 100,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 1",
+     "est_quantity_g": 50,
+     "est_kcal": 101,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 2",
+     "est_quantity_g": 50,
+     "est_kcal": 102,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 3",
+     "est_quantity_g": 50,
+     "est_kcal": 103,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 4",
+     "est_quantity_g": 50,
+     "est_kcal": 104,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 5",
+     "est_quantity_g": 50,
+     "est_kcal": 105,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 6",
+     "est_quantity_g": 50,
+     "est_kcal": 106,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 7",
+     "est_quantity_g": 50,
+     "est_kcal": 107,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 8",
+     "est_quantity_g": 50,
+     "est_kcal": 108,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 9",
+     "est_quantity_g": 50,
+     "est_kcal": 109,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    }
+   ],
+   "prompt": "These 2 photos show the SAME meal — different angles or a packaging/nutrition-label shot. Merge them into ONE list of items with no duplicates; use the extra angles to judge portion sizes, and when a nutrition label is visible prefer the label's data over visual estimation.\nFor each item estimate the portion in grams and, for THAT portion (not per 100g): calories, protein, carbs, fat, sugar, fiber (all in grams) and sodium (in mg). If it is not food, return an empty items array.\nThe user says: \"restaurant pizza, large\".\nThe user is in Iran — consider dishes and portion conventions common there when identifying the food.",
+   "maxTokens": null,
+   "images": 2,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"est_quantity_g\":{\"type\":\"number\"},\"est_kcal\":{\"type\":\"number\"},\"protein_g\":{\"type\":\"number\"},\"carbs_g\":{\"type\":\"number\"},\"fat_g\":{\"type\":\"number\"},\"sugar_g\":{\"type\":\"number\"},\"fiber_g\":{\"type\":\"number\"},\"sodium_mg\":{\"type\":\"number\"}},\"required\":[\"name\",\"est_quantity_g\",\"est_kcal\"]}}},\"required\":[\"items\"]}"
+  },
+  {
+   "fn": "mealPhoto",
+   "input": {
+    "photos": 2,
+    "context": "restaurant pizza, large",
+    "country": "Iran"
+   },
+   "reply": "{\"items\":\"none\"}",
+   "want": [],
+   "prompt": "These 2 photos show the SAME meal — different angles or a packaging/nutrition-label shot. Merge them into ONE list of items with no duplicates; use the extra angles to judge portion sizes, and when a nutrition label is visible prefer the label's data over visual estimation.\nFor each item estimate the portion in grams and, for THAT portion (not per 100g): calories, protein, carbs, fat, sugar, fiber (all in grams) and sodium (in mg). If it is not food, return an empty items array.\nThe user says: \"restaurant pizza, large\".\nThe user is in Iran — consider dishes and portion conventions common there when identifying the food.",
+   "maxTokens": null,
+   "images": 2,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"est_quantity_g\":{\"type\":\"number\"},\"est_kcal\":{\"type\":\"number\"},\"protein_g\":{\"type\":\"number\"},\"carbs_g\":{\"type\":\"number\"},\"fat_g\":{\"type\":\"number\"},\"sugar_g\":{\"type\":\"number\"},\"fiber_g\":{\"type\":\"number\"},\"sodium_mg\":{\"type\":\"number\"}},\"required\":[\"name\",\"est_quantity_g\",\"est_kcal\"]}}},\"required\":[\"items\"]}"
+  },
+  {
+   "fn": "mealPhoto",
+   "input": {
+    "photos": 2,
+    "context": "restaurant pizza, large",
+    "country": "Iran"
+   },
+   "reply": "not json",
+   "want": {
+    "error": "AI estimation is temporarily unavailable — try again later"
+   },
+   "prompt": "These 2 photos show the SAME meal — different angles or a packaging/nutrition-label shot. Merge them into ONE list of items with no duplicates; use the extra angles to judge portion sizes, and when a nutrition label is visible prefer the label's data over visual estimation.\nFor each item estimate the portion in grams and, for THAT portion (not per 100g): calories, protein, carbs, fat, sugar, fiber (all in grams) and sodium (in mg). If it is not food, return an empty items array.\nThe user says: \"restaurant pizza, large\".\nThe user is in Iran — consider dishes and portion conventions common there when identifying the food.",
+   "maxTokens": null,
+   "images": 2,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"est_quantity_g\":{\"type\":\"number\"},\"est_kcal\":{\"type\":\"number\"},\"protein_g\":{\"type\":\"number\"},\"carbs_g\":{\"type\":\"number\"},\"fat_g\":{\"type\":\"number\"},\"sugar_g\":{\"type\":\"number\"},\"fiber_g\":{\"type\":\"number\"},\"sodium_mg\":{\"type\":\"number\"}},\"required\":[\"name\",\"est_quantity_g\",\"est_kcal\"]}}},\"required\":[\"items\"]}"
+  },
+  {
+   "fn": "mealPhoto",
+   "input": {
+    "photos": 3,
+    "context": null,
+    "country": "Germany"
+   },
+   "reply": null,
+   "want": {
+    "error": "AI estimation is temporarily unavailable — try again later"
+   },
+   "prompt": "These 3 photos show the SAME meal — different angles or a packaging/nutrition-label shot. Merge them into ONE list of items with no duplicates; use the extra angles to judge portion sizes, and when a nutrition label is visible prefer the label's data over visual estimation.\nFor each item estimate the portion in grams and, for THAT portion (not per 100g): calories, protein, carbs, fat, sugar, fiber (all in grams) and sodium (in mg). If it is not food, return an empty items array.\nThe user is in Germany — consider dishes and portion conventions common there when identifying the food.",
+   "maxTokens": null,
+   "images": 3,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"est_quantity_g\":{\"type\":\"number\"},\"est_kcal\":{\"type\":\"number\"},\"protein_g\":{\"type\":\"number\"},\"carbs_g\":{\"type\":\"number\"},\"fat_g\":{\"type\":\"number\"},\"sugar_g\":{\"type\":\"number\"},\"fiber_g\":{\"type\":\"number\"},\"sodium_mg\":{\"type\":\"number\"}},\"required\":[\"name\",\"est_quantity_g\",\"est_kcal\"]}}},\"required\":[\"items\"]}"
+  },
+  {
+   "fn": "mealPhoto",
+   "input": {
+    "photos": 3,
+    "context": null,
+    "country": "Germany"
+   },
+   "reply": "{\"items\":[{\"name\":\"  Grilled chicken  \",\"est_quantity_g\":151.6,\"est_kcal\":247.5,\"protein_g\":46.4,\"carbs_g\":-2,\"fat_g\":\"5.6\",\"sugar_g\":null,\"fiber_g\":0.4,\"sodium_mg\":120.5},{\"name\":\"Rice\",\"est_quantity_g\":-10,\"est_kcal\":4000,\"protein_g\":5},{\"name\":\"Water\",\"est_quantity_g\":250,\"est_kcal\":0},{\"est_quantity_g\":30,\"est_kcal\":90},{\"name\":\"NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN\",\"est_quantity_g\":\"abc\",\"est_kcal\":\"120\"}]}",
+   "want": [
+    {
+     "name": "  Grilled chicken  ",
+     "est_quantity_g": 152,
+     "est_kcal": 248,
+     "protein_g": 46,
+     "carbs_g": 0,
+     "fat_g": 6,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 121
+    },
+    {
+     "name": "Rice",
+     "est_quantity_g": 100,
+     "est_kcal": 3000,
+     "protein_g": 5,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Food item",
+     "est_quantity_g": 30,
+     "est_kcal": 90,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN",
+     "est_quantity_g": 100,
+     "est_kcal": 120,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    }
+   ],
+   "prompt": "These 3 photos show the SAME meal — different angles or a packaging/nutrition-label shot. Merge them into ONE list of items with no duplicates; use the extra angles to judge portion sizes, and when a nutrition label is visible prefer the label's data over visual estimation.\nFor each item estimate the portion in grams and, for THAT portion (not per 100g): calories, protein, carbs, fat, sugar, fiber (all in grams) and sodium (in mg). If it is not food, return an empty items array.\nThe user is in Germany — consider dishes and portion conventions common there when identifying the food.",
+   "maxTokens": null,
+   "images": 3,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"est_quantity_g\":{\"type\":\"number\"},\"est_kcal\":{\"type\":\"number\"},\"protein_g\":{\"type\":\"number\"},\"carbs_g\":{\"type\":\"number\"},\"fat_g\":{\"type\":\"number\"},\"sugar_g\":{\"type\":\"number\"},\"fiber_g\":{\"type\":\"number\"},\"sodium_mg\":{\"type\":\"number\"}},\"required\":[\"name\",\"est_quantity_g\",\"est_kcal\"]}}},\"required\":[\"items\"]}"
+  },
+  {
+   "fn": "mealPhoto",
+   "input": {
+    "photos": 3,
+    "context": null,
+    "country": "Germany"
+   },
+   "reply": "{\"items\":[{\"name\":\"Item 0\",\"est_quantity_g\":50,\"est_kcal\":100},{\"name\":\"Item 1\",\"est_quantity_g\":50,\"est_kcal\":101},{\"name\":\"Item 2\",\"est_quantity_g\":50,\"est_kcal\":102},{\"name\":\"Item 3\",\"est_quantity_g\":50,\"est_kcal\":103},{\"name\":\"Item 4\",\"est_quantity_g\":50,\"est_kcal\":104},{\"name\":\"Item 5\",\"est_quantity_g\":50,\"est_kcal\":105},{\"name\":\"Item 6\",\"est_quantity_g\":50,\"est_kcal\":106},{\"name\":\"Item 7\",\"est_quantity_g\":50,\"est_kcal\":107},{\"name\":\"Item 8\",\"est_quantity_g\":50,\"est_kcal\":108},{\"name\":\"Item 9\",\"est_quantity_g\":50,\"est_kcal\":109},{\"name\":\"Item 10\",\"est_quantity_g\":50,\"est_kcal\":110},{\"name\":\"Item 11\",\"est_quantity_g\":50,\"est_kcal\":111}]}",
+   "want": [
+    {
+     "name": "Item 0",
+     "est_quantity_g": 50,
+     "est_kcal": 100,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 1",
+     "est_quantity_g": 50,
+     "est_kcal": 101,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 2",
+     "est_quantity_g": 50,
+     "est_kcal": 102,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 3",
+     "est_quantity_g": 50,
+     "est_kcal": 103,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 4",
+     "est_quantity_g": 50,
+     "est_kcal": 104,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 5",
+     "est_quantity_g": 50,
+     "est_kcal": 105,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 6",
+     "est_quantity_g": 50,
+     "est_kcal": 106,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 7",
+     "est_quantity_g": 50,
+     "est_kcal": 107,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 8",
+     "est_quantity_g": 50,
+     "est_kcal": 108,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    },
+    {
+     "name": "Item 9",
+     "est_quantity_g": 50,
+     "est_kcal": 109,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    }
+   ],
+   "prompt": "These 3 photos show the SAME meal — different angles or a packaging/nutrition-label shot. Merge them into ONE list of items with no duplicates; use the extra angles to judge portion sizes, and when a nutrition label is visible prefer the label's data over visual estimation.\nFor each item estimate the portion in grams and, for THAT portion (not per 100g): calories, protein, carbs, fat, sugar, fiber (all in grams) and sodium (in mg). If it is not food, return an empty items array.\nThe user is in Germany — consider dishes and portion conventions common there when identifying the food.",
+   "maxTokens": null,
+   "images": 3,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"est_quantity_g\":{\"type\":\"number\"},\"est_kcal\":{\"type\":\"number\"},\"protein_g\":{\"type\":\"number\"},\"carbs_g\":{\"type\":\"number\"},\"fat_g\":{\"type\":\"number\"},\"sugar_g\":{\"type\":\"number\"},\"fiber_g\":{\"type\":\"number\"},\"sodium_mg\":{\"type\":\"number\"}},\"required\":[\"name\",\"est_quantity_g\",\"est_kcal\"]}}},\"required\":[\"items\"]}"
+  },
+  {
+   "fn": "mealPhoto",
+   "input": {
+    "photos": 3,
+    "context": null,
+    "country": "Germany"
+   },
+   "reply": "{\"items\":\"none\"}",
+   "want": [],
+   "prompt": "These 3 photos show the SAME meal — different angles or a packaging/nutrition-label shot. Merge them into ONE list of items with no duplicates; use the extra angles to judge portion sizes, and when a nutrition label is visible prefer the label's data over visual estimation.\nFor each item estimate the portion in grams and, for THAT portion (not per 100g): calories, protein, carbs, fat, sugar, fiber (all in grams) and sodium (in mg). If it is not food, return an empty items array.\nThe user is in Germany — consider dishes and portion conventions common there when identifying the food.",
+   "maxTokens": null,
+   "images": 3,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"est_quantity_g\":{\"type\":\"number\"},\"est_kcal\":{\"type\":\"number\"},\"protein_g\":{\"type\":\"number\"},\"carbs_g\":{\"type\":\"number\"},\"fat_g\":{\"type\":\"number\"},\"sugar_g\":{\"type\":\"number\"},\"fiber_g\":{\"type\":\"number\"},\"sodium_mg\":{\"type\":\"number\"}},\"required\":[\"name\",\"est_quantity_g\",\"est_kcal\"]}}},\"required\":[\"items\"]}"
+  },
+  {
+   "fn": "mealPhoto",
+   "input": {
+    "photos": 3,
+    "context": null,
+    "country": "Germany"
+   },
+   "reply": "not json",
+   "want": {
+    "error": "AI estimation is temporarily unavailable — try again later"
+   },
+   "prompt": "These 3 photos show the SAME meal — different angles or a packaging/nutrition-label shot. Merge them into ONE list of items with no duplicates; use the extra angles to judge portion sizes, and when a nutrition label is visible prefer the label's data over visual estimation.\nFor each item estimate the portion in grams and, for THAT portion (not per 100g): calories, protein, carbs, fat, sugar, fiber (all in grams) and sodium (in mg). If it is not food, return an empty items array.\nThe user is in Germany — consider dishes and portion conventions common there when identifying the food.",
+   "maxTokens": null,
+   "images": 3,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"est_quantity_g\":{\"type\":\"number\"},\"est_kcal\":{\"type\":\"number\"},\"protein_g\":{\"type\":\"number\"},\"carbs_g\":{\"type\":\"number\"},\"fat_g\":{\"type\":\"number\"},\"sugar_g\":{\"type\":\"number\"},\"fiber_g\":{\"type\":\"number\"},\"sodium_mg\":{\"type\":\"number\"}},\"required\":[\"name\",\"est_quantity_g\",\"est_kcal\"]}}},\"required\":[\"items\"]}"
   }
  ]
 }

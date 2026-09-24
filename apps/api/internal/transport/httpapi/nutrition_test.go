@@ -1,8 +1,10 @@
 package httpapi
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"mime/multipart"
 	"net/http"
 	"testing"
 
@@ -10,10 +12,26 @@ import (
 
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/apperr"
 	appnutrition "github.com/hamid-karimi/coachin/apps/api/internal/app/nutrition"
+	"github.com/hamid-karimi/coachin/apps/api/internal/domain/aigen"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/nutrition"
 )
 
-type fakeNutrition struct{ logged appnutrition.MealInput }
+type fakeNutrition struct {
+	logged    appnutrition.MealInput
+	photos    []appnutrition.Photo
+	hint      string
+	confirmed []appnutrition.ReviewedItem
+}
+
+func (f *fakeNutrition) EstimatePhoto(_ context.Context, _ uuid.UUID, photos []appnutrition.Photo, hint string) ([]aigen.EstimateItem, error) {
+	f.photos, f.hint = photos, hint
+	return []aigen.EstimateItem{{Name: "Rice", EstQuantityG: 180, EstKcal: 230}}, nil
+}
+
+func (f *fakeNutrition) ConfirmPhotoMeal(_ context.Context, _ uuid.UUID, _ string, items []appnutrition.ReviewedItem) (string, error) {
+	f.confirmed = items
+	return "2 items logged · +10 XP.", nil
+}
 
 func (f *fakeNutrition) Day(context.Context, uuid.UUID) (appnutrition.Day, error) {
 	return appnutrition.Day{
@@ -65,5 +83,28 @@ func TestNutritionRoutes(t *testing.T) {
 	}
 	if rec := send(t, h, http.MethodDelete, BasePath+"/meals/"+uuid.NewString(), "", cookie); rec.Code != http.StatusOK {
 		t.Fatalf("delete: %d", rec.Code)
+	}
+
+	var buf bytes.Buffer
+	w := multipart.NewWriter(&buf)
+	for _, name := range []string{"a.jpg", "b.jpg"} {
+		part, _ := w.CreateFormFile("photos", name)
+		_, _ = part.Write([]byte("photo " + name))
+	}
+	_ = w.WriteField("context", "large bowl")
+	_ = w.Close()
+	rec = send(t, h, http.MethodPost, BasePath+"/meals/photo-estimate", buf.String(),
+		map[string]string{"Cookie": "coachin_session=live-token", "Content-Type": w.FormDataContentType()})
+	var estimate PhotoEstimateBody
+	_ = json.Unmarshal(rec.Body.Bytes(), &estimate)
+	if rec.Code != http.StatusOK || len(estimate.Items) != 1 || estimate.Items[0].EstKcal != 230 || len(fake.photos) != 2 ||
+		string(fake.photos[1].Data) != "photo b.jpg" || fake.hint != "large bowl" {
+		t.Fatalf("estimate: %d %s", rec.Code, rec.Body)
+	}
+
+	rec = send(t, h, http.MethodPost, BasePath+"/meals/batch",
+		`{"mealType":"lunch","items":[{"name":"Rice","estQuantityG":180,"estKcal":230},{"name":"Oats","estKcal":150,"source":"search"}]}`, cookie)
+	if rec.Code != http.StatusCreated || len(fake.confirmed) != 2 || fake.confirmed[0].FromSearch || !fake.confirmed[1].FromSearch {
+		t.Fatalf("batch: %d %s %+v", rec.Code, rec.Body, fake.confirmed)
 	}
 }

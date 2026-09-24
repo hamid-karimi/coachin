@@ -24,6 +24,14 @@ type Request struct {
 	Prompt    string
 	Schema    Schema
 	MaxTokens int
+	// Images go before the prompt (vision requests).
+	Images []Image
+}
+
+// Image is an inline image for a vision prompt.
+type Image struct {
+	MIMEType string
+	Data     []byte
 }
 
 // Result is generated JSON and the model that produced it.

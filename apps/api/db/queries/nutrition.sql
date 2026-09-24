@@ -74,3 +74,6 @@ SELECT COALESCE(SUM(amount), 0)::int AS xp
 FROM public.xp_transactions
 WHERE user_id = sqlc.arg(user_id)::uuid
   AND reason IN ('meal_log:' || sqlc.arg(meal_log_id)::text, 'meal_log_undo:' || sqlc.arg(meal_log_id)::text);
+
+-- name: ProfileCountry :one
+SELECT country FROM public.profiles WHERE id = sqlc.arg(id);

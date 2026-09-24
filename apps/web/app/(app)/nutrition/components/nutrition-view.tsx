@@ -14,7 +14,7 @@ export function NutritionView() {
       <div>
         <h1 className='text-foreground font-display text-2xl font-bold tracking-tight md:text-[28px]'>Nutrition</h1>
         <p className='text-muted-foreground text-sm'>
-          Log meals by search or hand — earn XP for the habit and a bonus for hitting your calorie goal.
+          Log meals by search, photo, or hand — earn XP for the habit and a bonus for hitting your calorie goal.
         </p>
       </div>
       <DaySummary day={day} />

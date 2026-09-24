@@ -7,7 +7,7 @@ const TONE = { empty: "bg-secondary", hit: "bg-brand", logged: "bg-brand/50" } a
 export function WeekBars({ week, target }: { week: Trend; target: number | null | undefined }) {
   const { bars, goalPct } = weekBars(week, target);
   return (
-    <div className='relative flex h-20 items-end gap-1.5'>
+    <div className='relative flex h-20 gap-1.5'>
       {goalPct !== null && (
         <div
           className='border-brand/40 pointer-events-none absolute inset-x-0 border-t border-dashed'

@@ -238,3 +238,13 @@ func (s *NutritionStore) DeleteMeal(ctx context.Context, userID, id uuid.UUID) (
 	})
 	return refunded, err
 }
+
+// Country is the profile's country as typed.
+func (s *NutritionStore) Country(ctx context.Context, userID uuid.UUID) (*string, error) {
+	var country *string
+	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		country, err = q.ProfileCountry(ctx, userID)
+		return err
+	})
+	return country, err
+}

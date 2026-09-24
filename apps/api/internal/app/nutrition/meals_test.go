@@ -23,6 +23,7 @@ type fakeStore struct {
 	rows      []nutrition.DatedNutrients
 	refund    int
 	deleteErr error
+	country   *string
 }
 
 func (f *fakeStore) Meals(context.Context, uuid.UUID, string) ([]Meal, error) { return f.meals, nil }
@@ -51,6 +52,7 @@ func (f *fakeStore) LogMeals(_ context.Context, _ uuid.UUID, date, adherenceDate
 	f.dates = [2]string{date, adherenceDate}
 	return f.awards, nil
 }
+func (f *fakeStore) Country(context.Context, uuid.UUID) (*string, error) { return f.country, nil }
 func (f *fakeStore) DeleteMeal(context.Context, uuid.UUID, uuid.UUID) (int, error) {
 	return f.refund, f.deleteErr
 }
@@ -79,7 +81,7 @@ func message(err error) string {
 
 func TestLogMealValidation(t *testing.T) {
 	food := uuid.New()
-	svc := NewService(&fakeStore{foods: map[uuid.UUID]Food{}}, fakeUSDA{}, now)
+	svc := NewService(&fakeStore{foods: map[uuid.UUID]Food{}}, fakeUSDA{}, nil, now)
 	fdc := int64(1)
 	cases := map[string]MealInput{
 		"Pick a meal type":                      {MealType: "brunch"},
@@ -105,7 +107,7 @@ func TestLogMealFromSearchAndManual(t *testing.T) {
 		foods:  map[uuid.UUID]Food{oats: {ID: oats, Name: "Oats", Per100g: nutrition.Per100g{Kcal: 389, ProteinG: 16.9, SodiumMg: 2}}},
 		awards: Awards{MealXP: 5, Adherence: 30},
 	}
-	svc := NewService(store, fakeUSDA{}, now)
+	svc := NewService(store, fakeUSDA{}, nil, now)
 	msg, err := svc.LogMeal(context.Background(), uuid.New(), MealInput{MealType: "breakfast", FoodID: &oats, QuantityG: 60})
 	if err != nil || msg != "Meal logged · +5 XP · +30 XP for hitting yesterday's calorie goal." {
 		t.Fatalf("msg = %q, %v", msg, err)
@@ -132,7 +134,7 @@ func TestLogMealFromSearchAndManual(t *testing.T) {
 func TestLogUSDAMealRereadsUSDA(t *testing.T) {
 	store := &fakeStore{}
 	banana := nutrition.USDAFood{FdcID: 173944, Name: "Bananas, raw", Per100g: nutrition.Per100g{Kcal: 89, CarbsG: 22.8}}
-	svc := NewService(store, fakeUSDA{enabled: true, food: banana}, now)
+	svc := NewService(store, fakeUSDA{enabled: true, food: banana}, nil, now)
 	fdc := int64(173944)
 	if _, err := svc.LogMeal(context.Background(), uuid.New(), MealInput{MealType: "snack", USDAFdcID: &fdc, QuantityG: 120}); err != nil {
 		t.Fatal(err)
@@ -140,7 +142,7 @@ func TestLogUSDAMealRereadsUSDA(t *testing.T) {
 	if len(store.saved) != 1 || store.logged[0].Kcal != 107 || store.logged[0].CarbsG != 27.4 || store.logged[0].FoodID == nil {
 		t.Errorf("saved %+v, logged %+v", store.saved, store.logged)
 	}
-	svc = NewService(&fakeStore{}, fakeUSDA{enabled: true, err: errors.New("down")}, now)
+	svc = NewService(&fakeStore{}, fakeUSDA{enabled: true, err: errors.New("down")}, nil, now)
 	if _, err := svc.LogMeal(context.Background(), uuid.New(), MealInput{MealType: "snack", USDAFdcID: &fdc, QuantityG: 120}); message(err) != "Failed to save the USDA food" {
 		t.Errorf("usda down: %v", err)
 	}
@@ -153,7 +155,7 @@ func TestSearchAndDay(t *testing.T) {
 		meals:  []Meal{{Nutrients: nutrition.Nutrients{Kcal: 500, ProteinG: 30}}, {Nutrients: nutrition.Nutrients{Kcal: 250, ProteinG: 10}}},
 		rows:   []nutrition.DatedNutrients{{Date: "2026-09-24", Nutrients: nutrition.Nutrients{Kcal: 750}}, {Date: "2026-08-20", Nutrients: nutrition.Nutrients{Kcal: 100}}},
 	}
-	svc := NewService(store, fakeUSDA{}, now)
+	svc := NewService(store, fakeUSDA{}, nil, now)
 	if foods, _ := svc.SearchFoods(context.Background(), uuid.New(), " o "); len(foods) != 0 {
 		t.Error("a 1-character query must not search")
 	}
@@ -183,7 +185,7 @@ func TestDeleteMeal(t *testing.T) {
 	}
 	for _, c := range cases {
 		store := c.store
-		if msg, err := NewService(&store, fakeUSDA{}, now).DeleteMeal(context.Background(), uuid.New(), uuid.New()); err != nil || msg != c.want {
+		if msg, err := NewService(&store, fakeUSDA{}, nil, now).DeleteMeal(context.Background(), uuid.New(), uuid.New()); err != nil || msg != c.want {
 			t.Errorf("got %q, %v; want %q", msg, err, c.want)
 		}
 	}
