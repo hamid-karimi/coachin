@@ -1,0 +1,19 @@
+# Single-node Garage: one copy of every object, on this machine's volumes.
+# Secrets (rpc_secret, admin_token) come from GARAGE_RPC_SECRET and
+# GARAGE_ADMIN_TOKEN in the environment, never from this file.
+metadata_dir = "/var/lib/garage/meta"
+data_dir = "/var/lib/garage/data"
+db_engine = "lmdb"
+replication_factor = 1
+
+# IPv4 binds: Docker networks are IPv4-only by default.
+rpc_bind_addr = "0.0.0.0:3901"
+rpc_public_addr = "127.0.0.1:3901"
+
+[s3_api]
+s3_region = "garage"
+api_bind_addr = "0.0.0.0:3900"
+root_domain = ".s3.garage.localhost"
+
+[admin]
+api_bind_addr = "0.0.0.0:3903"

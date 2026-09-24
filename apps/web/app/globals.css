@@ -1,0 +1,221 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * CoachIn "Volt Ember" design system.
+ * Graphite base, one loud color per job:
+ *   volt lime  = act & progress (the single primary action per screen)
+ *   ember heat = streaks & celebration (the only gradient in the system)
+ * Dark is the default look; light is a warm off-white twin.
+ */
+
+:root {
+  --radius: 1rem;
+
+  /* shadcn semantic tokens — light (warm paper) */
+  --background: #f4f3ef;
+  --foreground: #17161a;
+  --card: #ffffff;
+  --card-foreground: #17161a;
+  --popover: #ffffff;
+  --popover-foreground: #17161a;
+  --primary: #c3e51e;
+  --primary-foreground: #17161a;
+  --secondary: #eceae3;
+  --secondary-foreground: #17161a;
+  --muted: #eceae3;
+  --muted-foreground: #6c6a72;
+  --accent: rgba(195, 229, 30, 0.16);
+  --accent-foreground: #5a6b08;
+  --destructive: #e23d3d;
+  --destructive-foreground: #ffffff;
+  --border: #e2e0d8;
+  --input: #e2e0d8;
+  --ring: #94b20a;
+
+  /* CoachIn brand tokens — volt (act & progress) */
+  --brand: #c3e51e;
+  --brand-foreground: #17161a;
+  --brand-ink: #5a6b08;
+  --brand-tint: rgba(195, 229, 30, 0.16);
+  /* xp = volt on stats/progress; darker fill for contrast on paper */
+  --xp: #94b20a;
+  --xp-ink: #5a6b08;
+  --xp-tint: rgba(195, 229, 30, 0.2);
+  /* flame = ember (streaks & celebration) */
+  --flame: #f2510f;
+  --flame-ink: #c2410c;
+  --flame-tint: rgba(242, 81, 15, 0.1);
+  --ember-from: #f2510f;
+  --ember-to: #f59e1b;
+
+  --success: #16a34a;
+  --success-tint: rgba(22, 163, 74, 0.1);
+
+  /* league tiers */
+  --tier-bronze: #a9622f;
+  --tier-bronze-tint: rgba(169, 98, 47, 0.14);
+  --tier-silver: #6e6e78;
+  --tier-silver-tint: rgba(110, 110, 120, 0.14);
+  --tier-gold: #a66e0a;
+  --tier-gold-tint: rgba(217, 151, 30, 0.16);
+  --tier-platinum: #6d5bd0;
+  --tier-platinum-tint: rgba(109, 91, 208, 0.12);
+}
+
+.dark {
+  /* shadcn semantic tokens — dark (graphite, default look) */
+  --background: #0e0e11;
+  --foreground: #f5f4f0;
+  --card: #17171b;
+  --card-foreground: #f5f4f0;
+  --popover: #1f1f25;
+  --popover-foreground: #f5f4f0;
+  --primary: #d4f531;
+  --primary-foreground: #0b0b0d;
+  --secondary: #1f1f25;
+  --secondary-foreground: #f5f4f0;
+  --muted: #1f1f25;
+  --muted-foreground: #9a98a0;
+  --accent: rgba(212, 245, 49, 0.1);
+  --accent-foreground: #d4f531;
+  --destructive: #ff6b6b;
+  --destructive-foreground: #17070a;
+  --border: #2a2a31;
+  --input: #2a2a31;
+  --ring: #d4f531;
+
+  --brand: #d4f531;
+  --brand-foreground: #0b0b0d;
+  --brand-ink: #d4f531;
+  --brand-tint: rgba(212, 245, 49, 0.08);
+  --xp: #d4f531;
+  --xp-ink: #d4f531;
+  --xp-tint: rgba(212, 245, 49, 0.12);
+  --flame: #ff7a3d;
+  --flame-ink: #ffb03a;
+  --flame-tint: rgba(255, 92, 31, 0.16);
+  --ember-from: #ff5c1f;
+  --ember-to: #ffb03a;
+
+  --success: #4ade80;
+  --success-tint: rgba(74, 222, 128, 0.08);
+
+  --tier-bronze: #d08b5b;
+  --tier-bronze-tint: rgba(208, 139, 91, 0.16);
+  --tier-silver: #c8cdd6;
+  --tier-silver-tint: rgba(200, 205, 214, 0.14);
+  --tier-gold: #ffc14d;
+  --tier-gold-tint: rgba(255, 193, 77, 0.16);
+  --tier-platinum: #b7a8ff;
+  --tier-platinum-tint: rgba(183, 168, 255, 0.14);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-tint: var(--brand-tint);
+  --color-xp: var(--xp);
+  --color-xp-ink: var(--xp-ink);
+  --color-xp-tint: var(--xp-tint);
+  --color-flame: var(--flame);
+  --color-flame-ink: var(--flame-ink);
+  --color-flame-tint: var(--flame-tint);
+  --color-ember-from: var(--ember-from);
+  --color-ember-to: var(--ember-to);
+
+  --color-success: var(--success);
+  --color-success-tint: var(--success-tint);
+
+  --color-tier-bronze: var(--tier-bronze);
+  --color-tier-bronze-tint: var(--tier-bronze-tint);
+  --color-tier-silver: var(--tier-silver);
+  --color-tier-silver-tint: var(--tier-silver-tint);
+  --color-tier-gold: var(--tier-gold);
+  --color-tier-gold-tint: var(--tier-gold-tint);
+  --color-tier-platinum: var(--tier-platinum);
+  --color-tier-platinum-tint: var(--tier-platinum-tint);
+
+  /* controls 12 · cards 16 · sheets 20 · pills 999 */
+  --radius-sm: 0.625rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.5rem;
+
+  --font-sans: var(--font-instrument-sans);
+  --font-display: var(--font-space-grotesk);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Stat numerals: Grotesk, tabular, everywhere stats live. */
+@utility text-stat {
+  font-family: var(--font-display), var(--font-sans), sans-serif;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Overline labels above stats and sections. */
+@utility text-overline {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+/* Ember heat — the only gradient in the system (streaks & celebration). */
+@utility bg-ember {
+  background-image: linear-gradient(
+    135deg,
+    var(--ember-from),
+    var(--ember-to)
+  );
+}
+
+/*
+ * Respect the OS "reduce motion" setting: neutralize every transition and
+ * animation (including tw-animate-css and skeleton pulses) to near-zero so
+ * motion-sensitive users get a still, instant UI instead of movement.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

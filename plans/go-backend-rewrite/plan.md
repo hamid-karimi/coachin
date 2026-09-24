@@ -16,36 +16,40 @@ Sizing: **S** ≈ one focused session · **M** ≈ 2–3 · **L** ≈ 4+.
 
 Goal: `make up` on your Mac starts an empty but working stack.
 
-- [ ] 0.1 `git mv` the current app into `legacy/` (history kept). Update the "source of
-      truth" paths in FORMULAS.md, CLAUDE.md, and QA-ONBOARDING.md to `legacy/…`.
-- [ ] 0.2 `compose.yaml` + `compose.override.yaml`: `postgres:18.6`, `dxflrs/garage:v2.4.1`
-      + one-shot `garage-init` (layout, bucket, key), `axllent/mailpit:v1.31.2`,
-      `caddy:2.11.4`, `api`, `web`. `deploy/Caddyfile`, `deploy/garage.toml`, `.env.example`.
-- [ ] 0.3 Scaffold `apps/api` (Go 1.27.1): config from env (fail fast), `slog`, chi + huma,
-      `/healthz`, `/readyz` (DB + storage ping), graceful shutdown, `openapi` subcommand,
-      multi-stage Dockerfile → distroless. `golangci-lint` config.
-- [ ] 0.4 Scaffold `apps/web` fresh on the architecture §5 versions (Next 16.3.6,
-      React 19.3, TS 6.0.3, Tailwind 4.3.3, TanStack Query, nuqs, Storybook 10.6,
-      vitest 5, ESLint 10). Copy over `globals.css` tokens, `components/ui`,
-      `components/design-system` (+ stories), fonts, PWA manifest/icons. Placeholder home
-      page that calls `/api/v1/healthz`.
-- [ ] 0.5 `Makefile`: `up`, `infra`, `down`, `logs`, `migrate`, `seed`, `reset-db`, `gen`,
-      `test`, `lint`. Root `pnpm-workspace.yaml` → `apps/web`.
-- [ ] 0.6 CI (GitHub Actions): web (tsc, eslint, vitest, build, Storybook build) + api
-      (golangci-lint, `go test` with testcontainers, `sqlc diff`, OpenAPI drift) + compose
-      smoke test (`up`, wait for `/readyz`).
-- [ ] 0.7 CLAUDE.md: new layout + verify commands (`go vet ./...`, `golangci-lint run`,
-      `go test ./...`, `make test`).
-- **Gate**: on a clean Mac, `cp .env.example .env && make up` → `http://localhost:8080`
-  shows the placeholder with API healthy; Mailpit at `:8025`.
+- [x] 0.1 `git mv` the current app into `legacy/` (history kept). "Source of truth" paths
+      in FORMULAS.md and QA-ONBOARDING.md now point to `legacy/…`.
+- [x] 0.2 `compose.yaml` + `compose.dev.yaml`: `postgres:18.6-alpine`,
+      `dxflrs/garage:v2.4.1` + one-shot `storage-init` (layout, bucket, key) and `migrate`,
+      `axllent/mailpit:v1.31.2` (dev), `caddy:2.11.4-alpine`, `api`, `web`.
+      `deploy/caddy/Caddyfile`, `deploy/garage/garage.toml`, `deploy/postgres/initdb/`,
+      `.env.example`.
+- [x] 0.3 `apps/api` (Go 1.27.1): env config (fail fast), `slog`, chi + huma, `/healthz`,
+      `/readyz` (DB + storage), graceful shutdown, subcommands `serve`, `migrate`,
+      `storage-init`, `openapi`, `healthcheck`; first migration `00001_app_schema.sql`;
+      distroless Dockerfile; `golangci-lint` config; unit tests + a testcontainers
+      migration test.
+- [x] 0.4 `apps/web` fresh on the architecture §5 versions. Copied `globals.css`,
+      `components/ui`, `components/design-system` (+ stories; the nav trio waits for
+      Phase 2.6), PWA manifest/icons/service worker. Query + nuqs providers, generated
+      API types, a status page that renders `/readyz` server-side.
+- [x] 0.5 `Makefile`: `up`, `infra`, `down`, `logs`, `ps`, `migrate`, `migrate-status`,
+      `reset-db`, `gen`, `test`, `lint` (`seed` arrives with Phase 1.2). No root pnpm
+      workspace — `apps/web` is the only JS package.
+- [x] 0.6 CI `.github/workflows/rewrite-ci.yml`: api (golangci-lint, vet, `go test -race`
+      with testcontainers, OpenAPI drift) + web (typed-client drift, typecheck, lint, test,
+      build, Storybook) + Docker stack smoke test through Caddy. (`sqlc diff` joins when
+      sqlc does, Phase 2.1.)
+- [x] 0.7 CLAUDE.md + root README: new layout, `make` commands, per-app verify commands.
+- **Gate**: `make up` → `http://localhost:8080` shows the status page with API, database,
+  and storage healthy; Mailpit at `:8025`.
 
 ## Phase 1 — Clean schema + domain port (M)
 
-- [ ] 1.1 `db/migrations/00001_baseline.sql`: replay `legacy/supabase/migrations` into a
+- [ ] 1.1 `apps/api/db/migrations/00002_baseline.sql`: replay `legacy/supabase/migrations` into a
       scratch Postgres, `pg_dump --schema-only`, then clean it per ADR-2 (`users` table,
       `app.current_user_id()`, `coachin_owner`/`coachin_app` roles, no `auth`/`storage`
-      schemas). `00002_auth.sql`: `sessions`, `auth_tokens`.
-- [ ] 1.2 `db/seed/`: sport types (from the seed migration), a trainee, a coach, an active
+      schemas). `00003_auth.sql`: `sessions`, `auth_tokens`.
+- [ ] 1.2 `apps/api/db/seed/` + `make seed`: sport types (from the seed migration), a trainee, a coach, an active
       relationship, one running plan, one hypertrophy plan.
 - [ ] 1.3 RLS smoke test (testcontainers): as `coachin_app` with user A, every table read
       returns zero rows of user B.

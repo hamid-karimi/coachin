@@ -42,33 +42,35 @@ VPS the same stack sits behind real HTTPS on your domain.
 
 ```
 apps/
-  web/                 new Next.js app (fresh scaffold on latest versions; UI code
-                       ported from legacy/)
+  web/                 Next.js app (fresh scaffold on latest versions; UI code
+                       ported from legacy/); own pnpm lockfile — no root workspace
   api/
-    cmd/api/           main: config, wiring, graceful shutdown, `openapi` subcommand
+    cmd/api/           one binary: serve · migrate · storage-init · openapi · healthcheck
     cmd/import-supabase/  one-time importer used at go-live (then deleted)
+    db/migrations/     goose SQL migrations, embedded in the binary
+    db/seed/           local seed data (trainee, coach, relationship, sample plans)
     internal/
+      config/          env → typed config, fail fast listing every missing variable
       domain/          xp, streak, tiers, running, goals, scorecard, nutrition, dates,
                        quotas, supplements, plan items, share rules … (+ *_test.go)
       app/             auth, onboarding, today, training, nutrition, profile, coaching,
                        community
-      store/           sqlc output, tx.go (RLS context), queries/*.sql
-      transport/http/  handlers per module, middleware, problem+json
-      adapters/        ai/, media/, importer/, mail/, objectstore/, usda/
+      store/           pgx pool, migrator, sqlc output, tx.go (RLS context), queries/*.sql
+      transport/httpapi/  handlers per module, middleware, problem+json
+      adapters/        ai/, garage/ (bootstrap), media/, importer/, mail/, objectstore/, usda/
     sqlc.yaml
     Dockerfile
-db/
-  migrations/          goose SQL migrations (clean, Supabase-free schema)
-  seed/                local seed data (trainee, coach, relationship, sample plans)
 deploy/
-  Caddyfile            local + production site blocks
-  garage.toml          single-node Garage config
+  caddy/Caddyfile      one site block; SITE_ADDRESS switches local http ↔ VPS https
+  garage/garage.toml   single-node Garage config
+  postgres/initdb/     creates the coachin_app role on first boot
 testdata/golden/       JSON vectors shared by vitest (during transition) and go test
 openapi/openapi.json   emitted by the API, committed, CI drift check
 legacy/                today's Next.js + Supabase app, read-only reference; deleted at cutover
-compose.yaml           the whole stack
-compose.override.yaml  local-only: hot reload, Mailpit UI, published debug ports
-Makefile               up · down · logs · migrate · seed · reset-db · gen · test · lint
+compose.yaml           the whole stack (what the VPS runs)
+compose.dev.yaml       local-only: hot reload, Mailpit, Postgres port
+Makefile               up · infra · down · logs · ps · migrate · reset-db · gen · test · lint
+.github/workflows/rewrite-ci.yml
 FORMULAS.md, QA-ONBOARDING.md, WORKLOG.md, CLAUDE.md, README.md
 ```
 
@@ -84,9 +86,11 @@ FORMULAS.md, QA-ONBOARDING.md, WORKLOG.md, CLAUDE.md, README.md
 
 ### ADR-2 — Database: PostgreSQL 18, pgx + sqlc + goose, clean schema
 - **Decision**: `jackc/pgx/v5` pool; `sqlc` generates typed Go from SQL files; `goose`
-  runs migrations (embedded in the API binary, `api migrate up` on start in dev and as a
-  one-shot container on the VPS).
-- **Clean baseline**: `00001_baseline.sql` is produced from the 40 Supabase migrations,
+  runs migrations embedded in the API binary. A one-shot `migrate` service (`api migrate
+  up`, owner role) runs before the API starts — the same path locally and on the VPS.
+- **`00001_app_schema.sql`** (Phase 0): the `app` schema, `app.current_user_id()`, and
+  default grants to `coachin_app`.
+- **Clean baseline**: `00002_baseline.sql` is produced from the 40 Supabase migrations,
   then cleaned of every Supabase artifact:
   - `auth.users` → our own `users` table (`id uuid`, `email citext unique`,
     `password_hash`, `email_verified_at`, timestamps); every FK retargeted, UUIDs kept.
@@ -209,13 +213,13 @@ stay configurable (`CLAUDE_MODEL`, `GEMINI_MODEL`).
 ### ADR-10 — Local development on macOS
 - **Runtime**: Docker Desktop or OrbStack (lighter on Apple Silicon); all images are
   multi-arch (arm64 + amd64).
-- **`make up`** = `docker compose up --watch`: the API rebuilds on `.go` changes (a few
-  seconds with the build cache), web runs `next dev` with source synced into the
-  container. `make infra` starts only Postgres + Garage + Mailpit if you prefer to run
-  `pnpm dev` / `go run` natively.
-- **First run**: a one-shot `garage-init` service creates the layout, bucket, and access
-  key; the API runs migrations on start; `make seed` loads a trainee, a coach, and an
-  active relationship.
+- **`make up`** = `docker compose -f compose.yaml -f compose.dev.yaml up --build --watch`:
+  the API image rebuilds on `.go` changes (a few seconds with the build cache), web runs
+  `next dev` with source synced into the container. `make infra` starts only Postgres +
+  Garage + Mailpit if you prefer to run `pnpm dev` / `go run` natively.
+- **First run**: one-shot services from the API image — `storage-init` (Garage layout,
+  bucket, access key via the admin API; idempotent) and `migrate` — finish before the API
+  starts. `make seed` (Phase 1) loads a trainee, a coach, and an active relationship.
 - **Ports**: app `http://localhost:8080`, Mailpit UI `http://localhost:8025`, Postgres
   `localhost:5432` (dev override only, for a DB GUI).
 - Secrets live in `.env` (git-ignored); `.env.example` documents every variable.
