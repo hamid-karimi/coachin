@@ -158,6 +158,7 @@ type Food struct {
 	SugarG      pgtype.Numeric `json:"sugar_g"`
 	FiberG      pgtype.Numeric `json:"fiber_g"`
 	SodiumMg    pgtype.Numeric `json:"sodium_mg"`
+	FdcID       pgtype.Int4    `json:"fdc_id"`
 }
 
 type Goal struct {

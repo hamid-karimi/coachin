@@ -12,10 +12,12 @@ import (
 	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/mail"
 	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/objectstore"
 	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/password"
+	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/usda"
 	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/watchfile"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/activities"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/auth"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/calendar"
+	"github.com/hamid-karimi/coachin/apps/api/internal/app/nutrition"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/routine"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/supplements"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/today"
@@ -86,6 +88,7 @@ func serve(ctx context.Context, _ []string, _ *slog.Logger) error {
 		Checkins:         training.NewCheckins(store.NewTrainingStore(pool), generator, nil),
 		Activities:       activities.NewService(watchfile.New(nil)),
 		Calendar:         calendar.NewService(store.NewCalendarStore(pool), nil),
+		Nutrition:        nutrition.NewService(store.NewNutritionStore(pool), usda.New(cfg.USDAAPIKey, ""), nil),
 		Cookies:          httpapi.CookieSettings{Secure: cfg.CookieSecure},
 		CommunityEnabled: cfg.CommunityEnabled,
 	})

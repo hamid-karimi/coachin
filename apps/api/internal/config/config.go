@@ -52,6 +52,8 @@ type Server struct {
 	SMTP             SMTP
 	S3               S3
 	AI               AI
+	// USDAAPIKey enables USDA FoodData Central search; empty disables it.
+	USDAAPIKey string
 }
 
 // AI selects the generation providers. An empty key disables a provider;
@@ -99,6 +101,7 @@ func LoadServer(getenv Getenv) (Server, error) {
 			GeminiAPIKey: r.optional("GEMINI_API_KEY", ""),
 			GeminiModel:  r.optional("GEMINI_MODEL", ""),
 		},
+		USDAAPIKey: r.optional("USDA_API_KEY", ""),
 	}
 	return cfg, r.err()
 }
