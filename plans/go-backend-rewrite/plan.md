@@ -1,158 +1,168 @@
-# Plan — Go backend rewrite
+# Plan — Go backend rewrite, self-hosted
 
 Spec: [`spec.md`](spec.md) · Architecture: [`architecture.md`](architecture.md)
 
-Strategy: **strangler, module by module**. The app keeps working after every phase; each
-module flips from server actions to the Go API in its own PR. Nothing is deleted until its
-replacement is live and tested.
+Strategy: **build the new stack side by side, locally, module by module.** Today's app
+moves to `legacy/` as a read-only reference (production on Vercel + Supabase keeps running
+untouched until go-live). The new `apps/web` + `apps/api` grow one module at a time on the
+local Docker stack; nothing needs Supabase at any point. At go-live, data is imported once
+and the old hosting is switched off.
 
 Sizing: **S** ≈ one focused session · **M** ≈ 2–3 · **L** ≈ 4+.
 
 ---
 
-## Phase 0 — Foundations (M)
+## Phase 0 — Local platform (M)
 
-Goal: monorepo, empty-but-deployable Go API, database under goose, CI green.
+Goal: `make up` on your Mac starts an empty but working stack.
 
-- [ ] 0.1 `git mv` the Next app into `apps/web/` (keep history); root `pnpm-workspace.yaml`
-      → `apps/web`; fix Storybook/vitest/tsconfig paths. Behavior unchanged. **Gate**: tsc,
-      eslint, vitest, `next build` green.
-- [ ] 0.2 Upgrade web deps to the architecture §6 matrix in one commit (Next 16.3.6,
-      React 19.3, TS 6.0.3, Tailwind 4.3.3, Storybook 10.6, vitest 5, ESLint 10). Fix
-      breakages only. **Gate**: same as 0.1 + Storybook build.
-- [ ] 0.3 Scaffold `apps/api` (Go 1.27.1): `cmd/api` with config, `slog`, chi + huma,
-      `/healthz`, `/readyz`, graceful shutdown, `openapi` subcommand. Dockerfile
-      (distroless). `golangci-lint` config.
-- [ ] 0.4 `db/migrations`: `00001_baseline.sql` from `pg_dump --schema-only` of prod
-      (public schema + storage bucket row + policies); `00002_auth_compat.sql`
-      (`auth.uid()`, `authenticated` role — no-op on Supabase). Mark baseline applied on
-      prod (`goose` version table) without running it.
-- [ ] 0.5 Local dev: `compose.yaml` (Postgres 17 + MinIO), `make dev` runs API + web,
-      seed script with one trainee, one coach, one active relationship.
-- [ ] 0.6 CI workflow: web (tsc/eslint/vitest/build) + api (lint, `go test` with
-      testcontainers, `sqlc diff`, OpenAPI drift check).
-- [ ] 0.7 Update `CLAUDE.md` "Verify before every commit" with the Go commands
-      (`go vet ./...`, `golangci-lint run`, `go test ./...`).
+- [ ] 0.1 `git mv` the current app into `legacy/` (history kept). Update the "source of
+      truth" paths in FORMULAS.md, CLAUDE.md, and QA-ONBOARDING.md to `legacy/…`.
+- [ ] 0.2 `compose.yaml` + `compose.override.yaml`: `postgres:18.6`, `dxflrs/garage:v2.4.1`
+      + one-shot `garage-init` (layout, bucket, key), `axllent/mailpit:v1.31.2`,
+      `caddy:2.11.4`, `api`, `web`. `deploy/Caddyfile`, `deploy/garage.toml`, `.env.example`.
+- [ ] 0.3 Scaffold `apps/api` (Go 1.27.1): config from env (fail fast), `slog`, chi + huma,
+      `/healthz`, `/readyz` (DB + storage ping), graceful shutdown, `openapi` subcommand,
+      multi-stage Dockerfile → distroless. `golangci-lint` config.
+- [ ] 0.4 Scaffold `apps/web` fresh on the architecture §5 versions (Next 16.3.6,
+      React 19.3, TS 6.0.3, Tailwind 4.3.3, TanStack Query, nuqs, Storybook 10.6,
+      vitest 5, ESLint 10). Copy over `globals.css` tokens, `components/ui`,
+      `components/design-system` (+ stories), fonts, PWA manifest/icons. Placeholder home
+      page that calls `/api/v1/healthz`.
+- [ ] 0.5 `Makefile`: `up`, `infra`, `down`, `logs`, `migrate`, `seed`, `reset-db`, `gen`,
+      `test`, `lint`. Root `pnpm-workspace.yaml` → `apps/web`.
+- [ ] 0.6 CI (GitHub Actions): web (tsc, eslint, vitest, build, Storybook build) + api
+      (golangci-lint, `go test` with testcontainers, `sqlc diff`, OpenAPI drift) + compose
+      smoke test (`up`, wait for `/readyz`).
+- [ ] 0.7 CLAUDE.md: new layout + verify commands (`go vet ./...`, `golangci-lint run`,
+      `go test ./...`, `make test`).
+- **Gate**: on a clean Mac, `cp .env.example .env && make up` → `http://localhost:8080`
+  shows the placeholder with API healthy; Mailpit at `:8025`.
 
-## Phase 1 — Domain port with golden vectors (M)
+## Phase 1 — Clean schema + domain port (M)
 
-Goal: every FORMULAS.md section has one Go implementation proven equal to today's TS.
+- [ ] 1.1 `db/migrations/00001_baseline.sql`: replay `legacy/supabase/migrations` into a
+      scratch Postgres, `pg_dump --schema-only`, then clean it per ADR-2 (`users` table,
+      `app.current_user_id()`, `coachin_owner`/`coachin_app` roles, no `auth`/`storage`
+      schemas). `00002_auth.sql`: `sessions`, `auth_tokens`.
+- [ ] 1.2 `db/seed/`: sport types (from the seed migration), a trainee, a coach, an active
+      relationship, one running plan, one hypertrophy plan.
+- [ ] 1.3 RLS smoke test (testcontainers): as `coachin_app` with user A, every table read
+      returns zero rows of user B.
+- [ ] 1.4 `scripts/export-golden.ts` (runs in `legacy/`): pure `lib/*` functions over the
+      inputs in `lib/*.test.ts` → `testdata/golden/<topic>.json`.
+- [ ] 1.5 Port to `apps/api/internal/domain/` with table-driven tests on the vectors: xp §1 ·
+      streak §2 · tiers §3 · running §4 · race intake §5 · goals §6 · scorecard / check-in /
+      stall §7 · nutrition §8/§10 · plan weeks & dates §9 · quotas §11 · volume §12 ·
+      supplements + meal adherence §13 · activity summary §14 · charts + photo nudge §15 ·
+      plan-items, schedule-inserts, food-units, grocery, share-card privacy, sports,
+      user-country, AI extract-json / schema-hint / anchors.
+- [ ] 1.6 FORMULAS.md: add the Go path next to each "source of truth".
+- **Gate**: `go test ./...` passes every vector; RLS smoke test green.
 
-- [ ] 1.1 Script `scripts/export-golden.ts`: runs the pure `lib/*` functions over the
-      inputs already used in `lib/*.test.ts` and writes `testdata/golden/<topic>.json`.
-- [ ] 1.2 Port to `apps/api/internal/domain/`, table-driven tests reading the vectors:
-      `xp` §1 · `streak` §2 · `tiers` §3 · `running` §4 · race intake gates §5 · `goals` §6
-      · `scorecard` + check-in decision + stall detection §7 · nutrition §8/§10 · plan
-      weeks & dates §9 · weekly quotas §11 · workout volume §12 · supplements + meal
-      adherence §13 · activity import summary §14 · progress charts + photo nudge §15 ·
-      `plan-items`, `schedule-inserts`, `food-units`, `meal-plan-grocery`, `share-card`
-      privacy rules, `sports`, `user-country`, AI `extract-json` / `schema-hint` / anchors.
-- [ ] 1.3 FORMULAS.md: add the Go path next to each TS "source of truth" (both valid
-      until Phase 4).
-- **Gate**: `go test ./internal/domain/...` passes every vector; vitest still green.
-
-## Phase 2 — Platform slice: store, auth, contract, web data layer (L)
-
-Goal: a logged-in user's `/me` flows browser → Next → Go → Postgres with RLS on.
+## Phase 2 — Auth + platform slice (L)
 
 API
-- [ ] 2.1 `store`: pgx pool, `WithUser(ctx, uid, fn)` tx that sets role + claims
-      (ADR-4), `WithSystem`; sqlc config + first queries (`profiles`).
-- [ ] 2.2 Migration: `sessions` table. `app/auth` with `CredentialStore` interface +
-      `supabaseCredentials` (GoTrue signup / password grant). Endpoints
-      `POST /auth/register|login|logout`, `GET /me`. Cookie per ADR-3; same password rules.
-- [ ] 2.3 Middleware: session → user, request ID, problem+json errors, rate limits on
-      `/auth/*`, body limit 8 MB.
-- [ ] 2.4 Integration tests (testcontainers): register → login → `/me` → logout; RLS
-      denies cross-user reads even if a handler forgets a check.
+- [ ] 2.1 `store`: pgx pool as `coachin_app`, `WithUser` / `WithSystem`, sqlc setup.
+- [ ] 2.2 `app/auth`: argon2id + bcrypt-legacy verify/rehash, sessions, register, login,
+      logout, verify email, forgot/reset/change password, `GET /me`. `mail` adapter with
+      HTML + text templates (Mailpit locally).
+- [ ] 2.3 Middleware: session → user, request ID, problem+json, rate limits, 8 MB body cap.
+- [ ] 2.4 Integration tests: register → email in Mailpit → verify → logout → login →
+      forgot → reset → old sessions revoked; rate limits trigger; cross-user access denied.
 
 Web
-- [ ] 2.5 `lib/api/`: generated `schema.d.ts`, `openapi-fetch` clients (browser: `/api`,
-      server: `API_INTERNAL_URL` + forwarded cookie), `openapi-react-query` `$api`,
-      `getQueryClient()` (request-scoped on server, singleton in browser),
-      `QueryProvider` + `NuqsAdapter` in `app/layout.tsx`.
-- [ ] 2.6 `next.config.ts` rewrite `/api/:path*` → API. `pnpm gen:api` script.
-- [ ] 2.7 Port auth pages to the API (RHF + zod forms, `useMutation`); `proxy.ts` checks
-      the session cookie instead of Supabase; root page role routing uses `GET /me`.
-- **Gate**: existing users log in through Go (v1 credentials); logout revokes the session.
-      Transitional bridge until 5.3: the login/logout server actions also keep the Supabase
-      session (`signInWithPassword` / `signOut`) and relay the Go `Set-Cookie`, so
-      not-yet-ported pages keep working.
+- [ ] 2.5 `lib/api/`: generated `schema.d.ts`, server client (`API_INTERNAL_URL` + forwarded
+      cookie), browser client, `$api` (openapi-react-query), `getQueryClient()`,
+      `QueryProvider` + `NuqsAdapter` in the root layout. `make gen` regenerates.
+- [ ] 2.6 Auth screens ported (login, register) + new (forgot, reset, verify, change
+      password) with RHF + zod; `proxy.ts` cookie redirect; root page role routing via
+      `GET /me`; app shell / nav with the community flag from `/me`.
+- **Gate**: full auth journey works in the browser on the local stack.
 
 ## Phase 3 — Module slices (L, one PR per module)
 
-Per module, the same recipe:
-1. sqlc queries + `app/<module>` use cases (Step A: call existing RPCs inside `WithUser`).
-2. huma handlers + integration tests covering the module's QA journey steps.
-3. Regenerate client; page prefetches + `HydrationBoundary`; client leaves switch to
-   `$api.useQuery` / `useMutation`; nuqs for URL state.
-4. Delete the module's server actions / route handlers; update its `README.md` and
-   `QA-ONBOARDING.md`.
-- **Gate per module**: its QA journey passes manually + Playwright spec; tsc/eslint/vitest
-  and go tests green.
+Per module:
+1. sqlc queries + `app/<module>` use cases (Step A: call the rewritten SQL functions
+   inside `WithUser` where they exist).
+2. huma handlers + integration tests covering the module's QA journey.
+3. Port pages/components from `legacy/`: `page.tsx` prefetch + `HydrationBoundary`,
+   `$api.useQuery` / `useMutation`, nuqs for URL state, stories for new DS components.
+4. Port the module `README.md`; update QA-ONBOARDING for any flow that changed
+   (auth screens, photo URLs).
+- **Gate per module**: its QA journey passes on the local stack + a Playwright spec; all
+  checks green.
 
 Order (dependencies first, risk front-loaded):
 - [ ] 3.1 **Onboarding / My week** — sport types, schedules, weekly quotas, complete (S)
 - [ ] 3.2 **Today** — `GET /today`, streak settle, workout log, supplements + logs,
       optimistic toggles (M)
-- [ ] 3.3 **Training** — plan generation (AI adapters: Claude→Gemini, prompts verbatim),
+- [ ] 3.3 **Training** — AI adapters (Claude → Gemini, prompts verbatim), plan generation,
       archive, plan-item completion, session logs, check-ins, FIT/GPX parse (L)
-- [ ] 3.4 **Calendar** — `GET /calendar?week=` (nuqs `week`), ICS endpoint (S)
-- [ ] 3.5 **Nutrition** — USDA foods proxy, meal logs, photo estimate + batch confirm,
-      day/trends, meal plans (M)
-- [ ] 3.6 **Profile** — profile/measurements, goals, activity import, photos: object
-      storage adapter, pure-Go re-encode + Gemini moderation, signed URLs, analyze /
-      extract; nuqs `tab` (L)
-- [ ] 3.7 **Coaching** — invite codes, join (status mapping), roster/adherence,
-      consent-gated trainee nutrition/supplements, assign weekly plan, coach-mode plan
-      generation (`?student=`) (M)
-- [ ] 3.8 **Community** — clubs, follows, groups, leaderboard, discover; `404` while flag
-      off (M)
+- [ ] 3.4 **Calendar** — `GET /calendar?week=`, ICS endpoint (S)
+- [ ] 3.5 **Nutrition** — USDA proxy, meal logs, photo estimate + batch confirm, day/trends,
+      meal plans (M)
+- [ ] 3.6 **Profile** — profile/measurements, goals, activity import, photos (Garage
+      adapter, pure-Go re-encode, Gemini moderation, streamed `GET /photos/{id}`),
+      analyze / extract, `?tab=` (L)
+- [ ] 3.7 **Coaching** — invite codes, join statuses, roster/adherence, consent-gated
+      trainee nutrition/supplements, assign weekly plan, coach-mode plan generation (M)
+- [ ] 3.8 **Community** — clubs, follows, groups, leaderboard, discover; `404` while the
+      flag is off (M)
 
 ## Phase 4 — Retire SQL business logic (M)
 
-- [ ] 4.1 Migration: unique index `xp_transactions (user_id, reason)` (dedupe check first).
-- [ ] 4.2 Replace each RPC call with a Go use case in one tx (Step B, ADR-5), one PR per
-      group: plan items + session logs · meals + calorie day · goals · streak settle ·
+- [ ] 4.1 Migration: unique index `xp_transactions (user_id, reason)`.
+- [ ] 4.2 Replace each SQL function with a Go use case in one transaction (Step B), one PR
+      per group: plan items + session logs · meals + calorie day · goals · streak settle ·
       check-ins / week adjustment · coaching joins/assign · clubs/groups/leaderboard.
-      Concurrency test per use case (parallel duplicate requests → one award).
-- [ ] 4.3 Migration dropping the retired functions (`sync_league_tier` trigger and
-      `enforce_body_photo_cap` stay — they are invariants, not business flows).
-- [ ] 4.4 FORMULAS.md: Go files become the only "source of truth"; delete TS formula
-      copies no longer used by the UI.
-- **Gate**: full go + vitest suites; golden vectors; every QA journey re-run.
+      Each gets a concurrency test (parallel duplicates → exactly one award).
+- [ ] 4.3 Migration dropping retired functions (keep `sync_league_tier` and photo-cap
+      triggers).
+- [ ] 4.4 FORMULAS.md: Go files are the only source of truth.
+- **Gate**: full suites + golden vectors + every QA journey re-run.
 
-## Phase 5 — Cutover & cleanup (M)
+## Phase 5 — Hardening & cutover in the repo (M)
 
-- [ ] 5.1 Playwright suite for QA journeys 1–8 against web + API + Postgres in CI.
-- [ ] 5.2 Deploy API (container host) + web (Vercel) with `API_INTERNAL_URL`; staging
-      soak against a prod snapshot.
-- [ ] 5.3 Stop setting the Supabase session cookie; remove `@supabase/*`, `sharp`, AI SDKs,
-      `@garmin/fitsdk`, `fast-xml-parser` from `apps/web`; remove Supabase env vars from
-      web.
-- [ ] 5.4 Verify spec §8 acceptance criteria 1–6; update root README, QA-ONBOARDING
-      ("Stack", "Running the app locally"), module READMEs.
+- [ ] 5.1 Playwright suite for QA journeys 1–8 against the compose stack, in CI.
+- [ ] 5.2 Security review of auth, uploads, authorization (`/security-review`), and fixes.
+- [ ] 5.3 Delete `legacy/` (and with it `supabase/`, Vercel/Next server code). Verify spec
+      §8 criteria 1–7. Rewrite root README (stack, `make up`), QA-ONBOARDING ("Stack",
+      "Running the app locally"), module READMEs.
 
-## Phase 6 — Leave Supabase auth & storage (optional, M)
+## Phase 6 — VPS readiness (M)
 
-- [ ] 6.1 `nativeCredentials`: bcrypt verify from `auth.users.encrypted_password`, rehash
-      to argon2id into `credentials`; flip `CredentialStore`. Password reset + email
-      confirmation via a transactional email provider.
-- [ ] 6.2 Copy `body_photos` objects to the new S3-compatible bucket; switch endpoint.
-- [ ] 6.3 Drop FKs to `auth.users` in favor of our `users` table (same UUIDs); Postgres can
-      then move to any host with only a `DATABASE_URL` change.
+- [ ] 6.1 Release workflow: build `api` + `web` images (amd64 + arm64) → GHCR on tag.
+- [ ] 6.2 Production Caddyfile (domain, automatic HTTPS, security headers, gzip/zstd),
+      production `.env` template, `__Host-` secure cookie.
+- [ ] 6.3 Backups: nightly `pg_dump` + Garage bucket sync to off-site storage, 14-day
+      retention; `make restore` + a tested restore runbook in `deploy/README.md`.
+- [ ] 6.4 VPS bootstrap runbook: Ubuntu LTS, Docker Engine, non-root deploy user, SSH
+      key-only, firewall (22/80/443), unattended security upgrades, `make deploy`.
+
+## Phase 7 — Go-live (S–M)
+
+- [ ] 7.1 `cmd/import-supabase` (one-time): users (UUID, email, bcrypt hash, verified
+      date), all public tables, storage objects → Garage. Dry run against a production
+      snapshot locally; verify counts + spot-check XP/streaks/photos.
+- [ ] 7.2 Provision the VPS (Phase 6 runbook), point DNS, deploy, import production data
+      during a short maintenance window.
+- [ ] 7.3 Smoke-test every QA journey on the live domain; old users log in with their
+      existing passwords.
+- [ ] 7.4 Switch off Vercel and Supabase after a safe period (keep a final Supabase dump
+      archived). Delete `cmd/import-supabase`.
 
 ---
 
-## Working agreements for every PR in this plan
+## Working agreements for every PR
 
-- One module or one concern per PR; each leaves main deployable.
+- One module or concern per PR; `main` always builds and `make up` always works.
 - Before commit: `pnpm exec tsc --noEmit`, `pnpm exec eslint <changed>`, `pnpm test`,
   `go vet ./...`, `golangci-lint run`, `go test ./...` — never commit on red.
 - Same change updates: module `README.md`, `QA-ONBOARDING.md`, `FORMULAS.md` (if math
   moved), `WORKLOG.md` entry.
-- No new features ride along; UX diffs caused by upgrades are fixed, not accepted.
+- No new features ride along; visual diffs from upgrades are fixed, not accepted.
 
 ## Immediate next step
 
-Approve or amend the spec's open questions (§10) and the ADRs, then start Phase 0.1–0.3.
+Confirm the spec §10 defaults, then start Phase 0 (0.1 → 0.4 in one PR).

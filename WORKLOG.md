@@ -5,6 +5,24 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-24 (later) · `claude/lucid-tesla-3737vk` — rewrite docs revised: no Supabase, no Vercel
+
+**Done**: rewrote `plans/go-backend-rewrite/{spec,architecture,plan}.md` for the owner's
+decisions: **zero Supabase, zero Vercel**, everything local in Docker on macOS first, a
+single VPS later. Docs only; no code changed.
+
+**Decisions**: PostgreSQL 18.6; auth built into the Go API (argon2id, opaque session
+cookie, email verify + password reset via SMTP; Mailpit locally); clean schema with our
+own `users` table and `app.current_user_id()` replacing `auth.uid()`, RLS kept, API runs as
+non-owner `coachin_app`; object storage **Garage v2.4.1** (MinIO community is
+maintenance-only with no official images; RustFS 1.0 judged too fresh) behind an S3
+interface, private, photos streamed by the API; Caddy 2.11 as the single entry point
+(local :8080, VPS automatic HTTPS). Old app moves to `legacy/` as reference; Supabase data
+imported once at go-live (Phase 7).
+
+**Next steps**: owner confirms spec §10 defaults (import existing data? SMTP provider?
+domain) → Phase 0 (legacy move, compose stack, Go + web scaffolds, Makefile, CI).
+
 ## 2026-09-24 · `claude/lucid-tesla-3737vk` — Go backend rewrite: spec + architecture + plan (docs only)
 
 **Done**: `plans/go-backend-rewrite/` — `spec.md` (problem, goals, endpoint map for all 54

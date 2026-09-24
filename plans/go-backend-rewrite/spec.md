@@ -1,11 +1,11 @@
-# Spec — Go backend + frontend-only Next.js
+# Spec — Go backend + frontend-only Next.js, fully self-hosted
 
 Status: **Draft for approval** · Owner: Hamid · Date: 2026-09-24
 Companions: [`architecture.md`](architecture.md) (how) · [`plan.md`](plan.md) (when)
 
 ## 1. Problem
 
-Today every backend concern lives inside the Next.js app or inside Postgres:
+Today every backend concern lives inside the Next.js app or inside Supabase:
 
 | Concern | Where it lives now | Size |
 | --- | --- | --- |
@@ -16,43 +16,42 @@ Today every backend concern lives inside the Next.js app or inside Postgres:
 | Business formulas | `lib/*.ts` **and** mirrored in SQL (`evaluate_user_streak` ↔ `lib/streak.ts`, `league_tier_for_xp` ↔ `lib/tiers.ts`) | ~22k LOC app-wide |
 | AI (Claude primary, Gemini fallback) | `lib/ai/*` called from server actions | 8 generators |
 | File pipelines | `sharp` re-encode + Gemini moderation; FIT/GPX parsing | — |
-| Auth + storage | Supabase Auth, Supabase Storage (`body_photos` bucket) | — |
+| Auth, storage, hosting | Supabase Auth, Supabase Storage (`body_photos` bucket), Vercel | — |
 
 Consequences we want to fix:
 
-1. **Two implementations of the same formula** (TS + SQL) that must be kept in sync by hand
-   (FORMULAS.md exists partly to police this).
-2. **No API.** Logic is only reachable through Next.js server actions — no mobile client,
-   no integrations, no independent scaling or deploys of the backend.
-3. **Authorization is scattered** across RLS, SECURITY DEFINER functions, and action code
-   (e.g. the community flag had to be re-checked inside actions because "actions are
-   public endpoints", WORKLOG 2026-07-20).
-4. **Vendor coupling** to Supabase's auth/storage/RLS conventions.
+1. **Two implementations of the same formula** (TS + SQL), kept in sync by hand.
+2. **No API** — logic is only reachable through Next.js server actions.
+3. **Authorization is scattered** across RLS, SECURITY DEFINER functions, and action code.
+4. **Vendor lock-in** to Supabase (auth, storage, RLS conventions) and Vercel (hosting).
 
 ## 2. Goals
 
-- G1 — A **Go HTTP API** owns all data access, authorization, business rules, AI calls, and
-  file pipelines.
-- G2 — **Next.js is frontend only**: rendering, routing, URL state, client cache. No database
-  client, no secrets except the API's internal URL, no server actions that write data.
-- G3 — **Behavioral parity**: every formula in `FORMULAS.md`, every journey in
-  `QA-ONBOARDING.md` behaves identically after cutover. Same user IDs, same data, no forced
-  password reset.
-- G4 — **One implementation per formula** (Go `internal/domain`), shared golden test vectors.
-- G5 — **Typed contract**: OpenAPI 3.1 generated from Go; the frontend client is generated
-  from it. Contract drift fails CI.
-- G6 — **Latest stable versions** of every package at start of work (see architecture §6).
+- G1 — A **Go HTTP API** owns all data access, authorization, business rules, auth, email,
+  AI calls, and file pipelines.
+- G2 — **Next.js is frontend only**: rendering, routing, URL state, client cache. No
+  database client, no secrets, no server actions that write data.
+- G3 — **Zero Supabase, zero Vercel.** No `@supabase/*` package, no `auth.*` / `storage.*`
+  schema, no Supabase-specific roles or functions, no Vercel-specific config.
+- G4 — **Self-hosted with Docker Compose.** Everything runs locally on macOS with one
+  command (`make up`); the same images and compose file later run on a single VPS.
+- G5 — **Behavioral parity**: every formula in `FORMULAS.md` and every journey in
+  `QA-ONBOARDING.md` behaves identically.
+- G6 — **One implementation per formula** (Go `internal/domain`), proven by shared golden
+  test vectors.
+- G7 — **Typed contract**: OpenAPI 3.1 generated from Go; the frontend client is generated
+  from it; drift fails CI.
+- G8 — **Latest stable versions** of every package and image at start of work
+  (architecture §6).
 
 ## 3. Non-goals (v1)
 
-- New features or UX redesign — the UI is ported, not reinvented. (Upgrades may force small
-  visual diffs; those are bugs to fix, not features.)
+- New features or UX redesign — the UI is ported, not reinvented.
 - Native mobile app (the API enables it later).
-- Per-user time zones — current behavior uses the server's local day (UTC in prod); v1 keeps
-  that exact semantic, explicitly. See §9 risk R5.
-- Replacing Postgres or changing the schema beyond what the port requires.
-- Re-enabling community surfaces — the `community` flag stays **off**; its endpoints are
-  ported but gated (same as today).
+- Per-user time zones — v1 keeps today's semantic (the server's local day, pinned to UTC).
+- Multi-server / high availability — one VPS, one Postgres, one storage node.
+- Re-enabling community surfaces — the `community` flag stays **off**; endpoints are ported
+  but gated.
 
 ## 4. Users & roles (unchanged)
 
@@ -62,19 +61,26 @@ everyone else → `/dashboard`.
 
 ## 5. Functional requirements — API surface
 
-Every server action and route handler maps to one endpoint. Paths are under `/v1`.
-Mutations return the updated resource (or a `result` object mirroring today's action state:
-`status: success | info | error`, `message`) so toasts keep working.
+Every server action and route handler maps to one endpoint under `/api/v1`. Mutations
+return the updated resource or a result object mirroring today's action state
+(`status: success | info | error`, `message`) so toasts keep working.
 
-### 5.1 Auth & session
+### 5.1 Auth & session (new: owned by Go, replaces Supabase Auth)
 | Today | Endpoint |
 | --- | --- |
-| `registerAction` | `POST /auth/register` |
-| `loginAction` | `POST /auth/login` → sets `__Host-coachin_session` cookie |
-| `logoutAction` | `POST /auth/logout` |
-| `getUser()` in pages | `GET /me` (profile + role + flags) |
+| `registerAction` | `POST /auth/register` → creates user, sends verification email, signs in |
+| `loginAction` | `POST /auth/login` → sets session cookie |
+| `logoutAction` | `POST /auth/logout` → revokes session |
+| (Supabase email link) | `POST /auth/verify-email` (token from email) |
+| (Supabase reset flow) | `POST /auth/password/forgot`, `POST /auth/password/reset` |
+| — | `POST /auth/password/change` (signed in) |
+| `getUser()` in pages | `GET /me` (profile + role + feature flags) |
 
-Password rules unchanged: ≥ 8 chars, upper + lower + digit, email format.
+- Password rules unchanged: ≥ 8 chars, upper + lower + digit, valid email.
+- Email verification is sent but **does not block login** in v1 (same experience as today's
+  default); a banner nudges unverified users.
+- Reset/verify tokens: single-use, hashed at rest, expire (reset 1 h, verify 7 d).
+- Login, register, and forgot-password are rate-limited per IP and per email.
 
 ### 5.2 Onboarding / My week
 | Today | Endpoint |
@@ -96,7 +102,7 @@ Password rules unchanged: ≥ 8 chars, upper + lower + digit, email format.
 ### 5.4 Training
 | Today | Endpoint |
 | --- | --- |
-| `generatePlanAction` (race) / `generateHypertrophyPlanAction` | `POST /training-plans` (`kind: race \| hypertrophy`, optional `studentId` for coach mode) |
+| `generatePlanAction` / `generateHypertrophyPlanAction` | `POST /training-plans` (`kind: race \| hypertrophy`, optional `studentId` for coach mode) |
 | `archivePlanAction` | `POST /training-plans/{id}/archive` |
 | `togglePlanItemAction` | `PUT` / `DELETE /plan-items/{id}/completion` |
 | `logSessionAction` | `POST /session-logs` |
@@ -122,7 +128,7 @@ Password rules unchanged: ≥ 8 chars, upper + lower + digit, email format.
 | `importActivitiesAction` | `POST /activities/import` |
 | `uploadBodyPhotosAction`, `uploadProgressPhotoAction` | `POST /photos` (multipart, `kind: body \| progress`) |
 | `deleteBodyPhotoAction` | `DELETE /photos/{id}` |
-| signed image URLs (today via Supabase storage) | `GET /photos/{id}/url` (short-lived signed URL) |
+| signed image URLs (today via Supabase Storage) | `GET /photos/{id}` — API checks access and streams the image (storage is never public) |
 | `analyzePhotosAction`, `extractReportAction` | `POST /photos/analyze`, `POST /reports/extract` |
 | `createGoalAction`, `abandonGoalAction`, `achieve_goal` RPC | `POST /goals`, `POST /goals/{id}/abandon`, `POST /goals/{id}/achieve` |
 | profile page loaders (stats, XP history, charts) | `GET /me/overview`, `GET /me/progress` |
@@ -131,80 +137,83 @@ Password rules unchanged: ≥ 8 chars, upper + lower + digit, email format.
 | Today | Endpoint |
 | --- | --- |
 | `generateCoachInviteCodeAction` | `POST /coach/invite-codes` |
-| `connectCoachByCodeAction` (`join_coaching_via_invite_code`) | `POST /coaching/join` → `created \| already_connected \| reactivated` |
+| `connectCoachByCodeAction` | `POST /coaching/join` → `created \| already_connected \| reactivated` |
 | coaching hub loader | `GET /coach/trainees` (roster + adherence) |
 | trainee nutrition / supplements (consent-gated) | `GET /coach/trainees/{id}/nutrition`, `…/supplements` |
 | `assignCoachWeeklyPlanAction` | `POST /coach/trainees/{id}/weekly-plan` |
 
 ### 5.8 Community (flag-gated, `404` while off — same as today)
-Clubs (`create`, `join by code`, `leave`, `set primary`), follows, training groups
-(`create`, `join`, `leave`, `group_trained_today`, `evaluate_group_days`), leaderboard
-(`get_weekly_leaderboard`), discover. Paths under `/community/*`.
+Clubs (create, join by code, leave, set primary), follows, training groups (create, join,
+leave, trained-today, group-day evaluation), weekly leaderboard, discover. Paths under
+`/community/*`.
 
 ### 5.9 Cross-cutting behavior
-- **Idempotency**: every XP-awarding write stays idempotent by its FORMULAS.md reason key
-  (`plan_item:<id>`, `meal_log:<id>`, `calorie_goal:<date>`, …). Enforced by a unique
-  constraint, not just a pre-check.
-- **Upload limits**: 8 MB request cap (matches `bodySizeLimit`); photo caps via DB trigger
-  (body 5, progress 24) remain.
+- **Idempotency**: every XP award stays idempotent by its FORMULAS.md reason key, enforced
+  by a unique constraint.
+- **Uploads**: 8 MB request cap; photo caps (body 5, progress 24) stay DB-enforced.
 - **AI**: Claude primary, Gemini fallback, "AI is temporarily unavailable" when neither is
   configured — same contract as `lib/ai/README.md`.
-- **Errors**: RFC 9457 problem+json; user-facing `detail` stays English-only.
+- **Errors**: RFC 9457 problem+json; user-facing text stays English-only.
 
 ## 6. Frontend requirements
 
 - Every route in QA-ONBOARDING's module map renders server-side with data prefetched from
-  the API (no loading flash on first paint), then hydrates into TanStack Query.
-- URL-addressable state uses **nuqs**: profile `?tab=`, training `?student=`, calendar
-  `?week=`, nutrition `?date=`, community tabs.
-- Mutations use TanStack Query `useMutation`; toggles (plan item, supplement log) are
+  the API, then hydrates into TanStack Query (no loading flash on first paint).
+- URL state via **nuqs**: profile `?tab=`, training `?student=`, calendar `?week=`,
+  nutrition `?date=`, community tabs.
+- Mutations via TanStack Query `useMutation`; plan-item and supplement toggles are
   optimistic with rollback.
-- Toasts (sonner), theming (next-themes), PWA manifest + service worker, Storybook stories,
-  share-card canvas rendering — all kept.
-- The browser never holds an auth token in JS: session is an `HttpOnly; Secure;
-  SameSite=Lax` cookie.
+- New auth screens: forgot password, reset password, verify email, change password.
+- Kept: design system + tokens, sonner toasts, next-themes, PWA, Storybook, share-card
+  canvas.
+- No auth token in JS: session lives in an `HttpOnly` cookie.
 
 ## 7. Non-functional requirements
 
 | Area | Requirement |
 | --- | --- |
-| Performance | p95 API latency < 150 ms for non-AI reads at current data volume; Today page TTFB no worse than today |
-| Security | Authorization enforced in Go **and** by RLS (defense in depth); secrets only in the API; rate-limit auth + AI + upload endpoints |
-| Reliability | All multi-write operations in one DB transaction; AI calls time-boxed (60 s) with fallback |
-| Observability | Structured `slog` JSON logs with request ID + user ID; `/healthz`, `/readyz`; OpenTelemetry-ready |
-| Testability | Domain logic 100 % covered by golden vectors; integration tests on real Postgres (testcontainers) |
-| Deployability | Go API: single static binary in a distroless image; web: Next `standalone` |
+| Local dev | `make up` on macOS (Apple Silicon) starts the full stack; `make down`, `make reset-db`, `make seed`; hot reload for API and web |
+| Performance | p95 API latency < 150 ms for non-AI reads; fits a 2 vCPU / 4 GB VPS |
+| Security | Authorization in Go **and** Postgres RLS; argon2id passwords; secrets only in the API's env; rate limits on auth, AI, uploads; only Caddy's ports exposed |
+| Reliability | Multi-write operations in one DB transaction; AI calls time-boxed (60 s) with fallback |
+| Data safety (VPS) | Nightly `pg_dump` + storage sync to off-site storage, restore tested |
+| Observability | `slog` JSON logs with request ID + user ID; `/healthz`, `/readyz` |
+| Testability | Domain logic covered by golden vectors; integration tests on real Postgres (testcontainers) |
 
-## 8. Acceptance criteria (definition of done for cutover)
+## 8. Acceptance criteria
 
-1. All 216+ existing vitest cases for `lib/` logic have Go equivalents passing against the
-   **same** golden vectors.
-2. Every QA-ONBOARDING journey (1–8) passes end-to-end (Playwright) against web + Go API.
-3. A user created before cutover logs in with their existing password; XP, streak, hearts,
-   plans, photos all present and unchanged.
-4. `apps/web` has no `@supabase/*`, `sharp`, `@anthropic-ai/sdk`, `@google/genai`,
-   `@garmin/fitsdk`, or `fast-xml-parser` dependency and no `"use server"` data writes.
-5. FORMULAS.md "source of truth" pointers reference Go files; SQL mirrors of formulas are
-   dropped.
-6. `openapi.json` in repo equals what the API emits (CI check).
+1. Every `lib/` logic test (216+ vitest cases) has a Go equivalent passing on the **same**
+   golden vectors.
+2. Every QA-ONBOARDING journey (1–8) passes end-to-end (Playwright) against the Docker stack.
+3. `make up` on a clean Mac brings up the stack; a seeded trainee and coach can do every
+   journey.
+4. Repo contains no `@supabase/*` dependency, no `supabase/` directory, no reference to
+   `auth.uid()`, `auth.users`, or `storage.*`, and no `vercel` config.
+5. Web app has no `sharp`, AI SDK, `@garmin/fitsdk`, or `fast-xml-parser` dependency and
+   no `"use server"` data writes.
+6. FORMULAS.md "source of truth" pointers reference Go files only.
+7. `openapi.json` in the repo equals what the API emits (CI check).
+8. (Go-live) Imported Supabase users log in with their existing passwords; XP, streaks,
+   plans, and photos are intact.
 
 ## 9. Risks
 
 | # | Risk | Mitigation |
 | --- | --- | --- |
-| R1 | Formula drift during port (XP, streak, tiers, scorecard, nutrition targets) | Golden vectors exported from current TS tests; both suites run on them until TS copy is deleted |
-| R2 | Authorization regressions — 92 RLS policies encode access rules | Keep RLS on: Go sets the RLS user context per transaction, so policies still enforce while Go adds explicit checks (architecture ADR-4) |
-| R3 | User migration / password hashes | Same UUIDs; Supabase bcrypt hashes verified natively then rehashed to argon2id on login (ADR-3) |
-| R4 | Big-bang cutover | Strangler: API built module-by-module; frontend switches module-by-module behind the same URLs |
-| R5 | "Today" semantics — `lib/dates.ts` uses the server's local day | Go process runs with `TZ=UTC` pinned, matching Vercel; per-user TZ is a post-v1 item |
-| R6 | TypeScript 7 (native) is latest but typescript-eslint 8.70 supports `<6.1` | Pin TS **6.0.3** for tooling; revisit when typescript-eslint ships TS 7 support |
-| R7 | Image pipeline without `sharp` | Pure-Go decode/resize/re-encode (EXIF is dropped by re-encode); HEIC stays client-converted as today |
+| R1 | Formula drift during port | Golden vectors exported from current TS tests; both suites run on them until the TS copy is deleted |
+| R2 | Authorization regressions (92 RLS policies) | Policies rewritten mechanically to `app.current_user_id()` and kept as a safety net under Go's explicit checks (ADR-4) |
+| R3 | Losing existing users/passwords when leaving Supabase | One-time importer keeps user UUIDs and bcrypt hashes; Go verifies bcrypt then rehashes to argon2id on first login (ADR-3) |
+| R4 | Building auth ourselves (reset, verification, sessions) | Small, well-known surface; opaque server sessions; hashed single-use tokens; rate limits; security review before go-live |
+| R5 | "Today" semantics — `lib/dates.ts` uses the server's local day | API container pinned to `TZ=UTC` (matches Vercel today) |
+| R6 | TypeScript 7 is latest but typescript-eslint 8.70 supports `<6.1` | Pin TS **6.0.3**; revisit when typescript-eslint supports TS 7 |
+| R7 | Image pipeline without `sharp` | Pure-Go decode/resize/re-encode (drops EXIF); HEIC stays client-converted as today |
+| R8 | Object-storage choice after MinIO went maintenance-only | S3 API only, behind an interface — switch between Garage, RustFS, SeaweedFS, or a managed S3 bucket by config (ADR-8) |
+| R9 | Single VPS is a single point of failure | Accepted for v1; nightly off-site backups + a documented restore runbook |
 
 ## 10. Open questions (defaults assumed in the plan)
 
-1. **Hosting** — default: Go API on Fly.io/Railway/Cloud Run (any container host), web stays
-   on Vercel. Postgres stays on Supabase-hosted Postgres at first (it's just Postgres).
-2. **Leave Supabase entirely?** — default: yes for auth + storage (Phase 6), Postgres host
-   can move later with zero code change.
-3. **Email flows** (confirmation, password reset) — default: keep Supabase's current
-   behavior until Phase 6, then add a transactional email provider.
+1. **Existing production data** — default: import Supabase users, data, and photos once at
+   go-live (Phase 7). If there's nothing worth keeping, skip the importer.
+2. **Transactional email on the VPS** — default: any SMTP provider (e.g. Postmark, Resend,
+   Amazon SES); locally Mailpit catches everything.
+3. **Domain name** — needed at go-live for Caddy's automatic HTTPS.
