@@ -51,3 +51,14 @@ func root(t testing.TB) string {
 		dir = parent
 	}
 }
+
+// ReadFile reads a fixture by its path from the repository root
+// (e.g. "testdata/activity/run-5k.fit").
+func ReadFile(t testing.TB, rel string) []byte {
+	t.Helper()
+	data, err := os.ReadFile(filepath.Join(root(t), filepath.FromSlash(rel)))
+	if err != nil {
+		t.Fatalf("read fixture: %v", err)
+	}
+	return data
+}

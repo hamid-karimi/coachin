@@ -6,6 +6,7 @@ import {
   type RaceTarget,
 } from "@/lib/running";
 import type { components } from "@/lib/api/schema";
+import { intakeActivities, type ActivitySummary } from "./watch-files";
 
 export type RunningBody = components["schemas"]["RunningPlanInputBody"];
 export type PbKey = "pb_5k" | "pb_10k" | "pb_half" | "pb_full";
@@ -58,7 +59,7 @@ export const EXPERIENCE_LEVELS = [
   ["competitive", "Competitive", "High volume, structured training"],
 ] as const;
 
-export const WIZARD_STEPS = ["About you", "Running background", "Your goal", "Review"] as const;
+export const WIZARD_STEPS = ["About you", "Running background", "Your goal", "Watch data"] as const;
 
 export function needsCustomKm(target: RaceTarget): boolean {
   return target === "ultra" || target === "other";
@@ -93,8 +94,12 @@ function numberOrUndefined(value: string): number | undefined {
   return value.trim() !== "" && Number.isFinite(n) ? n : undefined;
 }
 
-/** The API request for a draft; race fields only in race mode. */
-export function runningBody(draft: RunningDraft, targetStudentId?: string): RunningBody {
+/** The API request for a draft; race fields only in race mode, parsed watch runs when any. */
+export function runningBody(
+  draft: RunningDraft,
+  targetStudentId?: string,
+  activities: ActivitySummary[] = [],
+): RunningBody {
   const common = {
     mode: draft.mode,
     experienceLevel: draft.experienceLevel,
@@ -107,6 +112,7 @@ export function runningBody(draft: RunningDraft, targetStudentId?: string): Runn
     longestRunKm: numberOrUndefined(draft.longestRunKm),
     injuries: draft.injuries,
     targetStudentId,
+    activities: activities.length > 0 ? intakeActivities(activities) : undefined,
   };
   if (draft.mode === "base") return { ...common, baseWeeks: draft.baseWeeks };
   return {

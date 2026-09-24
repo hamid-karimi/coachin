@@ -1,6 +1,81 @@
 {
   "components": {
     "schemas": {
+      "ActivitiesParsedBody": {
+        "additionalProperties": false,
+        "properties": {
+          "activities": {
+            "items": {
+              "$ref": "#/components/schemas/ActivitySummaryBody"
+            },
+            "type": "array"
+          },
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "info"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "activities",
+          "status",
+          "message"
+        ],
+        "type": "object"
+      },
+      "ActivitySummaryBody": {
+        "additionalProperties": false,
+        "properties": {
+          "avgHr": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "avgPaceMinKm": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "date": {
+            "description": "UTC date of the start",
+            "format": "date",
+            "type": "string"
+          },
+          "distanceKm": {
+            "format": "double",
+            "type": "number"
+          },
+          "durationMin": {
+            "format": "double",
+            "type": "number"
+          },
+          "source": {
+            "enum": [
+              "fit",
+              "gpx"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "date",
+          "distanceKm",
+          "durationMin",
+          "avgPaceMinKm",
+          "avgHr",
+          "source"
+        ],
+        "type": "object"
+      },
       "AddSchedulesInputBody": {
         "additionalProperties": false,
         "properties": {
@@ -1626,6 +1701,107 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/activities/parse": {
+      "post": {
+        "description": "Nothing is stored. Files that can't be read are reported in the message; 400 when none can.",
+        "operationId": "parseActivities",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "encoding": {
+                "activities": {
+                  "contentType": "application/octet-stream"
+                }
+              },
+              "schema": {
+                "properties": {
+                  "activities": {
+                    "items": {
+                      "contentEncoding": "binary",
+                      "contentMediaType": "application/octet-stream",
+                      "description": ".fit or .gpx exports, up to 3 files of 4 MB",
+                      "format": "binary",
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "activities"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivitiesParsedBody"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Read run summaries from watch files (.fit / .gpx)",
+        "tags": [
+          "activities"
+        ]
+      }
+    },
     "/auth/login": {
       "post": {
         "operationId": "login",

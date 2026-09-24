@@ -44,7 +44,7 @@ inactive; every coach feature checks for an **active** relationship.
 | `/onboarding` | "My week" editor: fixed weekly sessions (anchors) + weekly targets (quotas). Also the first-run flow. **Ported to the rewrite.** | [README](apps/web/app/(app)/onboarding/README.md) |
 | `/dashboard` | "Today": today's routine + plan items, logging, streaks, hearts, XP. **Ported to the rewrite**, including the daily stack. | [README](apps/web/app/(app)/dashboard/README.md) |
 | `/calendar` | Week view blending routine + all active plan items + logged state | [README](legacy/app/calendar/README.md) |
-| `/training` | Program manager: create (AI wizards), archive, weekly check-ins. **Rewrite: list, archive, .ics export, AI wizards, check-ins ported** (watch-file upload next). | [README](apps/web/app/(app)/training/README.md) |
+| `/training` | Program manager: create (AI wizards), archive, weekly check-ins. **Rewrite: list, archive, .ics export, AI wizards (with watch-file upload), check-ins ported**. | [README](apps/web/app/(app)/training/README.md) |
 | `/training/new` | Plan wizards (running / muscle building); coach mode via `?student=<id>` | [README](legacy/app/training/README.md) |
 | `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan | [README](legacy/app/nutrition/README.md) |
 | `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions | [README](legacy/app/coaching/README.md) |
@@ -145,9 +145,14 @@ shows "Create a plan" and Today shows "Train for a marathon".
 - Running wizard, 4 steps: About you (profile summary; "incomplete" hint links to
   Profile) → Running background (PBs, weekly km, longest run, days/week 2–7, injuries)
   → Your goal ("Just start running": 6/8/12 weeks; "Train for a race": distance, race
-  date, goal time + **Suggest** from PBs) → Review → "Your plan is ready." and back to
-  My programs. **Watch-file upload is not in the rewrite yet** (arrives with the watch
-  import).
+  date, goal time + **Suggest** from PBs) → Watch data → "Your plan is ready." and back
+  to My programs.
+- Watch data (optional, 3.3d): pick up to 3 .fit/.gpx files → "Parse files" → toast "2
+  runs parsed." (or "…; skipped — <file>: could not parse (use .fit or .gpx exports)." /
+  "<file>: larger than 4MB"), a line per run ("2026-09-20: 5.01km · 27.1min · 152 bpm")
+  and "N uploaded runs will inform your paces." Nothing is stored; a failed re-parse keeps
+  the last parsed runs. Sample files: `testdata/activity/` (runs under 200 m or 60 s, and
+  corrupt files, are rejected).
 - Validation (legacy copy): "Pick your race distance", "Enter the race distance in km
   (1-500)", "Pick your race date", "Race must be at least 4 weeks away for a useful
   plan", "Pick 2-7 training days per week"; strength: "Pick 2-6 training days per week".

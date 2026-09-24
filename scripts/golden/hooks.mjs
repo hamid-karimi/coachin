@@ -15,6 +15,8 @@ const STUBBED = new Map([
   [path.join(legacyRoot, "lib/ai/text-json.ts"), path.join(stubs, "text-json.mjs")],
 ]);
 
+const WATCH_FILE_PACKAGES = new Set(["@garmin/fitsdk", "fast-xml-parser"]);
+
 function withTsExtension(filePath) {
   if (existsSync(filePath)) return filePath;
   if (existsSync(`${filePath}.ts`)) return `${filePath}.ts`;
@@ -37,6 +39,11 @@ export async function resolve(specifier, context, nextResolve) {
     const parentDir = path.dirname(fileURLToPath(context.parentURL));
     const target = withTsExtension(path.resolve(parentDir, specifier));
     return nextResolve(toUrl(target), context);
+  }
+  // `make golden-activity` only: the watch-file parsers' npm packages, installed
+  // outside the repo (legacy/ has no node_modules).
+  if (WATCH_FILE_PACKAGES.has(specifier) && process.env.GOLDEN_DEPS) {
+    return nextResolve(specifier, { ...context, parentURL: pathToFileURL(path.join(process.env.GOLDEN_DEPS, "x.mjs")).href });
   }
   return nextResolve(specifier, context);
 }

@@ -46,5 +46,13 @@ describe("running wizard", () => {
     );
     expect(race).toMatchObject({ mode: "race", raceTarget: "other", customDistanceKm: 25, raceDate: "2027-01-10", targetStudentId: "student-1" });
     expect(race.baseWeeks).toBeUndefined();
+    expect(race.activities).toBeUndefined();
+  });
+
+  it("adds parsed watch runs in the intake shape", () => {
+    const run = { date: "2026-09-20", distanceKm: 5, durationMin: 25, avgPaceMinKm: 5, avgHr: null, source: "gpx" as const };
+    expect(runningBody(INITIAL_RUNNING_DRAFT, undefined, [run]).activities).toEqual([
+      { date: "2026-09-20", distance_km: 5, duration_min: 25, avg_pace_min_km: 5, avg_hr: null, source: "gpx" },
+    ]);
   });
 });

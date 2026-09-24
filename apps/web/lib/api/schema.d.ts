@@ -4,6 +4,26 @@
  */
 
 export interface paths {
+    "/activities/parse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Read run summaries from watch files (.fit / .gpx)
+         * @description Nothing is stored. Files that can't be read are reported in the message; 400 when none can.
+         */
+        post: operations["parseActivities"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/login": {
         parameters: {
             query?: never;
@@ -541,6 +561,29 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        ActivitiesParsedBody: {
+            activities: components["schemas"]["ActivitySummaryBody"][];
+            message: string;
+            /** @enum {string} */
+            status: "success" | "info";
+        };
+        ActivitySummaryBody: {
+            /** Format: double */
+            avgHr: number | null;
+            /** Format: double */
+            avgPaceMinKm: number | null;
+            /**
+             * Format: date
+             * @description UTC date of the start
+             */
+            date: string;
+            /** Format: double */
+            distanceKm: number;
+            /** Format: double */
+            durationMin: number;
+            /** @enum {string} */
+            source: "fit" | "gpx";
+        };
         AddSchedulesInputBody: {
             /** @description 0=Sunday … 6=Saturday */
             days: number[];
@@ -1067,6 +1110,77 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    parseActivities: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    activities: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActivitiesParsedBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
     login: {
         parameters: {
             query?: never;
