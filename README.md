@@ -35,11 +35,18 @@ make up        # first run copies .env.example → .env, builds, starts, hot-rel
 Open http://localhost:8080. The status page shows the API, database, and storage as
 healthy. Edit files under `apps/web` or `apps/api` and the stack reloads on its own.
 
+`make seed` adds demo accounts: `trainee@coachin.local` and `coach@coachin.local`, both
+with password `Coachin-demo1`. Emails the app sends (sign-up confirmation, password
+reset) show up in Mailpit at http://localhost:8025.
+
 `make help` lists everything else (`down`, `logs`, `migrate`, `reset-db`, `gen`, `test`,
-`lint`, `infra`).
+`lint`, `infra`, `golden`).
+
+> After pulling a change that adds a database role (like this one), run `make reset-db`
+> once: roles are created only when the Postgres volume is first initialized.
 
 For `make gen`, `make test`, and `make lint` you also need these on the Mac itself:
-Go 1.27, Node 24 with `corepack enable` (pnpm 12), and
+Go 1.27, Node 24 with `corepack enable` (pnpm 12), [sqlc](https://sqlc.dev) 1.31, and
 [golangci-lint](https://golangci-lint.run) v2.
 
 ## Repository layout

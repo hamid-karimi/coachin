@@ -25,12 +25,32 @@ type S3 struct {
 	SecretAccessKey string
 }
 
+// SMTP is the outgoing mail server.
+type SMTP struct {
+	Host     string
+	Port     int
+	Username string
+	Password string
+	// TLS is "none" (Mailpit), "starttls", or "tls" (implicit TLS).
+	TLS  string
+	From string
+}
+
 // Server is everything `api serve` needs.
 type Server struct {
 	HTTPAddr    string
 	LogLevel    slog.Level
 	DatabaseURL string
-	S3          S3
+	// AuthDatabaseURL connects as coachin_auth (login, registration, sessions).
+	AuthDatabaseURL string
+	// BaseURL is the public origin, used in emailed links.
+	BaseURL string
+	// CookieSecure sets Secure + the __Host- prefix on the session cookie
+	// (required behind HTTPS; off for plain-http localhost).
+	CookieSecure     bool
+	CommunityEnabled bool
+	SMTP             SMTP
+	S3               S3
 }
 
 // Garage is everything `api storage-init` needs to bootstrap a Garage node.
@@ -47,10 +67,22 @@ const defaultHTTPAddr = ":8080"
 func LoadServer(getenv Getenv) (Server, error) {
 	r := reader{getenv: getenv}
 	cfg := Server{
-		HTTPAddr:    r.optional("HTTP_ADDR", defaultHTTPAddr),
-		LogLevel:    r.logLevel("LOG_LEVEL"),
-		DatabaseURL: r.required("DATABASE_URL"),
-		S3:          r.s3(),
+		HTTPAddr:         r.optional("HTTP_ADDR", defaultHTTPAddr),
+		LogLevel:         r.logLevel("LOG_LEVEL"),
+		DatabaseURL:      r.required("DATABASE_URL"),
+		AuthDatabaseURL:  r.required("AUTH_DATABASE_URL"),
+		BaseURL:          strings.TrimRight(r.required("APP_BASE_URL"), "/"),
+		CookieSecure:     r.bool("COOKIE_SECURE", false),
+		CommunityEnabled: r.bool("FEATURE_COMMUNITY", false),
+		SMTP: SMTP{
+			Host:     r.required("SMTP_HOST"),
+			Port:     int(r.int64("SMTP_PORT", 587)),
+			Username: r.optional("SMTP_USERNAME", ""),
+			Password: r.optional("SMTP_PASSWORD", ""),
+			TLS:      r.oneOf("SMTP_TLS", "starttls", "none", "starttls", "tls"),
+			From:     r.required("MAIL_FROM"),
+		},
+		S3: r.s3(),
 	}
 	return cfg, r.err()
 }
@@ -112,6 +144,33 @@ func (r *reader) int64(key string, fallback int64) int64 {
 		return fallback
 	}
 	return n
+}
+
+func (r *reader) bool(key string, fallback bool) bool {
+	raw := strings.ToLower(strings.TrimSpace(r.getenv(key)))
+	if raw == "" {
+		return fallback
+	}
+	value, err := strconv.ParseBool(raw)
+	if err != nil {
+		if raw == "on" || raw == "off" {
+			return raw == "on"
+		}
+		r.problems = append(r.problems, key+" must be true/false (or on/off)")
+		return fallback
+	}
+	return value
+}
+
+func (r *reader) oneOf(key, fallback string, allowed ...string) string {
+	value := strings.ToLower(r.optional(key, fallback))
+	for _, a := range allowed {
+		if value == a {
+			return value
+		}
+	}
+	r.problems = append(r.problems, fmt.Sprintf("%s must be one of %s (got %q)", key, strings.Join(allowed, ", "), value))
+	return fallback
 }
 
 var logLevels = map[string]slog.Level{

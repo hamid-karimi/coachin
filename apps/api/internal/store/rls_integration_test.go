@@ -13,10 +13,10 @@ import (
 // Row-level security is the safety net under the API's own checks (ADR-4).
 // These tests connect as coachin_app, exactly like the running API.
 
-func migratedDB(t *testing.T) (ownerURL, appURL string) {
+func migratedDB(t *testing.T) dbURLs {
 	t.Helper()
-	ownerURL, appURL = startPostgres(t)
-	m, err := store.NewMigrator(context.Background(), ownerURL, migrations(t))
+	urls := startPostgres(t)
+	m, err := store.NewMigrator(context.Background(), urls.Owner, migrations(t))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -24,13 +24,12 @@ func migratedDB(t *testing.T) (ownerURL, appURL string) {
 	if _, err := m.Up(context.Background()); err != nil {
 		t.Fatalf("migrate: %v", err)
 	}
-	return ownerURL, appURL
+	return urls
 }
 
 func TestEveryTableHasRowLevelSecurity(t *testing.T) {
-	ownerURL, _ := migratedDB(t)
 	ctx := context.Background()
-	conn, err := pgx.Connect(ctx, ownerURL)
+	conn, err := pgx.Connect(ctx, migratedDB(t).Owner)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -54,7 +53,8 @@ func TestEveryTableHasRowLevelSecurity(t *testing.T) {
 }
 
 func TestUsersOnlySeeTheirOwnPrivateRows(t *testing.T) {
-	ownerURL, appURL := migratedDB(t)
+	urls := migratedDB(t)
+	ownerURL, appURL := urls.Owner, urls.App
 	ctx := context.Background()
 	alice, bob := uuid.New(), uuid.New()
 
@@ -104,6 +104,17 @@ func TestUsersOnlySeeTheirOwnPrivateRows(t *testing.T) {
 		}
 		if n := count(tx, "SELECT count(*) FROM users"); n != 1 {
 			t.Errorf("alice sees %d accounts, want only her own", n)
+		}
+		// Password hashes are out of reach even for her own row.
+		if _, err := tx.Exec(ctx, "SAVEPOINT hash_probe"); err != nil {
+			return err
+		}
+		var hash string
+		if err := tx.QueryRow(ctx, "SELECT password_hash FROM users").Scan(&hash); err == nil {
+			t.Error("coachin_app can read password_hash")
+		}
+		if _, err := tx.Exec(ctx, "ROLLBACK TO SAVEPOINT hash_probe"); err != nil {
+			return err
 		}
 		tag, err := tx.Exec(ctx, "UPDATE profiles SET full_name = 'hacked' WHERE id = $1", bob)
 		if err != nil {

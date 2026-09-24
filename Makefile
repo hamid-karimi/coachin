@@ -2,7 +2,7 @@
 COMPOSE := docker compose -f compose.yaml -f compose.dev.yaml
 
 .DEFAULT_GOAL := help
-.PHONY: help up infra down logs ps migrate migrate-status reset-db gen golden test lint
+.PHONY: help up infra down logs ps migrate migrate-status reset-db seed gen golden test lint
 
 help: ## List the available commands
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  make %-15s %s\n", $$1, $$2}'
@@ -37,7 +37,11 @@ reset-db: .env ## Delete the local database and re-create it from migrations
 	$(COMPOSE) up -d --wait postgres
 	$(COMPOSE) run --rm --build migrate migrate up
 
-gen: ## Regenerate openapi/openapi.json and the web app's typed API client
+seed: .env ## Load demo accounts (trainee@ / coach@coachin.local, password Coachin-demo1)
+	$(COMPOSE) run --rm --build migrate seed
+
+gen: ## Regenerate sqlc queries, openapi/openapi.json, and the web app's typed API client
+	cd apps/api && sqlc generate
 	cd apps/api && go run ./cmd/api openapi > ../../openapi/openapi.json
 	cd apps/web && pnpm gen:api
 

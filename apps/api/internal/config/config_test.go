@@ -12,6 +12,10 @@ func envOf(vars map[string]string) Getenv {
 
 var validServerEnv = map[string]string{
 	"DATABASE_URL":         "postgres://app@db/coachin",
+	"AUTH_DATABASE_URL":    "postgres://auth@db/coachin",
+	"APP_BASE_URL":         "http://localhost:8080/",
+	"SMTP_HOST":            "mailpit",
+	"MAIL_FROM":            "CoachIn <no-reply@coachin.local>",
 	"S3_ENDPOINT":          "http://garage:3900",
 	"S3_BUCKET":            "coachin-photos",
 	"S3_ACCESS_KEY_ID":     "GK0123",
@@ -31,6 +35,32 @@ func TestLoadServerDefaults(t *testing.T) {
 	}
 	if cfg.S3.Region != "garage" {
 		t.Errorf("S3.Region = %q, want garage", cfg.S3.Region)
+	}
+	if cfg.BaseURL != "http://localhost:8080" {
+		t.Errorf("BaseURL = %q, want no trailing slash", cfg.BaseURL)
+	}
+	if cfg.CookieSecure || cfg.CommunityEnabled {
+		t.Error("cookie security and community default to off")
+	}
+	if cfg.SMTP.Port != 587 || cfg.SMTP.TLS != "starttls" {
+		t.Errorf("SMTP defaults = %d/%s, want 587/starttls", cfg.SMTP.Port, cfg.SMTP.TLS)
+	}
+}
+
+func TestLoadServerRejectsBadEnums(t *testing.T) {
+	env := map[string]string{"SMTP_TLS": "maybe", "COOKIE_SECURE": "sometimes", "FEATURE_COMMUNITY": "on"}
+	for k, v := range validServerEnv {
+		env[k] = v
+	}
+	_, err := LoadServer(envOf(env))
+	if err == nil || !strings.Contains(err.Error(), "SMTP_TLS") || !strings.Contains(err.Error(), "COOKIE_SECURE") {
+		t.Fatalf("err = %v", err)
+	}
+	delete(env, "SMTP_TLS")
+	delete(env, "COOKIE_SECURE")
+	cfg, err := LoadServer(envOf(env))
+	if err != nil || !cfg.CommunityEnabled {
+		t.Fatalf("FEATURE_COMMUNITY=on: %v %v", cfg.CommunityEnabled, err)
 	}
 }
 

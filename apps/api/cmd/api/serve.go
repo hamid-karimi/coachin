@@ -8,7 +8,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/mail"
 	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/objectstore"
+	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/password"
+	"github.com/hamid-karimi/coachin/apps/api/internal/app/auth"
 	"github.com/hamid-karimi/coachin/apps/api/internal/config"
 	"github.com/hamid-karimi/coachin/apps/api/internal/store"
 	"github.com/hamid-karimi/coachin/apps/api/internal/transport/httpapi"
@@ -31,7 +34,24 @@ func serve(ctx context.Context, _ []string, _ *slog.Logger) error {
 	}
 	defer pool.Close()
 
+	authPool, err := store.Open(ctx, cfg.AuthDatabaseURL)
+	if err != nil {
+		return err
+	}
+	defer authPool.Close()
+
 	objects := objectstore.New(cfg.S3)
+
+	authService, err := auth.NewService(
+		store.NewAuthStore(authPool),
+		password.New(password.DefaultParams),
+		mail.NewSMTP(cfg.SMTP),
+		auth.DefaultSettings(cfg.BaseURL),
+		logger,
+	)
+	if err != nil {
+		return err
+	}
 
 	handler, _ := httpapi.New(httpapi.Deps{
 		Logger: logger,
@@ -39,6 +59,9 @@ func serve(ctx context.Context, _ []string, _ *slog.Logger) error {
 			"database": pool.Ping,
 			"storage":  objects.Ping,
 		},
+		Auth:             authService,
+		Cookies:          httpapi.CookieSettings{Secure: cfg.CookieSecure},
+		CommunityEnabled: cfg.CommunityEnabled,
 	})
 
 	server := &http.Server{
