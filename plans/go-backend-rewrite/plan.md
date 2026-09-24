@@ -79,18 +79,24 @@ Goal: `make up` on your Mac starts an empty but working stack.
 
 ## Phase 2 — Auth + platform slice (L)
 
-API
-- [ ] 2.1 `store`: `WithSystem`, sqlc setup (`WithUser` landed in 1.3).
-- [ ] 2.2 Migration `00004_auth.sql` (`sessions`, `auth_tokens`); `app/auth`: argon2id + bcrypt-legacy verify/rehash, sessions, register, login,
-      logout, verify email, forgot/reset/change password, `GET /me`. `mail` adapter with
-      HTML + text templates (Mailpit locally). `api seed` + `make seed`: sport types come
-      from 00003; adds a trainee, a coach, an active relationship, one running plan, one
-      hypertrophy plan (was 1.2).
-- [ ] 2.3 Middleware: session → user, request ID, problem+json, rate limits, 8 MB body cap.
-- [ ] 2.4 Integration tests: register → email in Mailpit → verify → logout → login →
-      forgot → reset → old sessions revoked; rate limits trigger; cross-user access denied.
+API — PR 2A
+- [x] 2.1 sqlc (`apps/api/sqlc.yaml`, `db/queries/*.sql` → `internal/store/queries`, CI
+      `sqlc diff`). Instead of an owner-level `WithSystem`, auth runs on a dedicated
+      `coachin_auth` pool (least privilege, ADR-3).
+- [x] 2.2 `00004_auth.sql` (`app.sessions`, `app.auth_tokens`, `coachin_auth` grants,
+      `password_hash` hidden from `coachin_app`); `app/auth`: argon2id + bcrypt-legacy
+      verify/rehash, register (creates the profile), login, logout, verify email,
+      forgot/reset/change password, `GET /me`; `adapters/mail` (SMTP → Mailpit locally);
+      `api seed` + `make seed` (trainee + coach + relationship + routine; plans come with
+      3.3).
+- [x] 2.3 Middleware: session cookie → user, request ID, problem+json with the legacy
+      messages, per-IP rate limits on auth endpoints, `http.CrossOriginProtection`, client
+      IP from Caddy's `X-Forwarded-For` hop.
+- [x] 2.4 Tests: full lifecycle on real Postgres, bcrypt→argon2id upgrade, validation
+      messages, HTTP cookie/401/403/429 behavior; verified end to end on the compose
+      stack through Caddy + Mailpit.
 
-Web
+Web — PR 2B
 - [ ] 2.5 `lib/api/`: generated `schema.d.ts`, server client (`API_INTERNAL_URL` + forwarded
       cookie), browser client, `$api` (openapi-react-query), `getQueryClient()`,
       `QueryProvider` + `NuqsAdapter` in the root layout. `make gen` regenerates.

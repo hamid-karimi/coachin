@@ -5,6 +5,28 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-24 (night) · #63 merged (Phase 1 done) · Phase 2 PR 2A — auth API
+
+**Done**: #63 merged → Phase 1 complete. This PR is the auth API:
+- `00004_auth.sql`: `app.sessions` / `app.auth_tokens` (digests only), `coachin_auth`
+  role grants (new role in `deploy/postgres/initdb`, needs `make reset-db` on existing
+  volumes), `coachin_app` loses access to `users.password_hash`.
+- sqlc introduced (`sqlc.yaml`, `db/queries/auth.sql`), CI runs `sqlc diff`.
+- `adapters/password` (argon2id; bcrypt legacy verify → rehash), `adapters/mail` (SMTP),
+  `app/auth` (register creates the profile — prod used an untracked dashboard trigger —
+  login, logout, verify, forgot/reset/change, `/me`), HTTP endpoints with legacy messages,
+  rate limits, CrossOriginProtection, client IP from the last XFF hop (chi RealIP is
+  deprecated as spoofable). `api seed` / `make seed` demo accounts (password Coachin-demo1).
+- Verified: unit + real-Postgres integration tests; full journey on the compose stack
+  through Caddy + Mailpit (register → email → verify → logout → login → cross-site 403).
+
+**Found**: legacy RLS lets a user update any column of their own profile (role/xp/hearts) →
+plan 4.5.
+
+**Next steps**: merge 2A → PR 2B (web): `$api` browser client + auth screens (login,
+register, forgot, reset, verify, change password), `proxy.ts` cookie redirect, `/me` role
+routing, app shell/nav with the community flag; then QA-ONBOARDING auth journey update.
+
 ## 2026-09-24 (night, latest) · #62 merged · Phase 1 PR B4 — last domain ports; Phase 1 done
 
 **Done**: #62 (nutrition + supplements) merged. This PR ports activity import §14

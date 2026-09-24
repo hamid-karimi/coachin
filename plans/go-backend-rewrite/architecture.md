@@ -101,7 +101,8 @@ FORMULAS.md, QA-ONBOARDING.md, WORKLOG.md, CLAUDE.md, README.md
 - **`00003_reference_data.sql`**: sport types and the starter food catalogue. Production's
   rows (with their ids) replace them at import.
 - **Roles**: `coachin_owner` owns the schema and runs migrations; the API connects as
-  `coachin_app` (not owner), so RLS applies to it.
+  `coachin_app` (not owner), so RLS applies to it, and as `coachin_auth` for login and
+  registration only (see ADR-3). `coachin_app` can read `users` minus `password_hash`.
 - **Why**: SQL stays SQL; compile-time-checked queries; no ORM; nothing Supabase-shaped left.
 
 ### ADR-3 — Auth: built into the API
@@ -110,15 +111,21 @@ FORMULAS.md, QA-ONBOARDING.md, WORKLOG.md, CLAUDE.md, README.md
   and transparently rehashed to argon2id. Nobody has to reset their password.
 - **Sessions**: opaque 256-bit random token in a cookie (`HttpOnly`, `SameSite=Lax`,
   `Secure` + `__Host-` prefix on the VPS; plain `coachin_session` over local http). Only
-  the token's SHA-256 is stored in `sessions`; 30-day sliding expiry; logout and password
-  change revoke sessions instantly.
+  the token's SHA-256 is stored in `app.sessions`; 30-day sliding expiry (extended at most
+  hourly); logout, password reset, and password change revoke sessions instantly.
+- **`coachin_auth` role**: login and registration happen before a user context exists, so
+  they can't run under RLS as `coachin_app`. A separate pool connects as `coachin_auth`
+  (`BYPASSRLS`, but granted only `users`, profile insert/summary columns, and the `app`
+  schema's `sessions` / `auth_tokens`). `coachin_app` cannot read `app.*` at all.
 - **Email flows**: verification and password-reset links carry single-use tokens (hashed in
   `auth_tokens`, 7 d / 1 h expiry). Sent through the `mail` adapter over SMTP
   (`wneessen/go-mail`): Mailpit locally, any SMTP provider on the VPS.
 - **Abuse limits**: per-IP and per-email rate limits on login, register, forgot-password;
   constant-time comparisons; generic "invalid email or password" messages.
-- **CSRF**: same origin + `SameSite=Lax` + mutations require JSON or multipart with a
-  custom header (`X-Requested-With`).
+- **CSRF**: same origin + `SameSite=Lax` + Go's `http.CrossOriginProtection`, which
+  rejects cross-site state-changing requests by `Sec-Fetch-Site` / `Origin`.
+- **Client IP** (rate limits, session records): the last `X-Forwarded-For` hop, which
+  Caddy appends; earlier hops are client-supplied and ignored.
 - **Why not an auth server** (Keycloak, Zitadel, Ory…): one more heavy service to run on a
   small VPS for a feature set this app doesn't need (no SSO, no OAuth providers today).
   Revisit if social login is ever wanted.

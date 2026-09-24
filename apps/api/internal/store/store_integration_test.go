@@ -26,9 +26,12 @@ func postgresImage() string {
 	return "postgres:18.6-alpine"
 }
 
+// dbURLs are connection strings for each database role.
+type dbURLs struct{ Owner, App, Auth string }
+
 // startPostgres boots the same image and init script as the compose stack and
-// returns owner and app-role connection strings.
-func startPostgres(t *testing.T) (ownerURL, appURL string) {
+// returns a connection string per role.
+func startPostgres(t *testing.T) dbURLs {
 	t.Helper()
 	if testing.Short() {
 		t.Skip("integration test: needs Docker")
@@ -45,7 +48,7 @@ func startPostgres(t *testing.T) (ownerURL, appURL string) {
 		postgres.WithUsername("coachin_owner"),
 		postgres.WithPassword("owner-pw"),
 		postgres.WithInitScripts(initScript),
-		testcontainers.WithEnv(map[string]string{"APP_DB_PASSWORD": "app-pw"}),
+		testcontainers.WithEnv(map[string]string{"APP_DB_PASSWORD": "app-pw", "AUTH_DB_PASSWORD": "auth-pw"}),
 		testcontainers.WithWaitStrategy(
 			wait.ForLog("database system is ready to accept connections").
 				WithOccurrence(2).WithStartupTimeout(60*time.Second)),
@@ -64,7 +67,11 @@ func startPostgres(t *testing.T) (ownerURL, appURL string) {
 		t.Fatal(err)
 	}
 	base := "@" + host + ":" + port.Port() + "/coachin?sslmode=disable"
-	return "postgres://coachin_owner:owner-pw" + base, "postgres://coachin_app:app-pw" + base
+	return dbURLs{
+		Owner: "postgres://coachin_owner:owner-pw" + base,
+		App:   "postgres://coachin_app:app-pw" + base,
+		Auth:  "postgres://coachin_auth:auth-pw" + base,
+	}
 }
 
 func migrations(t *testing.T) fs.FS {
@@ -77,7 +84,8 @@ func migrations(t *testing.T) fs.FS {
 }
 
 func TestMigrationsApplyAndRollBack(t *testing.T) {
-	ownerURL, appURL := startPostgres(t)
+	urls := startPostgres(t)
+	ownerURL, appURL := urls.Owner, urls.App
 	ctx := context.Background()
 
 	m, err := store.NewMigrator(ctx, ownerURL, migrations(t))

@@ -23,6 +23,7 @@ services:
       POSTGRES_USER: coachin_owner
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
       APP_DB_PASSWORD: ${APP_DB_PASSWORD:?set APP_DB_PASSWORD in .env}
+      AUTH_DB_PASSWORD: ${AUTH_DB_PASSWORD:?set AUTH_DB_PASSWORD in .env}
     volumes:
       - pgdata:/var/lib/postgresql
       - ./deploy/postgres/initdb:/docker-entrypoint-initdb.d:ro
@@ -73,6 +74,16 @@ services:
     environment:
       <<: *storage-env
       DATABASE_URL: postgres://coachin_app:${APP_DB_PASSWORD}@postgres:5432/coachin?sslmode=disable
+      AUTH_DATABASE_URL: postgres://coachin_auth:${AUTH_DB_PASSWORD}@postgres:5432/coachin?sslmode=disable
+      APP_BASE_URL: ${APP_BASE_URL:?set APP_BASE_URL in .env}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      FEATURE_COMMUNITY: ${FEATURE_COMMUNITY:-false}
+      SMTP_HOST: ${SMTP_HOST:?set SMTP_HOST in .env}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_TLS: ${SMTP_TLS:-starttls}
+      MAIL_FROM: ${MAIL_FROM:?set MAIL_FROM in .env}
       LOG_LEVEL: ${LOG_LEVEL:-info}
     depends_on:
       migrate:

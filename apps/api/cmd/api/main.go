@@ -3,6 +3,7 @@
 //	api serve                 run the HTTP API (default)
 //	api migrate [up|down|status]
 //	api storage-init          bootstrap the Garage node (layout, bucket, key)
+//	api seed                  load local demo accounts (idempotent)
 //	api openapi               print the OpenAPI 3.1 document
 //	api healthcheck           exit 0 when the local server is live (for Docker)
 package main
@@ -24,6 +25,7 @@ var commands = map[string]command{
 	"serve":        serve,
 	"migrate":      migrate,
 	"storage-init": storageInit,
+	"seed":         seed,
 	"openapi":      printOpenAPI,
 	"healthcheck":  healthcheck,
 }
