@@ -34,6 +34,41 @@
         ],
         "type": "object"
       },
+      "AddSupplementInputBody": {
+        "additionalProperties": false,
+        "properties": {
+          "daysOfWeek": {
+            "description": "Custom schedules only",
+            "items": {
+              "format": "int64",
+              "type": "integer"
+            },
+            "maxItems": 7,
+            "type": "array"
+          },
+          "dose": {
+            "maxLength": 200,
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 200,
+            "type": "string"
+          },
+          "scheduleType": {
+            "default": "daily",
+            "enum": [
+              "daily",
+              "training_days",
+              "custom"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
       "ChangeInputBody": {
         "additionalProperties": false,
         "properties": {
@@ -664,6 +699,96 @@
         ],
         "type": "object"
       },
+      "SupplementBody": {
+        "additionalProperties": false,
+        "properties": {
+          "daysOfWeek": {
+            "description": "Custom schedules only (0=Sunday … 6=Saturday); empty otherwise",
+            "items": {
+              "format": "int64",
+              "type": "integer"
+            },
+            "type": "array"
+          },
+          "dose": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "dueToday": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "scheduleLabel": {
+            "description": "e.g. \"Every day\", \"Training days\", \"Mon · Wed\"",
+            "type": "string"
+          },
+          "scheduleType": {
+            "enum": [
+              "daily",
+              "training_days",
+              "custom"
+            ],
+            "type": "string"
+          },
+          "takenToday": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "dose",
+          "scheduleType",
+          "daysOfWeek",
+          "scheduleLabel",
+          "dueToday",
+          "takenToday"
+        ],
+        "type": "object"
+      },
+      "SupplementScheduleFields": {
+        "additionalProperties": false,
+        "properties": {
+          "daysOfWeek": {
+            "description": "Custom schedules only",
+            "items": {
+              "format": "int64",
+              "type": "integer"
+            },
+            "maxItems": 7,
+            "type": "array"
+          },
+          "scheduleType": {
+            "default": "daily",
+            "enum": [
+              "daily",
+              "training_days",
+              "custom"
+            ],
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "TakenInputBody": {
+        "additionalProperties": false,
+        "properties": {
+          "taken": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "taken"
+        ],
+        "type": "object"
+      },
       "TodayBody": {
         "additionalProperties": false,
         "properties": {
@@ -713,6 +838,13 @@
           "stats": {
             "$ref": "#/components/schemas/StatsBody"
           },
+          "supplements": {
+            "description": "The whole daily stack; the checklist shows dueToday ones",
+            "items": {
+              "$ref": "#/components/schemas/SupplementBody"
+            },
+            "type": "array"
+          },
           "totalCount": {
             "description": "Sessions + plan items with a done toggle",
             "format": "int64",
@@ -737,7 +869,8 @@
           "doneCount",
           "totalCount",
           "quotas",
-          "progressPhoto"
+          "progressPhoto",
+          "supplements"
         ],
         "type": "object"
       },
@@ -1955,6 +2088,300 @@
         "summary": "Selectable sports",
         "tags": [
           "routine"
+        ]
+      }
+    },
+    "/supplements": {
+      "post": {
+        "operationId": "addSupplement",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddSupplementInputBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultBody"
+                }
+              }
+            },
+            "description": "Created"
+          },
+          "400": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Add a supplement to the daily stack (max 20)",
+        "tags": [
+          "supplements"
+        ]
+      }
+    },
+    "/supplements/{id}": {
+      "delete": {
+        "operationId": "removeSupplement",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultBody"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Remove a supplement and its logs",
+        "tags": [
+          "supplements"
+        ]
+      }
+    },
+    "/supplements/{id}/schedule": {
+      "put": {
+        "operationId": "rescheduleSupplement",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupplementScheduleFields"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultBody"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Change when a supplement is due",
+        "tags": [
+          "supplements"
+        ]
+      }
+    },
+    "/supplements/{id}/taken": {
+      "put": {
+        "operationId": "setSupplementTaken",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TakenInputBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultBody"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Check today's dose off (or back on); no XP",
+        "tags": [
+          "supplements"
         ]
       }
     },

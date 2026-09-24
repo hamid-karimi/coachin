@@ -7,6 +7,7 @@ import { EntryCard } from "./components/entry-card";
 import { PlanAndTargets } from "./components/plan-and-targets";
 import { ProgressOverview } from "./components/progress-overview";
 import { ProgressPhotoNudge } from "./components/progress-photo-nudge";
+import { SupplementsCard } from "./components/supplements-card";
 import { TodayHeader } from "./components/today-header";
 import { TodaysPlan } from "./components/todays-plan";
 
@@ -37,6 +38,7 @@ export default async function DashboardPage() {
           subtitle='Log meals by search or photo · +5 XP each (first 3 daily)'
         />
         <ProgressPhotoNudge />
+        <SupplementsCard />
         <TodaysPlan />
       </div>
     </HydrationBoundary>

@@ -11,6 +11,7 @@ import (
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/apperr"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/routine"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/quotas"
+	"github.com/hamid-karimi/coachin/apps/api/internal/domain/supplements"
 )
 
 type fakeStore struct {
@@ -18,6 +19,9 @@ type fakeStore struct {
 	found      bool
 	logged     NewWorkoutLog
 	logErr     error
+	stack      []SupplementRow
+	taken      []uuid.UUID
+	hasRoutine bool
 }
 
 func (f *fakeStore) SettleStreak(context.Context, uuid.UUID) error { return nil }
@@ -43,6 +47,15 @@ func (f *fakeStore) Logs(context.Context, uuid.UUID, string, string) ([]quotas.L
 }
 func (f *fakeStore) LastProgressPhotoAt(context.Context, uuid.UUID) (*time.Time, error) {
 	return nil, nil
+}
+func (f *fakeStore) Supplements(context.Context, uuid.UUID) ([]SupplementRow, error) {
+	return f.stack, nil
+}
+func (f *fakeStore) TakenSupplementsOn(context.Context, uuid.UUID, string) ([]uuid.UUID, error) {
+	return f.taken, nil
+}
+func (f *fakeStore) HasAnySchedule(context.Context, uuid.UUID) (bool, error) {
+	return f.hasRoutine, nil
 }
 func (f *fakeStore) SportMultiplier(context.Context, int64) (*float64, bool, error) {
 	return f.multiplier, f.found, nil
@@ -97,5 +110,34 @@ func TestLogWorkout(t *testing.T) {
 	dup := &fakeStore{found: true, logErr: ErrAlreadyLogged}
 	if _, err := NewService(dup, thursday).LogWorkout(ctx, user, 4); kindOf(err) != apperr.Conflict {
 		t.Errorf("duplicate: %v", err)
+	}
+}
+
+func TestSupplementsDueToday(t *testing.T) {
+	creatine, whey, fish := uuid.New(), uuid.New(), uuid.New()
+	stack := []SupplementRow{
+		{ID: creatine, Name: "Creatine", Schedule: supplements.Schedule{ScheduleType: supplements.Daily}},
+		{ID: whey, Name: "Whey", Schedule: supplements.Schedule{ScheduleType: supplements.TrainingDays}},
+		{ID: fish, Name: "Fish oil", Schedule: supplements.Schedule{ScheduleType: supplements.Custom, DaysOfWeek: []int{1, 3}}},
+	}
+	due := func(store *fakeStore) map[string]bool {
+		t.Helper()
+		day, err := NewService(store, thursday).Today(context.Background(), uuid.New())
+		if err != nil {
+			t.Fatal(err)
+		}
+		got := map[string]bool{}
+		for _, s := range day.Supplements {
+			got[s.Name] = s.Due
+		}
+		return got
+	}
+	// The fake's only plan has ended, but it is still "active": a rest day.
+	if got := due(&fakeStore{stack: stack}); got["Creatine"] != true || got["Whey"] != false || got["Fish oil"] != false {
+		t.Errorf("rest day within a plan: %v", got)
+	}
+	day, _ := NewService(&fakeStore{stack: stack, taken: []uuid.UUID{creatine}}, thursday).Today(context.Background(), uuid.New())
+	if !day.Supplements[0].Taken || day.Supplements[1].Taken || day.Supplements[2].Label != "Mon · Wed" {
+		t.Errorf("taken/labels: %+v", day.Supplements)
 	}
 }

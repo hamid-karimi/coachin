@@ -97,3 +97,24 @@ func TakenRateOver(s Schedule, createdYMD string, window []WindowDay, taken map[
 	}
 	return rate
 }
+
+// Normalize reads a submitted schedule: an unknown type becomes Daily; days
+// are kept only for Custom (0–6, deduplicated, sorted; possibly empty) and
+// are nil otherwise.
+func Normalize(scheduleType string, days []int) Schedule {
+	s := Schedule{ScheduleType: ScheduleType(scheduleType)}
+	if _, known := dueRules[s.ScheduleType]; !known {
+		s.ScheduleType = Daily
+	}
+	if s.ScheduleType != Custom {
+		return s
+	}
+	s.DaysOfWeek = []int{}
+	for _, day := range days {
+		if day >= 0 && day <= 6 && !slices.Contains(s.DaysOfWeek, day) {
+			s.DaysOfWeek = append(s.DaysOfWeek, day)
+		}
+	}
+	slices.Sort(s.DaysOfWeek)
+	return s
+}

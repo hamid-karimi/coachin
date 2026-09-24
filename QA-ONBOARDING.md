@@ -42,7 +42,7 @@ inactive; every coach feature checks for an **active** relationship.
 | Route | What it does | Docs |
 | --- | --- | --- |
 | `/onboarding` | "My week" editor: fixed weekly sessions (anchors) + weekly targets (quotas). Also the first-run flow. **Ported to the rewrite.** | [README](apps/web/app/(app)/onboarding/README.md) |
-| `/dashboard` | "Today": today's routine + plan items, logging, streaks, hearts, XP. **Ported to the rewrite** (supplements next). | [README](apps/web/app/(app)/dashboard/README.md) |
+| `/dashboard` | "Today": today's routine + plan items, logging, streaks, hearts, XP. **Ported to the rewrite**, including the daily stack. | [README](apps/web/app/(app)/dashboard/README.md) |
 | `/calendar` | Week view blending routine + all active plan items + logged state | [README](legacy/app/calendar/README.md) |
 | `/training` | Program manager: create (AI wizards), archive, weekly check-ins | [README](legacy/app/training/README.md) |
 | `/training/new` | Plan wizards (running / muscle building); coach mode via `?student=<id>` | [README](legacy/app/training/README.md) |
@@ -146,8 +146,8 @@ Training tab is highlighted there).
    logged").
 
 **Rewrite stack** (Today is ported; the per-set editor / "Log details" arrives with
-Training, and supplements, meals, goal strip, coaching card, and group nudge arrive
-with their modules):
+Training, and meals, goal strip, coaching card, and group nudge arrive with their
+modules; the daily stack is journey 5, steps 5–7):
 - Header shows the date, "Hi, <first name>", the streak badge, and initials. Level
   ring + XP bar, hearts ("N hearts · a missed day costs one"), and (desktop) the
   Level / Streak / Total XP / League stat row.
@@ -220,6 +220,12 @@ with their modules):
    if you have **no** plan or routine at all it shows every day (degrades to
    daily, never stranded). A "Custom" supplement shows only on its chosen
    weekdays.
+7. **Rewrite stack**: the Daily stack card is on Today. Toasts: "<name> added to your
+   daily stack.", "Schedule updated.", "Removed."; the check toggles instantly (no
+   toast) and survives a reload. **Editing a schedule now really saves** (legacy
+   silently kept the old one). Max 20 supplements ("Keep the stack under 20 items");
+   names are cut to 60 characters, doses to 40. Removing a supplement also removes
+   its logs.
 
 ### 6. Coaching
 

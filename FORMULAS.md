@@ -342,7 +342,9 @@ as `[{name, sets: [{weight_kg, reps}]}]` (legacy flat rows
 
 ## 13. Supplements (daily stack)
 
-**Go:** `apps/api/internal/domain/supplements` (`IsDue`, `Label`, `TakenRateOver`).
+**Go:** `apps/api/internal/domain/supplements` (`IsDue`, `Label`, `TakenRateOver`,
+`Normalize`); due-today per stack entry in `apps/api/internal/app/today`, mutations in
+`apps/api/internal/app/supplements`.
 **Source of truth:** `supplements` + `supplement_logs` tables
 (`20260708090000_supplements.sql`, schedules in
 `20260709120000_supplement_schedules.sql`, coach read in
@@ -367,6 +369,9 @@ as `[{name, sets: [{weight_kg, reps}]}]` (legacy flat rows
   `nutrition_coach_read`). The coach's "N/M due days" (`supplementTakenRate`)
   counts, over the last 7 days on/after each supplement's created date, the
   due days that have a log. Read-only — coaches never mutate the stack.
+- **Submitted schedules** (`Normalize`): an unknown type becomes `daily`; days are kept
+  only for `custom` (0–6, deduplicated, sorted) and are empty otherwise. Stack limit 20;
+  name ≤ 60 characters, dose ≤ 40 (trimmed; a blank dose is stored as none).
 - **NO gameplay effect:** supplements — including schedules and taken-rates —
   never award XP and never touch streaks, hearts, quotas, or tiers. The card
   is a reminder + logger only.

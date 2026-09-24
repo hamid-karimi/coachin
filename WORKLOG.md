@@ -5,6 +5,21 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-24 (night, later) · Phase 3.2b — daily supplements (Today complete)
+
+**Done** (branch `claude/lucid-tesla-3737vk`, after #67): `app/supplements` (add with
+legacy limits, reschedule, remove, taken toggle with an ownership check), the stack with
+due/taken on `GET /today` (training-day rule incl. the no-structure fallback),
+`domain/supplements.Normalize`, migration `00006` (UPDATE policy — legacy schedule edits
+silently failed). Web: Daily stack card + manage sheet, optimistic check. Verified with
+unit, HTTP, Postgres integration tests and Playwright on the stack.
+
+**Also**: #67's smoke test failed because React rendered `Hi, <!-- -->CI`; the greeting is
+now one text node (fix pushed to #67).
+
+**Next steps**: merge #67, then open the 3.2b PR; then 3.3 Training (plans list, AI
+generation adapters, check-ins, session logs, FIT/GPX).
+
 ## 2026-09-24 (night, late) · #66 merged (3.1) · Phase 3.2a — Today
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR into `feat/backend-rewrite-with-go`):

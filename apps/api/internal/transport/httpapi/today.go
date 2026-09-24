@@ -73,6 +73,7 @@ type TodayBody struct {
 	TotalCount    int                 `json:"totalCount" doc:"Sessions + plan items with a done toggle"`
 	Quotas        []QuotaBody         `json:"quotas"`
 	ProgressPhoto ProgressPhotoBody   `json:"progressPhoto"`
+	Supplements   []SupplementBody    `json:"supplements" doc:"The whole daily stack; the checklist shows dueToday ones"`
 }
 
 type todayOutput struct {
@@ -132,6 +133,10 @@ func todayBody(day today.Day) TodayBody {
 		TotalCount:    day.TotalCount,
 		Quotas:        make([]QuotaBody, len(day.Quotas)),
 		ProgressPhoto: ProgressPhotoBody{Due: day.ProgressPhotoDue, HasPhotos: day.HasProgressPhoto},
+		Supplements:   make([]SupplementBody, len(day.Supplements)),
+	}
+	for i, s := range day.Supplements {
+		body.Supplements[i] = supplementBody(s)
 	}
 	for i, s := range day.Sessions {
 		body.Sessions[i] = TodaySessionBody{

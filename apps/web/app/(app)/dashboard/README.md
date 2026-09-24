@@ -8,12 +8,16 @@ The daily execution surface: see today's plan, log it, watch XP and the streak m
 | --- | --- |
 | `GET /today` | Settles the streak for past days (`evaluate_user_streak`), then returns `stats` (XP, level progress, streak, hearts, tier), today's fixed `sessions` (with `completed`, `estimatedXp`), today's `planItems` blended across every active plan (each in its own week), `planWeek`, `hardCollision`, `doneCount`/`totalCount` (meal notes excluded), weekly-target `quotas`, `progressPhoto` nudge |
 | `POST /today/workouts` | `{sportTypeId}` → `round(60 × multiplier)` XP; log, ledger row, and balance in one transaction; once per sport per day (409 otherwise) |
+| `POST /supplements` · `PUT /supplements/{id}/schedule` · `DELETE /supplements/{id}` · `PUT /supplements/{id}/taken` | Daily stack (max 20); the stack with `dueToday`/`takenToday` comes with `GET /today` |
 | `PUT /plan-items/{id}/completion` | `{completed}` → XP delta (`+60/+30/+20` by type, compensated on undo); done only on the item's day or the day after |
 
 ## Structure
 
 - `page.tsx` — prefetches `/today` (+ `getMe` for the name) and hydrates; no logic
 - `loading.tsx` — skeleton
+- `hooks/use-supplements.ts` — add / reschedule / remove / taken, each refetching Today
+- `lib/supplements.ts` — schedule options, Sunday-first weekday chips, `toggleDay`,
+  `scheduleBody`, `dueChecklist` (unit-tested)
 - `hooks/use-today.ts` — `useToday` (suspense query), `useLogWorkout` (refetches Today and
   My week)
 - `lib/today.ts` — greeting, initials, date label, tier labels, level %, plurals, plan
@@ -26,6 +30,9 @@ The daily execution surface: see today's plan, log it, watch XP and the streak m
   - `progress-photo-nudge.tsx`
   - `todays-plan.tsx` — "x of y done", rest-day state, workout cards, plan items with
     the collision chip
+  - `supplements-card.tsx` — "Daily stack": due-today checklist + "x of y taken", manage
+    sheet (`add-supplement-form.tsx`, `managed-supplement-row.tsx` with inline schedule
+    edit, `schedule-fields.tsx`), `supplement-item.tsx` (optimistic check)
   - `workout-card.tsx` — pending → "Log it" → reward state (XP, next streak, confetti);
     done state for sports logged earlier today
 
@@ -35,7 +42,7 @@ Shared: `app/(app)/components/plan-item-row.tsx` + `app/(app)/hooks/use-plan-ite
 
 ## Not yet ported (arrive with their modules)
 
-Daily supplements (3.2b), today's meal-plan menu (Nutrition), featured goal strip
+Today's meal-plan menu (Nutrition), featured goal strip
 (Profile), coaching card (Coaching), group-streak nudge (Community), session "Log details"
 (Training).
 
@@ -45,3 +52,5 @@ Daily supplements (3.2b), today's meal-plan menu (Nutrition), featured goal stri
   the button); the XP ledger reason carries the date.
 - The plan-item log window is enforced by the API too, not only by the disabled button.
 - A sport with no multiplier earns 60 XP (legacy produced NaN).
+- Editing a supplement's schedule saves (legacy lacked the database UPDATE policy);
+  checking off another user's supplement is refused (legacy only checked the log's owner).
