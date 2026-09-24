@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
-import { ComingSoon } from "../../components/coming-soon";
+import { redirect } from "next/navigation";
+import { getCheckinProposal } from "@/app/lib/checkin-data";
+import { CheckinView } from "../components/checkin-view";
 
 export const metadata: Metadata = { title: "Weekly check-in · CoachIn" };
 
-export default function CheckinPage() {
-  return (
-    <ComingSoon
-      title='Weekly check-in'
-      greeting='Your week in review'
-      next='The scorecard and the suggested adjustment for next week arrive here in a coming training update.'
-    />
-  );
+type SearchParams = Promise<{ plan?: string | string[] }>;
+
+export default async function CheckinPage({ searchParams }: { searchParams: SearchParams }) {
+  const { plan } = await searchParams;
+  // No plan, or no check-in due for it: back to the programs.
+  const proposal = typeof plan === "string" && plan ? await getCheckinProposal(plan) : null;
+  if (!proposal) redirect("/training");
+  return <CheckinView proposal={proposal} />;
 }

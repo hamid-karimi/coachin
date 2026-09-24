@@ -47,16 +47,9 @@ func (s *TrainingStore) PlanItem(ctx context.Context, userID, itemID uuid.UUID) 
 	return ref, err
 }
 
-// completionResult is complete_plan_item's jsonb answer.
-type completionResult struct {
-	Success   bool   `json:"success"`
-	AwardedXP int    `json:"awarded_xp"`
-	Error     string `json:"error"`
-}
-
 // SetPlanItemCompleted calls complete_plan_item (ADR-5 Step A).
 func (s *TrainingStore) SetPlanItemCompleted(ctx context.Context, userID, itemID uuid.UUID, completed bool, date string) (int, error) {
-	var result completionResult
+	var result rpcResult
 	err := s.asUser(ctx, userID, func(q *queries.Queries) error {
 		raw, err := q.CompletePlanItem(ctx, queries.CompletePlanItemParams{ItemID: itemID, Completed: completed, OnDate: date})
 		if err != nil {

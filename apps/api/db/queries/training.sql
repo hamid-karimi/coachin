@@ -80,3 +80,60 @@ SELECT public.create_training_plan(
   sqlc.arg(summary)::text, sqlc.arg(intake)::jsonb, sqlc.arg(raw)::jsonb, sqlc.arg(model)::text,
   sqlc.arg(items)::jsonb, sqlc.arg(plan_kind)::text, sqlc.narg(target_user_id)::uuid
 )::text AS result;
+
+-- name: GetSessionItem :one
+SELECT i.item_type, i.title, i.details
+FROM public.plan_items i
+JOIN public.training_plans p ON p.id = i.plan_id
+WHERE i.id = sqlc.arg(id) AND p.user_id = sqlc.arg(user_id);
+
+-- name: InsertSessionLog :one
+INSERT INTO public.session_logs (user_id, plan_item_id, sport, rpe, actual, note)
+VALUES (sqlc.arg(user_id), sqlc.arg(plan_item_id), sqlc.arg(sport), sqlc.narg(rpe)::int, sqlc.arg(actual)::jsonb, sqlc.narg(note)::text)
+RETURNING id;
+
+-- name: MarkPlanItemCompleted :exec
+-- Logging implies the item is done; XP for the log itself comes next.
+UPDATE public.plan_items i SET is_completed = true
+FROM public.training_plans p
+WHERE i.id = sqlc.arg(id) AND p.id = i.plan_id AND p.user_id = sqlc.arg(user_id);
+
+-- name: AwardSessionLogXP :one
+SELECT public.award_session_log_xp(sqlc.arg(log_id))::text AS result;
+
+-- name: SaveSessionFeedback :exec
+UPDATE public.session_logs SET ai_feedback = sqlc.arg(feedback)::jsonb
+WHERE id = sqlc.arg(id) AND user_id = sqlc.arg(user_id);
+
+-- name: GetActivePlan :one
+SELECT id, weeks_total, summary, created_at, intake
+FROM public.training_plans
+WHERE id = sqlc.arg(id) AND user_id = sqlc.arg(user_id) AND status = 'active';
+
+-- name: GetCheckin :one
+-- A plan week's check-in, if any (the scorecard feeds the next decision).
+SELECT c.scorecard
+FROM public.weekly_checkins c
+JOIN public.training_plans p ON p.id = c.plan_id
+WHERE c.plan_id = sqlc.arg(plan_id) AND c.week = sqlc.arg(week) AND p.user_id = sqlc.arg(user_id);
+
+-- name: ListPlanWeeksItems :many
+SELECT i.id, i.week, i.day_of_week, i.item_type, i.title, i.details, i.is_completed
+FROM public.plan_items i
+JOIN public.training_plans p ON p.id = i.plan_id
+WHERE i.plan_id = sqlc.arg(plan_id) AND p.user_id = sqlc.arg(user_id)
+  AND i.week BETWEEN sqlc.arg(from_week)::int AND sqlc.arg(to_week)::int
+ORDER BY i.week, i.day_of_week, i.id;
+
+-- name: ListSessionLogs :many
+SELECT plan_item_id, actual, ai_feedback, note
+FROM public.session_logs
+WHERE user_id = sqlc.arg(user_id) AND plan_item_id = ANY(sqlc.arg(item_ids)::uuid[]);
+
+-- name: ApplyWeekAdjustment :one
+-- Step A (ADR-5): records the check-in, rewrites only the target week, and
+-- awards +20 XP once per reviewed week.
+SELECT public.apply_week_adjustment(
+  sqlc.arg(plan_id)::uuid, sqlc.arg(checkin_week)::int, sqlc.arg(scorecard)::jsonb, sqlc.arg(decision)::text,
+  sqlc.narg(summary)::text, sqlc.arg(target_week)::int, sqlc.arg(items)::jsonb
+)::text AS result;

@@ -26,6 +26,40 @@ func (q *Queries) ActiveCalorieGoal(ctx context.Context, userID uuid.UUID) (floa
 	return target_value, err
 }
 
+const applyWeekAdjustment = `-- name: ApplyWeekAdjustment :one
+SELECT public.apply_week_adjustment(
+  $1::uuid, $2::int, $3::jsonb, $4::text,
+  $5::text, $6::int, $7::jsonb
+)::text AS result
+`
+
+type ApplyWeekAdjustmentParams struct {
+	PlanID      uuid.UUID `json:"plan_id"`
+	CheckinWeek int32     `json:"checkin_week"`
+	Scorecard   []byte    `json:"scorecard"`
+	Decision    string    `json:"decision"`
+	Summary     *string   `json:"summary"`
+	TargetWeek  int32     `json:"target_week"`
+	Items       []byte    `json:"items"`
+}
+
+// Step A (ADR-5): records the check-in, rewrites only the target week, and
+// awards +20 XP once per reviewed week.
+func (q *Queries) ApplyWeekAdjustment(ctx context.Context, arg ApplyWeekAdjustmentParams) (string, error) {
+	row := q.db.QueryRow(ctx, applyWeekAdjustment,
+		arg.PlanID,
+		arg.CheckinWeek,
+		arg.Scorecard,
+		arg.Decision,
+		arg.Summary,
+		arg.TargetWeek,
+		arg.Items,
+	)
+	var result string
+	err := row.Scan(&result)
+	return result, err
+}
+
 const archivePlan = `-- name: ArchivePlan :execrows
 UPDATE public.training_plans SET status = 'archived'
 WHERE id = $1 AND user_id = $2 AND status = 'active'
@@ -73,6 +107,17 @@ func (q *Queries) AthleteProfile(ctx context.Context, id uuid.UUID) (AthleteProf
 		&i.Email,
 	)
 	return i, err
+}
+
+const awardSessionLogXP = `-- name: AwardSessionLogXP :one
+SELECT public.award_session_log_xp($1)::text AS result
+`
+
+func (q *Queries) AwardSessionLogXP(ctx context.Context, logID uuid.UUID) (string, error) {
+	row := q.db.QueryRow(ctx, awardSessionLogXP, logID)
+	var result string
+	err := row.Scan(&result)
+	return result, err
 }
 
 const coachesStudent = `-- name: CoachesStudent :one
@@ -154,6 +199,59 @@ func (q *Queries) CreateTrainingPlan(ctx context.Context, arg CreateTrainingPlan
 	return result, err
 }
 
+const getActivePlan = `-- name: GetActivePlan :one
+SELECT id, weeks_total, summary, created_at, intake
+FROM public.training_plans
+WHERE id = $1 AND user_id = $2 AND status = 'active'
+`
+
+type GetActivePlanParams struct {
+	ID     uuid.UUID `json:"id"`
+	UserID uuid.UUID `json:"user_id"`
+}
+
+type GetActivePlanRow struct {
+	ID         uuid.UUID `json:"id"`
+	WeeksTotal int32     `json:"weeks_total"`
+	Summary    *string   `json:"summary"`
+	CreatedAt  time.Time `json:"created_at"`
+	Intake     []byte    `json:"intake"`
+}
+
+func (q *Queries) GetActivePlan(ctx context.Context, arg GetActivePlanParams) (GetActivePlanRow, error) {
+	row := q.db.QueryRow(ctx, getActivePlan, arg.ID, arg.UserID)
+	var i GetActivePlanRow
+	err := row.Scan(
+		&i.ID,
+		&i.WeeksTotal,
+		&i.Summary,
+		&i.CreatedAt,
+		&i.Intake,
+	)
+	return i, err
+}
+
+const getCheckin = `-- name: GetCheckin :one
+SELECT c.scorecard
+FROM public.weekly_checkins c
+JOIN public.training_plans p ON p.id = c.plan_id
+WHERE c.plan_id = $1 AND c.week = $2 AND p.user_id = $3
+`
+
+type GetCheckinParams struct {
+	PlanID uuid.UUID `json:"plan_id"`
+	Week   int32     `json:"week"`
+	UserID uuid.UUID `json:"user_id"`
+}
+
+// A plan week's check-in, if any (the scorecard feeds the next decision).
+func (q *Queries) GetCheckin(ctx context.Context, arg GetCheckinParams) ([]byte, error) {
+	row := q.db.QueryRow(ctx, getCheckin, arg.PlanID, arg.Week, arg.UserID)
+	var scorecard []byte
+	err := row.Scan(&scorecard)
+	return scorecard, err
+}
+
 const getPlanItemRef = `-- name: GetPlanItemRef :one
 
 SELECT i.item_type, i.week, i.day_of_week, i.is_completed, p.created_at AS plan_created_at
@@ -188,6 +286,60 @@ func (q *Queries) GetPlanItemRef(ctx context.Context, arg GetPlanItemRefParams) 
 		&i.PlanCreatedAt,
 	)
 	return i, err
+}
+
+const getSessionItem = `-- name: GetSessionItem :one
+SELECT i.item_type, i.title, i.details
+FROM public.plan_items i
+JOIN public.training_plans p ON p.id = i.plan_id
+WHERE i.id = $1 AND p.user_id = $2
+`
+
+type GetSessionItemParams struct {
+	ID     uuid.UUID `json:"id"`
+	UserID uuid.UUID `json:"user_id"`
+}
+
+type GetSessionItemRow struct {
+	ItemType string `json:"item_type"`
+	Title    string `json:"title"`
+	Details  []byte `json:"details"`
+}
+
+func (q *Queries) GetSessionItem(ctx context.Context, arg GetSessionItemParams) (GetSessionItemRow, error) {
+	row := q.db.QueryRow(ctx, getSessionItem, arg.ID, arg.UserID)
+	var i GetSessionItemRow
+	err := row.Scan(&i.ItemType, &i.Title, &i.Details)
+	return i, err
+}
+
+const insertSessionLog = `-- name: InsertSessionLog :one
+INSERT INTO public.session_logs (user_id, plan_item_id, sport, rpe, actual, note)
+VALUES ($1, $2, $3, $4::int, $5::jsonb, $6::text)
+RETURNING id
+`
+
+type InsertSessionLogParams struct {
+	UserID     uuid.UUID   `json:"user_id"`
+	PlanItemID uuid.UUID   `json:"plan_item_id"`
+	Sport      string      `json:"sport"`
+	Rpe        pgtype.Int4 `json:"rpe"`
+	Actual     []byte      `json:"actual"`
+	Note       *string     `json:"note"`
+}
+
+func (q *Queries) InsertSessionLog(ctx context.Context, arg InsertSessionLogParams) (uuid.UUID, error) {
+	row := q.db.QueryRow(ctx, insertSessionLog,
+		arg.UserID,
+		arg.PlanItemID,
+		arg.Sport,
+		arg.Rpe,
+		arg.Actual,
+		arg.Note,
+	)
+	var id uuid.UUID
+	err := row.Scan(&id)
+	return id, err
 }
 
 const latestBodyAnalysis = `-- name: LatestBodyAnalysis :one
@@ -343,6 +495,65 @@ func (q *Queries) ListAnchors(ctx context.Context, arg ListAnchorsParams) ([]Lis
 	return items, nil
 }
 
+const listPlanWeeksItems = `-- name: ListPlanWeeksItems :many
+SELECT i.id, i.week, i.day_of_week, i.item_type, i.title, i.details, i.is_completed
+FROM public.plan_items i
+JOIN public.training_plans p ON p.id = i.plan_id
+WHERE i.plan_id = $1 AND p.user_id = $2
+  AND i.week BETWEEN $3::int AND $4::int
+ORDER BY i.week, i.day_of_week, i.id
+`
+
+type ListPlanWeeksItemsParams struct {
+	PlanID   uuid.UUID `json:"plan_id"`
+	UserID   uuid.UUID `json:"user_id"`
+	FromWeek int32     `json:"from_week"`
+	ToWeek   int32     `json:"to_week"`
+}
+
+type ListPlanWeeksItemsRow struct {
+	ID          uuid.UUID `json:"id"`
+	Week        int32     `json:"week"`
+	DayOfWeek   int16     `json:"day_of_week"`
+	ItemType    string    `json:"item_type"`
+	Title       string    `json:"title"`
+	Details     []byte    `json:"details"`
+	IsCompleted bool      `json:"is_completed"`
+}
+
+func (q *Queries) ListPlanWeeksItems(ctx context.Context, arg ListPlanWeeksItemsParams) ([]ListPlanWeeksItemsRow, error) {
+	rows, err := q.db.Query(ctx, listPlanWeeksItems,
+		arg.PlanID,
+		arg.UserID,
+		arg.FromWeek,
+		arg.ToWeek,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListPlanWeeksItemsRow{}
+	for rows.Next() {
+		var i ListPlanWeeksItemsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Week,
+			&i.DayOfWeek,
+			&i.ItemType,
+			&i.Title,
+			&i.Details,
+			&i.IsCompleted,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listReviewedWeeks = `-- name: ListReviewedWeeks :many
 SELECT c.plan_id, c.week
 FROM public.weekly_checkins c
@@ -380,6 +591,66 @@ func (q *Queries) ListReviewedWeeks(ctx context.Context, arg ListReviewedWeeksPa
 	return items, nil
 }
 
+const listSessionLogs = `-- name: ListSessionLogs :many
+SELECT plan_item_id, actual, ai_feedback, note
+FROM public.session_logs
+WHERE user_id = $1 AND plan_item_id = ANY($2::uuid[])
+`
+
+type ListSessionLogsParams struct {
+	UserID  uuid.UUID   `json:"user_id"`
+	ItemIds []uuid.UUID `json:"item_ids"`
+}
+
+type ListSessionLogsRow struct {
+	PlanItemID uuid.UUID `json:"plan_item_id"`
+	Actual     []byte    `json:"actual"`
+	AiFeedback []byte    `json:"ai_feedback"`
+	Note       *string   `json:"note"`
+}
+
+func (q *Queries) ListSessionLogs(ctx context.Context, arg ListSessionLogsParams) ([]ListSessionLogsRow, error) {
+	rows, err := q.db.Query(ctx, listSessionLogs, arg.UserID, arg.ItemIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListSessionLogsRow{}
+	for rows.Next() {
+		var i ListSessionLogsRow
+		if err := rows.Scan(
+			&i.PlanItemID,
+			&i.Actual,
+			&i.AiFeedback,
+			&i.Note,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const markPlanItemCompleted = `-- name: MarkPlanItemCompleted :exec
+UPDATE public.plan_items i SET is_completed = true
+FROM public.training_plans p
+WHERE i.id = $1 AND p.id = i.plan_id AND p.user_id = $2
+`
+
+type MarkPlanItemCompletedParams struct {
+	ID     uuid.UUID `json:"id"`
+	UserID uuid.UUID `json:"user_id"`
+}
+
+// Logging implies the item is done; XP for the log itself comes next.
+func (q *Queries) MarkPlanItemCompleted(ctx context.Context, arg MarkPlanItemCompletedParams) error {
+	_, err := q.db.Exec(ctx, markPlanItemCompleted, arg.ID, arg.UserID)
+	return err
+}
+
 const profileRole = `-- name: ProfileRole :one
 SELECT COALESCE(role, 'student')::text AS role FROM public.profiles WHERE id = $1
 `
@@ -389,4 +660,20 @@ func (q *Queries) ProfileRole(ctx context.Context, id uuid.UUID) (string, error)
 	var role string
 	err := row.Scan(&role)
 	return role, err
+}
+
+const saveSessionFeedback = `-- name: SaveSessionFeedback :exec
+UPDATE public.session_logs SET ai_feedback = $1::jsonb
+WHERE id = $2 AND user_id = $3
+`
+
+type SaveSessionFeedbackParams struct {
+	Feedback []byte    `json:"feedback"`
+	ID       uuid.UUID `json:"id"`
+	UserID   uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) SaveSessionFeedback(ctx context.Context, arg SaveSessionFeedbackParams) error {
+	_, err := q.db.Exec(ctx, saveSessionFeedback, arg.Feedback, arg.ID, arg.UserID)
+	return err
 }

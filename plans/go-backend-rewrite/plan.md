@@ -155,8 +155,13 @@ Order (dependencies first, risk front-loaded):
         `running.json`).
   - [ ] 3.3d FIT/GPX parsing (`muktihari/fit`, `encoding/xml`) for the running wizard's
         upload step and the profile watch import.
-  - [ ] 3.3c Session logs ("Log details", strength sets, +10 XP, AI feedback) + weekly
-        check-in (scorecard, AI week adjustment, +20 XP).
+  - [x] 3.3c Session logs: `POST /plan-items/{id}/session-log` (insert + done + +10 XP in
+        one tx, AI feedback non-fatal, flagged-note fallback persisted); weekly check-in:
+        `GET/POST /training/plans/{id}/checkin` (scorecard, stalls, decision recomputed on
+        confirm, AI week adjustment or "Keeping week N as planned", `apply_week_adjustment`
+        +20 XP); `domain/aigen` feedback/adjustment ports (golden `ai.json`); web "Log
+        details" sheet (RPE, run fields, per-set strength editor replaying
+        `workout-sets.json`), check-in page, `components/ui/textarea`.
 - [ ] 3.4 **Calendar** — `GET /calendar?week=`, ICS endpoint (S)
 - [ ] 3.5 **Nutrition** — USDA proxy, meal logs, photo estimate + batch confirm, day/trends,
       meal plans (M)

@@ -6162,6 +6162,1366 @@
    "want": {
     "error": "AI returned an incomplete plan — try again"
    }
+  },
+  {
+   "fn": "redFlagPrecheck",
+   "note": null,
+   "rpe": null,
+   "want": "ok"
+  },
+  {
+   "fn": "redFlagPrecheck",
+   "note": null,
+   "rpe": 8,
+   "want": "ok"
+  },
+  {
+   "fn": "redFlagPrecheck",
+   "note": null,
+   "rpe": 9,
+   "want": "caution"
+  },
+  {
+   "fn": "redFlagPrecheck",
+   "note": "felt great",
+   "rpe": 10,
+   "want": "caution"
+  },
+  {
+   "fn": "redFlagPrecheck",
+   "note": "knee pain",
+   "rpe": 5,
+   "want": "caution"
+  },
+  {
+   "fn": "redFlagPrecheck",
+   "note": "knee pain",
+   "rpe": 8,
+   "want": "red"
+  },
+  {
+   "fn": "redFlagPrecheck",
+   "note": "sharp pain in calf",
+   "rpe": 3,
+   "want": "red"
+  },
+  {
+   "fn": "redFlagPrecheck",
+   "note": "Schmerz im Knie",
+   "rpe": null,
+   "want": "caution"
+  },
+  {
+   "fn": "redFlagPrecheck",
+   "note": "It HURT a bit",
+   "rpe": 7,
+   "want": "caution"
+  },
+  {
+   "fn": "redFlagPrecheck",
+   "note": "verletzt, stark",
+   "rpe": null,
+   "want": "red"
+  },
+  {
+   "fn": "redFlagPrecheck",
+   "note": "",
+   "rpe": 9,
+   "want": "caution"
+  },
+  {
+   "fn": "sessionFeedback",
+   "input": {
+    "itemTitle": "Tempo run",
+    "itemType": "run",
+    "planned": {
+     "distance_km": 8,
+     "pace_min_km": "5:10",
+     "notes": "Steady"
+    },
+    "actual": {
+     "distance_km": 7.5,
+     "duration_min": 41,
+     "avg_hr": 162
+    },
+    "rpe": 7,
+    "note": "Legs heavy"
+   },
+   "reply": null,
+   "want": {
+    "error": "AI feedback is temporarily unavailable — try again later"
+   },
+   "prompt": "An athlete just logged a training session. Give short, supportive feedback.\nPlanned session: \"Tempo run\" (run). Planned details: {\"distance_km\":8,\"pace_min_km\":\"5:10\",\"notes\":\"Steady\"}.\nActual result: {\"distance_km\":7.5,\"duration_min\":41,\"avg_hr\":162}.\nPerceived effort (RPE 1-10): 7.\nAthlete's note: Legs heavy.\nRules:\n- Compare planned vs actual and the effort; at most 2 sentences plus ONE actionable tip.\n- flag: \"ok\" if all is fine, \"caution\" if effort/deviation warrants care, \"red\" if pain or possible injury is indicated.\n- If pain or injury is mentioned, advise easing off and seeing a professional. NEVER diagnose or prescribe medical treatment.",
+   "maxTokens": 1024,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"},\"flag\":{\"type\":\"string\",\"enum\":[\"ok\",\"caution\",\"red\"]}},\"required\":[\"message\",\"flag\"]}"
+  },
+  {
+   "fn": "sessionFeedback",
+   "input": {
+    "itemTitle": "Tempo run",
+    "itemType": "run",
+    "planned": {
+     "distance_km": 8,
+     "pace_min_km": "5:10",
+     "notes": "Steady"
+    },
+    "actual": {
+     "distance_km": 7.5,
+     "duration_min": 41,
+     "avg_hr": 162
+    },
+    "rpe": 7,
+    "note": "Legs heavy"
+   },
+   "reply": "{\"message\":\"  Nice work — keep the easy days easy.  \",\"flag\":\"ok\"}",
+   "want": {
+    "message": "Nice work — keep the easy days easy.",
+    "flag": "ok"
+   },
+   "prompt": "An athlete just logged a training session. Give short, supportive feedback.\nPlanned session: \"Tempo run\" (run). Planned details: {\"distance_km\":8,\"pace_min_km\":\"5:10\",\"notes\":\"Steady\"}.\nActual result: {\"distance_km\":7.5,\"duration_min\":41,\"avg_hr\":162}.\nPerceived effort (RPE 1-10): 7.\nAthlete's note: Legs heavy.\nRules:\n- Compare planned vs actual and the effort; at most 2 sentences plus ONE actionable tip.\n- flag: \"ok\" if all is fine, \"caution\" if effort/deviation warrants care, \"red\" if pain or possible injury is indicated.\n- If pain or injury is mentioned, advise easing off and seeing a professional. NEVER diagnose or prescribe medical treatment.",
+   "maxTokens": 1024,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"},\"flag\":{\"type\":\"string\",\"enum\":[\"ok\",\"caution\",\"red\"]}},\"required\":[\"message\",\"flag\"]}"
+  },
+  {
+   "fn": "sessionFeedback",
+   "input": {
+    "itemTitle": "Tempo run",
+    "itemType": "run",
+    "planned": {
+     "distance_km": 8,
+     "pace_min_km": "5:10",
+     "notes": "Steady"
+    },
+    "actual": {
+     "distance_km": 7.5,
+     "duration_min": 41,
+     "avg_hr": 162
+    },
+    "rpe": 7,
+    "note": "Legs heavy"
+   },
+   "reply": "{\"message\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"flag\":\"weird\"}",
+   "want": {
+    "message": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "flag": "caution"
+   },
+   "prompt": "An athlete just logged a training session. Give short, supportive feedback.\nPlanned session: \"Tempo run\" (run). Planned details: {\"distance_km\":8,\"pace_min_km\":\"5:10\",\"notes\":\"Steady\"}.\nActual result: {\"distance_km\":7.5,\"duration_min\":41,\"avg_hr\":162}.\nPerceived effort (RPE 1-10): 7.\nAthlete's note: Legs heavy.\nRules:\n- Compare planned vs actual and the effort; at most 2 sentences plus ONE actionable tip.\n- flag: \"ok\" if all is fine, \"caution\" if effort/deviation warrants care, \"red\" if pain or possible injury is indicated.\n- If pain or injury is mentioned, advise easing off and seeing a professional. NEVER diagnose or prescribe medical treatment.",
+   "maxTokens": 1024,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"},\"flag\":{\"type\":\"string\",\"enum\":[\"ok\",\"caution\",\"red\"]}},\"required\":[\"message\",\"flag\"]}"
+  },
+  {
+   "fn": "sessionFeedback",
+   "input": {
+    "itemTitle": "Tempo run",
+    "itemType": "run",
+    "planned": {
+     "distance_km": 8,
+     "pace_min_km": "5:10",
+     "notes": "Steady"
+    },
+    "actual": {
+     "distance_km": 7.5,
+     "duration_min": 41,
+     "avg_hr": 162
+    },
+    "rpe": 7,
+    "note": "Legs heavy"
+   },
+   "reply": "{\"message\":\"   \",\"flag\":\"ok\"}",
+   "want": {
+    "error": "AI returned an unexpected response"
+   },
+   "prompt": "An athlete just logged a training session. Give short, supportive feedback.\nPlanned session: \"Tempo run\" (run). Planned details: {\"distance_km\":8,\"pace_min_km\":\"5:10\",\"notes\":\"Steady\"}.\nActual result: {\"distance_km\":7.5,\"duration_min\":41,\"avg_hr\":162}.\nPerceived effort (RPE 1-10): 7.\nAthlete's note: Legs heavy.\nRules:\n- Compare planned vs actual and the effort; at most 2 sentences plus ONE actionable tip.\n- flag: \"ok\" if all is fine, \"caution\" if effort/deviation warrants care, \"red\" if pain or possible injury is indicated.\n- If pain or injury is mentioned, advise easing off and seeing a professional. NEVER diagnose or prescribe medical treatment.",
+   "maxTokens": 1024,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"},\"flag\":{\"type\":\"string\",\"enum\":[\"ok\",\"caution\",\"red\"]}},\"required\":[\"message\",\"flag\"]}"
+  },
+  {
+   "fn": "sessionFeedback",
+   "input": {
+    "itemTitle": "Tempo run",
+    "itemType": "run",
+    "planned": {
+     "distance_km": 8,
+     "pace_min_km": "5:10",
+     "notes": "Steady"
+    },
+    "actual": {
+     "distance_km": 7.5,
+     "duration_min": 41,
+     "avg_hr": 162
+    },
+    "rpe": 7,
+    "note": "Legs heavy"
+   },
+   "reply": "not json",
+   "want": {
+    "error": "AI feedback is temporarily unavailable — try again later"
+   },
+   "prompt": "An athlete just logged a training session. Give short, supportive feedback.\nPlanned session: \"Tempo run\" (run). Planned details: {\"distance_km\":8,\"pace_min_km\":\"5:10\",\"notes\":\"Steady\"}.\nActual result: {\"distance_km\":7.5,\"duration_min\":41,\"avg_hr\":162}.\nPerceived effort (RPE 1-10): 7.\nAthlete's note: Legs heavy.\nRules:\n- Compare planned vs actual and the effort; at most 2 sentences plus ONE actionable tip.\n- flag: \"ok\" if all is fine, \"caution\" if effort/deviation warrants care, \"red\" if pain or possible injury is indicated.\n- If pain or injury is mentioned, advise easing off and seeing a professional. NEVER diagnose or prescribe medical treatment.",
+   "maxTokens": 1024,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"},\"flag\":{\"type\":\"string\",\"enum\":[\"ok\",\"caution\",\"red\"]}},\"required\":[\"message\",\"flag\"]}"
+  },
+  {
+   "fn": "sessionFeedback",
+   "input": {
+    "itemTitle": "Upper body — Day A",
+    "itemType": "strength",
+    "planned": null,
+    "actual": {
+     "exercises": [
+      {
+       "name": "Bench press",
+       "sets": [
+        {
+         "weight_kg": 60,
+         "reps": 8
+        }
+       ]
+      }
+     ]
+    },
+    "rpe": null,
+    "note": null
+   },
+   "reply": null,
+   "want": {
+    "error": "AI feedback is temporarily unavailable — try again later"
+   },
+   "prompt": "An athlete just logged a training session. Give short, supportive feedback.\nPlanned session: \"Upper body — Day A\" (strength). Planned details: {}.\nActual result: {\"exercises\":[{\"name\":\"Bench press\",\"sets\":[{\"weight_kg\":60,\"reps\":8}]}]}.\nPerceived effort (RPE 1-10): not given.\nAthlete's note: none.\nRules:\n- Compare planned vs actual and the effort; at most 2 sentences plus ONE actionable tip.\n- flag: \"ok\" if all is fine, \"caution\" if effort/deviation warrants care, \"red\" if pain or possible injury is indicated.\n- If pain or injury is mentioned, advise easing off and seeing a professional. NEVER diagnose or prescribe medical treatment.",
+   "maxTokens": 1024,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"},\"flag\":{\"type\":\"string\",\"enum\":[\"ok\",\"caution\",\"red\"]}},\"required\":[\"message\",\"flag\"]}"
+  },
+  {
+   "fn": "sessionFeedback",
+   "input": {
+    "itemTitle": "Upper body — Day A",
+    "itemType": "strength",
+    "planned": null,
+    "actual": {
+     "exercises": [
+      {
+       "name": "Bench press",
+       "sets": [
+        {
+         "weight_kg": 60,
+         "reps": 8
+        }
+       ]
+      }
+     ]
+    },
+    "rpe": null,
+    "note": null
+   },
+   "reply": "{\"message\":\"  Nice work — keep the easy days easy.  \",\"flag\":\"ok\"}",
+   "want": {
+    "message": "Nice work — keep the easy days easy.",
+    "flag": "ok"
+   },
+   "prompt": "An athlete just logged a training session. Give short, supportive feedback.\nPlanned session: \"Upper body — Day A\" (strength). Planned details: {}.\nActual result: {\"exercises\":[{\"name\":\"Bench press\",\"sets\":[{\"weight_kg\":60,\"reps\":8}]}]}.\nPerceived effort (RPE 1-10): not given.\nAthlete's note: none.\nRules:\n- Compare planned vs actual and the effort; at most 2 sentences plus ONE actionable tip.\n- flag: \"ok\" if all is fine, \"caution\" if effort/deviation warrants care, \"red\" if pain or possible injury is indicated.\n- If pain or injury is mentioned, advise easing off and seeing a professional. NEVER diagnose or prescribe medical treatment.",
+   "maxTokens": 1024,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"},\"flag\":{\"type\":\"string\",\"enum\":[\"ok\",\"caution\",\"red\"]}},\"required\":[\"message\",\"flag\"]}"
+  },
+  {
+   "fn": "sessionFeedback",
+   "input": {
+    "itemTitle": "Upper body — Day A",
+    "itemType": "strength",
+    "planned": null,
+    "actual": {
+     "exercises": [
+      {
+       "name": "Bench press",
+       "sets": [
+        {
+         "weight_kg": 60,
+         "reps": 8
+        }
+       ]
+      }
+     ]
+    },
+    "rpe": null,
+    "note": null
+   },
+   "reply": "{\"message\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"flag\":\"weird\"}",
+   "want": {
+    "message": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "flag": "caution"
+   },
+   "prompt": "An athlete just logged a training session. Give short, supportive feedback.\nPlanned session: \"Upper body — Day A\" (strength). Planned details: {}.\nActual result: {\"exercises\":[{\"name\":\"Bench press\",\"sets\":[{\"weight_kg\":60,\"reps\":8}]}]}.\nPerceived effort (RPE 1-10): not given.\nAthlete's note: none.\nRules:\n- Compare planned vs actual and the effort; at most 2 sentences plus ONE actionable tip.\n- flag: \"ok\" if all is fine, \"caution\" if effort/deviation warrants care, \"red\" if pain or possible injury is indicated.\n- If pain or injury is mentioned, advise easing off and seeing a professional. NEVER diagnose or prescribe medical treatment.",
+   "maxTokens": 1024,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"},\"flag\":{\"type\":\"string\",\"enum\":[\"ok\",\"caution\",\"red\"]}},\"required\":[\"message\",\"flag\"]}"
+  },
+  {
+   "fn": "sessionFeedback",
+   "input": {
+    "itemTitle": "Upper body — Day A",
+    "itemType": "strength",
+    "planned": null,
+    "actual": {
+     "exercises": [
+      {
+       "name": "Bench press",
+       "sets": [
+        {
+         "weight_kg": 60,
+         "reps": 8
+        }
+       ]
+      }
+     ]
+    },
+    "rpe": null,
+    "note": null
+   },
+   "reply": "{\"message\":\"   \",\"flag\":\"ok\"}",
+   "want": {
+    "error": "AI returned an unexpected response"
+   },
+   "prompt": "An athlete just logged a training session. Give short, supportive feedback.\nPlanned session: \"Upper body — Day A\" (strength). Planned details: {}.\nActual result: {\"exercises\":[{\"name\":\"Bench press\",\"sets\":[{\"weight_kg\":60,\"reps\":8}]}]}.\nPerceived effort (RPE 1-10): not given.\nAthlete's note: none.\nRules:\n- Compare planned vs actual and the effort; at most 2 sentences plus ONE actionable tip.\n- flag: \"ok\" if all is fine, \"caution\" if effort/deviation warrants care, \"red\" if pain or possible injury is indicated.\n- If pain or injury is mentioned, advise easing off and seeing a professional. NEVER diagnose or prescribe medical treatment.",
+   "maxTokens": 1024,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"},\"flag\":{\"type\":\"string\",\"enum\":[\"ok\",\"caution\",\"red\"]}},\"required\":[\"message\",\"flag\"]}"
+  },
+  {
+   "fn": "sessionFeedback",
+   "input": {
+    "itemTitle": "Upper body — Day A",
+    "itemType": "strength",
+    "planned": null,
+    "actual": {
+     "exercises": [
+      {
+       "name": "Bench press",
+       "sets": [
+        {
+         "weight_kg": 60,
+         "reps": 8
+        }
+       ]
+      }
+     ]
+    },
+    "rpe": null,
+    "note": null
+   },
+   "reply": "not json",
+   "want": {
+    "error": "AI feedback is temporarily unavailable — try again later"
+   },
+   "prompt": "An athlete just logged a training session. Give short, supportive feedback.\nPlanned session: \"Upper body — Day A\" (strength). Planned details: {}.\nActual result: {\"exercises\":[{\"name\":\"Bench press\",\"sets\":[{\"weight_kg\":60,\"reps\":8}]}]}.\nPerceived effort (RPE 1-10): not given.\nAthlete's note: none.\nRules:\n- Compare planned vs actual and the effort; at most 2 sentences plus ONE actionable tip.\n- flag: \"ok\" if all is fine, \"caution\" if effort/deviation warrants care, \"red\" if pain or possible injury is indicated.\n- If pain or injury is mentioned, advise easing off and seeing a professional. NEVER diagnose or prescribe medical treatment.",
+   "maxTokens": 1024,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"},\"flag\":{\"type\":\"string\",\"enum\":[\"ok\",\"caution\",\"red\"]}},\"required\":[\"message\",\"flag\"]}"
+  },
+  {
+   "fn": "sessionFeedback",
+   "input": {
+    "itemTitle": "Long run",
+    "itemType": "run",
+    "planned": {},
+    "actual": {},
+    "rpe": 9,
+    "note": "sharp pain in my knee"
+   },
+   "reply": null,
+   "want": {
+    "error": "AI feedback is temporarily unavailable — try again later"
+   },
+   "prompt": "An athlete just logged a training session. Give short, supportive feedback.\nPlanned session: \"Long run\" (run). Planned details: {}.\nActual result: {}.\nPerceived effort (RPE 1-10): 9.\nAthlete's note: sharp pain in my knee.\nRules:\n- Compare planned vs actual and the effort; at most 2 sentences plus ONE actionable tip.\n- flag: \"ok\" if all is fine, \"caution\" if effort/deviation warrants care, \"red\" if pain or possible injury is indicated.\n- If pain or injury is mentioned, advise easing off and seeing a professional. NEVER diagnose or prescribe medical treatment.",
+   "maxTokens": 1024,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"},\"flag\":{\"type\":\"string\",\"enum\":[\"ok\",\"caution\",\"red\"]}},\"required\":[\"message\",\"flag\"]}"
+  },
+  {
+   "fn": "sessionFeedback",
+   "input": {
+    "itemTitle": "Long run",
+    "itemType": "run",
+    "planned": {},
+    "actual": {},
+    "rpe": 9,
+    "note": "sharp pain in my knee"
+   },
+   "reply": "{\"message\":\"  Nice work — keep the easy days easy.  \",\"flag\":\"ok\"}",
+   "want": {
+    "message": "Nice work — keep the easy days easy.",
+    "flag": "red"
+   },
+   "prompt": "An athlete just logged a training session. Give short, supportive feedback.\nPlanned session: \"Long run\" (run). Planned details: {}.\nActual result: {}.\nPerceived effort (RPE 1-10): 9.\nAthlete's note: sharp pain in my knee.\nRules:\n- Compare planned vs actual and the effort; at most 2 sentences plus ONE actionable tip.\n- flag: \"ok\" if all is fine, \"caution\" if effort/deviation warrants care, \"red\" if pain or possible injury is indicated.\n- If pain or injury is mentioned, advise easing off and seeing a professional. NEVER diagnose or prescribe medical treatment.",
+   "maxTokens": 1024,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"},\"flag\":{\"type\":\"string\",\"enum\":[\"ok\",\"caution\",\"red\"]}},\"required\":[\"message\",\"flag\"]}"
+  },
+  {
+   "fn": "sessionFeedback",
+   "input": {
+    "itemTitle": "Long run",
+    "itemType": "run",
+    "planned": {},
+    "actual": {},
+    "rpe": 9,
+    "note": "sharp pain in my knee"
+   },
+   "reply": "{\"message\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"flag\":\"weird\"}",
+   "want": {
+    "message": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "flag": "red"
+   },
+   "prompt": "An athlete just logged a training session. Give short, supportive feedback.\nPlanned session: \"Long run\" (run). Planned details: {}.\nActual result: {}.\nPerceived effort (RPE 1-10): 9.\nAthlete's note: sharp pain in my knee.\nRules:\n- Compare planned vs actual and the effort; at most 2 sentences plus ONE actionable tip.\n- flag: \"ok\" if all is fine, \"caution\" if effort/deviation warrants care, \"red\" if pain or possible injury is indicated.\n- If pain or injury is mentioned, advise easing off and seeing a professional. NEVER diagnose or prescribe medical treatment.",
+   "maxTokens": 1024,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"},\"flag\":{\"type\":\"string\",\"enum\":[\"ok\",\"caution\",\"red\"]}},\"required\":[\"message\",\"flag\"]}"
+  },
+  {
+   "fn": "sessionFeedback",
+   "input": {
+    "itemTitle": "Long run",
+    "itemType": "run",
+    "planned": {},
+    "actual": {},
+    "rpe": 9,
+    "note": "sharp pain in my knee"
+   },
+   "reply": "{\"message\":\"   \",\"flag\":\"ok\"}",
+   "want": {
+    "error": "AI returned an unexpected response"
+   },
+   "prompt": "An athlete just logged a training session. Give short, supportive feedback.\nPlanned session: \"Long run\" (run). Planned details: {}.\nActual result: {}.\nPerceived effort (RPE 1-10): 9.\nAthlete's note: sharp pain in my knee.\nRules:\n- Compare planned vs actual and the effort; at most 2 sentences plus ONE actionable tip.\n- flag: \"ok\" if all is fine, \"caution\" if effort/deviation warrants care, \"red\" if pain or possible injury is indicated.\n- If pain or injury is mentioned, advise easing off and seeing a professional. NEVER diagnose or prescribe medical treatment.",
+   "maxTokens": 1024,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"},\"flag\":{\"type\":\"string\",\"enum\":[\"ok\",\"caution\",\"red\"]}},\"required\":[\"message\",\"flag\"]}"
+  },
+  {
+   "fn": "sessionFeedback",
+   "input": {
+    "itemTitle": "Long run",
+    "itemType": "run",
+    "planned": {},
+    "actual": {},
+    "rpe": 9,
+    "note": "sharp pain in my knee"
+   },
+   "reply": "not json",
+   "want": {
+    "error": "AI feedback is temporarily unavailable — try again later"
+   },
+   "prompt": "An athlete just logged a training session. Give short, supportive feedback.\nPlanned session: \"Long run\" (run). Planned details: {}.\nActual result: {}.\nPerceived effort (RPE 1-10): 9.\nAthlete's note: sharp pain in my knee.\nRules:\n- Compare planned vs actual and the effort; at most 2 sentences plus ONE actionable tip.\n- flag: \"ok\" if all is fine, \"caution\" if effort/deviation warrants care, \"red\" if pain or possible injury is indicated.\n- If pain or injury is mentioned, advise easing off and seeing a professional. NEVER diagnose or prescribe medical treatment.",
+   "maxTokens": 1024,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"},\"flag\":{\"type\":\"string\",\"enum\":[\"ok\",\"caution\",\"red\"]}},\"required\":[\"message\",\"flag\"]}"
+  },
+  {
+   "fn": "weekAdjustment",
+   "input": {
+    "scorecard": {
+     "adherence_pct": 60,
+     "planned_items": 5,
+     "completed_items": 3,
+     "planned_km": 32.5,
+     "actual_km": 20,
+     "red_flags": [],
+     "caution_flags": [
+      "Long run: RPE 9"
+     ]
+    },
+    "decision": "advance",
+    "reasons": [
+     "Adherence 60%.",
+     "One caution flag."
+    ],
+    "nextWeekItems": [
+     {
+      "week": 4,
+      "day_of_week": 2,
+      "item_type": "run",
+      "title": "Easy run 6k",
+      "details": {
+       "distance_km": 6,
+       "pace_min_km": "6:00",
+       "notes": "Easy"
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 6,
+      "item_type": "run",
+      "title": "Long run 14k",
+      "details": {
+       "distance_km": 14
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 4,
+      "item_type": "strength",
+      "title": "Strength",
+      "details": {}
+     }
+    ],
+    "targetWeek": 5,
+    "intakeSummary": "21.0975km race plan · regular runner · 4 days/week · Summary"
+   },
+   "reply": null,
+   "want": {
+    "error": "AI adjustment is temporarily unavailable — try again later"
+   },
+   "prompt": "You are adjusting ONE week of an existing training plan after a weekly review.\nPlan context: 21.0975km race plan · regular runner · 4 days/week · Summary.\nReviewed week scorecard: {\"adherence_pct\":60,\"planned_items\":5,\"completed_items\":3,\"planned_km\":32.5,\"actual_km\":20,\"red_flags\":[],\"caution_flags\":[\"Long run: RPE 9\"]}.\nDeterministic decision (already made — do NOT change it): advance.\nReasons: Adherence 60%. One caution flag.\nCurrent items of the week to rewrite (week 5):\n[{\"week\":4,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Easy run 6k\",\"details\":{\"distance_km\":6,\"pace_min_km\":\"6:00\",\"notes\":\"Easy\"}},{\"week\":4,\"day_of_week\":6,\"item_type\":\"run\",\"title\":\"Long run 14k\",\"details\":{\"distance_km\":14}},{\"week\":4,\"day_of_week\":4,\"item_type\":\"strength\",\"title\":\"Strength\",\"details\":{}}]\nRules:\n- ADVANCE: apply a light progression (<=10% volume increase) to the given items; keep the same session types.\n- Rewrite ONLY these items; keep the same number of training days and the same day_of_week pattern.\n- Every item: week = 5, same item schema (run items keep details.distance_km, details.pace_min_km, details.notes).\n- summary: at most 2 sentences explaining what changed and why, in plain language.",
+   "maxTokens": null,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}"
+  },
+  {
+   "fn": "weekAdjustment",
+   "input": {
+    "scorecard": {
+     "adherence_pct": 60,
+     "planned_items": 5,
+     "completed_items": 3,
+     "planned_km": 32.5,
+     "actual_km": 20,
+     "red_flags": [],
+     "caution_flags": [
+      "Long run: RPE 9"
+     ]
+    },
+    "decision": "advance",
+    "reasons": [
+     "Adherence 60%.",
+     "One caution flag."
+    ],
+    "nextWeekItems": [
+     {
+      "week": 4,
+      "day_of_week": 2,
+      "item_type": "run",
+      "title": "Easy run 6k",
+      "details": {
+       "distance_km": 6,
+       "pace_min_km": "6:00",
+       "notes": "Easy"
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 6,
+      "item_type": "run",
+      "title": "Long run 14k",
+      "details": {
+       "distance_km": 14
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 4,
+      "item_type": "strength",
+      "title": "Strength",
+      "details": {}
+     }
+    ],
+    "targetWeek": 5,
+    "intakeSummary": "21.0975km race plan · regular runner · 4 days/week · Summary"
+   },
+   "reply": "{\"summary\":\"  Lighter week to recover.  \",\"items\":[{\"week\":9,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Easy run 4k\",\"details\":{\"distance_km\":4.04}}]}",
+   "want": {
+    "items": [
+     {
+      "week": 5,
+      "day_of_week": 2,
+      "item_type": "run",
+      "title": "Easy run 4k",
+      "details": {
+       "distance_km": 4
+      }
+     }
+    ],
+    "summary": "Lighter week to recover."
+   },
+   "prompt": "You are adjusting ONE week of an existing training plan after a weekly review.\nPlan context: 21.0975km race plan · regular runner · 4 days/week · Summary.\nReviewed week scorecard: {\"adherence_pct\":60,\"planned_items\":5,\"completed_items\":3,\"planned_km\":32.5,\"actual_km\":20,\"red_flags\":[],\"caution_flags\":[\"Long run: RPE 9\"]}.\nDeterministic decision (already made — do NOT change it): advance.\nReasons: Adherence 60%. One caution flag.\nCurrent items of the week to rewrite (week 5):\n[{\"week\":4,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Easy run 6k\",\"details\":{\"distance_km\":6,\"pace_min_km\":\"6:00\",\"notes\":\"Easy\"}},{\"week\":4,\"day_of_week\":6,\"item_type\":\"run\",\"title\":\"Long run 14k\",\"details\":{\"distance_km\":14}},{\"week\":4,\"day_of_week\":4,\"item_type\":\"strength\",\"title\":\"Strength\",\"details\":{}}]\nRules:\n- ADVANCE: apply a light progression (<=10% volume increase) to the given items; keep the same session types.\n- Rewrite ONLY these items; keep the same number of training days and the same day_of_week pattern.\n- Every item: week = 5, same item schema (run items keep details.distance_km, details.pace_min_km, details.notes).\n- summary: at most 2 sentences explaining what changed and why, in plain language.",
+   "maxTokens": null,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}"
+  },
+  {
+   "fn": "weekAdjustment",
+   "input": {
+    "scorecard": {
+     "adherence_pct": 60,
+     "planned_items": 5,
+     "completed_items": 3,
+     "planned_km": 32.5,
+     "actual_km": 20,
+     "red_flags": [],
+     "caution_flags": [
+      "Long run: RPE 9"
+     ]
+    },
+    "decision": "advance",
+    "reasons": [
+     "Adherence 60%.",
+     "One caution flag."
+    ],
+    "nextWeekItems": [
+     {
+      "week": 4,
+      "day_of_week": 2,
+      "item_type": "run",
+      "title": "Easy run 6k",
+      "details": {
+       "distance_km": 6,
+       "pace_min_km": "6:00",
+       "notes": "Easy"
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 6,
+      "item_type": "run",
+      "title": "Long run 14k",
+      "details": {
+       "distance_km": 14
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 4,
+      "item_type": "strength",
+      "title": "Strength",
+      "details": {}
+     }
+    ],
+    "targetWeek": 5,
+    "intakeSummary": "21.0975km race plan · regular runner · 4 days/week · Summary"
+   },
+   "reply": "{\"summary\":\"\",\"items\":[{\"week\":5,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Run\"}]}",
+   "want": {
+    "error": "AI returned no summary"
+   },
+   "prompt": "You are adjusting ONE week of an existing training plan after a weekly review.\nPlan context: 21.0975km race plan · regular runner · 4 days/week · Summary.\nReviewed week scorecard: {\"adherence_pct\":60,\"planned_items\":5,\"completed_items\":3,\"planned_km\":32.5,\"actual_km\":20,\"red_flags\":[],\"caution_flags\":[\"Long run: RPE 9\"]}.\nDeterministic decision (already made — do NOT change it): advance.\nReasons: Adherence 60%. One caution flag.\nCurrent items of the week to rewrite (week 5):\n[{\"week\":4,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Easy run 6k\",\"details\":{\"distance_km\":6,\"pace_min_km\":\"6:00\",\"notes\":\"Easy\"}},{\"week\":4,\"day_of_week\":6,\"item_type\":\"run\",\"title\":\"Long run 14k\",\"details\":{\"distance_km\":14}},{\"week\":4,\"day_of_week\":4,\"item_type\":\"strength\",\"title\":\"Strength\",\"details\":{}}]\nRules:\n- ADVANCE: apply a light progression (<=10% volume increase) to the given items; keep the same session types.\n- Rewrite ONLY these items; keep the same number of training days and the same day_of_week pattern.\n- Every item: week = 5, same item schema (run items keep details.distance_km, details.pace_min_km, details.notes).\n- summary: at most 2 sentences explaining what changed and why, in plain language.",
+   "maxTokens": null,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}"
+  },
+  {
+   "fn": "weekAdjustment",
+   "input": {
+    "scorecard": {
+     "adherence_pct": 60,
+     "planned_items": 5,
+     "completed_items": 3,
+     "planned_km": 32.5,
+     "actual_km": 20,
+     "red_flags": [],
+     "caution_flags": [
+      "Long run: RPE 9"
+     ]
+    },
+    "decision": "advance",
+    "reasons": [
+     "Adherence 60%.",
+     "One caution flag."
+    ],
+    "nextWeekItems": [
+     {
+      "week": 4,
+      "day_of_week": 2,
+      "item_type": "run",
+      "title": "Easy run 6k",
+      "details": {
+       "distance_km": 6,
+       "pace_min_km": "6:00",
+       "notes": "Easy"
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 6,
+      "item_type": "run",
+      "title": "Long run 14k",
+      "details": {
+       "distance_km": 14
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 4,
+      "item_type": "strength",
+      "title": "Strength",
+      "details": {}
+     }
+    ],
+    "targetWeek": 5,
+    "intakeSummary": "21.0975km race plan · regular runner · 4 days/week · Summary"
+   },
+   "reply": "{\"summary\":\"No items\",\"items\":[]}",
+   "want": {
+    "error": "AI returned no usable items"
+   },
+   "prompt": "You are adjusting ONE week of an existing training plan after a weekly review.\nPlan context: 21.0975km race plan · regular runner · 4 days/week · Summary.\nReviewed week scorecard: {\"adherence_pct\":60,\"planned_items\":5,\"completed_items\":3,\"planned_km\":32.5,\"actual_km\":20,\"red_flags\":[],\"caution_flags\":[\"Long run: RPE 9\"]}.\nDeterministic decision (already made — do NOT change it): advance.\nReasons: Adherence 60%. One caution flag.\nCurrent items of the week to rewrite (week 5):\n[{\"week\":4,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Easy run 6k\",\"details\":{\"distance_km\":6,\"pace_min_km\":\"6:00\",\"notes\":\"Easy\"}},{\"week\":4,\"day_of_week\":6,\"item_type\":\"run\",\"title\":\"Long run 14k\",\"details\":{\"distance_km\":14}},{\"week\":4,\"day_of_week\":4,\"item_type\":\"strength\",\"title\":\"Strength\",\"details\":{}}]\nRules:\n- ADVANCE: apply a light progression (<=10% volume increase) to the given items; keep the same session types.\n- Rewrite ONLY these items; keep the same number of training days and the same day_of_week pattern.\n- Every item: week = 5, same item schema (run items keep details.distance_km, details.pace_min_km, details.notes).\n- summary: at most 2 sentences explaining what changed and why, in plain language.",
+   "maxTokens": null,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}"
+  },
+  {
+   "fn": "weekAdjustment",
+   "input": {
+    "scorecard": {
+     "adherence_pct": 60,
+     "planned_items": 5,
+     "completed_items": 3,
+     "planned_km": 32.5,
+     "actual_km": 20,
+     "red_flags": [],
+     "caution_flags": [
+      "Long run: RPE 9"
+     ]
+    },
+    "decision": "advance",
+    "reasons": [
+     "Adherence 60%.",
+     "One caution flag."
+    ],
+    "nextWeekItems": [
+     {
+      "week": 4,
+      "day_of_week": 2,
+      "item_type": "run",
+      "title": "Easy run 6k",
+      "details": {
+       "distance_km": 6,
+       "pace_min_km": "6:00",
+       "notes": "Easy"
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 6,
+      "item_type": "run",
+      "title": "Long run 14k",
+      "details": {
+       "distance_km": 14
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 4,
+      "item_type": "strength",
+      "title": "Strength",
+      "details": {}
+     }
+    ],
+    "targetWeek": 5,
+    "intakeSummary": "21.0975km race plan · regular runner · 4 days/week · Summary"
+   },
+   "reply": "{broken",
+   "want": {
+    "error": "AI adjustment is temporarily unavailable — try again later"
+   },
+   "prompt": "You are adjusting ONE week of an existing training plan after a weekly review.\nPlan context: 21.0975km race plan · regular runner · 4 days/week · Summary.\nReviewed week scorecard: {\"adherence_pct\":60,\"planned_items\":5,\"completed_items\":3,\"planned_km\":32.5,\"actual_km\":20,\"red_flags\":[],\"caution_flags\":[\"Long run: RPE 9\"]}.\nDeterministic decision (already made — do NOT change it): advance.\nReasons: Adherence 60%. One caution flag.\nCurrent items of the week to rewrite (week 5):\n[{\"week\":4,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Easy run 6k\",\"details\":{\"distance_km\":6,\"pace_min_km\":\"6:00\",\"notes\":\"Easy\"}},{\"week\":4,\"day_of_week\":6,\"item_type\":\"run\",\"title\":\"Long run 14k\",\"details\":{\"distance_km\":14}},{\"week\":4,\"day_of_week\":4,\"item_type\":\"strength\",\"title\":\"Strength\",\"details\":{}}]\nRules:\n- ADVANCE: apply a light progression (<=10% volume increase) to the given items; keep the same session types.\n- Rewrite ONLY these items; keep the same number of training days and the same day_of_week pattern.\n- Every item: week = 5, same item schema (run items keep details.distance_km, details.pace_min_km, details.notes).\n- summary: at most 2 sentences explaining what changed and why, in plain language.",
+   "maxTokens": null,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}"
+  },
+  {
+   "fn": "weekAdjustment",
+   "input": {
+    "scorecard": {
+     "adherence_pct": 60,
+     "planned_items": 5,
+     "completed_items": 3,
+     "planned_km": 32.5,
+     "actual_km": 20,
+     "red_flags": [],
+     "caution_flags": [
+      "Long run: RPE 9"
+     ]
+    },
+    "decision": "repeat",
+    "reasons": [
+     "Adherence 60%.",
+     "One caution flag."
+    ],
+    "nextWeekItems": [
+     {
+      "week": 4,
+      "day_of_week": 2,
+      "item_type": "run",
+      "title": "Easy run 6k",
+      "details": {
+       "distance_km": 6,
+       "pace_min_km": "6:00",
+       "notes": "Easy"
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 6,
+      "item_type": "run",
+      "title": "Long run 14k",
+      "details": {
+       "distance_km": 14
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 4,
+      "item_type": "strength",
+      "title": "Strength",
+      "details": {}
+     }
+    ],
+    "targetWeek": 5,
+    "intakeSummary": ""
+   },
+   "reply": null,
+   "want": {
+    "error": "AI adjustment is temporarily unavailable — try again later"
+   },
+   "prompt": "You are adjusting ONE week of an existing training plan after a weekly review.\nPlan context: unknown.\nReviewed week scorecard: {\"adherence_pct\":60,\"planned_items\":5,\"completed_items\":3,\"planned_km\":32.5,\"actual_km\":20,\"red_flags\":[],\"caution_flags\":[\"Long run: RPE 9\"]}.\nDeterministic decision (already made — do NOT change it): repeat.\nReasons: Adherence 60%. One caution flag.\nCurrent items of the week to rewrite (week 5):\n[{\"week\":4,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Easy run 6k\",\"details\":{\"distance_km\":6,\"pace_min_km\":\"6:00\",\"notes\":\"Easy\"}},{\"week\":4,\"day_of_week\":6,\"item_type\":\"run\",\"title\":\"Long run 14k\",\"details\":{\"distance_km\":14}},{\"week\":4,\"day_of_week\":4,\"item_type\":\"strength\",\"title\":\"Strength\",\"details\":{}}]\nRules:\n- REPEAT: mirror the structure and volume of the reviewed week — do not progress. The athlete needs another pass at this load.\n- Rewrite ONLY these items; keep the same number of training days and the same day_of_week pattern.\n- Every item: week = 5, same item schema (run items keep details.distance_km, details.pace_min_km, details.notes).\n- summary: at most 2 sentences explaining what changed and why, in plain language.",
+   "maxTokens": null,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}"
+  },
+  {
+   "fn": "weekAdjustment",
+   "input": {
+    "scorecard": {
+     "adherence_pct": 60,
+     "planned_items": 5,
+     "completed_items": 3,
+     "planned_km": 32.5,
+     "actual_km": 20,
+     "red_flags": [],
+     "caution_flags": [
+      "Long run: RPE 9"
+     ]
+    },
+    "decision": "repeat",
+    "reasons": [
+     "Adherence 60%.",
+     "One caution flag."
+    ],
+    "nextWeekItems": [
+     {
+      "week": 4,
+      "day_of_week": 2,
+      "item_type": "run",
+      "title": "Easy run 6k",
+      "details": {
+       "distance_km": 6,
+       "pace_min_km": "6:00",
+       "notes": "Easy"
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 6,
+      "item_type": "run",
+      "title": "Long run 14k",
+      "details": {
+       "distance_km": 14
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 4,
+      "item_type": "strength",
+      "title": "Strength",
+      "details": {}
+     }
+    ],
+    "targetWeek": 5,
+    "intakeSummary": ""
+   },
+   "reply": "{\"summary\":\"  Lighter week to recover.  \",\"items\":[{\"week\":9,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Easy run 4k\",\"details\":{\"distance_km\":4.04}}]}",
+   "want": {
+    "items": [
+     {
+      "week": 5,
+      "day_of_week": 2,
+      "item_type": "run",
+      "title": "Easy run 4k",
+      "details": {
+       "distance_km": 4
+      }
+     }
+    ],
+    "summary": "Lighter week to recover."
+   },
+   "prompt": "You are adjusting ONE week of an existing training plan after a weekly review.\nPlan context: unknown.\nReviewed week scorecard: {\"adherence_pct\":60,\"planned_items\":5,\"completed_items\":3,\"planned_km\":32.5,\"actual_km\":20,\"red_flags\":[],\"caution_flags\":[\"Long run: RPE 9\"]}.\nDeterministic decision (already made — do NOT change it): repeat.\nReasons: Adherence 60%. One caution flag.\nCurrent items of the week to rewrite (week 5):\n[{\"week\":4,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Easy run 6k\",\"details\":{\"distance_km\":6,\"pace_min_km\":\"6:00\",\"notes\":\"Easy\"}},{\"week\":4,\"day_of_week\":6,\"item_type\":\"run\",\"title\":\"Long run 14k\",\"details\":{\"distance_km\":14}},{\"week\":4,\"day_of_week\":4,\"item_type\":\"strength\",\"title\":\"Strength\",\"details\":{}}]\nRules:\n- REPEAT: mirror the structure and volume of the reviewed week — do not progress. The athlete needs another pass at this load.\n- Rewrite ONLY these items; keep the same number of training days and the same day_of_week pattern.\n- Every item: week = 5, same item schema (run items keep details.distance_km, details.pace_min_km, details.notes).\n- summary: at most 2 sentences explaining what changed and why, in plain language.",
+   "maxTokens": null,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}"
+  },
+  {
+   "fn": "weekAdjustment",
+   "input": {
+    "scorecard": {
+     "adherence_pct": 60,
+     "planned_items": 5,
+     "completed_items": 3,
+     "planned_km": 32.5,
+     "actual_km": 20,
+     "red_flags": [],
+     "caution_flags": [
+      "Long run: RPE 9"
+     ]
+    },
+    "decision": "repeat",
+    "reasons": [
+     "Adherence 60%.",
+     "One caution flag."
+    ],
+    "nextWeekItems": [
+     {
+      "week": 4,
+      "day_of_week": 2,
+      "item_type": "run",
+      "title": "Easy run 6k",
+      "details": {
+       "distance_km": 6,
+       "pace_min_km": "6:00",
+       "notes": "Easy"
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 6,
+      "item_type": "run",
+      "title": "Long run 14k",
+      "details": {
+       "distance_km": 14
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 4,
+      "item_type": "strength",
+      "title": "Strength",
+      "details": {}
+     }
+    ],
+    "targetWeek": 5,
+    "intakeSummary": ""
+   },
+   "reply": "{\"summary\":\"\",\"items\":[{\"week\":5,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Run\"}]}",
+   "want": {
+    "error": "AI returned no summary"
+   },
+   "prompt": "You are adjusting ONE week of an existing training plan after a weekly review.\nPlan context: unknown.\nReviewed week scorecard: {\"adherence_pct\":60,\"planned_items\":5,\"completed_items\":3,\"planned_km\":32.5,\"actual_km\":20,\"red_flags\":[],\"caution_flags\":[\"Long run: RPE 9\"]}.\nDeterministic decision (already made — do NOT change it): repeat.\nReasons: Adherence 60%. One caution flag.\nCurrent items of the week to rewrite (week 5):\n[{\"week\":4,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Easy run 6k\",\"details\":{\"distance_km\":6,\"pace_min_km\":\"6:00\",\"notes\":\"Easy\"}},{\"week\":4,\"day_of_week\":6,\"item_type\":\"run\",\"title\":\"Long run 14k\",\"details\":{\"distance_km\":14}},{\"week\":4,\"day_of_week\":4,\"item_type\":\"strength\",\"title\":\"Strength\",\"details\":{}}]\nRules:\n- REPEAT: mirror the structure and volume of the reviewed week — do not progress. The athlete needs another pass at this load.\n- Rewrite ONLY these items; keep the same number of training days and the same day_of_week pattern.\n- Every item: week = 5, same item schema (run items keep details.distance_km, details.pace_min_km, details.notes).\n- summary: at most 2 sentences explaining what changed and why, in plain language.",
+   "maxTokens": null,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}"
+  },
+  {
+   "fn": "weekAdjustment",
+   "input": {
+    "scorecard": {
+     "adherence_pct": 60,
+     "planned_items": 5,
+     "completed_items": 3,
+     "planned_km": 32.5,
+     "actual_km": 20,
+     "red_flags": [],
+     "caution_flags": [
+      "Long run: RPE 9"
+     ]
+    },
+    "decision": "repeat",
+    "reasons": [
+     "Adherence 60%.",
+     "One caution flag."
+    ],
+    "nextWeekItems": [
+     {
+      "week": 4,
+      "day_of_week": 2,
+      "item_type": "run",
+      "title": "Easy run 6k",
+      "details": {
+       "distance_km": 6,
+       "pace_min_km": "6:00",
+       "notes": "Easy"
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 6,
+      "item_type": "run",
+      "title": "Long run 14k",
+      "details": {
+       "distance_km": 14
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 4,
+      "item_type": "strength",
+      "title": "Strength",
+      "details": {}
+     }
+    ],
+    "targetWeek": 5,
+    "intakeSummary": ""
+   },
+   "reply": "{\"summary\":\"No items\",\"items\":[]}",
+   "want": {
+    "error": "AI returned no usable items"
+   },
+   "prompt": "You are adjusting ONE week of an existing training plan after a weekly review.\nPlan context: unknown.\nReviewed week scorecard: {\"adherence_pct\":60,\"planned_items\":5,\"completed_items\":3,\"planned_km\":32.5,\"actual_km\":20,\"red_flags\":[],\"caution_flags\":[\"Long run: RPE 9\"]}.\nDeterministic decision (already made — do NOT change it): repeat.\nReasons: Adherence 60%. One caution flag.\nCurrent items of the week to rewrite (week 5):\n[{\"week\":4,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Easy run 6k\",\"details\":{\"distance_km\":6,\"pace_min_km\":\"6:00\",\"notes\":\"Easy\"}},{\"week\":4,\"day_of_week\":6,\"item_type\":\"run\",\"title\":\"Long run 14k\",\"details\":{\"distance_km\":14}},{\"week\":4,\"day_of_week\":4,\"item_type\":\"strength\",\"title\":\"Strength\",\"details\":{}}]\nRules:\n- REPEAT: mirror the structure and volume of the reviewed week — do not progress. The athlete needs another pass at this load.\n- Rewrite ONLY these items; keep the same number of training days and the same day_of_week pattern.\n- Every item: week = 5, same item schema (run items keep details.distance_km, details.pace_min_km, details.notes).\n- summary: at most 2 sentences explaining what changed and why, in plain language.",
+   "maxTokens": null,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}"
+  },
+  {
+   "fn": "weekAdjustment",
+   "input": {
+    "scorecard": {
+     "adherence_pct": 60,
+     "planned_items": 5,
+     "completed_items": 3,
+     "planned_km": 32.5,
+     "actual_km": 20,
+     "red_flags": [],
+     "caution_flags": [
+      "Long run: RPE 9"
+     ]
+    },
+    "decision": "repeat",
+    "reasons": [
+     "Adherence 60%.",
+     "One caution flag."
+    ],
+    "nextWeekItems": [
+     {
+      "week": 4,
+      "day_of_week": 2,
+      "item_type": "run",
+      "title": "Easy run 6k",
+      "details": {
+       "distance_km": 6,
+       "pace_min_km": "6:00",
+       "notes": "Easy"
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 6,
+      "item_type": "run",
+      "title": "Long run 14k",
+      "details": {
+       "distance_km": 14
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 4,
+      "item_type": "strength",
+      "title": "Strength",
+      "details": {}
+     }
+    ],
+    "targetWeek": 5,
+    "intakeSummary": ""
+   },
+   "reply": "{broken",
+   "want": {
+    "error": "AI adjustment is temporarily unavailable — try again later"
+   },
+   "prompt": "You are adjusting ONE week of an existing training plan after a weekly review.\nPlan context: unknown.\nReviewed week scorecard: {\"adherence_pct\":60,\"planned_items\":5,\"completed_items\":3,\"planned_km\":32.5,\"actual_km\":20,\"red_flags\":[],\"caution_flags\":[\"Long run: RPE 9\"]}.\nDeterministic decision (already made — do NOT change it): repeat.\nReasons: Adherence 60%. One caution flag.\nCurrent items of the week to rewrite (week 5):\n[{\"week\":4,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Easy run 6k\",\"details\":{\"distance_km\":6,\"pace_min_km\":\"6:00\",\"notes\":\"Easy\"}},{\"week\":4,\"day_of_week\":6,\"item_type\":\"run\",\"title\":\"Long run 14k\",\"details\":{\"distance_km\":14}},{\"week\":4,\"day_of_week\":4,\"item_type\":\"strength\",\"title\":\"Strength\",\"details\":{}}]\nRules:\n- REPEAT: mirror the structure and volume of the reviewed week — do not progress. The athlete needs another pass at this load.\n- Rewrite ONLY these items; keep the same number of training days and the same day_of_week pattern.\n- Every item: week = 5, same item schema (run items keep details.distance_km, details.pace_min_km, details.notes).\n- summary: at most 2 sentences explaining what changed and why, in plain language.",
+   "maxTokens": null,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}"
+  },
+  {
+   "fn": "weekAdjustment",
+   "input": {
+    "scorecard": {
+     "adherence_pct": 60,
+     "planned_items": 5,
+     "completed_items": 3,
+     "planned_km": 32.5,
+     "actual_km": 20,
+     "red_flags": [],
+     "caution_flags": [
+      "Long run: RPE 9"
+     ]
+    },
+    "decision": "deload",
+    "reasons": [
+     "Adherence 60%.",
+     "One caution flag."
+    ],
+    "nextWeekItems": [
+     {
+      "week": 4,
+      "day_of_week": 2,
+      "item_type": "run",
+      "title": "Easy run 6k",
+      "details": {
+       "distance_km": 6,
+       "pace_min_km": "6:00",
+       "notes": "Easy"
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 6,
+      "item_type": "run",
+      "title": "Long run 14k",
+      "details": {
+       "distance_km": 14
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 4,
+      "item_type": "strength",
+      "title": "Strength",
+      "details": {}
+     }
+    ],
+    "targetWeek": 5,
+    "intakeSummary": "21.0975km race plan · regular runner · 4 days/week · Summary"
+   },
+   "reply": null,
+   "want": {
+    "error": "AI adjustment is temporarily unavailable — try again later"
+   },
+   "prompt": "You are adjusting ONE week of an existing training plan after a weekly review.\nPlan context: 21.0975km race plan · regular runner · 4 days/week · Summary.\nReviewed week scorecard: {\"adherence_pct\":60,\"planned_items\":5,\"completed_items\":3,\"planned_km\":32.5,\"actual_km\":20,\"red_flags\":[],\"caution_flags\":[\"Long run: RPE 9\"]}.\nDeterministic decision (already made — do NOT change it): deload.\nReasons: Adherence 60%. One caution flag.\nCurrent items of the week to rewrite (week 5):\n[{\"week\":4,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Easy run 6k\",\"details\":{\"distance_km\":6,\"pace_min_km\":\"6:00\",\"notes\":\"Easy\"}},{\"week\":4,\"day_of_week\":6,\"item_type\":\"run\",\"title\":\"Long run 14k\",\"details\":{\"distance_km\":14}},{\"week\":4,\"day_of_week\":4,\"item_type\":\"strength\",\"title\":\"Strength\",\"details\":{}}]\nRules:\n- DELOAD: reduce total volume by roughly 30-40% (shorter runs, easier paces, lighter strength). Keep the athlete moving but recovering.\n- Rewrite ONLY these items; keep the same number of training days and the same day_of_week pattern.\n- Every item: week = 5, same item schema (run items keep details.distance_km, details.pace_min_km, details.notes).\n- summary: at most 2 sentences explaining what changed and why, in plain language.",
+   "maxTokens": null,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}"
+  },
+  {
+   "fn": "weekAdjustment",
+   "input": {
+    "scorecard": {
+     "adherence_pct": 60,
+     "planned_items": 5,
+     "completed_items": 3,
+     "planned_km": 32.5,
+     "actual_km": 20,
+     "red_flags": [],
+     "caution_flags": [
+      "Long run: RPE 9"
+     ]
+    },
+    "decision": "deload",
+    "reasons": [
+     "Adherence 60%.",
+     "One caution flag."
+    ],
+    "nextWeekItems": [
+     {
+      "week": 4,
+      "day_of_week": 2,
+      "item_type": "run",
+      "title": "Easy run 6k",
+      "details": {
+       "distance_km": 6,
+       "pace_min_km": "6:00",
+       "notes": "Easy"
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 6,
+      "item_type": "run",
+      "title": "Long run 14k",
+      "details": {
+       "distance_km": 14
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 4,
+      "item_type": "strength",
+      "title": "Strength",
+      "details": {}
+     }
+    ],
+    "targetWeek": 5,
+    "intakeSummary": "21.0975km race plan · regular runner · 4 days/week · Summary"
+   },
+   "reply": "{\"summary\":\"  Lighter week to recover.  \",\"items\":[{\"week\":9,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Easy run 4k\",\"details\":{\"distance_km\":4.04}}]}",
+   "want": {
+    "items": [
+     {
+      "week": 5,
+      "day_of_week": 2,
+      "item_type": "run",
+      "title": "Easy run 4k",
+      "details": {
+       "distance_km": 4
+      }
+     }
+    ],
+    "summary": "Lighter week to recover."
+   },
+   "prompt": "You are adjusting ONE week of an existing training plan after a weekly review.\nPlan context: 21.0975km race plan · regular runner · 4 days/week · Summary.\nReviewed week scorecard: {\"adherence_pct\":60,\"planned_items\":5,\"completed_items\":3,\"planned_km\":32.5,\"actual_km\":20,\"red_flags\":[],\"caution_flags\":[\"Long run: RPE 9\"]}.\nDeterministic decision (already made — do NOT change it): deload.\nReasons: Adherence 60%. One caution flag.\nCurrent items of the week to rewrite (week 5):\n[{\"week\":4,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Easy run 6k\",\"details\":{\"distance_km\":6,\"pace_min_km\":\"6:00\",\"notes\":\"Easy\"}},{\"week\":4,\"day_of_week\":6,\"item_type\":\"run\",\"title\":\"Long run 14k\",\"details\":{\"distance_km\":14}},{\"week\":4,\"day_of_week\":4,\"item_type\":\"strength\",\"title\":\"Strength\",\"details\":{}}]\nRules:\n- DELOAD: reduce total volume by roughly 30-40% (shorter runs, easier paces, lighter strength). Keep the athlete moving but recovering.\n- Rewrite ONLY these items; keep the same number of training days and the same day_of_week pattern.\n- Every item: week = 5, same item schema (run items keep details.distance_km, details.pace_min_km, details.notes).\n- summary: at most 2 sentences explaining what changed and why, in plain language.",
+   "maxTokens": null,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}"
+  },
+  {
+   "fn": "weekAdjustment",
+   "input": {
+    "scorecard": {
+     "adherence_pct": 60,
+     "planned_items": 5,
+     "completed_items": 3,
+     "planned_km": 32.5,
+     "actual_km": 20,
+     "red_flags": [],
+     "caution_flags": [
+      "Long run: RPE 9"
+     ]
+    },
+    "decision": "deload",
+    "reasons": [
+     "Adherence 60%.",
+     "One caution flag."
+    ],
+    "nextWeekItems": [
+     {
+      "week": 4,
+      "day_of_week": 2,
+      "item_type": "run",
+      "title": "Easy run 6k",
+      "details": {
+       "distance_km": 6,
+       "pace_min_km": "6:00",
+       "notes": "Easy"
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 6,
+      "item_type": "run",
+      "title": "Long run 14k",
+      "details": {
+       "distance_km": 14
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 4,
+      "item_type": "strength",
+      "title": "Strength",
+      "details": {}
+     }
+    ],
+    "targetWeek": 5,
+    "intakeSummary": "21.0975km race plan · regular runner · 4 days/week · Summary"
+   },
+   "reply": "{\"summary\":\"\",\"items\":[{\"week\":5,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Run\"}]}",
+   "want": {
+    "error": "AI returned no summary"
+   },
+   "prompt": "You are adjusting ONE week of an existing training plan after a weekly review.\nPlan context: 21.0975km race plan · regular runner · 4 days/week · Summary.\nReviewed week scorecard: {\"adherence_pct\":60,\"planned_items\":5,\"completed_items\":3,\"planned_km\":32.5,\"actual_km\":20,\"red_flags\":[],\"caution_flags\":[\"Long run: RPE 9\"]}.\nDeterministic decision (already made — do NOT change it): deload.\nReasons: Adherence 60%. One caution flag.\nCurrent items of the week to rewrite (week 5):\n[{\"week\":4,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Easy run 6k\",\"details\":{\"distance_km\":6,\"pace_min_km\":\"6:00\",\"notes\":\"Easy\"}},{\"week\":4,\"day_of_week\":6,\"item_type\":\"run\",\"title\":\"Long run 14k\",\"details\":{\"distance_km\":14}},{\"week\":4,\"day_of_week\":4,\"item_type\":\"strength\",\"title\":\"Strength\",\"details\":{}}]\nRules:\n- DELOAD: reduce total volume by roughly 30-40% (shorter runs, easier paces, lighter strength). Keep the athlete moving but recovering.\n- Rewrite ONLY these items; keep the same number of training days and the same day_of_week pattern.\n- Every item: week = 5, same item schema (run items keep details.distance_km, details.pace_min_km, details.notes).\n- summary: at most 2 sentences explaining what changed and why, in plain language.",
+   "maxTokens": null,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}"
+  },
+  {
+   "fn": "weekAdjustment",
+   "input": {
+    "scorecard": {
+     "adherence_pct": 60,
+     "planned_items": 5,
+     "completed_items": 3,
+     "planned_km": 32.5,
+     "actual_km": 20,
+     "red_flags": [],
+     "caution_flags": [
+      "Long run: RPE 9"
+     ]
+    },
+    "decision": "deload",
+    "reasons": [
+     "Adherence 60%.",
+     "One caution flag."
+    ],
+    "nextWeekItems": [
+     {
+      "week": 4,
+      "day_of_week": 2,
+      "item_type": "run",
+      "title": "Easy run 6k",
+      "details": {
+       "distance_km": 6,
+       "pace_min_km": "6:00",
+       "notes": "Easy"
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 6,
+      "item_type": "run",
+      "title": "Long run 14k",
+      "details": {
+       "distance_km": 14
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 4,
+      "item_type": "strength",
+      "title": "Strength",
+      "details": {}
+     }
+    ],
+    "targetWeek": 5,
+    "intakeSummary": "21.0975km race plan · regular runner · 4 days/week · Summary"
+   },
+   "reply": "{\"summary\":\"No items\",\"items\":[]}",
+   "want": {
+    "error": "AI returned no usable items"
+   },
+   "prompt": "You are adjusting ONE week of an existing training plan after a weekly review.\nPlan context: 21.0975km race plan · regular runner · 4 days/week · Summary.\nReviewed week scorecard: {\"adherence_pct\":60,\"planned_items\":5,\"completed_items\":3,\"planned_km\":32.5,\"actual_km\":20,\"red_flags\":[],\"caution_flags\":[\"Long run: RPE 9\"]}.\nDeterministic decision (already made — do NOT change it): deload.\nReasons: Adherence 60%. One caution flag.\nCurrent items of the week to rewrite (week 5):\n[{\"week\":4,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Easy run 6k\",\"details\":{\"distance_km\":6,\"pace_min_km\":\"6:00\",\"notes\":\"Easy\"}},{\"week\":4,\"day_of_week\":6,\"item_type\":\"run\",\"title\":\"Long run 14k\",\"details\":{\"distance_km\":14}},{\"week\":4,\"day_of_week\":4,\"item_type\":\"strength\",\"title\":\"Strength\",\"details\":{}}]\nRules:\n- DELOAD: reduce total volume by roughly 30-40% (shorter runs, easier paces, lighter strength). Keep the athlete moving but recovering.\n- Rewrite ONLY these items; keep the same number of training days and the same day_of_week pattern.\n- Every item: week = 5, same item schema (run items keep details.distance_km, details.pace_min_km, details.notes).\n- summary: at most 2 sentences explaining what changed and why, in plain language.",
+   "maxTokens": null,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}"
+  },
+  {
+   "fn": "weekAdjustment",
+   "input": {
+    "scorecard": {
+     "adherence_pct": 60,
+     "planned_items": 5,
+     "completed_items": 3,
+     "planned_km": 32.5,
+     "actual_km": 20,
+     "red_flags": [],
+     "caution_flags": [
+      "Long run: RPE 9"
+     ]
+    },
+    "decision": "deload",
+    "reasons": [
+     "Adherence 60%.",
+     "One caution flag."
+    ],
+    "nextWeekItems": [
+     {
+      "week": 4,
+      "day_of_week": 2,
+      "item_type": "run",
+      "title": "Easy run 6k",
+      "details": {
+       "distance_km": 6,
+       "pace_min_km": "6:00",
+       "notes": "Easy"
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 6,
+      "item_type": "run",
+      "title": "Long run 14k",
+      "details": {
+       "distance_km": 14
+      }
+     },
+     {
+      "week": 4,
+      "day_of_week": 4,
+      "item_type": "strength",
+      "title": "Strength",
+      "details": {}
+     }
+    ],
+    "targetWeek": 5,
+    "intakeSummary": "21.0975km race plan · regular runner · 4 days/week · Summary"
+   },
+   "reply": "{broken",
+   "want": {
+    "error": "AI adjustment is temporarily unavailable — try again later"
+   },
+   "prompt": "You are adjusting ONE week of an existing training plan after a weekly review.\nPlan context: 21.0975km race plan · regular runner · 4 days/week · Summary.\nReviewed week scorecard: {\"adherence_pct\":60,\"planned_items\":5,\"completed_items\":3,\"planned_km\":32.5,\"actual_km\":20,\"red_flags\":[],\"caution_flags\":[\"Long run: RPE 9\"]}.\nDeterministic decision (already made — do NOT change it): deload.\nReasons: Adherence 60%. One caution flag.\nCurrent items of the week to rewrite (week 5):\n[{\"week\":4,\"day_of_week\":2,\"item_type\":\"run\",\"title\":\"Easy run 6k\",\"details\":{\"distance_km\":6,\"pace_min_km\":\"6:00\",\"notes\":\"Easy\"}},{\"week\":4,\"day_of_week\":6,\"item_type\":\"run\",\"title\":\"Long run 14k\",\"details\":{\"distance_km\":14}},{\"week\":4,\"day_of_week\":4,\"item_type\":\"strength\",\"title\":\"Strength\",\"details\":{}}]\nRules:\n- DELOAD: reduce total volume by roughly 30-40% (shorter runs, easier paces, lighter strength). Keep the athlete moving but recovering.\n- Rewrite ONLY these items; keep the same number of training days and the same day_of_week pattern.\n- Every item: week = 5, same item schema (run items keep details.distance_km, details.pace_min_km, details.notes).\n- summary: at most 2 sentences explaining what changed and why, in plain language.",
+   "maxTokens": null,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}"
   }
  ]
 }

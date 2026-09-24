@@ -1,12 +1,9 @@
 import type { ReactNode } from "react";
 import { Label } from "@/components/ui/label";
 
-// Native controls styled like the Input primitive (design-system tokens).
+// Native select styled like the Input primitive (design-system tokens).
 export const SELECT_CLASS =
   "border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-9 w-full rounded-md border px-3 py-1 text-sm outline-none focus-visible:ring-[3px]";
-
-export const TEXTAREA_CLASS =
-  "border-input bg-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 w-full rounded-md border px-3 py-2 text-sm outline-none focus-visible:ring-[3px]";
 
 /** Label above a control. */
 export function Field({ id, label, children }: { id: string; label: string; children: ReactNode }) {

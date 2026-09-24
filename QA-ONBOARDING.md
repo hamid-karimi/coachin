@@ -44,7 +44,7 @@ inactive; every coach feature checks for an **active** relationship.
 | `/onboarding` | "My week" editor: fixed weekly sessions (anchors) + weekly targets (quotas). Also the first-run flow. **Ported to the rewrite.** | [README](apps/web/app/(app)/onboarding/README.md) |
 | `/dashboard` | "Today": today's routine + plan items, logging, streaks, hearts, XP. **Ported to the rewrite**, including the daily stack. | [README](apps/web/app/(app)/dashboard/README.md) |
 | `/calendar` | Week view blending routine + all active plan items + logged state | [README](legacy/app/calendar/README.md) |
-| `/training` | Program manager: create (AI wizards), archive, weekly check-ins. **Rewrite: list, archive, .ics export ported**; wizards and check-ins next. | [README](apps/web/app/(app)/training/README.md) |
+| `/training` | Program manager: create (AI wizards), archive, weekly check-ins. **Rewrite: list, archive, .ics export, AI wizards, check-ins ported** (watch-file upload next). | [README](apps/web/app/(app)/training/README.md) |
 | `/training/new` | Plan wizards (running / muscle building); coach mode via `?student=<id>` | [README](legacy/app/training/README.md) |
 | `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan | [README](legacy/app/nutrition/README.md) |
 | `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions | [README](legacy/app/coaching/README.md) |
@@ -158,7 +158,24 @@ shows "Create a plan" and Today shows "Train for a marathon".
   saves the plan to the trainee ("By your coach" on their card); a non-coach or a coach
   without an active relationship is sent away.
 
-The check-in screen is a placeholder until 3.3c.
+**Rewrite stack — weekly check-in (3.3c)**: the program card's "Week N review ready" →
+"Start check-in" opens `/training/checkin?plan=<id>` (it takes a few seconds: the AI
+rewrites next week).
+- Stat cards: Adherence % (ember under 50%), Sessions done/planned (meal notes don't
+  count), Planned km, Actual km (a logged distance wins over the planned one).
+- "Flagged sessions": red flags (red) then cautions — flagged session-log notes, and for
+  week 3+ "<lift>: same load 3 weeks running — consider a deload or variation".
+- Decision (FORMULAS.md §7): a red flag → Deload; under 50% twice in a row → Deload;
+  under 50% once → Repeat the week; otherwise Advance (+ "Heads up: N sessions flagged
+  for caution."). The reasons are listed.
+- "Proposed week N+1": the AI summary, or without AI "Keeping week N+1 as planned.
+  <reasons>" with the week unchanged.
+- "Confirm — update week N+1 (+20 XP)" → toast "Week N+1 updated · +20 XP", back to My
+  programs, banner gone; **only that week's items change**. Opening the check-in link
+  again (or for a week 1 plan, the last week, another user's plan) goes back to
+  `/training`.
+- Checking in late replaces the new week's items — including ones already done or logged
+  that week (as before).
 
 ### 3. Logging on Today (dashboard)
 
@@ -174,9 +191,8 @@ The check-in screen is a placeholder until 3.3c.
 4. Logging the same plan item twice must be rejected ("Session already
    logged").
 
-**Rewrite stack** (Today is ported; the per-set editor / "Log details" arrives with
-Training, and meals, goal strip, coaching card, and group nudge arrive with their
-modules; the daily stack is journey 5, steps 5–7):
+**Rewrite stack** (Today is ported; meals, goal strip, coaching card, and group nudge
+arrive with their modules; the daily stack is journey 5, steps 5–7):
 - Header shows the date, "Hi, <first name>", the streak badge, and initials. Level
   ring + XP bar, hearts ("N hearts · a missed day costs one"), and (desktop) the
   Level / Streak / Total XP / League stat row.
@@ -189,6 +205,15 @@ modules; the daily stack is journey 5, steps 5–7):
 - Plan item toggle: done → "+60/+30/+20 XP earned" (by type), undo → "Undone · -N XP";
   done → undo → done nets the XP once. The API refuses "done" outside the item's day
   and the day after, even if the button were forced.
+- A done run/strength item shows "Log details": effort (RPE 1–10, tap again to clear),
+  run distance / duration / avg HR or the per-set strength editor (prefilled from the
+  prescription, max 20 exercises × 10 sets, blank weight = bodyweight), and a note.
+  "Save log" → toast "Session logged · +10 XP" (+ " You lifted N kg total — that's a
+  <thing> 🐎." with confetti when weights were entered) + " 🏃 <AI coach comment>"; the
+  row then shows the stat and the comment (amber for caution, red for a red flag). Without
+  AI there is no comment unless the note mentions pain / RPE ≥ 9 — then "Your note was
+  flagged — take it easy and monitor how it feels." is stored so the check-in sees it.
+  Logging the item again (e.g. after a reload) → "Session already logged".
 - 2+ run/strength items today show "2 intense workouts today — consider spacing them."
 - No plan → "Train for a marathon" card; with plans → "Training plan(s) · n items today".
 - Weekly targets show as "This week" chips; a progress-photo link appears when you've
