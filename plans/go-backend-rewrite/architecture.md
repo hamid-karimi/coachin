@@ -96,7 +96,10 @@ FORMULAS.md, QA-ONBOARDING.md, WORKLOG.md, CLAUDE.md, README.md
     `password_hash`, `email_verified_at`, timestamps); every FK retargeted, UUIDs kept.
   - `auth.uid()` → `app.current_user_id()`; `authenticated` role → `coachin_app`.
   - `storage.*` schema and bucket policies removed (access is enforced by the API).
-  - New tables: `sessions`, `auth_tokens` (verify / reset, hashed, single-use).
+  - New tables (`00004_auth.sql`, Phase 2): `sessions`, `auth_tokens` (verify / reset,
+    hashed, single-use).
+- **`00003_reference_data.sql`**: sport types and the starter food catalogue. Production's
+  rows (with their ids) replace them at import.
 - **Roles**: `coachin_owner` owns the schema and runs migrations; the API connects as
   `coachin_app` (not owner), so RLS applies to it.
 - **Why**: SQL stays SQL; compile-time-checked queries; no ORM; nothing Supabase-shaped left.
