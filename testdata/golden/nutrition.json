@@ -1,0 +1,7056 @@
+{
+ "generatedBy": "scripts/golden/generate.ts",
+ "topic": "nutrition",
+ "cases": [
+  {
+   "fn": "FOOD_UNIT_OPTIONS",
+   "want": [
+    {
+     "value": "g",
+     "label": "g"
+    },
+    {
+     "value": "ml",
+     "label": "ml"
+    },
+    {
+     "value": "tsp",
+     "label": "tsp"
+    },
+    {
+     "value": "tbsp",
+     "label": "tbsp"
+    },
+    {
+     "value": "cup",
+     "label": "cup"
+    },
+    {
+     "value": "oz",
+     "label": "oz"
+    },
+    {
+     "value": "slice",
+     "label": "slice"
+    },
+    {
+     "value": "piece",
+     "label": "piece"
+    },
+    {
+     "value": "handful",
+     "label": "handful"
+    },
+    {
+     "value": "serving",
+     "label": "serving"
+    }
+   ]
+  },
+  {
+   "fn": "isFoodUnit",
+   "unit": "g",
+   "want": true
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0,
+   "unit": "g",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": -1,
+   "unit": "g",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0.5,
+   "unit": "g",
+   "want": 0.5
+  },
+  {
+   "fn": "toGrams",
+   "qty": 1,
+   "unit": "g",
+   "want": 1
+  },
+  {
+   "fn": "toGrams",
+   "qty": 2.25,
+   "unit": "g",
+   "want": 2.3
+  },
+  {
+   "fn": "toGrams",
+   "qty": 3,
+   "unit": "g",
+   "want": 3
+  },
+  {
+   "fn": "toGrams",
+   "qty": 150,
+   "unit": "g",
+   "want": 150
+  },
+  {
+   "fn": "isFoodUnit",
+   "unit": "kg",
+   "want": true
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0,
+   "unit": "kg",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": -1,
+   "unit": "kg",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0.5,
+   "unit": "kg",
+   "want": 500
+  },
+  {
+   "fn": "toGrams",
+   "qty": 1,
+   "unit": "kg",
+   "want": 1000
+  },
+  {
+   "fn": "toGrams",
+   "qty": 2.25,
+   "unit": "kg",
+   "want": 2250
+  },
+  {
+   "fn": "toGrams",
+   "qty": 3,
+   "unit": "kg",
+   "want": 3000
+  },
+  {
+   "fn": "toGrams",
+   "qty": 150,
+   "unit": "kg",
+   "want": 150000
+  },
+  {
+   "fn": "isFoodUnit",
+   "unit": "ml",
+   "want": true
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0,
+   "unit": "ml",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": -1,
+   "unit": "ml",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0.5,
+   "unit": "ml",
+   "want": 0.5
+  },
+  {
+   "fn": "toGrams",
+   "qty": 1,
+   "unit": "ml",
+   "want": 1
+  },
+  {
+   "fn": "toGrams",
+   "qty": 2.25,
+   "unit": "ml",
+   "want": 2.3
+  },
+  {
+   "fn": "toGrams",
+   "qty": 3,
+   "unit": "ml",
+   "want": 3
+  },
+  {
+   "fn": "toGrams",
+   "qty": 150,
+   "unit": "ml",
+   "want": 150
+  },
+  {
+   "fn": "isFoodUnit",
+   "unit": "l",
+   "want": true
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0,
+   "unit": "l",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": -1,
+   "unit": "l",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0.5,
+   "unit": "l",
+   "want": 500
+  },
+  {
+   "fn": "toGrams",
+   "qty": 1,
+   "unit": "l",
+   "want": 1000
+  },
+  {
+   "fn": "toGrams",
+   "qty": 2.25,
+   "unit": "l",
+   "want": 2250
+  },
+  {
+   "fn": "toGrams",
+   "qty": 3,
+   "unit": "l",
+   "want": 3000
+  },
+  {
+   "fn": "toGrams",
+   "qty": 150,
+   "unit": "l",
+   "want": 150000
+  },
+  {
+   "fn": "isFoodUnit",
+   "unit": "tsp",
+   "want": true
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0,
+   "unit": "tsp",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": -1,
+   "unit": "tsp",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0.5,
+   "unit": "tsp",
+   "want": 2.5
+  },
+  {
+   "fn": "toGrams",
+   "qty": 1,
+   "unit": "tsp",
+   "want": 5
+  },
+  {
+   "fn": "toGrams",
+   "qty": 2.25,
+   "unit": "tsp",
+   "want": 11.3
+  },
+  {
+   "fn": "toGrams",
+   "qty": 3,
+   "unit": "tsp",
+   "want": 15
+  },
+  {
+   "fn": "toGrams",
+   "qty": 150,
+   "unit": "tsp",
+   "want": 750
+  },
+  {
+   "fn": "isFoodUnit",
+   "unit": "tbsp",
+   "want": true
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0,
+   "unit": "tbsp",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": -1,
+   "unit": "tbsp",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0.5,
+   "unit": "tbsp",
+   "want": 7.5
+  },
+  {
+   "fn": "toGrams",
+   "qty": 1,
+   "unit": "tbsp",
+   "want": 15
+  },
+  {
+   "fn": "toGrams",
+   "qty": 2.25,
+   "unit": "tbsp",
+   "want": 33.8
+  },
+  {
+   "fn": "toGrams",
+   "qty": 3,
+   "unit": "tbsp",
+   "want": 45
+  },
+  {
+   "fn": "toGrams",
+   "qty": 150,
+   "unit": "tbsp",
+   "want": 2250
+  },
+  {
+   "fn": "isFoodUnit",
+   "unit": "cup",
+   "want": true
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0,
+   "unit": "cup",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": -1,
+   "unit": "cup",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0.5,
+   "unit": "cup",
+   "want": 120
+  },
+  {
+   "fn": "toGrams",
+   "qty": 1,
+   "unit": "cup",
+   "want": 240
+  },
+  {
+   "fn": "toGrams",
+   "qty": 2.25,
+   "unit": "cup",
+   "want": 540
+  },
+  {
+   "fn": "toGrams",
+   "qty": 3,
+   "unit": "cup",
+   "want": 720
+  },
+  {
+   "fn": "toGrams",
+   "qty": 150,
+   "unit": "cup",
+   "want": 36000
+  },
+  {
+   "fn": "isFoodUnit",
+   "unit": "oz",
+   "want": true
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0,
+   "unit": "oz",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": -1,
+   "unit": "oz",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0.5,
+   "unit": "oz",
+   "want": 14.2
+  },
+  {
+   "fn": "toGrams",
+   "qty": 1,
+   "unit": "oz",
+   "want": 28.4
+  },
+  {
+   "fn": "toGrams",
+   "qty": 2.25,
+   "unit": "oz",
+   "want": 63.8
+  },
+  {
+   "fn": "toGrams",
+   "qty": 3,
+   "unit": "oz",
+   "want": 85.1
+  },
+  {
+   "fn": "toGrams",
+   "qty": 150,
+   "unit": "oz",
+   "want": 4252.5
+  },
+  {
+   "fn": "isFoodUnit",
+   "unit": "lb",
+   "want": true
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0,
+   "unit": "lb",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": -1,
+   "unit": "lb",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0.5,
+   "unit": "lb",
+   "want": 226.8
+  },
+  {
+   "fn": "toGrams",
+   "qty": 1,
+   "unit": "lb",
+   "want": 453.6
+  },
+  {
+   "fn": "toGrams",
+   "qty": 2.25,
+   "unit": "lb",
+   "want": 1020.6
+  },
+  {
+   "fn": "toGrams",
+   "qty": 3,
+   "unit": "lb",
+   "want": 1360.8
+  },
+  {
+   "fn": "toGrams",
+   "qty": 150,
+   "unit": "lb",
+   "want": 68040
+  },
+  {
+   "fn": "isFoodUnit",
+   "unit": "slice",
+   "want": true
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0,
+   "unit": "slice",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": -1,
+   "unit": "slice",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0.5,
+   "unit": "slice",
+   "want": 15
+  },
+  {
+   "fn": "toGrams",
+   "qty": 1,
+   "unit": "slice",
+   "want": 30
+  },
+  {
+   "fn": "toGrams",
+   "qty": 2.25,
+   "unit": "slice",
+   "want": 67.5
+  },
+  {
+   "fn": "toGrams",
+   "qty": 3,
+   "unit": "slice",
+   "want": 90
+  },
+  {
+   "fn": "toGrams",
+   "qty": 150,
+   "unit": "slice",
+   "want": 4500
+  },
+  {
+   "fn": "isFoodUnit",
+   "unit": "piece",
+   "want": true
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0,
+   "unit": "piece",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": -1,
+   "unit": "piece",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0.5,
+   "unit": "piece",
+   "want": 25
+  },
+  {
+   "fn": "toGrams",
+   "qty": 1,
+   "unit": "piece",
+   "want": 50
+  },
+  {
+   "fn": "toGrams",
+   "qty": 2.25,
+   "unit": "piece",
+   "want": 112.5
+  },
+  {
+   "fn": "toGrams",
+   "qty": 3,
+   "unit": "piece",
+   "want": 150
+  },
+  {
+   "fn": "toGrams",
+   "qty": 150,
+   "unit": "piece",
+   "want": 7500
+  },
+  {
+   "fn": "isFoodUnit",
+   "unit": "handful",
+   "want": true
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0,
+   "unit": "handful",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": -1,
+   "unit": "handful",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0.5,
+   "unit": "handful",
+   "want": 15
+  },
+  {
+   "fn": "toGrams",
+   "qty": 1,
+   "unit": "handful",
+   "want": 30
+  },
+  {
+   "fn": "toGrams",
+   "qty": 2.25,
+   "unit": "handful",
+   "want": 67.5
+  },
+  {
+   "fn": "toGrams",
+   "qty": 3,
+   "unit": "handful",
+   "want": 90
+  },
+  {
+   "fn": "toGrams",
+   "qty": 150,
+   "unit": "handful",
+   "want": 4500
+  },
+  {
+   "fn": "isFoodUnit",
+   "unit": "serving",
+   "want": true
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0,
+   "unit": "serving",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": -1,
+   "unit": "serving",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0.5,
+   "unit": "serving",
+   "want": 50
+  },
+  {
+   "fn": "toGrams",
+   "qty": 1,
+   "unit": "serving",
+   "want": 100
+  },
+  {
+   "fn": "toGrams",
+   "qty": 2.25,
+   "unit": "serving",
+   "want": 225
+  },
+  {
+   "fn": "toGrams",
+   "qty": 3,
+   "unit": "serving",
+   "want": 300
+  },
+  {
+   "fn": "toGrams",
+   "qty": 150,
+   "unit": "serving",
+   "want": 15000
+  },
+  {
+   "fn": "isFoodUnit",
+   "unit": "bowl",
+   "want": false
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0,
+   "unit": "bowl",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": -1,
+   "unit": "bowl",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0.5,
+   "unit": "bowl",
+   "want": 0.5
+  },
+  {
+   "fn": "toGrams",
+   "qty": 1,
+   "unit": "bowl",
+   "want": 1
+  },
+  {
+   "fn": "toGrams",
+   "qty": 2.25,
+   "unit": "bowl",
+   "want": 2.3
+  },
+  {
+   "fn": "toGrams",
+   "qty": 3,
+   "unit": "bowl",
+   "want": 3
+  },
+  {
+   "fn": "toGrams",
+   "qty": 150,
+   "unit": "bowl",
+   "want": 150
+  },
+  {
+   "fn": "isFoodUnit",
+   "unit": "",
+   "want": false
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0,
+   "unit": "",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": -1,
+   "unit": "",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0.5,
+   "unit": "",
+   "want": 0.5
+  },
+  {
+   "fn": "toGrams",
+   "qty": 1,
+   "unit": "",
+   "want": 1
+  },
+  {
+   "fn": "toGrams",
+   "qty": 2.25,
+   "unit": "",
+   "want": 2.3
+  },
+  {
+   "fn": "toGrams",
+   "qty": 3,
+   "unit": "",
+   "want": 3
+  },
+  {
+   "fn": "toGrams",
+   "qty": 150,
+   "unit": "",
+   "want": 150
+  },
+  {
+   "fn": "isFoodUnit",
+   "unit": "G",
+   "want": false
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0,
+   "unit": "G",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": -1,
+   "unit": "G",
+   "want": 0
+  },
+  {
+   "fn": "toGrams",
+   "qty": 0.5,
+   "unit": "G",
+   "want": 0.5
+  },
+  {
+   "fn": "toGrams",
+   "qty": 1,
+   "unit": "G",
+   "want": 1
+  },
+  {
+   "fn": "toGrams",
+   "qty": 2.25,
+   "unit": "G",
+   "want": 2.3
+  },
+  {
+   "fn": "toGrams",
+   "qty": 3,
+   "unit": "G",
+   "want": 3
+  },
+  {
+   "fn": "toGrams",
+   "qty": 150,
+   "unit": "G",
+   "want": 150
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [
+    {
+     "meal_type": "dinner",
+     "kcal": 547.3
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 765.7
+    }
+   ],
+   "logged": [
+    {
+     "meal_type": "breakfast",
+     "kcal": 477.5
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 405.3
+    },
+    {
+     "meal_type": "lunch",
+     "kcal": 759.2
+    }
+   ],
+   "want": {
+    "slotsPlanned": 1,
+    "slotsLogged": 1,
+    "kcalPlanned": 1313,
+    "kcalLogged": 1642,
+    "kcalRatio": 1.2505712109672507
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [
+    {
+     "meal_type": "dinner",
+     "kcal": 613.4
+    },
+    {
+     "meal_type": "breakfast",
+     "kcal": 160.7
+    }
+   ],
+   "logged": [
+    {
+     "meal_type": "lunch",
+     "kcal": 339.3
+    }
+   ],
+   "want": {
+    "slotsPlanned": 2,
+    "slotsLogged": 0,
+    "kcalPlanned": 774.0999999999999,
+    "kcalLogged": 339.3,
+    "kcalRatio": 0.4383154631184602
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [
+    {
+     "meal_type": "breakfast",
+     "kcal": 537.4
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 376.6
+    }
+   ],
+   "logged": [
+    {
+     "meal_type": "snack",
+     "kcal": 691.9
+    },
+    {
+     "meal_type": "lunch",
+     "kcal": 560.8
+    },
+    {
+     "meal_type": "lunch",
+     "kcal": 50.6
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 879.9
+    },
+    {
+     "meal_type": "lunch",
+     "kcal": 131.9
+    }
+   ],
+   "want": {
+    "slotsPlanned": 2,
+    "slotsLogged": 1,
+    "kcalPlanned": 914,
+    "kcalLogged": 2315.1,
+    "kcalRatio": 2.5329321663019693
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [
+    {
+     "meal_type": "lunch",
+     "kcal": 498.1
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 761
+    },
+    {
+     "meal_type": "breakfast",
+     "kcal": 764.7
+    }
+   ],
+   "logged": [
+    {
+     "meal_type": "lunch",
+     "kcal": 22.9
+    },
+    {
+     "meal_type": "breakfast",
+     "kcal": 757.2
+    },
+    {
+     "meal_type": "lunch",
+     "kcal": 473.5
+    },
+    {
+     "meal_type": "lunch",
+     "kcal": 451.8
+    }
+   ],
+   "want": {
+    "slotsPlanned": 3,
+    "slotsLogged": 2,
+    "kcalPlanned": 2023.8,
+    "kcalLogged": 1705.3999999999999,
+    "kcalRatio": 0.8426722008103567
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [
+    {
+     "meal_type": "breakfast",
+     "kcal": 579.7
+    },
+    {
+     "meal_type": "breakfast",
+     "kcal": 400.1
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 885.9
+    }
+   ],
+   "logged": [
+    {
+     "meal_type": "lunch",
+     "kcal": 317.6
+    },
+    {
+     "meal_type": "breakfast",
+     "kcal": 660.1
+    }
+   ],
+   "want": {
+    "slotsPlanned": 2,
+    "slotsLogged": 1,
+    "kcalPlanned": 1865.7,
+    "kcalLogged": 977.7,
+    "kcalRatio": 0.524039234603634
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [
+    {
+     "meal_type": "snack",
+     "kcal": 270.3
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 313
+    }
+   ],
+   "logged": [
+    {
+     "meal_type": "breakfast",
+     "kcal": 106.7
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 561.3
+    },
+    {
+     "meal_type": "breakfast",
+     "kcal": 332.3
+    },
+    {
+     "meal_type": "lunch",
+     "kcal": 843.6
+    },
+    {
+     "meal_type": "snack",
+     "kcal": 566.9
+    }
+   ],
+   "want": {
+    "slotsPlanned": 2,
+    "slotsLogged": 2,
+    "kcalPlanned": 583.3,
+    "kcalLogged": 2410.8,
+    "kcalRatio": 4.133036173495629
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [
+    {
+     "meal_type": "snack",
+     "kcal": 528.4
+    },
+    {
+     "meal_type": "lunch",
+     "kcal": 277.1
+    }
+   ],
+   "logged": [
+    {
+     "meal_type": "breakfast",
+     "kcal": 792.6
+    },
+    {
+     "meal_type": "lunch",
+     "kcal": 367.3
+    },
+    {
+     "meal_type": "breakfast",
+     "kcal": 71.8
+    }
+   ],
+   "want": {
+    "slotsPlanned": 2,
+    "slotsLogged": 1,
+    "kcalPlanned": 805.5,
+    "kcalLogged": 1231.7,
+    "kcalRatio": 1.5291123525760397
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [
+    {
+     "meal_type": "dinner",
+     "kcal": 462.7
+    },
+    {
+     "meal_type": "breakfast",
+     "kcal": 503.7
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 796
+    }
+   ],
+   "logged": [
+    {
+     "meal_type": "dinner",
+     "kcal": 543.4
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 438.3
+    },
+    {
+     "meal_type": "breakfast",
+     "kcal": 586.6
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 895.9
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 121.6
+    }
+   ],
+   "want": {
+    "slotsPlanned": 2,
+    "slotsLogged": 2,
+    "kcalPlanned": 1762.4,
+    "kcalLogged": 2585.8,
+    "kcalRatio": 1.4672038129822969
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [],
+   "logged": [
+    {
+     "meal_type": "snack",
+     "kcal": 309.1
+    },
+    {
+     "meal_type": "snack",
+     "kcal": 338.9
+    },
+    {
+     "meal_type": "snack",
+     "kcal": 588.4
+    }
+   ],
+   "want": {
+    "slotsPlanned": 0,
+    "slotsLogged": 0,
+    "kcalPlanned": 0,
+    "kcalLogged": 1236.4,
+    "kcalRatio": null
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [],
+   "logged": [
+    {
+     "meal_type": "dinner",
+     "kcal": 443.1
+    }
+   ],
+   "want": {
+    "slotsPlanned": 0,
+    "slotsLogged": 0,
+    "kcalPlanned": 0,
+    "kcalLogged": 443.1,
+    "kcalRatio": null
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [
+    {
+     "meal_type": "breakfast",
+     "kcal": 646.3
+    },
+    {
+     "meal_type": "lunch",
+     "kcal": 82.8
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 342.8
+    }
+   ],
+   "logged": [
+    {
+     "meal_type": "snack",
+     "kcal": 841.6
+    }
+   ],
+   "want": {
+    "slotsPlanned": 3,
+    "slotsLogged": 0,
+    "kcalPlanned": 1071.8999999999999,
+    "kcalLogged": 841.6,
+    "kcalRatio": 0.7851478682712941
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [
+    {
+     "meal_type": "breakfast",
+     "kcal": 389.7
+    },
+    {
+     "meal_type": "snack",
+     "kcal": 512.3
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 565.8
+    }
+   ],
+   "logged": [],
+   "want": {
+    "slotsPlanned": 3,
+    "slotsLogged": 0,
+    "kcalPlanned": 1467.8,
+    "kcalLogged": 0,
+    "kcalRatio": 0
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [
+    {
+     "meal_type": "lunch",
+     "kcal": 146.8
+    },
+    {
+     "meal_type": "snack",
+     "kcal": 57.3
+    }
+   ],
+   "logged": [],
+   "want": {
+    "slotsPlanned": 2,
+    "slotsLogged": 0,
+    "kcalPlanned": 204.10000000000002,
+    "kcalLogged": 0,
+    "kcalRatio": 0
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [
+    {
+     "meal_type": "dinner",
+     "kcal": 633.5
+    },
+    {
+     "meal_type": "snack",
+     "kcal": 826.8
+    },
+    {
+     "meal_type": "snack",
+     "kcal": 45.6
+    },
+    {
+     "meal_type": "breakfast",
+     "kcal": 536.5
+    }
+   ],
+   "logged": [
+    {
+     "meal_type": "lunch",
+     "kcal": 479.6
+    },
+    {
+     "meal_type": "breakfast",
+     "kcal": 54.8
+    }
+   ],
+   "want": {
+    "slotsPlanned": 3,
+    "slotsLogged": 1,
+    "kcalPlanned": 2042.3999999999999,
+    "kcalLogged": 534.4,
+    "kcalRatio": 0.2616529573051312
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [
+    {
+     "meal_type": "lunch",
+     "kcal": 375.5
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 372.4
+    }
+   ],
+   "logged": [
+    {
+     "meal_type": "dinner",
+     "kcal": 335.3
+    },
+    {
+     "meal_type": "snack",
+     "kcal": 267.2
+    }
+   ],
+   "want": {
+    "slotsPlanned": 2,
+    "slotsLogged": 1,
+    "kcalPlanned": 747.9,
+    "kcalLogged": 602.5,
+    "kcalRatio": 0.8055889824842893
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [
+    {
+     "meal_type": "breakfast",
+     "kcal": 615.6
+    },
+    {
+     "meal_type": "lunch",
+     "kcal": 506.2
+    }
+   ],
+   "logged": [
+    {
+     "meal_type": "breakfast",
+     "kcal": 117.6
+    },
+    {
+     "meal_type": "breakfast",
+     "kcal": 739.8
+    },
+    {
+     "meal_type": "breakfast",
+     "kcal": 735.2
+    }
+   ],
+   "want": {
+    "slotsPlanned": 2,
+    "slotsLogged": 1,
+    "kcalPlanned": 1121.8,
+    "kcalLogged": 1592.6,
+    "kcalRatio": 1.4196826528793012
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [],
+   "logged": [
+    {
+     "meal_type": "snack",
+     "kcal": 665
+    },
+    {
+     "meal_type": "snack",
+     "kcal": 89.8
+    },
+    {
+     "meal_type": "breakfast",
+     "kcal": 669.7
+    }
+   ],
+   "want": {
+    "slotsPlanned": 0,
+    "slotsLogged": 0,
+    "kcalPlanned": 0,
+    "kcalLogged": 1424.5,
+    "kcalRatio": null
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [
+    {
+     "meal_type": "breakfast",
+     "kcal": 308.5
+    }
+   ],
+   "logged": [],
+   "want": {
+    "slotsPlanned": 1,
+    "slotsLogged": 0,
+    "kcalPlanned": 308.5,
+    "kcalLogged": 0,
+    "kcalRatio": 0
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [
+    {
+     "meal_type": "dinner",
+     "kcal": 648.6
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 680.7
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 345.4
+    },
+    {
+     "meal_type": "snack",
+     "kcal": 204
+    }
+   ],
+   "logged": [
+    {
+     "meal_type": "breakfast",
+     "kcal": 562.8
+    }
+   ],
+   "want": {
+    "slotsPlanned": 2,
+    "slotsLogged": 0,
+    "kcalPlanned": 1878.7000000000003,
+    "kcalLogged": 562.8,
+    "kcalRatio": 0.2995688508010858
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [],
+   "logged": [
+    {
+     "meal_type": "snack",
+     "kcal": 779.2
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 788.5
+    },
+    {
+     "meal_type": "breakfast",
+     "kcal": 475.2
+    }
+   ],
+   "want": {
+    "slotsPlanned": 0,
+    "slotsLogged": 0,
+    "kcalPlanned": 0,
+    "kcalLogged": 2042.9,
+    "kcalRatio": null
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [
+    {
+     "meal_type": "lunch",
+     "kcal": 884.5
+    },
+    {
+     "meal_type": "breakfast",
+     "kcal": 787.5
+    },
+    {
+     "meal_type": "lunch",
+     "kcal": 834.3
+    }
+   ],
+   "logged": [
+    {
+     "meal_type": "lunch",
+     "kcal": 416.4
+    },
+    {
+     "meal_type": "lunch",
+     "kcal": 88.9
+    },
+    {
+     "meal_type": "breakfast",
+     "kcal": 85.3
+    },
+    {
+     "meal_type": "breakfast",
+     "kcal": 843.3
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 514.1
+    }
+   ],
+   "want": {
+    "slotsPlanned": 2,
+    "slotsLogged": 2,
+    "kcalPlanned": 2506.3,
+    "kcalLogged": 1948,
+    "kcalRatio": 0.7772413517934804
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [
+    {
+     "meal_type": "snack",
+     "kcal": 69.6
+    }
+   ],
+   "logged": [
+    {
+     "meal_type": "lunch",
+     "kcal": 56.7
+    },
+    {
+     "meal_type": "lunch",
+     "kcal": 343.4
+    },
+    {
+     "meal_type": "breakfast",
+     "kcal": 334.9
+    },
+    {
+     "meal_type": "breakfast",
+     "kcal": 807.4
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 414.8
+    }
+   ],
+   "want": {
+    "slotsPlanned": 1,
+    "slotsLogged": 0,
+    "kcalPlanned": 69.6,
+    "kcalLogged": 1957.2,
+    "kcalRatio": 28.120689655172416
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [
+    {
+     "meal_type": "lunch",
+     "kcal": 512.2
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 232.9
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 850.8
+    },
+    {
+     "meal_type": "lunch",
+     "kcal": 427.1
+    }
+   ],
+   "logged": [
+    {
+     "meal_type": "breakfast",
+     "kcal": 213.3
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 18.8
+    }
+   ],
+   "want": {
+    "slotsPlanned": 2,
+    "slotsLogged": 1,
+    "kcalPlanned": 2023,
+    "kcalLogged": 232.10000000000002,
+    "kcalRatio": 0.11473059812160159
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [],
+   "logged": [
+    {
+     "meal_type": "breakfast",
+     "kcal": 191.7
+    },
+    {
+     "meal_type": "lunch",
+     "kcal": 704.6
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 544.7
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 340.1
+    }
+   ],
+   "want": {
+    "slotsPlanned": 0,
+    "slotsLogged": 0,
+    "kcalPlanned": 0,
+    "kcalLogged": 1781.1,
+    "kcalRatio": null
+   }
+  },
+  {
+   "fn": "mealAdherenceForDay",
+   "planned": [
+    {
+     "meal_type": "snack",
+     "kcal": 296.1
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 76.3
+    },
+    {
+     "meal_type": "breakfast",
+     "kcal": 470.6
+    }
+   ],
+   "logged": [
+    {
+     "meal_type": "breakfast",
+     "kcal": 828.2
+    },
+    {
+     "meal_type": "snack",
+     "kcal": 120.3
+    },
+    {
+     "meal_type": "snack",
+     "kcal": 345
+    },
+    {
+     "meal_type": "dinner",
+     "kcal": 513.3
+    }
+   ],
+   "want": {
+    "slotsPlanned": 3,
+    "slotsLogged": 3,
+    "kcalPlanned": 843,
+    "kcalLogged": 1806.8,
+    "kcalRatio": 2.143297746144721
+   }
+  },
+  {
+   "fn": "summarizePeriod",
+   "rows": [
+    {
+     "date": "2026-08-25",
+     "kcal": 643.4,
+     "protein_g": 42.2,
+     "carbs_g": 4.4,
+     "fat_g": 28.7,
+     "sugar_g": 3.7,
+     "fiber_g": 6.4,
+     "sodium_mg": 1513
+    },
+    {
+     "date": "2026-08-24",
+     "kcal": 854.2,
+     "protein_g": 44.5,
+     "carbs_g": 11,
+     "fat_g": 3.8,
+     "sugar_g": 5.1,
+     "fiber_g": 0.2,
+     "sodium_mg": 1886.4
+    },
+    {
+     "date": "2026-08-26",
+     "kcal": 585.1,
+     "protein_g": 17.5,
+     "carbs_g": 29.1,
+     "fat_g": 28.6,
+     "sugar_g": 22.7,
+     "fiber_g": 9.2,
+     "sodium_mg": 1948.2
+    },
+    {
+     "date": "2026-08-23",
+     "kcal": 727.3,
+     "protein_g": 32.9,
+     "carbs_g": 35.3,
+     "fat_g": 11.5,
+     "sugar_g": 27,
+     "fiber_g": 1.5,
+     "sodium_mg": 1092
+    }
+   ],
+   "days": 7,
+   "today": "2026-08-28",
+   "want": {
+    "series": [
+     {
+      "date": "2026-08-22",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-08-23",
+      "totals": {
+       "kcal": 727.3,
+       "protein_g": 32.9,
+       "carbs_g": 35.3,
+       "fat_g": 11.5,
+       "sugar_g": 27,
+       "fiber_g": 1.5,
+       "sodium_mg": 1092
+      }
+     },
+     {
+      "date": "2026-08-24",
+      "totals": {
+       "kcal": 854.2,
+       "protein_g": 44.5,
+       "carbs_g": 11,
+       "fat_g": 3.8,
+       "sugar_g": 5.1,
+       "fiber_g": 0.2,
+       "sodium_mg": 1886.4
+      }
+     },
+     {
+      "date": "2026-08-25",
+      "totals": {
+       "kcal": 643.4,
+       "protein_g": 42.2,
+       "carbs_g": 4.4,
+       "fat_g": 28.7,
+       "sugar_g": 3.7,
+       "fiber_g": 6.4,
+       "sodium_mg": 1513
+      }
+     },
+     {
+      "date": "2026-08-26",
+      "totals": {
+       "kcal": 585.1,
+       "protein_g": 17.5,
+       "carbs_g": 29.1,
+       "fat_g": 28.6,
+       "sugar_g": 22.7,
+       "fiber_g": 9.2,
+       "sodium_mg": 1948.2
+      }
+     },
+     {
+      "date": "2026-08-27",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-08-28",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     }
+    ],
+    "daysLogged": 4,
+    "totalDays": 7,
+    "avg": {
+     "kcal": 703,
+     "protein_g": 34,
+     "carbs_g": 20,
+     "fat_g": 18,
+     "sugar_g": 15,
+     "fiber_g": 4,
+     "sodium_mg": 1610
+    }
+   }
+  },
+  {
+   "fn": "summarizePeriod",
+   "rows": [
+    {
+     "date": "2026-04-08",
+     "kcal": 251.9,
+     "protein_g": 18,
+     "carbs_g": 8.8,
+     "fat_g": 35.5,
+     "sugar_g": 12,
+     "fiber_g": 1.5,
+     "sodium_mg": 1141.3
+    },
+    {
+     "date": "2026-04-12",
+     "kcal": 180.3,
+     "protein_g": 3.8,
+     "carbs_g": 5.3,
+     "fat_g": 15.6,
+     "sugar_g": 27.4,
+     "fiber_g": 6.3,
+     "sodium_mg": 1810.8
+    },
+    {
+     "date": "2026-04-14",
+     "kcal": 311.8,
+     "protein_g": 36.5,
+     "carbs_g": 0.6,
+     "fat_g": 14.8,
+     "sugar_g": 16.6,
+     "fiber_g": 11.9,
+     "sodium_mg": 1416.3
+    }
+   ],
+   "days": 14,
+   "today": "2026-04-19",
+   "want": {
+    "series": [
+     {
+      "date": "2026-04-06",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-07",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-08",
+      "totals": {
+       "kcal": 251.9,
+       "protein_g": 18,
+       "carbs_g": 8.8,
+       "fat_g": 35.5,
+       "sugar_g": 12,
+       "fiber_g": 1.5,
+       "sodium_mg": 1141.3
+      }
+     },
+     {
+      "date": "2026-04-09",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-10",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-11",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-12",
+      "totals": {
+       "kcal": 180.3,
+       "protein_g": 3.8,
+       "carbs_g": 5.3,
+       "fat_g": 15.6,
+       "sugar_g": 27.4,
+       "fiber_g": 6.3,
+       "sodium_mg": 1810.8
+      }
+     },
+     {
+      "date": "2026-04-13",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-14",
+      "totals": {
+       "kcal": 311.8,
+       "protein_g": 36.5,
+       "carbs_g": 0.6,
+       "fat_g": 14.8,
+       "sugar_g": 16.6,
+       "fiber_g": 11.9,
+       "sodium_mg": 1416.3
+      }
+     },
+     {
+      "date": "2026-04-15",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-16",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-17",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-18",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-19",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     }
+    ],
+    "daysLogged": 3,
+    "totalDays": 14,
+    "avg": {
+     "kcal": 248,
+     "protein_g": 19,
+     "carbs_g": 5,
+     "fat_g": 22,
+     "sugar_g": 19,
+     "fiber_g": 7,
+     "sodium_mg": 1456
+    }
+   }
+  },
+  {
+   "fn": "summarizePeriod",
+   "rows": [
+    {
+     "date": "2026-06-26",
+     "kcal": 116.9,
+     "protein_g": 13.1,
+     "carbs_g": 76.5,
+     "fat_g": 6.2,
+     "sugar_g": 3.9,
+     "fiber_g": 1,
+     "sodium_mg": 1673.1
+    },
+    {
+     "date": "2026-06-15",
+     "kcal": 19.2,
+     "protein_g": 22.2,
+     "carbs_g": 1.1,
+     "fat_g": 9.1,
+     "sugar_g": 24.1,
+     "fiber_g": 7.1,
+     "sodium_mg": 10.1
+    },
+    {
+     "date": "2026-06-27",
+     "kcal": 27.2,
+     "protein_g": 22.7,
+     "carbs_g": 45.1,
+     "fat_g": 0.6,
+     "sugar_g": 26,
+     "fiber_g": 13.7,
+     "sodium_mg": 489.9
+    }
+   ],
+   "days": 14,
+   "today": "2026-06-27",
+   "want": {
+    "series": [
+     {
+      "date": "2026-06-14",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-15",
+      "totals": {
+       "kcal": 19.2,
+       "protein_g": 22.2,
+       "carbs_g": 1.1,
+       "fat_g": 9.1,
+       "sugar_g": 24.1,
+       "fiber_g": 7.1,
+       "sodium_mg": 10.1
+      }
+     },
+     {
+      "date": "2026-06-16",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-17",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-18",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-19",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-20",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-21",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-22",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-23",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-24",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-25",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-26",
+      "totals": {
+       "kcal": 116.9,
+       "protein_g": 13.1,
+       "carbs_g": 76.5,
+       "fat_g": 6.2,
+       "sugar_g": 3.9,
+       "fiber_g": 1,
+       "sodium_mg": 1673.1
+      }
+     },
+     {
+      "date": "2026-06-27",
+      "totals": {
+       "kcal": 27.2,
+       "protein_g": 22.7,
+       "carbs_g": 45.1,
+       "fat_g": 0.6,
+       "sugar_g": 26,
+       "fiber_g": 13.7,
+       "sodium_mg": 489.9
+      }
+     }
+    ],
+    "daysLogged": 3,
+    "totalDays": 14,
+    "avg": {
+     "kcal": 54,
+     "protein_g": 19,
+     "carbs_g": 41,
+     "fat_g": 5,
+     "sugar_g": 18,
+     "fiber_g": 7,
+     "sodium_mg": 724
+    }
+   }
+  },
+  {
+   "fn": "summarizePeriod",
+   "rows": [],
+   "days": 1,
+   "today": "2026-04-04",
+   "want": {
+    "series": [
+     {
+      "date": "2026-04-04",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     }
+    ],
+    "daysLogged": 0,
+    "totalDays": 1,
+    "avg": {
+     "kcal": 0,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    }
+   }
+  },
+  {
+   "fn": "summarizePeriod",
+   "rows": [
+    {
+     "date": "2026-03-25",
+     "kcal": 422.9,
+     "protein_g": 18.7,
+     "carbs_g": 55.8,
+     "fat_g": 26.1,
+     "sugar_g": 19.9,
+     "fiber_g": 5.9,
+     "sodium_mg": 1406.4
+    },
+    {
+     "date": "2026-04-07",
+     "kcal": 364.5,
+     "protein_g": 25.3,
+     "carbs_g": 86.9,
+     "fat_g": 12.3,
+     "sugar_g": 19.1,
+     "fiber_g": 1,
+     "sodium_mg": 1267.4
+    },
+    {
+     "date": "2026-04-18",
+     "kcal": 567.2,
+     "protein_g": 13.3,
+     "carbs_g": 72.6,
+     "fat_g": 29.2,
+     "sugar_g": 5.9,
+     "fiber_g": 14.4,
+     "sodium_mg": 825.9
+    },
+    {
+     "date": "2026-04-11",
+     "kcal": 189.7,
+     "protein_g": 0.7,
+     "carbs_g": 79.4,
+     "fat_g": 5.3,
+     "sugar_g": 15.4,
+     "fiber_g": 12.8,
+     "sodium_mg": 1765.3
+    },
+    {
+     "date": "2026-04-18",
+     "kcal": 815.5,
+     "protein_g": 24,
+     "carbs_g": 50,
+     "fat_g": 14.1,
+     "sugar_g": 10.5,
+     "fiber_g": 1.4,
+     "sodium_mg": 57.2
+    },
+    {
+     "date": "2026-04-14",
+     "kcal": 55.2,
+     "protein_g": 17.8,
+     "carbs_g": 55,
+     "fat_g": 18.6,
+     "sugar_g": 7.4,
+     "fiber_g": 7.8,
+     "sodium_mg": 1250.4
+    },
+    {
+     "date": "2026-03-28",
+     "kcal": 838.1,
+     "protein_g": 11.5,
+     "carbs_g": 39.3,
+     "fat_g": 4.7,
+     "sugar_g": 21,
+     "fiber_g": 4.7,
+     "sodium_mg": 315.5
+    }
+   ],
+   "days": 30,
+   "today": "2026-04-22",
+   "want": {
+    "series": [
+     {
+      "date": "2026-03-24",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-25",
+      "totals": {
+       "kcal": 422.9,
+       "protein_g": 18.7,
+       "carbs_g": 55.8,
+       "fat_g": 26.1,
+       "sugar_g": 19.9,
+       "fiber_g": 5.9,
+       "sodium_mg": 1406.4
+      }
+     },
+     {
+      "date": "2026-03-26",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-27",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-28",
+      "totals": {
+       "kcal": 838.1,
+       "protein_g": 11.5,
+       "carbs_g": 39.3,
+       "fat_g": 4.7,
+       "sugar_g": 21,
+       "fiber_g": 4.7,
+       "sodium_mg": 315.5
+      }
+     },
+     {
+      "date": "2026-03-29",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-30",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-31",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-01",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-02",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-03",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-04",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-05",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-06",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-07",
+      "totals": {
+       "kcal": 364.5,
+       "protein_g": 25.3,
+       "carbs_g": 86.9,
+       "fat_g": 12.3,
+       "sugar_g": 19.1,
+       "fiber_g": 1,
+       "sodium_mg": 1267.4
+      }
+     },
+     {
+      "date": "2026-04-08",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-09",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-10",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-11",
+      "totals": {
+       "kcal": 189.7,
+       "protein_g": 0.7,
+       "carbs_g": 79.4,
+       "fat_g": 5.3,
+       "sugar_g": 15.4,
+       "fiber_g": 12.8,
+       "sodium_mg": 1765.3
+      }
+     },
+     {
+      "date": "2026-04-12",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-13",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-14",
+      "totals": {
+       "kcal": 55.2,
+       "protein_g": 17.8,
+       "carbs_g": 55,
+       "fat_g": 18.6,
+       "sugar_g": 7.4,
+       "fiber_g": 7.8,
+       "sodium_mg": 1250.4
+      }
+     },
+     {
+      "date": "2026-04-15",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-16",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-17",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-18",
+      "totals": {
+       "kcal": 1382.7,
+       "protein_g": 37.3,
+       "carbs_g": 122.6,
+       "fat_g": 43.3,
+       "sugar_g": 16.4,
+       "fiber_g": 15.8,
+       "sodium_mg": 883.1
+      }
+     },
+     {
+      "date": "2026-04-19",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-20",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-21",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-22",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     }
+    ],
+    "daysLogged": 6,
+    "totalDays": 30,
+    "avg": {
+     "kcal": 542,
+     "protein_g": 19,
+     "carbs_g": 73,
+     "fat_g": 18,
+     "sugar_g": 17,
+     "fiber_g": 8,
+     "sodium_mg": 1148
+    }
+   }
+  },
+  {
+   "fn": "summarizePeriod",
+   "rows": [
+    {
+     "date": "2026-06-08",
+     "kcal": 214.4,
+     "protein_g": 14,
+     "carbs_g": 1.1,
+     "fat_g": 3.6,
+     "sugar_g": 1.7,
+     "fiber_g": 4.8,
+     "sodium_mg": 1035.8
+    },
+    {
+     "date": "2026-06-07",
+     "kcal": 872.9,
+     "protein_g": 43.2,
+     "carbs_g": 64.3,
+     "fat_g": 11.5,
+     "sugar_g": 20.1,
+     "fiber_g": 6.3,
+     "sodium_mg": 1785.5
+    },
+    {
+     "date": "2026-06-07",
+     "kcal": 689.3,
+     "protein_g": 10.4,
+     "carbs_g": 21.8,
+     "fat_g": 37.3,
+     "sugar_g": 8.7,
+     "fiber_g": 1,
+     "sodium_mg": 1728.4
+    },
+    {
+     "date": "2026-06-05",
+     "kcal": 230.3,
+     "protein_g": 0,
+     "carbs_g": 13.4,
+     "fat_g": 19.6,
+     "sugar_g": 1.2,
+     "fiber_g": 10.1,
+     "sodium_mg": 1411.7
+    },
+    {
+     "date": "2026-06-06",
+     "kcal": 472.9,
+     "protein_g": 12.6,
+     "carbs_g": 83.9,
+     "fat_g": 38.6,
+     "sugar_g": 19.5,
+     "fiber_g": 1.7,
+     "sodium_mg": 656.2
+    },
+    {
+     "date": "2026-06-07",
+     "kcal": 455.6,
+     "protein_g": 48.4,
+     "carbs_g": 85.5,
+     "fat_g": 2.2,
+     "sugar_g": 8.3,
+     "fiber_g": 5.9,
+     "sodium_mg": 1891.4
+    },
+    {
+     "date": "2026-06-06",
+     "kcal": 421.4,
+     "protein_g": 8.8,
+     "carbs_g": 57.6,
+     "fat_g": 22.7,
+     "sugar_g": 12.2,
+     "fiber_g": 13.5,
+     "sodium_mg": 927.3
+    },
+    {
+     "date": "2026-06-05",
+     "kcal": 129.9,
+     "protein_g": 14.3,
+     "carbs_g": 54.3,
+     "fat_g": 31.8,
+     "sugar_g": 9.6,
+     "fiber_g": 4.1,
+     "sodium_mg": 108.9
+    },
+    {
+     "date": "2026-06-07",
+     "kcal": 751.2,
+     "protein_g": 53.6,
+     "carbs_g": 25.9,
+     "fat_g": 17.5,
+     "sugar_g": 13.1,
+     "fiber_g": 6,
+     "sodium_mg": 816.8
+    },
+    {
+     "date": "2026-06-06",
+     "kcal": 96.7,
+     "protein_g": 19.5,
+     "carbs_g": 20.7,
+     "fat_g": 38.1,
+     "sugar_g": 4.8,
+     "fiber_g": 0.2,
+     "sodium_mg": 1153.6
+    },
+    {
+     "date": "2026-06-08",
+     "kcal": 4.3,
+     "protein_g": 49.5,
+     "carbs_g": 62.4,
+     "fat_g": 6.2,
+     "sugar_g": 22.5,
+     "fiber_g": 0.1,
+     "sodium_mg": 142.6
+    },
+    {
+     "date": "2026-06-08",
+     "kcal": 37.1,
+     "protein_g": 0.6,
+     "carbs_g": 84.1,
+     "fat_g": 34.6,
+     "sugar_g": 23.3,
+     "fiber_g": 9.7,
+     "sodium_mg": 1200
+    },
+    {
+     "date": "2026-06-05",
+     "kcal": 234.7,
+     "protein_g": 3,
+     "carbs_g": 34.9,
+     "fat_g": 4.7,
+     "sugar_g": 8.3,
+     "fiber_g": 6.1,
+     "sodium_mg": 565.1
+    }
+   ],
+   "days": 1,
+   "today": "2026-06-08",
+   "want": {
+    "series": [
+     {
+      "date": "2026-06-08",
+      "totals": {
+       "kcal": 255.8,
+       "protein_g": 64.1,
+       "carbs_g": 147.6,
+       "fat_g": 44.400000000000006,
+       "sugar_g": 47.5,
+       "fiber_g": 14.599999999999998,
+       "sodium_mg": 2378.3999999999996
+      }
+     }
+    ],
+    "daysLogged": 1,
+    "totalDays": 1,
+    "avg": {
+     "kcal": 256,
+     "protein_g": 64,
+     "carbs_g": 148,
+     "fat_g": 44,
+     "sugar_g": 48,
+     "fiber_g": 15,
+     "sodium_mg": 2378
+    }
+   }
+  },
+  {
+   "fn": "summarizePeriod",
+   "rows": [
+    {
+     "date": "2026-02-18",
+     "kcal": 128,
+     "protein_g": 31.1,
+     "carbs_g": 59.9,
+     "fat_g": 0.7,
+     "sugar_g": 11.8,
+     "fiber_g": 10.5,
+     "sodium_mg": 1649.3
+    },
+    {
+     "date": "2026-02-22",
+     "kcal": 570.3,
+     "protein_g": 26.6,
+     "carbs_g": 19.2,
+     "fat_g": 22.9,
+     "sugar_g": 29.3,
+     "fiber_g": 3.1,
+     "sodium_mg": 152.9
+    },
+    {
+     "date": "2026-02-22",
+     "kcal": 439.8,
+     "protein_g": 18.3,
+     "carbs_g": 68.2,
+     "fat_g": 38.9,
+     "sugar_g": 12.6,
+     "fiber_g": 5.5,
+     "sodium_mg": 244.8
+    },
+    {
+     "date": "2026-02-19",
+     "kcal": 392.6,
+     "protein_g": 15.1,
+     "carbs_g": 10.9,
+     "fat_g": 0.9,
+     "sugar_g": 16.9,
+     "fiber_g": 3,
+     "sodium_mg": 1203.1
+    },
+    {
+     "date": "2026-02-22",
+     "kcal": 769.7,
+     "protein_g": 50.6,
+     "carbs_g": 9.8,
+     "fat_g": 14.3,
+     "sugar_g": 12.1,
+     "fiber_g": 4.2,
+     "sodium_mg": 307
+    },
+    {
+     "date": "2026-02-17",
+     "kcal": 191.8,
+     "protein_g": 34,
+     "carbs_g": 8,
+     "fat_g": 20.6,
+     "sugar_g": 18.2,
+     "fiber_g": 11,
+     "sodium_mg": 975.5
+    },
+    {
+     "date": "2026-02-21",
+     "kcal": 845.6,
+     "protein_g": 8.4,
+     "carbs_g": 65.8,
+     "fat_g": 16.8,
+     "sugar_g": 22.5,
+     "fiber_g": 9.1,
+     "sodium_mg": 1491.7
+    },
+    {
+     "date": "2026-02-20",
+     "kcal": 623,
+     "protein_g": 0.8,
+     "carbs_g": 26.9,
+     "fat_g": 17.1,
+     "sugar_g": 20,
+     "fiber_g": 5.7,
+     "sodium_mg": 1322.4
+    },
+    {
+     "date": "2026-02-20",
+     "kcal": 589.7,
+     "protein_g": 49.4,
+     "carbs_g": 0.7,
+     "fat_g": 29.7,
+     "sugar_g": 23.3,
+     "fiber_g": 8.3,
+     "sodium_mg": 1163.3
+    },
+    {
+     "date": "2026-02-24",
+     "kcal": 140.1,
+     "protein_g": 32.4,
+     "carbs_g": 14.9,
+     "fat_g": 17.6,
+     "sugar_g": 12.2,
+     "fiber_g": 3,
+     "sodium_mg": 191.6
+    },
+    {
+     "date": "2026-02-22",
+     "kcal": 693.8,
+     "protein_g": 39.5,
+     "carbs_g": 75,
+     "fat_g": 4.7,
+     "sugar_g": 4.9,
+     "fiber_g": 0.5,
+     "sodium_mg": 1162.8
+    },
+    {
+     "date": "2026-02-16",
+     "kcal": 618.9,
+     "protein_g": 11,
+     "carbs_g": 28.9,
+     "fat_g": 18.9,
+     "sugar_g": 2.6,
+     "fiber_g": 7.2,
+     "sodium_mg": 1831.3
+    },
+    {
+     "date": "2026-02-21",
+     "kcal": 388.3,
+     "protein_g": 4.9,
+     "carbs_g": 58.5,
+     "fat_g": 18.9,
+     "sugar_g": 29.9,
+     "fiber_g": 5.2,
+     "sodium_mg": 331.7
+    },
+    {
+     "date": "2026-02-16",
+     "kcal": 486.5,
+     "protein_g": 13.8,
+     "carbs_g": 18.2,
+     "fat_g": 12.5,
+     "sugar_g": 16.5,
+     "fiber_g": 11.6,
+     "sodium_mg": 1957.6
+    },
+    {
+     "date": "2026-02-24",
+     "kcal": 525.1,
+     "protein_g": 44,
+     "carbs_g": 53.2,
+     "fat_g": 38.2,
+     "sugar_g": 15.6,
+     "fiber_g": 12.8,
+     "sodium_mg": 698.6
+    },
+    {
+     "date": "2026-02-25",
+     "kcal": 869.8,
+     "protein_g": 38,
+     "carbs_g": 10,
+     "fat_g": 3.7,
+     "sugar_g": 4.2,
+     "fiber_g": 4.7,
+     "sodium_mg": 1370.5
+    },
+    {
+     "date": "2026-02-19",
+     "kcal": 346.9,
+     "protein_g": 33.7,
+     "carbs_g": 57.5,
+     "fat_g": 27.5,
+     "sugar_g": 12.1,
+     "fiber_g": 1.2,
+     "sodium_mg": 1603.7
+    }
+   ],
+   "days": 7,
+   "today": "2026-02-25",
+   "want": {
+    "series": [
+     {
+      "date": "2026-02-19",
+      "totals": {
+       "kcal": 739.5,
+       "protein_g": 48.800000000000004,
+       "carbs_g": 68.4,
+       "fat_g": 28.4,
+       "sugar_g": 29,
+       "fiber_g": 4.2,
+       "sodium_mg": 2806.8
+      }
+     },
+     {
+      "date": "2026-02-20",
+      "totals": {
+       "kcal": 1212.7,
+       "protein_g": 50.199999999999996,
+       "carbs_g": 27.599999999999998,
+       "fat_g": 46.8,
+       "sugar_g": 43.3,
+       "fiber_g": 14,
+       "sodium_mg": 2485.7
+      }
+     },
+     {
+      "date": "2026-02-21",
+      "totals": {
+       "kcal": 1233.9,
+       "protein_g": 13.3,
+       "carbs_g": 124.3,
+       "fat_g": 35.7,
+       "sugar_g": 52.4,
+       "fiber_g": 14.3,
+       "sodium_mg": 1823.4
+      }
+     },
+     {
+      "date": "2026-02-22",
+      "totals": {
+       "kcal": 2473.6,
+       "protein_g": 135,
+       "carbs_g": 172.2,
+       "fat_g": 80.8,
+       "sugar_g": 58.9,
+       "fiber_g": 13.3,
+       "sodium_mg": 1867.5
+      }
+     },
+     {
+      "date": "2026-02-23",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-02-24",
+      "totals": {
+       "kcal": 665.2,
+       "protein_g": 76.4,
+       "carbs_g": 68.10000000000001,
+       "fat_g": 55.800000000000004,
+       "sugar_g": 27.799999999999997,
+       "fiber_g": 15.8,
+       "sodium_mg": 890.2
+      }
+     },
+     {
+      "date": "2026-02-25",
+      "totals": {
+       "kcal": 869.8,
+       "protein_g": 38,
+       "carbs_g": 10,
+       "fat_g": 3.7,
+       "sugar_g": 4.2,
+       "fiber_g": 4.7,
+       "sodium_mg": 1370.5
+      }
+     }
+    ],
+    "daysLogged": 6,
+    "totalDays": 7,
+    "avg": {
+     "kcal": 1199,
+     "protein_g": 60,
+     "carbs_g": 78,
+     "fat_g": 42,
+     "sugar_g": 36,
+     "fiber_g": 11,
+     "sodium_mg": 1874
+    }
+   }
+  },
+  {
+   "fn": "summarizePeriod",
+   "rows": [
+    {
+     "date": "2026-01-15",
+     "kcal": 397.2,
+     "protein_g": 20.6,
+     "carbs_g": 84.1,
+     "fat_g": 29.7,
+     "sugar_g": 22.3,
+     "fiber_g": 13.1,
+     "sodium_mg": 354
+    },
+    {
+     "date": "2026-02-08",
+     "kcal": 602,
+     "protein_g": 16.5,
+     "carbs_g": 41.7,
+     "fat_g": 27,
+     "sugar_g": 16.4,
+     "fiber_g": 13.6,
+     "sodium_mg": 402.7
+    },
+    {
+     "date": "2026-02-16",
+     "kcal": 599.5,
+     "protein_g": 40.6,
+     "carbs_g": 58.2,
+     "fat_g": 38.2,
+     "sugar_g": 5.7,
+     "fiber_g": 2.2,
+     "sodium_mg": 1999.2
+    },
+    {
+     "date": "2026-01-26",
+     "kcal": 232.1,
+     "protein_g": 17.6,
+     "carbs_g": 65.1,
+     "fat_g": 27.5,
+     "sugar_g": 28.5,
+     "fiber_g": 4.9,
+     "sodium_mg": 638.8
+    },
+    {
+     "date": "2026-02-14",
+     "kcal": 42.3,
+     "protein_g": 35.1,
+     "carbs_g": 13,
+     "fat_g": 31.3,
+     "sugar_g": 20.3,
+     "fiber_g": 11.3,
+     "sodium_mg": 801.2
+    },
+    {
+     "date": "2026-02-12",
+     "kcal": 618.2,
+     "protein_g": 59.7,
+     "carbs_g": 67.3,
+     "fat_g": 11.4,
+     "sugar_g": 8.7,
+     "fiber_g": 2.2,
+     "sodium_mg": 719.3
+    },
+    {
+     "date": "2026-01-24",
+     "kcal": 6.2,
+     "protein_g": 31.4,
+     "carbs_g": 10.6,
+     "fat_g": 23.2,
+     "sugar_g": 26.1,
+     "fiber_g": 14.4,
+     "sodium_mg": 1957
+    },
+    {
+     "date": "2026-02-07",
+     "kcal": 746.3,
+     "protein_g": 30.2,
+     "carbs_g": 42,
+     "fat_g": 35.3,
+     "sugar_g": 3.3,
+     "fiber_g": 11.1,
+     "sodium_mg": 1199.5
+    },
+    {
+     "date": "2026-01-20",
+     "kcal": 265.1,
+     "protein_g": 10.6,
+     "carbs_g": 6.4,
+     "fat_g": 27.8,
+     "sugar_g": 18.5,
+     "fiber_g": 14.8,
+     "sodium_mg": 671
+    },
+    {
+     "date": "2026-02-13",
+     "kcal": 419.1,
+     "protein_g": 54.1,
+     "carbs_g": 51,
+     "fat_g": 25.2,
+     "sugar_g": 26.5,
+     "fiber_g": 8.4,
+     "sodium_mg": 89.7
+    },
+    {
+     "date": "2026-01-30",
+     "kcal": 155.5,
+     "protein_g": 12.9,
+     "carbs_g": 45.5,
+     "fat_g": 25.6,
+     "sugar_g": 13.6,
+     "fiber_g": 2.5,
+     "sodium_mg": 14
+    },
+    {
+     "date": "2026-02-06",
+     "kcal": 121.1,
+     "protein_g": 36.4,
+     "carbs_g": 70,
+     "fat_g": 23.5,
+     "sugar_g": 2.5,
+     "fiber_g": 9.8,
+     "sodium_mg": 127.4
+    },
+    {
+     "date": "2026-02-09",
+     "kcal": 229.9,
+     "protein_g": 27.3,
+     "carbs_g": 14.7,
+     "fat_g": 3.2,
+     "sugar_g": 28.6,
+     "fiber_g": 2.5,
+     "sodium_mg": 224.1
+    },
+    {
+     "date": "2026-01-18",
+     "kcal": 124.8,
+     "protein_g": 6.4,
+     "carbs_g": 89.4,
+     "fat_g": 8.3,
+     "sugar_g": 6.9,
+     "fiber_g": 12.6,
+     "sodium_mg": 1406.8
+    },
+    {
+     "date": "2026-01-25",
+     "kcal": 722.4,
+     "protein_g": 45.5,
+     "carbs_g": 88,
+     "fat_g": 32.2,
+     "sugar_g": 6.7,
+     "fiber_g": 6.1,
+     "sodium_mg": 684.2
+    },
+    {
+     "date": "2026-01-19",
+     "kcal": 188.8,
+     "protein_g": 1.2,
+     "carbs_g": 64.1,
+     "fat_g": 19,
+     "sugar_g": 7.7,
+     "fiber_g": 0.7,
+     "sodium_mg": 966.8
+    },
+    {
+     "date": "2026-01-26",
+     "kcal": 86.2,
+     "protein_g": 53.3,
+     "carbs_g": 39.2,
+     "fat_g": 2.5,
+     "sugar_g": 9.2,
+     "fiber_g": 2.3,
+     "sodium_mg": 1840.2
+    }
+   ],
+   "days": 30,
+   "today": "2026-02-16",
+   "want": {
+    "series": [
+     {
+      "date": "2026-01-18",
+      "totals": {
+       "kcal": 124.8,
+       "protein_g": 6.4,
+       "carbs_g": 89.4,
+       "fat_g": 8.3,
+       "sugar_g": 6.9,
+       "fiber_g": 12.6,
+       "sodium_mg": 1406.8
+      }
+     },
+     {
+      "date": "2026-01-19",
+      "totals": {
+       "kcal": 188.8,
+       "protein_g": 1.2,
+       "carbs_g": 64.1,
+       "fat_g": 19,
+       "sugar_g": 7.7,
+       "fiber_g": 0.7,
+       "sodium_mg": 966.8
+      }
+     },
+     {
+      "date": "2026-01-20",
+      "totals": {
+       "kcal": 265.1,
+       "protein_g": 10.6,
+       "carbs_g": 6.4,
+       "fat_g": 27.8,
+       "sugar_g": 18.5,
+       "fiber_g": 14.8,
+       "sodium_mg": 671
+      }
+     },
+     {
+      "date": "2026-01-21",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-01-22",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-01-23",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-01-24",
+      "totals": {
+       "kcal": 6.2,
+       "protein_g": 31.4,
+       "carbs_g": 10.6,
+       "fat_g": 23.2,
+       "sugar_g": 26.1,
+       "fiber_g": 14.4,
+       "sodium_mg": 1957
+      }
+     },
+     {
+      "date": "2026-01-25",
+      "totals": {
+       "kcal": 722.4,
+       "protein_g": 45.5,
+       "carbs_g": 88,
+       "fat_g": 32.2,
+       "sugar_g": 6.7,
+       "fiber_g": 6.1,
+       "sodium_mg": 684.2
+      }
+     },
+     {
+      "date": "2026-01-26",
+      "totals": {
+       "kcal": 318.3,
+       "protein_g": 70.9,
+       "carbs_g": 104.3,
+       "fat_g": 30,
+       "sugar_g": 37.7,
+       "fiber_g": 7.2,
+       "sodium_mg": 2479
+      }
+     },
+     {
+      "date": "2026-01-27",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-01-28",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-01-29",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-01-30",
+      "totals": {
+       "kcal": 155.5,
+       "protein_g": 12.9,
+       "carbs_g": 45.5,
+       "fat_g": 25.6,
+       "sugar_g": 13.6,
+       "fiber_g": 2.5,
+       "sodium_mg": 14
+      }
+     },
+     {
+      "date": "2026-01-31",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-02-01",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-02-02",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-02-03",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-02-04",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-02-05",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-02-06",
+      "totals": {
+       "kcal": 121.1,
+       "protein_g": 36.4,
+       "carbs_g": 70,
+       "fat_g": 23.5,
+       "sugar_g": 2.5,
+       "fiber_g": 9.8,
+       "sodium_mg": 127.4
+      }
+     },
+     {
+      "date": "2026-02-07",
+      "totals": {
+       "kcal": 746.3,
+       "protein_g": 30.2,
+       "carbs_g": 42,
+       "fat_g": 35.3,
+       "sugar_g": 3.3,
+       "fiber_g": 11.1,
+       "sodium_mg": 1199.5
+      }
+     },
+     {
+      "date": "2026-02-08",
+      "totals": {
+       "kcal": 602,
+       "protein_g": 16.5,
+       "carbs_g": 41.7,
+       "fat_g": 27,
+       "sugar_g": 16.4,
+       "fiber_g": 13.6,
+       "sodium_mg": 402.7
+      }
+     },
+     {
+      "date": "2026-02-09",
+      "totals": {
+       "kcal": 229.9,
+       "protein_g": 27.3,
+       "carbs_g": 14.7,
+       "fat_g": 3.2,
+       "sugar_g": 28.6,
+       "fiber_g": 2.5,
+       "sodium_mg": 224.1
+      }
+     },
+     {
+      "date": "2026-02-10",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-02-11",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-02-12",
+      "totals": {
+       "kcal": 618.2,
+       "protein_g": 59.7,
+       "carbs_g": 67.3,
+       "fat_g": 11.4,
+       "sugar_g": 8.7,
+       "fiber_g": 2.2,
+       "sodium_mg": 719.3
+      }
+     },
+     {
+      "date": "2026-02-13",
+      "totals": {
+       "kcal": 419.1,
+       "protein_g": 54.1,
+       "carbs_g": 51,
+       "fat_g": 25.2,
+       "sugar_g": 26.5,
+       "fiber_g": 8.4,
+       "sodium_mg": 89.7
+      }
+     },
+     {
+      "date": "2026-02-14",
+      "totals": {
+       "kcal": 42.3,
+       "protein_g": 35.1,
+       "carbs_g": 13,
+       "fat_g": 31.3,
+       "sugar_g": 20.3,
+       "fiber_g": 11.3,
+       "sodium_mg": 801.2
+      }
+     },
+     {
+      "date": "2026-02-15",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-02-16",
+      "totals": {
+       "kcal": 599.5,
+       "protein_g": 40.6,
+       "carbs_g": 58.2,
+       "fat_g": 38.2,
+       "sugar_g": 5.7,
+       "fiber_g": 2.2,
+       "sodium_mg": 1999.2
+      }
+     }
+    ],
+    "daysLogged": 15,
+    "totalDays": 30,
+    "avg": {
+     "kcal": 344,
+     "protein_g": 32,
+     "carbs_g": 51,
+     "fat_g": 24,
+     "sugar_g": 15,
+     "fiber_g": 8,
+     "sodium_mg": 916
+    }
+   }
+  },
+  {
+   "fn": "summarizePeriod",
+   "rows": [
+    {
+     "date": "2026-02-09",
+     "kcal": 58,
+     "protein_g": 58.7,
+     "carbs_g": 1,
+     "fat_g": 16.8,
+     "sugar_g": 29,
+     "fiber_g": 3.5,
+     "sodium_mg": 1.2
+    },
+    {
+     "date": "2026-02-09",
+     "kcal": 458,
+     "protein_g": 31.5,
+     "carbs_g": 51.5,
+     "fat_g": 27,
+     "sugar_g": 10.4,
+     "fiber_g": 8.1,
+     "sodium_mg": 1610.3
+    },
+    {
+     "date": "2026-02-08",
+     "kcal": 433.3,
+     "protein_g": 48.1,
+     "carbs_g": 88.2,
+     "fat_g": 5.3,
+     "sugar_g": 6.6,
+     "fiber_g": 10.6,
+     "sodium_mg": 60.6
+    },
+    {
+     "date": "2026-02-09",
+     "kcal": 539.5,
+     "protein_g": 40.8,
+     "carbs_g": 53.1,
+     "fat_g": 17.2,
+     "sugar_g": 25.2,
+     "fiber_g": 13.9,
+     "sodium_mg": 964.6
+    },
+    {
+     "date": "2026-02-08",
+     "kcal": 20.7,
+     "protein_g": 3.8,
+     "carbs_g": 14.4,
+     "fat_g": 15.6,
+     "sugar_g": 21.9,
+     "fiber_g": 4,
+     "sodium_mg": 479.8
+    },
+    {
+     "date": "2026-02-11",
+     "kcal": 606,
+     "protein_g": 56.9,
+     "carbs_g": 39.9,
+     "fat_g": 33.8,
+     "sugar_g": 0.7,
+     "fiber_g": 13.7,
+     "sodium_mg": 344.7
+    },
+    {
+     "date": "2026-02-15",
+     "kcal": 653.2,
+     "protein_g": 22.5,
+     "carbs_g": 89,
+     "fat_g": 34.7,
+     "sugar_g": 23.5,
+     "fiber_g": 8.4,
+     "sodium_mg": 1678.7
+    },
+    {
+     "date": "2026-02-09",
+     "kcal": 39.7,
+     "protein_g": 59.1,
+     "carbs_g": 75.5,
+     "fat_g": 16.8,
+     "sugar_g": 21.3,
+     "fiber_g": 10.6,
+     "sodium_mg": 1659.5
+    },
+    {
+     "date": "2026-02-14",
+     "kcal": 665.1,
+     "protein_g": 19.4,
+     "carbs_g": 57.3,
+     "fat_g": 8.8,
+     "sugar_g": 24.7,
+     "fiber_g": 3.5,
+     "sodium_mg": 1971.1
+    },
+    {
+     "date": "2026-02-17",
+     "kcal": 102.2,
+     "protein_g": 30,
+     "carbs_g": 12.1,
+     "fat_g": 26.7,
+     "sugar_g": 23.6,
+     "fiber_g": 12.1,
+     "sodium_mg": 1834
+    },
+    {
+     "date": "2026-02-13",
+     "kcal": 773.7,
+     "protein_g": 55,
+     "carbs_g": 63.6,
+     "fat_g": 28.4,
+     "sugar_g": 13.1,
+     "fiber_g": 7.4,
+     "sodium_mg": 1182.6
+    },
+    {
+     "date": "2026-02-13",
+     "kcal": 609.2,
+     "protein_g": 45.4,
+     "carbs_g": 17.4,
+     "fat_g": 11.4,
+     "sugar_g": 19.4,
+     "fiber_g": 6.2,
+     "sodium_mg": 873.7
+    },
+    {
+     "date": "2026-02-09",
+     "kcal": 244.2,
+     "protein_g": 48.9,
+     "carbs_g": 53.1,
+     "fat_g": 17.8,
+     "sugar_g": 6.1,
+     "fiber_g": 2.1,
+     "sodium_mg": 1879.2
+    },
+    {
+     "date": "2026-02-16",
+     "kcal": 277.2,
+     "protein_g": 47.4,
+     "carbs_g": 53.3,
+     "fat_g": 34.7,
+     "sugar_g": 8.6,
+     "fiber_g": 7.9,
+     "sodium_mg": 1766.6
+    },
+    {
+     "date": "2026-02-12",
+     "kcal": 636.2,
+     "protein_g": 14.2,
+     "carbs_g": 57.7,
+     "fat_g": 14.6,
+     "sugar_g": 5.1,
+     "fiber_g": 7,
+     "sodium_mg": 657.2
+    },
+    {
+     "date": "2026-02-08",
+     "kcal": 482.5,
+     "protein_g": 14.6,
+     "carbs_g": 31.2,
+     "fat_g": 34.5,
+     "sugar_g": 20.2,
+     "fiber_g": 4.3,
+     "sodium_mg": 973.3
+    }
+   ],
+   "days": 7,
+   "today": "2026-02-17",
+   "want": {
+    "series": [
+     {
+      "date": "2026-02-11",
+      "totals": {
+       "kcal": 606,
+       "protein_g": 56.9,
+       "carbs_g": 39.9,
+       "fat_g": 33.8,
+       "sugar_g": 0.7,
+       "fiber_g": 13.7,
+       "sodium_mg": 344.7
+      }
+     },
+     {
+      "date": "2026-02-12",
+      "totals": {
+       "kcal": 636.2,
+       "protein_g": 14.2,
+       "carbs_g": 57.7,
+       "fat_g": 14.6,
+       "sugar_g": 5.1,
+       "fiber_g": 7,
+       "sodium_mg": 657.2
+      }
+     },
+     {
+      "date": "2026-02-13",
+      "totals": {
+       "kcal": 1382.9,
+       "protein_g": 100.4,
+       "carbs_g": 81,
+       "fat_g": 39.8,
+       "sugar_g": 32.5,
+       "fiber_g": 13.600000000000001,
+       "sodium_mg": 2056.3
+      }
+     },
+     {
+      "date": "2026-02-14",
+      "totals": {
+       "kcal": 665.1,
+       "protein_g": 19.4,
+       "carbs_g": 57.3,
+       "fat_g": 8.8,
+       "sugar_g": 24.7,
+       "fiber_g": 3.5,
+       "sodium_mg": 1971.1
+      }
+     },
+     {
+      "date": "2026-02-15",
+      "totals": {
+       "kcal": 653.2,
+       "protein_g": 22.5,
+       "carbs_g": 89,
+       "fat_g": 34.7,
+       "sugar_g": 23.5,
+       "fiber_g": 8.4,
+       "sodium_mg": 1678.7
+      }
+     },
+     {
+      "date": "2026-02-16",
+      "totals": {
+       "kcal": 277.2,
+       "protein_g": 47.4,
+       "carbs_g": 53.3,
+       "fat_g": 34.7,
+       "sugar_g": 8.6,
+       "fiber_g": 7.9,
+       "sodium_mg": 1766.6
+      }
+     },
+     {
+      "date": "2026-02-17",
+      "totals": {
+       "kcal": 102.2,
+       "protein_g": 30,
+       "carbs_g": 12.1,
+       "fat_g": 26.7,
+       "sugar_g": 23.6,
+       "fiber_g": 12.1,
+       "sodium_mg": 1834
+      }
+     }
+    ],
+    "daysLogged": 7,
+    "totalDays": 7,
+    "avg": {
+     "kcal": 618,
+     "protein_g": 42,
+     "carbs_g": 56,
+     "fat_g": 28,
+     "sugar_g": 17,
+     "fiber_g": 9,
+     "sodium_mg": 1473
+    }
+   }
+  },
+  {
+   "fn": "summarizePeriod",
+   "rows": [
+    {
+     "date": "2026-03-15",
+     "kcal": 308.1,
+     "protein_g": 29.1,
+     "carbs_g": 11,
+     "fat_g": 20.9,
+     "sugar_g": 2.3,
+     "fiber_g": 1.5,
+     "sodium_mg": 1084.2
+    },
+    {
+     "date": "2026-03-11",
+     "kcal": 257.8,
+     "protein_g": 38.4,
+     "carbs_g": 37.6,
+     "fat_g": 35.3,
+     "sugar_g": 28,
+     "fiber_g": 13.8,
+     "sodium_mg": 844.9
+    },
+    {
+     "date": "2026-03-02",
+     "kcal": 845.2,
+     "protein_g": 28.8,
+     "carbs_g": 31.2,
+     "fat_g": 0.6,
+     "sugar_g": 18.8,
+     "fiber_g": 8.1,
+     "sodium_mg": 1707.2
+    },
+    {
+     "date": "2026-03-13",
+     "kcal": 301.9,
+     "protein_g": 29.9,
+     "carbs_g": 41.7,
+     "fat_g": 0.6,
+     "sugar_g": 23.9,
+     "fiber_g": 14.1,
+     "sodium_mg": 26.6
+    },
+    {
+     "date": "2026-03-15",
+     "kcal": 384.6,
+     "protein_g": 48.3,
+     "carbs_g": 40.2,
+     "fat_g": 31.3,
+     "sugar_g": 24.6,
+     "fiber_g": 1.2,
+     "sodium_mg": 985.2
+    },
+    {
+     "date": "2026-03-11",
+     "kcal": 184.5,
+     "protein_g": 6.9,
+     "carbs_g": 12.7,
+     "fat_g": 8.1,
+     "sugar_g": 2.1,
+     "fiber_g": 5.8,
+     "sodium_mg": 286.1
+    },
+    {
+     "date": "2026-02-24",
+     "kcal": 24.6,
+     "protein_g": 17.1,
+     "carbs_g": 60.1,
+     "fat_g": 10.3,
+     "sugar_g": 7.7,
+     "fiber_g": 13.3,
+     "sodium_mg": 558.4
+    },
+    {
+     "date": "2026-03-07",
+     "kcal": 491.5,
+     "protein_g": 21.2,
+     "carbs_g": 48,
+     "fat_g": 24.7,
+     "sugar_g": 27.4,
+     "fiber_g": 3.6,
+     "sodium_mg": 1903.7
+    },
+    {
+     "date": "2026-02-24",
+     "kcal": 515.2,
+     "protein_g": 3.5,
+     "carbs_g": 88.6,
+     "fat_g": 0.4,
+     "sugar_g": 0.4,
+     "fiber_g": 12.9,
+     "sodium_mg": 428
+    }
+   ],
+   "days": 30,
+   "today": "2026-03-25",
+   "want": {
+    "series": [
+     {
+      "date": "2026-02-24",
+      "totals": {
+       "kcal": 539.8000000000001,
+       "protein_g": 20.6,
+       "carbs_g": 148.7,
+       "fat_g": 10.700000000000001,
+       "sugar_g": 8.1,
+       "fiber_g": 26.200000000000003,
+       "sodium_mg": 986.4
+      }
+     },
+     {
+      "date": "2026-02-25",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-02-26",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-02-27",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-02-28",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-01",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-02",
+      "totals": {
+       "kcal": 845.2,
+       "protein_g": 28.8,
+       "carbs_g": 31.2,
+       "fat_g": 0.6,
+       "sugar_g": 18.8,
+       "fiber_g": 8.1,
+       "sodium_mg": 1707.2
+      }
+     },
+     {
+      "date": "2026-03-03",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-04",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-05",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-06",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-07",
+      "totals": {
+       "kcal": 491.5,
+       "protein_g": 21.2,
+       "carbs_g": 48,
+       "fat_g": 24.7,
+       "sugar_g": 27.4,
+       "fiber_g": 3.6,
+       "sodium_mg": 1903.7
+      }
+     },
+     {
+      "date": "2026-03-08",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-09",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-10",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-11",
+      "totals": {
+       "kcal": 442.3,
+       "protein_g": 45.3,
+       "carbs_g": 50.3,
+       "fat_g": 43.4,
+       "sugar_g": 30.1,
+       "fiber_g": 19.6,
+       "sodium_mg": 1131
+      }
+     },
+     {
+      "date": "2026-03-12",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-13",
+      "totals": {
+       "kcal": 301.9,
+       "protein_g": 29.9,
+       "carbs_g": 41.7,
+       "fat_g": 0.6,
+       "sugar_g": 23.9,
+       "fiber_g": 14.1,
+       "sodium_mg": 26.6
+      }
+     },
+     {
+      "date": "2026-03-14",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-15",
+      "totals": {
+       "kcal": 692.7,
+       "protein_g": 77.4,
+       "carbs_g": 51.2,
+       "fat_g": 52.2,
+       "sugar_g": 26.900000000000002,
+       "fiber_g": 2.7,
+       "sodium_mg": 2069.4
+      }
+     },
+     {
+      "date": "2026-03-16",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-17",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-18",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-19",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-20",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-21",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-22",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-23",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-24",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-25",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     }
+    ],
+    "daysLogged": 6,
+    "totalDays": 30,
+    "avg": {
+     "kcal": 552,
+     "protein_g": 37,
+     "carbs_g": 62,
+     "fat_g": 22,
+     "sugar_g": 23,
+     "fiber_g": 12,
+     "sodium_mg": 1304
+    }
+   }
+  },
+  {
+   "fn": "summarizePeriod",
+   "rows": [
+    {
+     "date": "2026-03-25",
+     "kcal": 887.3,
+     "protein_g": 9,
+     "carbs_g": 55.3,
+     "fat_g": 35.7,
+     "sugar_g": 6.8,
+     "fiber_g": 13,
+     "sodium_mg": 1921
+    },
+    {
+     "date": "2026-03-21",
+     "kcal": 438.5,
+     "protein_g": 48.6,
+     "carbs_g": 64.4,
+     "fat_g": 9,
+     "sugar_g": 21.3,
+     "fiber_g": 5.9,
+     "sodium_mg": 1638.6
+    },
+    {
+     "date": "2026-03-25",
+     "kcal": 684.3,
+     "protein_g": 52.2,
+     "carbs_g": 81.2,
+     "fat_g": 26.6,
+     "sugar_g": 10.4,
+     "fiber_g": 11.9,
+     "sodium_mg": 891.9
+    },
+    {
+     "date": "2026-03-11",
+     "kcal": 211.1,
+     "protein_g": 25.8,
+     "carbs_g": 37.6,
+     "fat_g": 5,
+     "sugar_g": 14.8,
+     "fiber_g": 2.9,
+     "sodium_mg": 1169.3
+    },
+    {
+     "date": "2026-03-22",
+     "kcal": 662.9,
+     "protein_g": 1.2,
+     "carbs_g": 79.5,
+     "fat_g": 0.1,
+     "sugar_g": 0.7,
+     "fiber_g": 6.1,
+     "sodium_mg": 1592.8
+    },
+    {
+     "date": "2026-03-27",
+     "kcal": 44,
+     "protein_g": 37.2,
+     "carbs_g": 2.8,
+     "fat_g": 31.6,
+     "sugar_g": 2.5,
+     "fiber_g": 7.1,
+     "sodium_mg": 1732.9
+    },
+    {
+     "date": "2026-03-15",
+     "kcal": 467.7,
+     "protein_g": 11.7,
+     "carbs_g": 69.3,
+     "fat_g": 37.8,
+     "sugar_g": 4.2,
+     "fiber_g": 14.2,
+     "sodium_mg": 1268.1
+    },
+    {
+     "date": "2026-03-25",
+     "kcal": 148.2,
+     "protein_g": 58.4,
+     "carbs_g": 63.2,
+     "fat_g": 17.2,
+     "sugar_g": 29.4,
+     "fiber_g": 3,
+     "sodium_mg": 365.4
+    },
+    {
+     "date": "2026-03-22",
+     "kcal": 451.9,
+     "protein_g": 28.4,
+     "carbs_g": 58,
+     "fat_g": 13.6,
+     "sugar_g": 6.6,
+     "fiber_g": 4.5,
+     "sodium_mg": 721.5
+    },
+    {
+     "date": "2026-03-21",
+     "kcal": 172.2,
+     "protein_g": 24.3,
+     "carbs_g": 39.5,
+     "fat_g": 36.5,
+     "sugar_g": 8,
+     "fiber_g": 14.8,
+     "sodium_mg": 181
+    },
+    {
+     "date": "2026-03-17",
+     "kcal": 422.5,
+     "protein_g": 40.5,
+     "carbs_g": 54.2,
+     "fat_g": 21.7,
+     "sugar_g": 23.1,
+     "fiber_g": 3.9,
+     "sodium_mg": 1931.2
+    },
+    {
+     "date": "2026-03-17",
+     "kcal": 162.6,
+     "protein_g": 54.1,
+     "carbs_g": 38.4,
+     "fat_g": 36.9,
+     "sugar_g": 11.5,
+     "fiber_g": 1.4,
+     "sodium_mg": 499.2
+    },
+    {
+     "date": "2026-03-21",
+     "kcal": 470.3,
+     "protein_g": 42.8,
+     "carbs_g": 4.6,
+     "fat_g": 37.8,
+     "sugar_g": 2.6,
+     "fiber_g": 3.7,
+     "sodium_mg": 1098.4
+    },
+    {
+     "date": "2026-03-13",
+     "kcal": 658.6,
+     "protein_g": 40.6,
+     "carbs_g": 0.6,
+     "fat_g": 7.1,
+     "sugar_g": 2.6,
+     "fiber_g": 2.5,
+     "sodium_mg": 1518.4
+    },
+    {
+     "date": "2026-03-26",
+     "kcal": 3.4,
+     "protein_g": 59.4,
+     "carbs_g": 69.4,
+     "fat_g": 39.1,
+     "sugar_g": 16,
+     "fiber_g": 5,
+     "sodium_mg": 1106.2
+    },
+    {
+     "date": "2026-03-12",
+     "kcal": 663.2,
+     "protein_g": 31,
+     "carbs_g": 33.2,
+     "fat_g": 27.5,
+     "sugar_g": 26,
+     "fiber_g": 11.3,
+     "sodium_mg": 1278.1
+    },
+    {
+     "date": "2026-03-12",
+     "kcal": 836.9,
+     "protein_g": 57.3,
+     "carbs_g": 63.1,
+     "fat_g": 34.6,
+     "sugar_g": 3.2,
+     "fiber_g": 2.7,
+     "sodium_mg": 167.8
+    },
+    {
+     "date": "2026-03-13",
+     "kcal": 148.9,
+     "protein_g": 9.5,
+     "carbs_g": 31,
+     "fat_g": 18.4,
+     "sugar_g": 14.8,
+     "fiber_g": 8.9,
+     "sodium_mg": 1904.8
+    }
+   ],
+   "days": 14,
+   "today": "2026-03-27",
+   "want": {
+    "series": [
+     {
+      "date": "2026-03-14",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-15",
+      "totals": {
+       "kcal": 467.7,
+       "protein_g": 11.7,
+       "carbs_g": 69.3,
+       "fat_g": 37.8,
+       "sugar_g": 4.2,
+       "fiber_g": 14.2,
+       "sodium_mg": 1268.1
+      }
+     },
+     {
+      "date": "2026-03-16",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-17",
+      "totals": {
+       "kcal": 585.1,
+       "protein_g": 94.6,
+       "carbs_g": 92.6,
+       "fat_g": 58.599999999999994,
+       "sugar_g": 34.6,
+       "fiber_g": 5.3,
+       "sodium_mg": 2430.4
+      }
+     },
+     {
+      "date": "2026-03-18",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-19",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-20",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-21",
+      "totals": {
+       "kcal": 1081,
+       "protein_g": 115.7,
+       "carbs_g": 108.5,
+       "fat_g": 83.3,
+       "sugar_g": 31.900000000000002,
+       "fiber_g": 24.400000000000002,
+       "sodium_mg": 2918
+      }
+     },
+     {
+      "date": "2026-03-22",
+      "totals": {
+       "kcal": 1114.8,
+       "protein_g": 29.599999999999998,
+       "carbs_g": 137.5,
+       "fat_g": 13.7,
+       "sugar_g": 7.3,
+       "fiber_g": 10.6,
+       "sodium_mg": 2314.3
+      }
+     },
+     {
+      "date": "2026-03-23",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-24",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-03-25",
+      "totals": {
+       "kcal": 1719.8,
+       "protein_g": 119.6,
+       "carbs_g": 199.7,
+       "fat_g": 79.5,
+       "sugar_g": 46.599999999999994,
+       "fiber_g": 27.9,
+       "sodium_mg": 3178.3
+      }
+     },
+     {
+      "date": "2026-03-26",
+      "totals": {
+       "kcal": 3.4,
+       "protein_g": 59.4,
+       "carbs_g": 69.4,
+       "fat_g": 39.1,
+       "sugar_g": 16,
+       "fiber_g": 5,
+       "sodium_mg": 1106.2
+      }
+     },
+     {
+      "date": "2026-03-27",
+      "totals": {
+       "kcal": 44,
+       "protein_g": 37.2,
+       "carbs_g": 2.8,
+       "fat_g": 31.6,
+       "sugar_g": 2.5,
+       "fiber_g": 7.1,
+       "sodium_mg": 1732.9
+      }
+     }
+    ],
+    "daysLogged": 7,
+    "totalDays": 14,
+    "avg": {
+     "kcal": 717,
+     "protein_g": 67,
+     "carbs_g": 97,
+     "fat_g": 49,
+     "sugar_g": 20,
+     "fiber_g": 14,
+     "sodium_mg": 2135
+    }
+   }
+  },
+  {
+   "fn": "summarizePeriod",
+   "rows": [
+    {
+     "date": "2026-03-05",
+     "kcal": 825,
+     "protein_g": 48.7,
+     "carbs_g": 53.5,
+     "fat_g": 25.1,
+     "sugar_g": 5,
+     "fiber_g": 7.9,
+     "sodium_mg": 847.9
+    },
+    {
+     "date": "2026-03-03",
+     "kcal": 568.7,
+     "protein_g": 2.8,
+     "carbs_g": 81.2,
+     "fat_g": 18.3,
+     "sugar_g": 5.1,
+     "fiber_g": 10.2,
+     "sodium_mg": 776.4
+    },
+    {
+     "date": "2026-03-05",
+     "kcal": 159.9,
+     "protein_g": 9.5,
+     "carbs_g": 32.2,
+     "fat_g": 38.3,
+     "sugar_g": 14.2,
+     "fiber_g": 7.9,
+     "sodium_mg": 1298.7
+    },
+    {
+     "date": "2026-03-03",
+     "kcal": 688.9,
+     "protein_g": 54.9,
+     "carbs_g": 26.9,
+     "fat_g": 31,
+     "sugar_g": 11.3,
+     "fiber_g": 13.1,
+     "sodium_mg": 650.4
+    },
+    {
+     "date": "2026-03-04",
+     "kcal": 510.4,
+     "protein_g": 5.4,
+     "carbs_g": 25.4,
+     "fat_g": 33.5,
+     "sugar_g": 1.4,
+     "fiber_g": 0.8,
+     "sodium_mg": 1761.8
+    },
+    {
+     "date": "2026-03-03",
+     "kcal": 864.9,
+     "protein_g": 19.7,
+     "carbs_g": 13.7,
+     "fat_g": 8.6,
+     "sugar_g": 26.9,
+     "fiber_g": 12.7,
+     "sodium_mg": 1442.2
+    },
+    {
+     "date": "2026-03-05",
+     "kcal": 517.8,
+     "protein_g": 41.2,
+     "carbs_g": 79.4,
+     "fat_g": 34.4,
+     "sugar_g": 19.2,
+     "fiber_g": 4.5,
+     "sodium_mg": 33.8
+    },
+    {
+     "date": "2026-03-06",
+     "kcal": 709.8,
+     "protein_g": 37.1,
+     "carbs_g": 56.2,
+     "fat_g": 2,
+     "sugar_g": 27.1,
+     "fiber_g": 1.7,
+     "sodium_mg": 709
+    },
+    {
+     "date": "2026-03-05",
+     "kcal": 701.8,
+     "protein_g": 54.7,
+     "carbs_g": 3.3,
+     "fat_g": 4.3,
+     "sugar_g": 2.2,
+     "fiber_g": 2.2,
+     "sodium_mg": 244.5
+    }
+   ],
+   "days": 1,
+   "today": "2026-03-06",
+   "want": {
+    "series": [
+     {
+      "date": "2026-03-06",
+      "totals": {
+       "kcal": 709.8,
+       "protein_g": 37.1,
+       "carbs_g": 56.2,
+       "fat_g": 2,
+       "sugar_g": 27.1,
+       "fiber_g": 1.7,
+       "sodium_mg": 709
+      }
+     }
+    ],
+    "daysLogged": 1,
+    "totalDays": 1,
+    "avg": {
+     "kcal": 710,
+     "protein_g": 37,
+     "carbs_g": 56,
+     "fat_g": 2,
+     "sugar_g": 27,
+     "fiber_g": 2,
+     "sodium_mg": 709
+    }
+   }
+  },
+  {
+   "fn": "summarizePeriod",
+   "rows": [
+    {
+     "date": "2026-06-26",
+     "kcal": 299.2,
+     "protein_g": 51.6,
+     "carbs_g": 12.3,
+     "fat_g": 22,
+     "sugar_g": 22.1,
+     "fiber_g": 8.6,
+     "sodium_mg": 1763.9
+    },
+    {
+     "date": "2026-06-30",
+     "kcal": 273.4,
+     "protein_g": 21.6,
+     "carbs_g": 16.4,
+     "fat_g": 38.7,
+     "sugar_g": 20.5,
+     "fiber_g": 3,
+     "sodium_mg": 1010.4
+    },
+    {
+     "date": "2026-07-09",
+     "kcal": 198.4,
+     "protein_g": 40.7,
+     "carbs_g": 46.5,
+     "fat_g": 25.4,
+     "sugar_g": 22.1,
+     "fiber_g": 2.3,
+     "sodium_mg": 690.2
+    },
+    {
+     "date": "2026-07-03",
+     "kcal": 326.9,
+     "protein_g": 55.4,
+     "carbs_g": 18.8,
+     "fat_g": 34.4,
+     "sugar_g": 8.3,
+     "fiber_g": 11.1,
+     "sodium_mg": 1172.6
+    },
+    {
+     "date": "2026-07-02",
+     "kcal": 382.4,
+     "protein_g": 8.1,
+     "carbs_g": 88.5,
+     "fat_g": 0.1,
+     "sugar_g": 19.4,
+     "fiber_g": 9.5,
+     "sodium_mg": 64.8
+    },
+    {
+     "date": "2026-06-29",
+     "kcal": 419.9,
+     "protein_g": 10.6,
+     "carbs_g": 79.8,
+     "fat_g": 22.8,
+     "sugar_g": 0.5,
+     "fiber_g": 4.8,
+     "sodium_mg": 121
+    },
+    {
+     "date": "2026-07-05",
+     "kcal": 898,
+     "protein_g": 50.3,
+     "carbs_g": 83.1,
+     "fat_g": 27.3,
+     "sugar_g": 3.6,
+     "fiber_g": 11.7,
+     "sodium_mg": 648.2
+    },
+    {
+     "date": "2026-07-11",
+     "kcal": 42.1,
+     "protein_g": 51.6,
+     "carbs_g": 22,
+     "fat_g": 37.9,
+     "sugar_g": 1.4,
+     "fiber_g": 13.9,
+     "sodium_mg": 556.3
+    },
+    {
+     "date": "2026-07-08",
+     "kcal": 564,
+     "protein_g": 16,
+     "carbs_g": 87.1,
+     "fat_g": 31.3,
+     "sugar_g": 4.9,
+     "fiber_g": 7.6,
+     "sodium_mg": 851.8
+    },
+    {
+     "date": "2026-06-28",
+     "kcal": 240.9,
+     "protein_g": 56.5,
+     "carbs_g": 76.2,
+     "fat_g": 9.8,
+     "sugar_g": 12,
+     "fiber_g": 7.8,
+     "sodium_mg": 1962.1
+    }
+   ],
+   "days": 14,
+   "today": "2026-07-11",
+   "want": {
+    "series": [
+     {
+      "date": "2026-06-28",
+      "totals": {
+       "kcal": 240.9,
+       "protein_g": 56.5,
+       "carbs_g": 76.2,
+       "fat_g": 9.8,
+       "sugar_g": 12,
+       "fiber_g": 7.8,
+       "sodium_mg": 1962.1
+      }
+     },
+     {
+      "date": "2026-06-29",
+      "totals": {
+       "kcal": 419.9,
+       "protein_g": 10.6,
+       "carbs_g": 79.8,
+       "fat_g": 22.8,
+       "sugar_g": 0.5,
+       "fiber_g": 4.8,
+       "sodium_mg": 121
+      }
+     },
+     {
+      "date": "2026-06-30",
+      "totals": {
+       "kcal": 273.4,
+       "protein_g": 21.6,
+       "carbs_g": 16.4,
+       "fat_g": 38.7,
+       "sugar_g": 20.5,
+       "fiber_g": 3,
+       "sodium_mg": 1010.4
+      }
+     },
+     {
+      "date": "2026-07-01",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-07-02",
+      "totals": {
+       "kcal": 382.4,
+       "protein_g": 8.1,
+       "carbs_g": 88.5,
+       "fat_g": 0.1,
+       "sugar_g": 19.4,
+       "fiber_g": 9.5,
+       "sodium_mg": 64.8
+      }
+     },
+     {
+      "date": "2026-07-03",
+      "totals": {
+       "kcal": 326.9,
+       "protein_g": 55.4,
+       "carbs_g": 18.8,
+       "fat_g": 34.4,
+       "sugar_g": 8.3,
+       "fiber_g": 11.1,
+       "sodium_mg": 1172.6
+      }
+     },
+     {
+      "date": "2026-07-04",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-07-05",
+      "totals": {
+       "kcal": 898,
+       "protein_g": 50.3,
+       "carbs_g": 83.1,
+       "fat_g": 27.3,
+       "sugar_g": 3.6,
+       "fiber_g": 11.7,
+       "sodium_mg": 648.2
+      }
+     },
+     {
+      "date": "2026-07-06",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-07-07",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-07-08",
+      "totals": {
+       "kcal": 564,
+       "protein_g": 16,
+       "carbs_g": 87.1,
+       "fat_g": 31.3,
+       "sugar_g": 4.9,
+       "fiber_g": 7.6,
+       "sodium_mg": 851.8
+      }
+     },
+     {
+      "date": "2026-07-09",
+      "totals": {
+       "kcal": 198.4,
+       "protein_g": 40.7,
+       "carbs_g": 46.5,
+       "fat_g": 25.4,
+       "sugar_g": 22.1,
+       "fiber_g": 2.3,
+       "sodium_mg": 690.2
+      }
+     },
+     {
+      "date": "2026-07-10",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-07-11",
+      "totals": {
+       "kcal": 42.1,
+       "protein_g": 51.6,
+       "carbs_g": 22,
+       "fat_g": 37.9,
+       "sugar_g": 1.4,
+       "fiber_g": 13.9,
+       "sodium_mg": 556.3
+      }
+     }
+    ],
+    "daysLogged": 9,
+    "totalDays": 14,
+    "avg": {
+     "kcal": 372,
+     "protein_g": 35,
+     "carbs_g": 58,
+     "fat_g": 25,
+     "sugar_g": 10,
+     "fiber_g": 8,
+     "sodium_mg": 786
+    }
+   }
+  },
+  {
+   "fn": "summarizePeriod",
+   "rows": [
+    {
+     "date": "2026-06-20",
+     "kcal": 470.4,
+     "protein_g": 19.1,
+     "carbs_g": 4.5,
+     "fat_g": 8.9,
+     "sugar_g": 24.3,
+     "fiber_g": 13.2,
+     "sodium_mg": 691.6
+    }
+   ],
+   "days": 1,
+   "today": "2026-06-20",
+   "want": {
+    "series": [
+     {
+      "date": "2026-06-20",
+      "totals": {
+       "kcal": 470.4,
+       "protein_g": 19.1,
+       "carbs_g": 4.5,
+       "fat_g": 8.9,
+       "sugar_g": 24.3,
+       "fiber_g": 13.2,
+       "sodium_mg": 691.6
+      }
+     }
+    ],
+    "daysLogged": 1,
+    "totalDays": 1,
+    "avg": {
+     "kcal": 470,
+     "protein_g": 19,
+     "carbs_g": 5,
+     "fat_g": 9,
+     "sugar_g": 24,
+     "fiber_g": 13,
+     "sodium_mg": 692
+    }
+   }
+  },
+  {
+   "fn": "summarizePeriod",
+   "rows": [
+    {
+     "date": "2026-04-20",
+     "kcal": 764.8,
+     "protein_g": 5.4,
+     "carbs_g": 39,
+     "fat_g": 3.1,
+     "sugar_g": 23.3,
+     "fiber_g": 14.1,
+     "sodium_mg": 1504.9
+    }
+   ],
+   "days": 14,
+   "today": "2026-05-06",
+   "want": {
+    "series": [
+     {
+      "date": "2026-04-23",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-24",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-25",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-26",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-27",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-28",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-29",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-30",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-05-01",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-05-02",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-05-03",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-05-04",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-05-05",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-05-06",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     }
+    ],
+    "daysLogged": 0,
+    "totalDays": 14,
+    "avg": {
+     "kcal": 0,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    }
+   }
+  },
+  {
+   "fn": "summarizePeriod",
+   "rows": [
+    {
+     "date": "2026-06-13",
+     "kcal": 766,
+     "protein_g": 56,
+     "carbs_g": 47.2,
+     "fat_g": 15.6,
+     "sugar_g": 1.8,
+     "fiber_g": 8.8,
+     "sodium_mg": 483.6
+    },
+    {
+     "date": "2026-06-27",
+     "kcal": 831.3,
+     "protein_g": 46,
+     "carbs_g": 67.1,
+     "fat_g": 8,
+     "sugar_g": 25,
+     "fiber_g": 6.7,
+     "sodium_mg": 850.7
+    },
+    {
+     "date": "2026-07-01",
+     "kcal": 105.8,
+     "protein_g": 1.2,
+     "carbs_g": 81.8,
+     "fat_g": 8,
+     "sugar_g": 8,
+     "fiber_g": 4.3,
+     "sodium_mg": 1869.6
+    },
+    {
+     "date": "2026-06-03",
+     "kcal": 296.2,
+     "protein_g": 15.7,
+     "carbs_g": 62.8,
+     "fat_g": 12.2,
+     "sugar_g": 22.1,
+     "fiber_g": 1.6,
+     "sodium_mg": 1933.6
+    },
+    {
+     "date": "2026-06-07",
+     "kcal": 92.9,
+     "protein_g": 39.1,
+     "carbs_g": 21.3,
+     "fat_g": 34.7,
+     "sugar_g": 18.3,
+     "fiber_g": 8.6,
+     "sodium_mg": 1108.4
+    },
+    {
+     "date": "2026-06-13",
+     "kcal": 832.2,
+     "protein_g": 55.9,
+     "carbs_g": 88.9,
+     "fat_g": 6.9,
+     "sugar_g": 18.5,
+     "fiber_g": 13.4,
+     "sodium_mg": 337.8
+    },
+    {
+     "date": "2026-06-12",
+     "kcal": 70.3,
+     "protein_g": 42.4,
+     "carbs_g": 86.5,
+     "fat_g": 22,
+     "sugar_g": 27.6,
+     "fiber_g": 3.2,
+     "sodium_mg": 872.6
+    },
+    {
+     "date": "2026-06-29",
+     "kcal": 412.2,
+     "protein_g": 2,
+     "carbs_g": 24.2,
+     "fat_g": 23.5,
+     "sugar_g": 7.4,
+     "fiber_g": 14.8,
+     "sodium_mg": 106.5
+    },
+    {
+     "date": "2026-06-24",
+     "kcal": 472.9,
+     "protein_g": 7.2,
+     "carbs_g": 44.9,
+     "fat_g": 23.8,
+     "sugar_g": 25.7,
+     "fiber_g": 10.4,
+     "sodium_mg": 1968.3
+    },
+    {
+     "date": "2026-06-04",
+     "kcal": 818.6,
+     "protein_g": 47.6,
+     "carbs_g": 29.2,
+     "fat_g": 39.7,
+     "sugar_g": 4.3,
+     "fiber_g": 2.2,
+     "sodium_mg": 1766.1
+    },
+    {
+     "date": "2026-06-25",
+     "kcal": 365.3,
+     "protein_g": 48.1,
+     "carbs_g": 12.4,
+     "fat_g": 5.4,
+     "sugar_g": 19.2,
+     "fiber_g": 0.3,
+     "sodium_mg": 1876.7
+    },
+    {
+     "date": "2026-06-28",
+     "kcal": 205.4,
+     "protein_g": 52.1,
+     "carbs_g": 68.2,
+     "fat_g": 34.4,
+     "sugar_g": 8.3,
+     "fiber_g": 13.8,
+     "sodium_mg": 831.4
+    },
+    {
+     "date": "2026-06-04",
+     "kcal": 851.3,
+     "protein_g": 3,
+     "carbs_g": 61.7,
+     "fat_g": 24.6,
+     "sugar_g": 22.9,
+     "fiber_g": 3.4,
+     "sodium_mg": 1460.8
+    },
+    {
+     "date": "2026-06-26",
+     "kcal": 341.8,
+     "protein_g": 9.8,
+     "carbs_g": 39.1,
+     "fat_g": 15,
+     "sugar_g": 24.6,
+     "fiber_g": 10.7,
+     "sodium_mg": 1089
+    },
+    {
+     "date": "2026-06-16",
+     "kcal": 824.1,
+     "protein_g": 14.4,
+     "carbs_g": 64.6,
+     "fat_g": 6.3,
+     "sugar_g": 14,
+     "fiber_g": 2.8,
+     "sodium_mg": 1170.3
+    }
+   ],
+   "days": 30,
+   "today": "2026-07-04",
+   "want": {
+    "series": [
+     {
+      "date": "2026-06-05",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-06",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-07",
+      "totals": {
+       "kcal": 92.9,
+       "protein_g": 39.1,
+       "carbs_g": 21.3,
+       "fat_g": 34.7,
+       "sugar_g": 18.3,
+       "fiber_g": 8.6,
+       "sodium_mg": 1108.4
+      }
+     },
+     {
+      "date": "2026-06-08",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-09",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-10",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-11",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-12",
+      "totals": {
+       "kcal": 70.3,
+       "protein_g": 42.4,
+       "carbs_g": 86.5,
+       "fat_g": 22,
+       "sugar_g": 27.6,
+       "fiber_g": 3.2,
+       "sodium_mg": 872.6
+      }
+     },
+     {
+      "date": "2026-06-13",
+      "totals": {
+       "kcal": 1598.2,
+       "protein_g": 111.9,
+       "carbs_g": 136.10000000000002,
+       "fat_g": 22.5,
+       "sugar_g": 20.3,
+       "fiber_g": 22.200000000000003,
+       "sodium_mg": 821.4000000000001
+      }
+     },
+     {
+      "date": "2026-06-14",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-15",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-16",
+      "totals": {
+       "kcal": 824.1,
+       "protein_g": 14.4,
+       "carbs_g": 64.6,
+       "fat_g": 6.3,
+       "sugar_g": 14,
+       "fiber_g": 2.8,
+       "sodium_mg": 1170.3
+      }
+     },
+     {
+      "date": "2026-06-17",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-18",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-19",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-20",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-21",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-22",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-23",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-06-24",
+      "totals": {
+       "kcal": 472.9,
+       "protein_g": 7.2,
+       "carbs_g": 44.9,
+       "fat_g": 23.8,
+       "sugar_g": 25.7,
+       "fiber_g": 10.4,
+       "sodium_mg": 1968.3
+      }
+     },
+     {
+      "date": "2026-06-25",
+      "totals": {
+       "kcal": 365.3,
+       "protein_g": 48.1,
+       "carbs_g": 12.4,
+       "fat_g": 5.4,
+       "sugar_g": 19.2,
+       "fiber_g": 0.3,
+       "sodium_mg": 1876.7
+      }
+     },
+     {
+      "date": "2026-06-26",
+      "totals": {
+       "kcal": 341.8,
+       "protein_g": 9.8,
+       "carbs_g": 39.1,
+       "fat_g": 15,
+       "sugar_g": 24.6,
+       "fiber_g": 10.7,
+       "sodium_mg": 1089
+      }
+     },
+     {
+      "date": "2026-06-27",
+      "totals": {
+       "kcal": 831.3,
+       "protein_g": 46,
+       "carbs_g": 67.1,
+       "fat_g": 8,
+       "sugar_g": 25,
+       "fiber_g": 6.7,
+       "sodium_mg": 850.7
+      }
+     },
+     {
+      "date": "2026-06-28",
+      "totals": {
+       "kcal": 205.4,
+       "protein_g": 52.1,
+       "carbs_g": 68.2,
+       "fat_g": 34.4,
+       "sugar_g": 8.3,
+       "fiber_g": 13.8,
+       "sodium_mg": 831.4
+      }
+     },
+     {
+      "date": "2026-06-29",
+      "totals": {
+       "kcal": 412.2,
+       "protein_g": 2,
+       "carbs_g": 24.2,
+       "fat_g": 23.5,
+       "sugar_g": 7.4,
+       "fiber_g": 14.8,
+       "sodium_mg": 106.5
+      }
+     },
+     {
+      "date": "2026-06-30",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-07-01",
+      "totals": {
+       "kcal": 105.8,
+       "protein_g": 1.2,
+       "carbs_g": 81.8,
+       "fat_g": 8,
+       "sugar_g": 8,
+       "fiber_g": 4.3,
+       "sodium_mg": 1869.6
+      }
+     },
+     {
+      "date": "2026-07-02",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-07-03",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-07-04",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     }
+    ],
+    "daysLogged": 11,
+    "totalDays": 30,
+    "avg": {
+     "kcal": 484,
+     "protein_g": 34,
+     "carbs_g": 59,
+     "fat_g": 19,
+     "sugar_g": 18,
+     "fiber_g": 9,
+     "sodium_mg": 1142
+    }
+   }
+  },
+  {
+   "fn": "summarizePeriod",
+   "rows": [
+    {
+     "date": "2026-05-22",
+     "kcal": 442.5,
+     "protein_g": 46.3,
+     "carbs_g": 81.4,
+     "fat_g": 8.5,
+     "sugar_g": 15.2,
+     "fiber_g": 5.8,
+     "sodium_mg": 54.3
+    },
+    {
+     "date": "2026-05-20",
+     "kcal": 73.5,
+     "protein_g": 54.1,
+     "carbs_g": 29.1,
+     "fat_g": 7.8,
+     "sugar_g": 16.5,
+     "fiber_g": 14.9,
+     "sodium_mg": 1066.9
+    },
+    {
+     "date": "2026-05-22",
+     "kcal": 250.1,
+     "protein_g": 28.2,
+     "carbs_g": 79,
+     "fat_g": 35.5,
+     "sugar_g": 26.7,
+     "fiber_g": 10.9,
+     "sodium_mg": 718
+    },
+    {
+     "date": "2026-05-22",
+     "kcal": 402.5,
+     "protein_g": 17.4,
+     "carbs_g": 62.6,
+     "fat_g": 21.5,
+     "sugar_g": 21.6,
+     "fiber_g": 9.4,
+     "sodium_mg": 54.9
+    },
+    {
+     "date": "2026-05-20",
+     "kcal": 561.6,
+     "protein_g": 51.1,
+     "carbs_g": 78,
+     "fat_g": 26.9,
+     "sugar_g": 13.8,
+     "fiber_g": 14.6,
+     "sodium_mg": 881.1
+    },
+    {
+     "date": "2026-05-22",
+     "kcal": 644.7,
+     "protein_g": 14.8,
+     "carbs_g": 12.6,
+     "fat_g": 29.4,
+     "sugar_g": 6.8,
+     "fiber_g": 8.6,
+     "sodium_mg": 1502.4
+    },
+    {
+     "date": "2026-05-20",
+     "kcal": 190.6,
+     "protein_g": 11.2,
+     "carbs_g": 21.6,
+     "fat_g": 28.9,
+     "sugar_g": 22.2,
+     "fiber_g": 9.6,
+     "sodium_mg": 158.8
+    },
+    {
+     "date": "2026-05-22",
+     "kcal": 579.2,
+     "protein_g": 25.3,
+     "carbs_g": 45.2,
+     "fat_g": 7.8,
+     "sugar_g": 17.1,
+     "fiber_g": 7.9,
+     "sodium_mg": 1431.1
+    },
+    {
+     "date": "2026-05-20",
+     "kcal": 675.2,
+     "protein_g": 40.9,
+     "carbs_g": 12,
+     "fat_g": 7.8,
+     "sugar_g": 4,
+     "fiber_g": 7.6,
+     "sodium_mg": 511.5
+    },
+    {
+     "date": "2026-05-22",
+     "kcal": 125.1,
+     "protein_g": 2,
+     "carbs_g": 86.7,
+     "fat_g": 28.6,
+     "sugar_g": 19.6,
+     "fiber_g": 6.2,
+     "sodium_mg": 852.6
+    },
+    {
+     "date": "2026-05-19",
+     "kcal": 517.8,
+     "protein_g": 24.8,
+     "carbs_g": 89.5,
+     "fat_g": 1.1,
+     "sugar_g": 16.6,
+     "fiber_g": 0.9,
+     "sodium_mg": 1469.7
+    },
+    {
+     "date": "2026-05-20",
+     "kcal": 391.9,
+     "protein_g": 16,
+     "carbs_g": 22.4,
+     "fat_g": 24.1,
+     "sugar_g": 8.1,
+     "fiber_g": 13,
+     "sodium_mg": 674.5
+    },
+    {
+     "date": "2026-05-22",
+     "kcal": 599,
+     "protein_g": 25,
+     "carbs_g": 13.9,
+     "fat_g": 6.4,
+     "sugar_g": 16.7,
+     "fiber_g": 11,
+     "sodium_mg": 709.2
+    }
+   ],
+   "days": 1,
+   "today": "2026-05-22",
+   "want": {
+    "series": [
+     {
+      "date": "2026-05-22",
+      "totals": {
+       "kcal": 3043.1,
+       "protein_g": 159,
+       "carbs_g": 381.4,
+       "fat_g": 137.70000000000002,
+       "sugar_g": 123.7,
+       "fiber_g": 59.800000000000004,
+       "sodium_mg": 5322.5
+      }
+     }
+    ],
+    "daysLogged": 1,
+    "totalDays": 1,
+    "avg": {
+     "kcal": 3043,
+     "protein_g": 159,
+     "carbs_g": 381,
+     "fat_g": 138,
+     "sugar_g": 124,
+     "fiber_g": 60,
+     "sodium_mg": 5323
+    }
+   }
+  },
+  {
+   "fn": "summarizePeriod",
+   "rows": [],
+   "days": 7,
+   "today": "2026-04-18",
+   "want": {
+    "series": [
+     {
+      "date": "2026-04-12",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-13",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-14",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-15",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-16",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-17",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-04-18",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     }
+    ],
+    "daysLogged": 0,
+    "totalDays": 7,
+    "avg": {
+     "kcal": 0,
+     "protein_g": 0,
+     "carbs_g": 0,
+     "fat_g": 0,
+     "sugar_g": 0,
+     "fiber_g": 0,
+     "sodium_mg": 0
+    }
+   }
+  },
+  {
+   "fn": "summarizePeriod",
+   "rows": [
+    {
+     "date": "2026-08-03",
+     "kcal": 835.6,
+     "protein_g": 59.8,
+     "carbs_g": 48.3,
+     "fat_g": 27,
+     "sugar_g": 29.1,
+     "fiber_g": 1.6,
+     "sodium_mg": 91.8
+    },
+    {
+     "date": "2026-08-04",
+     "kcal": 490.4,
+     "protein_g": 27.9,
+     "carbs_g": 82.3,
+     "fat_g": 39.1,
+     "sugar_g": 9.8,
+     "fiber_g": 13.9,
+     "sodium_mg": 1268.6
+    },
+    {
+     "date": "2026-08-08",
+     "kcal": 804.1,
+     "protein_g": 54.4,
+     "carbs_g": 78.6,
+     "fat_g": 1.7,
+     "sugar_g": 7.2,
+     "fiber_g": 3.2,
+     "sodium_mg": 1077.8
+    },
+    {
+     "date": "2026-07-19",
+     "kcal": 440.6,
+     "protein_g": 47.9,
+     "carbs_g": 9.3,
+     "fat_g": 7.2,
+     "sugar_g": 28.5,
+     "fiber_g": 7.9,
+     "sodium_mg": 1945.6
+    },
+    {
+     "date": "2026-08-12",
+     "kcal": 304.9,
+     "protein_g": 24.3,
+     "carbs_g": 6.7,
+     "fat_g": 34.6,
+     "sugar_g": 2.7,
+     "fiber_g": 0.2,
+     "sodium_mg": 537
+    },
+    {
+     "date": "2026-08-08",
+     "kcal": 311.5,
+     "protein_g": 9.9,
+     "carbs_g": 61.2,
+     "fat_g": 18.4,
+     "sugar_g": 15.4,
+     "fiber_g": 13.5,
+     "sodium_mg": 1381.3
+    },
+    {
+     "date": "2026-08-01",
+     "kcal": 550.9,
+     "protein_g": 29.7,
+     "carbs_g": 40.4,
+     "fat_g": 38.6,
+     "sugar_g": 11.8,
+     "fiber_g": 8.1,
+     "sodium_mg": 1882.5
+    },
+    {
+     "date": "2026-07-13",
+     "kcal": 588.2,
+     "protein_g": 28.4,
+     "carbs_g": 51.6,
+     "fat_g": 3,
+     "sugar_g": 24.2,
+     "fiber_g": 3.4,
+     "sodium_mg": 1656.3
+    },
+    {
+     "date": "2026-08-12",
+     "kcal": 462.2,
+     "protein_g": 58.8,
+     "carbs_g": 66.3,
+     "fat_g": 29.6,
+     "sugar_g": 0.3,
+     "fiber_g": 11.8,
+     "sodium_mg": 132.1
+    },
+    {
+     "date": "2026-07-17",
+     "kcal": 254.3,
+     "protein_g": 41.5,
+     "carbs_g": 76.4,
+     "fat_g": 12.7,
+     "sugar_g": 20.1,
+     "fiber_g": 10.7,
+     "sodium_mg": 1198.8
+    },
+    {
+     "date": "2026-07-15",
+     "kcal": 54.6,
+     "protein_g": 4.1,
+     "carbs_g": 56.9,
+     "fat_g": 0.3,
+     "sugar_g": 9.7,
+     "fiber_g": 2,
+     "sodium_mg": 48.8
+    },
+    {
+     "date": "2026-08-04",
+     "kcal": 640,
+     "protein_g": 33.1,
+     "carbs_g": 6.2,
+     "fat_g": 37.5,
+     "sugar_g": 26.9,
+     "fiber_g": 9.8,
+     "sodium_mg": 1131
+    },
+    {
+     "date": "2026-08-01",
+     "kcal": 660.4,
+     "protein_g": 35.6,
+     "carbs_g": 18,
+     "fat_g": 28.2,
+     "sugar_g": 27.8,
+     "fiber_g": 3.4,
+     "sodium_mg": 1115.4
+    },
+    {
+     "date": "2026-08-08",
+     "kcal": 419.8,
+     "protein_g": 56.5,
+     "carbs_g": 10.6,
+     "fat_g": 3,
+     "sugar_g": 16.2,
+     "fiber_g": 7.7,
+     "sodium_mg": 906
+    },
+    {
+     "date": "2026-07-18",
+     "kcal": 542.2,
+     "protein_g": 28.1,
+     "carbs_g": 71.5,
+     "fat_g": 32.7,
+     "sugar_g": 21.2,
+     "fiber_g": 4.7,
+     "sodium_mg": 601.6
+    },
+    {
+     "date": "2026-07-27",
+     "kcal": 547.9,
+     "protein_g": 27.5,
+     "carbs_g": 15.1,
+     "fat_g": 37.9,
+     "sugar_g": 27,
+     "fiber_g": 12.9,
+     "sodium_mg": 854.3
+    },
+    {
+     "date": "2026-07-19",
+     "kcal": 793.5,
+     "protein_g": 22.7,
+     "carbs_g": 22.6,
+     "fat_g": 11.6,
+     "sugar_g": 24.6,
+     "fiber_g": 5,
+     "sodium_mg": 900.7
+    },
+    {
+     "date": "2026-07-14",
+     "kcal": 163.1,
+     "protein_g": 41.2,
+     "carbs_g": 20.2,
+     "fat_g": 19.5,
+     "sugar_g": 10.4,
+     "fiber_g": 6.9,
+     "sodium_mg": 1321.1
+    }
+   ],
+   "days": 30,
+   "today": "2026-08-13",
+   "want": {
+    "series": [
+     {
+      "date": "2026-07-15",
+      "totals": {
+       "kcal": 54.6,
+       "protein_g": 4.1,
+       "carbs_g": 56.9,
+       "fat_g": 0.3,
+       "sugar_g": 9.7,
+       "fiber_g": 2,
+       "sodium_mg": 48.8
+      }
+     },
+     {
+      "date": "2026-07-16",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-07-17",
+      "totals": {
+       "kcal": 254.3,
+       "protein_g": 41.5,
+       "carbs_g": 76.4,
+       "fat_g": 12.7,
+       "sugar_g": 20.1,
+       "fiber_g": 10.7,
+       "sodium_mg": 1198.8
+      }
+     },
+     {
+      "date": "2026-07-18",
+      "totals": {
+       "kcal": 542.2,
+       "protein_g": 28.1,
+       "carbs_g": 71.5,
+       "fat_g": 32.7,
+       "sugar_g": 21.2,
+       "fiber_g": 4.7,
+       "sodium_mg": 601.6
+      }
+     },
+     {
+      "date": "2026-07-19",
+      "totals": {
+       "kcal": 1234.1,
+       "protein_g": 70.6,
+       "carbs_g": 31.900000000000002,
+       "fat_g": 18.8,
+       "sugar_g": 53.1,
+       "fiber_g": 12.9,
+       "sodium_mg": 2846.3
+      }
+     },
+     {
+      "date": "2026-07-20",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-07-21",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-07-22",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-07-23",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-07-24",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-07-25",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-07-26",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-07-27",
+      "totals": {
+       "kcal": 547.9,
+       "protein_g": 27.5,
+       "carbs_g": 15.1,
+       "fat_g": 37.9,
+       "sugar_g": 27,
+       "fiber_g": 12.9,
+       "sodium_mg": 854.3
+      }
+     },
+     {
+      "date": "2026-07-28",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-07-29",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-07-30",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-07-31",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-08-01",
+      "totals": {
+       "kcal": 1211.3,
+       "protein_g": 65.3,
+       "carbs_g": 58.4,
+       "fat_g": 66.8,
+       "sugar_g": 39.6,
+       "fiber_g": 11.5,
+       "sodium_mg": 2997.9
+      }
+     },
+     {
+      "date": "2026-08-02",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-08-03",
+      "totals": {
+       "kcal": 835.6,
+       "protein_g": 59.8,
+       "carbs_g": 48.3,
+       "fat_g": 27,
+       "sugar_g": 29.1,
+       "fiber_g": 1.6,
+       "sodium_mg": 91.8
+      }
+     },
+     {
+      "date": "2026-08-04",
+      "totals": {
+       "kcal": 1130.4,
+       "protein_g": 61,
+       "carbs_g": 88.5,
+       "fat_g": 76.6,
+       "sugar_g": 36.7,
+       "fiber_g": 23.700000000000003,
+       "sodium_mg": 2399.6
+      }
+     },
+     {
+      "date": "2026-08-05",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-08-06",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-08-07",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-08-08",
+      "totals": {
+       "kcal": 1535.3999999999999,
+       "protein_g": 120.8,
+       "carbs_g": 150.4,
+       "fat_g": 23.099999999999998,
+       "sugar_g": 38.8,
+       "fiber_g": 24.4,
+       "sodium_mg": 3365.1
+      }
+     },
+     {
+      "date": "2026-08-09",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-08-10",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-08-11",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     },
+     {
+      "date": "2026-08-12",
+      "totals": {
+       "kcal": 767.0999999999999,
+       "protein_g": 83.1,
+       "carbs_g": 73,
+       "fat_g": 64.2,
+       "sugar_g": 3,
+       "fiber_g": 12,
+       "sodium_mg": 669.1
+      }
+     },
+     {
+      "date": "2026-08-13",
+      "totals": {
+       "kcal": 0,
+       "protein_g": 0,
+       "carbs_g": 0,
+       "fat_g": 0,
+       "sugar_g": 0,
+       "fiber_g": 0,
+       "sodium_mg": 0
+      }
+     }
+    ],
+    "daysLogged": 10,
+    "totalDays": 30,
+    "avg": {
+     "kcal": 811,
+     "protein_g": 56,
+     "carbs_g": 67,
+     "fat_g": 36,
+     "sugar_g": 28,
+     "fiber_g": 12,
+     "sodium_mg": 1507
+    }
+   }
+  },
+  {
+   "fn": "summarizePeriod",
+   "rows": [
+    {
+     "date": "2026-05-08",
+     "kcal": 97.3,
+     "protein_g": 32.3,
+     "carbs_g": 46.5,
+     "fat_g": 4.7,
+     "sugar_g": 21.9,
+     "fiber_g": 10.7,
+     "sodium_mg": 380.3
+    },
+    {
+     "date": "2026-05-05",
+     "kcal": 297.1,
+     "protein_g": 9.3,
+     "carbs_g": 66.7,
+     "fat_g": 22.8,
+     "sugar_g": 6.6,
+     "fiber_g": 1.7,
+     "sodium_mg": 935.6
+    },
+    {
+     "date": "2026-05-06",
+     "kcal": 252.6,
+     "protein_g": 11.3,
+     "carbs_g": 7.4,
+     "fat_g": 39.7,
+     "sugar_g": 28.6,
+     "fiber_g": 4.3,
+     "sodium_mg": 873.4
+    },
+    {
+     "date": "2026-05-08",
+     "kcal": 448.3,
+     "protein_g": 54.1,
+     "carbs_g": 77.5,
+     "fat_g": 9.6,
+     "sugar_g": 21.8,
+     "fiber_g": 0.6,
+     "sodium_mg": 525.6
+    },
+    {
+     "date": "2026-05-07",
+     "kcal": 552.6,
+     "protein_g": 50,
+     "carbs_g": 34.7,
+     "fat_g": 38.9,
+     "sugar_g": 6.9,
+     "fiber_g": 12.6,
+     "sodium_mg": 1455.4
+    },
+    {
+     "date": "2026-05-08",
+     "kcal": 712,
+     "protein_g": 7,
+     "carbs_g": 11.5,
+     "fat_g": 9.3,
+     "sugar_g": 20.3,
+     "fiber_g": 12.5,
+     "sodium_mg": 1527
+    },
+    {
+     "date": "2026-05-05",
+     "kcal": 520.9,
+     "protein_g": 54.7,
+     "carbs_g": 33.6,
+     "fat_g": 4.2,
+     "sugar_g": 1.9,
+     "fiber_g": 8.6,
+     "sodium_mg": 372.6
+    },
+    {
+     "date": "2026-05-05",
+     "kcal": 51.8,
+     "protein_g": 53.7,
+     "carbs_g": 54.2,
+     "fat_g": 3.8,
+     "sugar_g": 8.4,
+     "fiber_g": 12.6,
+     "sodium_mg": 1845.8
+    },
+    {
+     "date": "2026-05-08",
+     "kcal": 29.1,
+     "protein_g": 52.6,
+     "carbs_g": 31,
+     "fat_g": 24.8,
+     "sugar_g": 16.6,
+     "fiber_g": 2.9,
+     "sodium_mg": 782.8
+    },
+    {
+     "date": "2026-05-08",
+     "kcal": 185.2,
+     "protein_g": 32.8,
+     "carbs_g": 17,
+     "fat_g": 13.4,
+     "sugar_g": 17.9,
+     "fiber_g": 11.5,
+     "sodium_mg": 1238.7
+    }
+   ],
+   "days": 1,
+   "today": "2026-05-08",
+   "want": {
+    "series": [
+     {
+      "date": "2026-05-08",
+      "totals": {
+       "kcal": 1471.8999999999999,
+       "protein_g": 178.8,
+       "carbs_g": 183.5,
+       "fat_g": 61.800000000000004,
+       "sugar_g": 98.5,
+       "fiber_g": 38.199999999999996,
+       "sodium_mg": 4454.4
+      }
+     }
+    ],
+    "daysLogged": 1,
+    "totalDays": 1,
+    "avg": {
+     "kcal": 1472,
+     "protein_g": 179,
+     "carbs_g": 184,
+     "fat_g": 62,
+     "sugar_g": 99,
+     "fiber_g": 38,
+     "sodium_mg": 4454
+    }
+   }
+  },
+  {
+   "fn": "buildGroceryList",
+   "items": [],
+   "want": []
+  },
+  {
+   "fn": "buildGroceryList",
+   "items": [
+    {
+     "ingredients": null
+    },
+    {}
+   ],
+   "want": []
+  },
+  {
+   "fn": "buildGroceryList",
+   "items": [
+    {
+     "ingredients": [
+      {
+       "name": "Oats",
+       "qty": "80g"
+      },
+      {
+       "name": "banana"
+      },
+      {
+       "name": "  "
+      }
+     ]
+    },
+    {
+     "ingredients": [
+      {
+       "name": "oats"
+      },
+      {
+       "name": "Banana"
+      },
+      {
+       "name": "Éclair"
+      },
+      {
+       "name": "apple"
+      },
+      {
+       "name": "Zucchini"
+      }
+     ]
+    },
+    {
+     "ingredients": [
+      {
+       "name": "eggs"
+      },
+      {
+       "name": "Eggs"
+      },
+      {
+       "name": "égg noodles"
+      },
+      {
+       "name": "Apple"
+      },
+      {
+       "name": "10 almonds"
+      },
+      {
+       "name": "2 limes"
+      }
+     ]
+    }
+   ],
+   "want": [
+    {
+     "name": "10 almonds",
+     "count": 1
+    },
+    {
+     "name": "2 limes",
+     "count": 1
+    },
+    {
+     "name": "apple",
+     "count": 2
+    },
+    {
+     "name": "banana",
+     "count": 2
+    },
+    {
+     "name": "Éclair",
+     "count": 1
+    },
+    {
+     "name": "égg noodles",
+     "count": 1
+    },
+    {
+     "name": "eggs",
+     "count": 2
+    },
+    {
+     "name": "Oats",
+     "count": 2
+    },
+    {
+     "name": "Zucchini",
+     "count": 1
+    }
+   ]
+  }
+ ]
+}

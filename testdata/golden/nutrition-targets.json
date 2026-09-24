@@ -1,0 +1,1152 @@
+{
+ "generatedBy": "scripts/golden/generate.ts",
+ "topic": "nutrition-targets",
+ "cases": [
+  {
+   "input": {
+    "sex": "male",
+    "age": 35,
+    "heightCm": 180,
+    "weightKg": 82,
+    "trainingDaysPerWeek": 4,
+    "goal": "lose"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2260,
+    "protein_g": 180,
+    "carbs_g": 243,
+    "fat_g": 63
+   }
+  },
+  {
+   "input": {
+    "sex": "female",
+    "age": 42,
+    "heightCm": 165,
+    "weightKg": 70,
+    "trainingDaysPerWeek": 0,
+    "goal": "maintain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 1630,
+    "protein_g": 112,
+    "carbs_g": 194,
+    "fat_g": 45
+   }
+  },
+  {
+   "input": {
+    "sex": null,
+    "age": 30,
+    "heightCm": 175,
+    "weightKg": 75,
+    "trainingDaysPerWeek": 7,
+    "goal": "gain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 3440,
+    "protein_g": 135,
+    "carbs_g": 509,
+    "fat_g": 96
+   }
+  },
+  {
+   "input": {
+    "sex": "male",
+    "age": null,
+    "heightCm": 180,
+    "weightKg": 82,
+    "trainingDaysPerWeek": 3,
+    "goal": "lose"
+   },
+   "can": false,
+   "want": null
+  },
+  {
+   "input": {
+    "sex": "male",
+    "age": 30,
+    "heightCm": 0,
+    "weightKg": 82,
+    "trainingDaysPerWeek": 3,
+    "goal": "lose"
+   },
+   "can": false,
+   "want": null
+  },
+  {
+   "input": {
+    "sex": "female",
+    "age": 80,
+    "heightCm": 150,
+    "weightKg": 45,
+    "trainingDaysPerWeek": 2.5,
+    "goal": "lose"
+   },
+   "can": true,
+   "want": {
+    "kcal": 1050,
+    "protein_g": 99,
+    "carbs_g": 98,
+    "fat_g": 29
+   }
+  },
+  {
+   "input": {
+    "sex": "male",
+    "age": 25,
+    "heightCm": 190,
+    "weightKg": 100,
+    "trainingDaysPerWeek": 12,
+    "goal": "recomp"
+   },
+   "can": true,
+   "want": {
+    "kcal": 3930,
+    "protein_g": 220,
+    "carbs_g": 517,
+    "fat_g": 109
+   }
+  },
+  {
+   "input": {
+    "sex": "male",
+    "age": 25,
+    "heightCm": 190,
+    "weightKg": 100,
+    "trainingDaysPerWeek": -3,
+    "goal": "gain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2780,
+    "protein_g": 180,
+    "carbs_g": 342,
+    "fat_g": 77
+   }
+  },
+  {
+   "input": {
+    "sex": "F",
+    "age": 73,
+    "heightCm": 184.6,
+    "weightKg": 109.2,
+    "trainingDaysPerWeek": 3,
+    "goal": "maintain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2670,
+    "protein_g": 175,
+    "carbs_g": 326,
+    "fat_g": 74
+   }
+  },
+  {
+   "input": {
+    "sex": "Female",
+    "age": 23,
+    "heightCm": 151.7,
+    "weightKg": 124.7,
+    "trainingDaysPerWeek": 7,
+    "goal": "lose"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2990,
+    "protein_g": 274,
+    "carbs_g": 287,
+    "fat_g": 83
+   }
+  },
+  {
+   "input": {
+    "sex": "m",
+    "age": 41,
+    "heightCm": 172.2,
+    "weightKg": 119.1,
+    "trainingDaysPerWeek": 2,
+    "goal": "recomp"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2840,
+    "protein_g": 262,
+    "carbs_g": 270,
+    "fat_g": 79
+   }
+  },
+  {
+   "input": {
+    "sex": null,
+    "age": 27,
+    "heightCm": 169.4,
+    "weightKg": 100.6,
+    "trainingDaysPerWeek": 4,
+    "goal": "maintain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2870,
+    "protein_g": 161,
+    "carbs_g": 377,
+    "fat_g": 80
+   }
+  },
+  {
+   "input": {
+    "sex": "m",
+    "age": 38,
+    "heightCm": 169.2,
+    "weightKg": 86.4,
+    "trainingDaysPerWeek": 0,
+    "goal": "gain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2330,
+    "protein_g": 156,
+    "carbs_g": 280,
+    "fat_g": 65
+   }
+  },
+  {
+   "input": {
+    "sex": "male",
+    "age": 22,
+    "heightCm": 160.2,
+    "weightKg": 56.7,
+    "trainingDaysPerWeek": 0,
+    "goal": "lose"
+   },
+   "can": true,
+   "want": {
+    "kcal": 1610,
+    "protein_g": 125,
+    "carbs_g": 176,
+    "fat_g": 45
+   }
+  },
+  {
+   "input": {
+    "sex": "",
+    "age": 47,
+    "heightCm": 170.9,
+    "weightKg": 95.4,
+    "trainingDaysPerWeek": 6,
+    "goal": "lose"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2420,
+    "protein_g": 210,
+    "carbs_g": 244,
+    "fat_g": 67
+   }
+  },
+  {
+   "input": {
+    "sex": "F",
+    "age": 73,
+    "heightCm": 161.9,
+    "weightKg": 108.2,
+    "trainingDaysPerWeek": 5,
+    "goal": "lose"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2220,
+    "protein_g": 238,
+    "carbs_g": 178,
+    "fat_g": 62
+   }
+  },
+  {
+   "input": {
+    "sex": "other",
+    "age": 70,
+    "heightCm": 179.8,
+    "weightKg": 46.3,
+    "trainingDaysPerWeek": 5,
+    "goal": "gain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2240,
+    "protein_g": 83,
+    "carbs_g": 338,
+    "fat_g": 62
+   }
+  },
+  {
+   "input": {
+    "sex": "other",
+    "age": 66,
+    "heightCm": 177.8,
+    "weightKg": 76.1,
+    "trainingDaysPerWeek": 2,
+    "goal": "recomp"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2010,
+    "protein_g": 167,
+    "carbs_g": 210,
+    "fat_g": 56
+   }
+  },
+  {
+   "input": {
+    "sex": "male",
+    "age": 41,
+    "heightCm": 161,
+    "weightKg": 49.6,
+    "trainingDaysPerWeek": 7,
+    "goal": "maintain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2470,
+    "protein_g": 79,
+    "carbs_g": 383,
+    "fat_g": 69
+   }
+  },
+  {
+   "input": {
+    "sex": "F",
+    "age": 27,
+    "heightCm": 194,
+    "weightKg": 78.9,
+    "trainingDaysPerWeek": 6,
+    "goal": "recomp"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2940,
+    "protein_g": 174,
+    "carbs_g": 377,
+    "fat_g": 82
+   }
+  },
+  {
+   "input": {
+    "sex": "male",
+    "age": 27,
+    "heightCm": 165,
+    "weightKg": 123.8,
+    "trainingDaysPerWeek": 7,
+    "goal": "gain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 4550,
+    "protein_g": 223,
+    "carbs_g": 631,
+    "fat_g": 126
+   }
+  },
+  {
+   "input": {
+    "sex": "male",
+    "age": 30,
+    "heightCm": 166.2,
+    "weightKg": 104.2,
+    "trainingDaysPerWeek": 7,
+    "goal": "recomp"
+   },
+   "can": true,
+   "want": {
+    "kcal": 3680,
+    "protein_g": 229,
+    "carbs_g": 462,
+    "fat_g": 102
+   }
+  },
+  {
+   "input": {
+    "sex": "",
+    "age": 37,
+    "heightCm": 160.2,
+    "weightKg": 68.4,
+    "trainingDaysPerWeek": 7,
+    "goal": "recomp"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2700,
+    "protein_g": 150,
+    "carbs_g": 356,
+    "fat_g": 75
+   }
+  },
+  {
+   "input": {
+    "sex": "other",
+    "age": 64,
+    "heightCm": 175.2,
+    "weightKg": 77.8,
+    "trainingDaysPerWeek": 1,
+    "goal": "maintain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2030,
+    "protein_g": 124,
+    "carbs_g": 258,
+    "fat_g": 56
+   }
+  },
+  {
+   "input": {
+    "sex": "other",
+    "age": 39,
+    "heightCm": 188.8,
+    "weightKg": 47.3,
+    "trainingDaysPerWeek": 4,
+    "goal": "recomp"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2140,
+    "protein_g": 104,
+    "carbs_g": 298,
+    "fat_g": 59
+   }
+  },
+  {
+   "input": {
+    "sex": "",
+    "age": 48,
+    "heightCm": 171.1,
+    "weightKg": 109.8,
+    "trainingDaysPerWeek": 7,
+    "goal": "maintain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 3510,
+    "protein_g": 176,
+    "carbs_g": 481,
+    "fat_g": 98
+   }
+  },
+  {
+   "input": {
+    "sex": "Female",
+    "age": 33,
+    "heightCm": 152.6,
+    "weightKg": 116.4,
+    "trainingDaysPerWeek": 2,
+    "goal": "gain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2760,
+    "protein_g": 210,
+    "carbs_g": 307,
+    "fat_g": 77
+   }
+  },
+  {
+   "input": {
+    "sex": "other",
+    "age": 50,
+    "heightCm": 164.1,
+    "weightKg": 72.8,
+    "trainingDaysPerWeek": 2,
+    "goal": "gain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2200,
+    "protein_g": 131,
+    "carbs_g": 282,
+    "fat_g": 61
+   }
+  },
+  {
+   "input": {
+    "sex": "F",
+    "age": 59,
+    "heightCm": 164.2,
+    "weightKg": 103.9,
+    "trainingDaysPerWeek": 7,
+    "goal": "gain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 3420,
+    "protein_g": 187,
+    "carbs_g": 454,
+    "fat_g": 95
+   }
+  },
+  {
+   "input": {
+    "sex": "male",
+    "age": 20,
+    "heightCm": 158.8,
+    "weightKg": 109.6,
+    "trainingDaysPerWeek": 3,
+    "goal": "gain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 3460,
+    "protein_g": 197,
+    "carbs_g": 452,
+    "fat_g": 96
+   }
+  },
+  {
+   "input": {
+    "sex": "other",
+    "age": 66,
+    "heightCm": 151.4,
+    "weightKg": 86.6,
+    "trainingDaysPerWeek": 2,
+    "goal": "gain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2160,
+    "protein_g": 156,
+    "carbs_g": 249,
+    "fat_g": 60
+   }
+  },
+  {
+   "input": {
+    "sex": "male",
+    "age": 33,
+    "heightCm": 159.8,
+    "weightKg": 117.5,
+    "trainingDaysPerWeek": 6,
+    "goal": "recomp"
+   },
+   "can": true,
+   "want": {
+    "kcal": 3470,
+    "protein_g": 259,
+    "carbs_g": 393,
+    "fat_g": 96
+   }
+  },
+  {
+   "input": {
+    "sex": "m",
+    "age": 31,
+    "heightCm": 168.4,
+    "weightKg": 109.3,
+    "trainingDaysPerWeek": 7,
+    "goal": "lose"
+   },
+   "can": true,
+   "want": {
+    "kcal": 3110,
+    "protein_g": 240,
+    "carbs_g": 344,
+    "fat_g": 86
+   }
+  },
+  {
+   "input": {
+    "sex": "Female",
+    "age": 47,
+    "heightCm": 164.8,
+    "weightKg": 103.2,
+    "trainingDaysPerWeek": 7,
+    "goal": "lose"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2600,
+    "protein_g": 227,
+    "carbs_g": 261,
+    "fat_g": 72
+   }
+  },
+  {
+   "input": {
+    "sex": "m",
+    "age": 27,
+    "heightCm": 192.5,
+    "weightKg": 119.6,
+    "trainingDaysPerWeek": 5,
+    "goal": "recomp"
+   },
+   "can": true,
+   "want": {
+    "kcal": 3910,
+    "protein_g": 263,
+    "carbs_g": 469,
+    "fat_g": 109
+   }
+  },
+  {
+   "input": {
+    "sex": "m",
+    "age": 24,
+    "heightCm": 191.3,
+    "weightKg": 114.2,
+    "trainingDaysPerWeek": 4,
+    "goal": "maintain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 3450,
+    "protein_g": 183,
+    "carbs_g": 464,
+    "fat_g": 96
+   }
+  },
+  {
+   "input": {
+    "sex": "Female",
+    "age": 49,
+    "heightCm": 160,
+    "weightKg": 85.6,
+    "trainingDaysPerWeek": 2,
+    "goal": "gain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2230,
+    "protein_g": 154,
+    "carbs_g": 264,
+    "fat_g": 62
+   }
+  },
+  {
+   "input": {
+    "sex": "F",
+    "age": 21,
+    "heightCm": 152.4,
+    "weightKg": 88,
+    "trainingDaysPerWeek": 3,
+    "goal": "maintain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2430,
+    "protein_g": 141,
+    "carbs_g": 314,
+    "fat_g": 68
+   }
+  },
+  {
+   "input": {
+    "sex": "m",
+    "age": 46,
+    "heightCm": 191.6,
+    "weightKg": 61.2,
+    "trainingDaysPerWeek": 4,
+    "goal": "recomp"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2460,
+    "protein_g": 135,
+    "carbs_g": 327,
+    "fat_g": 68
+   }
+  },
+  {
+   "input": {
+    "sex": "m",
+    "age": 74,
+    "heightCm": 178.8,
+    "weightKg": 49.1,
+    "trainingDaysPerWeek": 1,
+    "goal": "maintain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 1710,
+    "protein_g": 79,
+    "carbs_g": 241,
+    "fat_g": 48
+   }
+  },
+  {
+   "input": {
+    "sex": "other",
+    "age": 56,
+    "heightCm": 189.8,
+    "weightKg": 59.8,
+    "trainingDaysPerWeek": 5,
+    "goal": "recomp"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2460,
+    "protein_g": 132,
+    "carbs_g": 330,
+    "fat_g": 68
+   }
+  },
+  {
+   "input": {
+    "sex": "",
+    "age": 37,
+    "heightCm": 192.1,
+    "weightKg": 74.7,
+    "trainingDaysPerWeek": 1,
+    "goal": "gain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2590,
+    "protein_g": 134,
+    "carbs_g": 352,
+    "fat_g": 72
+   }
+  },
+  {
+   "input": {
+    "sex": "",
+    "age": 66,
+    "heightCm": 173.7,
+    "weightKg": 66.3,
+    "trainingDaysPerWeek": 5,
+    "goal": "maintain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2310,
+    "protein_g": 106,
+    "carbs_g": 328,
+    "fat_g": 64
+   }
+  },
+  {
+   "input": {
+    "sex": "other",
+    "age": 42,
+    "heightCm": 154.9,
+    "weightKg": 104.3,
+    "trainingDaysPerWeek": 5,
+    "goal": "recomp"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2970,
+    "protein_g": 229,
+    "carbs_g": 327,
+    "fat_g": 83
+   }
+  },
+  {
+   "input": {
+    "sex": null,
+    "age": 75,
+    "heightCm": 188.4,
+    "weightKg": 119.3,
+    "trainingDaysPerWeek": 5,
+    "goal": "maintain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 3310,
+    "protein_g": 191,
+    "carbs_g": 430,
+    "fat_g": 92
+   }
+  },
+  {
+   "input": {
+    "sex": "m",
+    "age": 61,
+    "heightCm": 165,
+    "weightKg": 53.7,
+    "trainingDaysPerWeek": 1,
+    "goal": "maintain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 1740,
+    "protein_g": 86,
+    "carbs_g": 241,
+    "fat_g": 48
+   }
+  },
+  {
+   "input": {
+    "sex": "male",
+    "age": 58,
+    "heightCm": 163.4,
+    "weightKg": 53,
+    "trainingDaysPerWeek": 5,
+    "goal": "maintain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2180,
+    "protein_g": 85,
+    "carbs_g": 323,
+    "fat_g": 61
+   }
+  },
+  {
+   "input": {
+    "sex": "other",
+    "age": 77,
+    "heightCm": 153.9,
+    "weightKg": 84.8,
+    "trainingDaysPerWeek": 1,
+    "goal": "gain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2070,
+    "protein_g": 153,
+    "carbs_g": 234,
+    "fat_g": 58
+   }
+  },
+  {
+   "input": {
+    "sex": "F",
+    "age": 53,
+    "heightCm": 183,
+    "weightKg": 55.8,
+    "trainingDaysPerWeek": 3,
+    "goal": "gain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2210,
+    "protein_g": 100,
+    "carbs_g": 315,
+    "fat_g": 61
+   }
+  },
+  {
+   "input": {
+    "sex": null,
+    "age": 38,
+    "heightCm": 167.6,
+    "weightKg": 112.8,
+    "trainingDaysPerWeek": 1,
+    "goal": "recomp"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2620,
+    "protein_g": 248,
+    "carbs_g": 243,
+    "fat_g": 73
+   }
+  },
+  {
+   "input": {
+    "sex": "other",
+    "age": 25,
+    "heightCm": 196.8,
+    "weightKg": 64.9,
+    "trainingDaysPerWeek": 1,
+    "goal": "maintain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2300,
+    "protein_g": 104,
+    "carbs_g": 327,
+    "fat_g": 64
+   }
+  },
+  {
+   "input": {
+    "sex": "Female",
+    "age": 71,
+    "heightCm": 165.3,
+    "weightKg": 53.7,
+    "trainingDaysPerWeek": 0,
+    "goal": "recomp"
+   },
+   "can": true,
+   "want": {
+    "kcal": 1260,
+    "protein_g": 118,
+    "carbs_g": 118,
+    "fat_g": 35
+   }
+  },
+  {
+   "input": {
+    "sex": "",
+    "age": 43,
+    "heightCm": 173.9,
+    "weightKg": 108,
+    "trainingDaysPerWeek": 6,
+    "goal": "lose"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2650,
+    "protein_g": 238,
+    "carbs_g": 258,
+    "fat_g": 74
+   }
+  },
+  {
+   "input": {
+    "sex": "other",
+    "age": 63,
+    "heightCm": 186.8,
+    "weightKg": 105.7,
+    "trainingDaysPerWeek": 2,
+    "goal": "maintain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2520,
+    "protein_g": 169,
+    "carbs_g": 304,
+    "fat_g": 70
+   }
+  },
+  {
+   "input": {
+    "sex": "male",
+    "age": 60,
+    "heightCm": 194.6,
+    "weightKg": 124.3,
+    "trainingDaysPerWeek": 5,
+    "goal": "maintain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 3730,
+    "protein_g": 199,
+    "carbs_g": 500,
+    "fat_g": 104
+   }
+  },
+  {
+   "input": {
+    "sex": "other",
+    "age": 36,
+    "heightCm": 186.5,
+    "weightKg": 116.2,
+    "trainingDaysPerWeek": 4,
+    "goal": "maintain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 3210,
+    "protein_g": 186,
+    "carbs_g": 416,
+    "fat_g": 89
+   }
+  },
+  {
+   "input": {
+    "sex": null,
+    "age": 40,
+    "heightCm": 189.6,
+    "weightKg": 84.3,
+    "trainingDaysPerWeek": 4,
+    "goal": "gain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 3040,
+    "protein_g": 152,
+    "carbs_g": 419,
+    "fat_g": 84
+   }
+  },
+  {
+   "input": {
+    "sex": "m",
+    "age": 45,
+    "heightCm": 185,
+    "weightKg": 82.8,
+    "trainingDaysPerWeek": 0,
+    "goal": "lose"
+   },
+   "can": true,
+   "want": {
+    "kcal": 1940,
+    "protein_g": 182,
+    "carbs_g": 182,
+    "fat_g": 54
+   }
+  },
+  {
+   "input": {
+    "sex": null,
+    "age": 53,
+    "heightCm": 159.9,
+    "weightKg": 117.1,
+    "trainingDaysPerWeek": 3,
+    "goal": "gain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 3170,
+    "protein_g": 211,
+    "carbs_g": 384,
+    "fat_g": 88
+   }
+  },
+  {
+   "input": {
+    "sex": "male",
+    "age": 28,
+    "heightCm": 194.3,
+    "weightKg": 121.7,
+    "trainingDaysPerWeek": 0,
+    "goal": "recomp"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2760,
+    "protein_g": 268,
+    "carbs_g": 249,
+    "fat_g": 77
+   }
+  },
+  {
+   "input": {
+    "sex": "other",
+    "age": 70,
+    "heightCm": 167,
+    "weightKg": 46.3,
+    "trainingDaysPerWeek": 1,
+    "goal": "lose"
+   },
+   "can": true,
+   "want": {
+    "kcal": 1220,
+    "protein_g": 102,
+    "carbs_g": 127,
+    "fat_g": 34
+   }
+  },
+  {
+   "input": {
+    "sex": "Female",
+    "age": 37,
+    "heightCm": 189.5,
+    "weightKg": 80.8,
+    "trainingDaysPerWeek": 5,
+    "goal": "lose"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2330,
+    "protein_g": 178,
+    "carbs_g": 258,
+    "fat_g": 65
+   }
+  },
+  {
+   "input": {
+    "sex": "F",
+    "age": 49,
+    "heightCm": 150.1,
+    "weightKg": 67.3,
+    "trainingDaysPerWeek": 6,
+    "goal": "lose"
+   },
+   "can": true,
+   "want": {
+    "kcal": 1700,
+    "protein_g": 148,
+    "carbs_g": 171,
+    "fat_g": 47
+   }
+  },
+  {
+   "input": {
+    "sex": "m",
+    "age": 71,
+    "heightCm": 168.4,
+    "weightKg": 54.4,
+    "trainingDaysPerWeek": 0,
+    "goal": "maintain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 1500,
+    "protein_g": 87,
+    "carbs_g": 194,
+    "fat_g": 42
+   }
+  },
+  {
+   "input": {
+    "sex": "F",
+    "age": 22,
+    "heightCm": 163.3,
+    "weightKg": 92.8,
+    "trainingDaysPerWeek": 4,
+    "goal": "recomp"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2600,
+    "protein_g": 204,
+    "carbs_g": 284,
+    "fat_g": 72
+   }
+  },
+  {
+   "input": {
+    "sex": "m",
+    "age": 73,
+    "heightCm": 175.1,
+    "weightKg": 78.2,
+    "trainingDaysPerWeek": 6,
+    "goal": "gain"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2930,
+    "protein_g": 141,
+    "carbs_g": 409,
+    "fat_g": 81
+   }
+  },
+  {
+   "input": {
+    "sex": "other",
+    "age": 56,
+    "heightCm": 198,
+    "weightKg": 121.3,
+    "trainingDaysPerWeek": 0,
+    "goal": "recomp"
+   },
+   "can": true,
+   "want": {
+    "kcal": 2510,
+    "protein_g": 267,
+    "carbs_g": 203,
+    "fat_g": 70
+   }
+  },
+  {
+   "input": {
+    "sex": "m",
+    "age": 37,
+    "heightCm": 152,
+    "weightKg": 56.7,
+    "trainingDaysPerWeek": 1,
+    "goal": "recomp"
+   },
+   "can": true,
+   "want": {
+    "kcal": 1840,
+    "protein_g": 125,
+    "carbs_g": 220,
+    "fat_g": 51
+   }
+  }
+ ]
+}

@@ -1,0 +1,7061 @@
+{
+ "generatedBy": "scripts/golden/generate.ts",
+ "topic": "supplements",
+ "cases": [
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": null
+   },
+   "want": "Every day"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": null
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": null
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": null
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": null
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": null
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": null
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": null
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": null
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": null
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": null
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": null
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": null
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": null
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": null
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": []
+   },
+   "want": "Every day"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": []
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": []
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": []
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": []
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": []
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": []
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": []
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": []
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": []
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": []
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": []
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": []
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": []
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": []
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "want": "Every day"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "want": "Every day"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "want": "Every day"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "want": "Every day"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": null
+   },
+   "want": "Training days"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": null
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": null
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": null
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": null
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": null
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": null
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": null
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": null
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": null
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": null
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": null
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": null
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": null
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": null
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": []
+   },
+   "want": "Training days"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": []
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": []
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": []
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": []
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": []
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": []
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": []
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": []
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": []
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": []
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": []
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": []
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": []
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": []
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "want": "Training days"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "want": "Training days"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "want": "Training days"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "want": "Training days"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": null
+   },
+   "want": "Every day"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": null
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": null
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": null
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": null
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": null
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": null
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": null
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": null
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": null
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": null
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": null
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": null
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": null
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": null
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": []
+   },
+   "want": "Every day"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": []
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": []
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": []
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": []
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": []
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": []
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": []
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": []
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": []
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": []
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": []
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": []
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": []
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": []
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "want": "Sun"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "want": "Mon · Wed · Fri"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "want": "Sun · Tue · Sat"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": false
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "want": "Sun · Mon · Tue · Wed · Thu · Fri · Sat"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": null
+   },
+   "want": "Every day"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": null
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": null
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": null
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": null
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": null
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": null
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": null
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": null
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": null
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": null
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": null
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": null
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": null
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": null
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": []
+   },
+   "want": "Every day"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": []
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": []
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": []
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": []
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": []
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": []
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": []
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": []
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": []
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": []
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": []
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": []
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": []
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": []
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "want": "Every day"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "want": "Every day"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "want": "Every day"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "scheduleLabel",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "want": "Every day"
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 0,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 1,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 2,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 3,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 4,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 5,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": true,
+   "want": true
+  },
+  {
+   "fn": "isSupplementDue",
+   "schedule": {
+    "scheduleType": "unknown",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "weekday": 6,
+   "isTrainingDay": false,
+   "want": true
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": null
+   },
+   "createdYmd": "2026-07-09",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": false
+    }
+   ],
+   "taken": [
+    "2026-07-03",
+    "2026-07-04",
+    "2026-07-06",
+    "2026-07-07",
+    "2026-07-08",
+    "2026-07-09",
+    "2026-07-10",
+    "2026-07-11",
+    "2026-07-12",
+    "2026-07-13",
+    "2026-07-14"
+   ],
+   "want": {
+    "takenDueDays": 6,
+    "totalDueDays": 6
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "createdYmd": "2026-07-06",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": false
+    }
+   ],
+   "taken": [
+    "2026-07-01",
+    "2026-07-02",
+    "2026-07-03",
+    "2026-07-05",
+    "2026-07-07",
+    "2026-07-08",
+    "2026-07-09",
+    "2026-07-10",
+    "2026-07-12",
+    "2026-07-13",
+    "2026-07-14"
+   ],
+   "want": {
+    "takenDueDays": 7,
+    "totalDueDays": 9
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "createdYmd": "2026-07-03",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": false
+    }
+   ],
+   "taken": [
+    "2026-07-02",
+    "2026-07-03",
+    "2026-07-05",
+    "2026-07-06",
+    "2026-07-07",
+    "2026-07-08",
+    "2026-07-09",
+    "2026-07-11",
+    "2026-07-13"
+   ],
+   "want": {
+    "takenDueDays": 4,
+    "totalDueDays": 4
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": null
+   },
+   "createdYmd": "2026-07-02",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": false
+    }
+   ],
+   "taken": [
+    "2026-07-01",
+    "2026-07-02",
+    "2026-07-03",
+    "2026-07-05",
+    "2026-07-06",
+    "2026-07-08",
+    "2026-07-10",
+    "2026-07-11",
+    "2026-07-12",
+    "2026-07-13",
+    "2026-07-14"
+   ],
+   "want": {
+    "takenDueDays": 10,
+    "totalDueDays": 13
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": null
+   },
+   "createdYmd": "2026-07-11",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": true
+    }
+   ],
+   "taken": [
+    "2026-07-03",
+    "2026-07-04",
+    "2026-07-05",
+    "2026-07-07",
+    "2026-07-08",
+    "2026-07-10",
+    "2026-07-11",
+    "2026-07-12",
+    "2026-07-13"
+   ],
+   "want": {
+    "takenDueDays": 3,
+    "totalDueDays": 4
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": null
+   },
+   "createdYmd": "2026-07-07",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": true
+    }
+   ],
+   "taken": [
+    "2026-07-01",
+    "2026-07-02",
+    "2026-07-03",
+    "2026-07-05",
+    "2026-07-08",
+    "2026-07-09",
+    "2026-07-12",
+    "2026-07-13",
+    "2026-07-14"
+   ],
+   "want": {
+    "takenDueDays": 5,
+    "totalDueDays": 8
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "createdYmd": "2026-07-10",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": false
+    }
+   ],
+   "taken": [
+    "2026-07-01",
+    "2026-07-02",
+    "2026-07-03",
+    "2026-07-04",
+    "2026-07-06",
+    "2026-07-07",
+    "2026-07-09",
+    "2026-07-12",
+    "2026-07-14"
+   ],
+   "want": {
+    "takenDueDays": 1,
+    "totalDueDays": 1
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "createdYmd": "2026-07-14",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": false
+    }
+   ],
+   "taken": [
+    "2026-07-01",
+    "2026-07-02",
+    "2026-07-04",
+    "2026-07-07",
+    "2026-07-08",
+    "2026-07-12",
+    "2026-07-14"
+   ],
+   "want": {
+    "takenDueDays": 0,
+    "totalDueDays": 0
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "createdYmd": "2026-07-14",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": false
+    }
+   ],
+   "taken": [
+    "2026-07-01",
+    "2026-07-04",
+    "2026-07-06",
+    "2026-07-10",
+    "2026-07-11",
+    "2026-07-13"
+   ],
+   "want": {
+    "takenDueDays": 0,
+    "totalDueDays": 0
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "createdYmd": "2026-07-14",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": false
+    }
+   ],
+   "taken": [
+    "2026-07-01",
+    "2026-07-03",
+    "2026-07-04",
+    "2026-07-06",
+    "2026-07-07",
+    "2026-07-08",
+    "2026-07-10",
+    "2026-07-11",
+    "2026-07-12",
+    "2026-07-14"
+   ],
+   "want": {
+    "takenDueDays": 0,
+    "totalDueDays": 0
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "createdYmd": "2026-07-06",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": false
+    }
+   ],
+   "taken": [
+    "2026-07-01",
+    "2026-07-02",
+    "2026-07-05",
+    "2026-07-06",
+    "2026-07-07",
+    "2026-07-08",
+    "2026-07-11",
+    "2026-07-13"
+   ],
+   "want": {
+    "takenDueDays": 4,
+    "totalDueDays": 5
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "createdYmd": "2026-07-10",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": false
+    }
+   ],
+   "taken": [
+    "2026-07-01",
+    "2026-07-03",
+    "2026-07-04",
+    "2026-07-05",
+    "2026-07-09",
+    "2026-07-11",
+    "2026-07-12"
+   ],
+   "want": {
+    "takenDueDays": 2,
+    "totalDueDays": 5
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": null
+   },
+   "createdYmd": "2026-07-08",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": false
+    }
+   ],
+   "taken": [
+    "2026-07-02",
+    "2026-07-08",
+    "2026-07-09",
+    "2026-07-10",
+    "2026-07-11",
+    "2026-07-12",
+    "2026-07-14"
+   ],
+   "want": {
+    "takenDueDays": 6,
+    "totalDueDays": 7
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "createdYmd": "2026-07-06",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": true
+    }
+   ],
+   "taken": [
+    "2026-07-01",
+    "2026-07-02",
+    "2026-07-04",
+    "2026-07-05",
+    "2026-07-06",
+    "2026-07-09",
+    "2026-07-11",
+    "2026-07-12",
+    "2026-07-14"
+   ],
+   "want": {
+    "takenDueDays": 1,
+    "totalDueDays": 3
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": []
+   },
+   "createdYmd": "2026-07-06",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": true
+    }
+   ],
+   "taken": [
+    "2026-07-03",
+    "2026-07-04",
+    "2026-07-06",
+    "2026-07-07",
+    "2026-07-08",
+    "2026-07-09",
+    "2026-07-10",
+    "2026-07-11",
+    "2026-07-13",
+    "2026-07-14"
+   ],
+   "want": {
+    "takenDueDays": 2,
+    "totalDueDays": 2
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": []
+   },
+   "createdYmd": "2026-07-07",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": false
+    }
+   ],
+   "taken": [
+    "2026-07-01",
+    "2026-07-02",
+    "2026-07-04",
+    "2026-07-06",
+    "2026-07-07",
+    "2026-07-08",
+    "2026-07-09",
+    "2026-07-10",
+    "2026-07-11",
+    "2026-07-12",
+    "2026-07-13",
+    "2026-07-14"
+   ],
+   "want": {
+    "takenDueDays": 2,
+    "totalDueDays": 2
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "createdYmd": "2026-07-12",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": false
+    }
+   ],
+   "taken": [
+    "2026-07-01",
+    "2026-07-02",
+    "2026-07-05",
+    "2026-07-07",
+    "2026-07-10",
+    "2026-07-11",
+    "2026-07-13"
+   ],
+   "want": {
+    "takenDueDays": 0,
+    "totalDueDays": 0
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "createdYmd": "2026-07-03",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": true
+    }
+   ],
+   "taken": [
+    "2026-07-01",
+    "2026-07-03",
+    "2026-07-04",
+    "2026-07-05",
+    "2026-07-06",
+    "2026-07-08",
+    "2026-07-09",
+    "2026-07-10",
+    "2026-07-11",
+    "2026-07-12",
+    "2026-07-13",
+    "2026-07-14"
+   ],
+   "want": {
+    "takenDueDays": 5,
+    "totalDueDays": 5
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     0
+    ]
+   },
+   "createdYmd": "2026-07-05",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": false
+    }
+   ],
+   "taken": [
+    "2026-07-01",
+    "2026-07-02",
+    "2026-07-04",
+    "2026-07-07",
+    "2026-07-08",
+    "2026-07-10",
+    "2026-07-11",
+    "2026-07-12",
+    "2026-07-13",
+    "2026-07-14"
+   ],
+   "want": {
+    "takenDueDays": 1,
+    "totalDueDays": 2
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": []
+   },
+   "createdYmd": "2026-07-04",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": false
+    }
+   ],
+   "taken": [
+    "2026-07-01",
+    "2026-07-02",
+    "2026-07-03",
+    "2026-07-05",
+    "2026-07-11",
+    "2026-07-12"
+   ],
+   "want": {
+    "takenDueDays": 3,
+    "totalDueDays": 11
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "daily",
+    "daysOfWeek": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "createdYmd": "2026-07-10",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": false
+    }
+   ],
+   "taken": [
+    "2026-07-04",
+    "2026-07-05",
+    "2026-07-06",
+    "2026-07-07",
+    "2026-07-08",
+    "2026-07-09",
+    "2026-07-10"
+   ],
+   "want": {
+    "takenDueDays": 1,
+    "totalDueDays": 5
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": null
+   },
+   "createdYmd": "2026-07-14",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": false
+    }
+   ],
+   "taken": [
+    "2026-07-01",
+    "2026-07-02",
+    "2026-07-03",
+    "2026-07-06",
+    "2026-07-07",
+    "2026-07-08",
+    "2026-07-09",
+    "2026-07-11",
+    "2026-07-12"
+   ],
+   "want": {
+    "takenDueDays": 0,
+    "totalDueDays": 0
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "createdYmd": "2026-07-02",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": false
+    }
+   ],
+   "taken": [
+    "2026-07-04",
+    "2026-07-05",
+    "2026-07-06",
+    "2026-07-07",
+    "2026-07-09",
+    "2026-07-12",
+    "2026-07-13"
+   ],
+   "want": {
+    "takenDueDays": 4,
+    "totalDueDays": 6
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "training_days",
+    "daysOfWeek": [
+     1,
+     3,
+     5
+    ]
+   },
+   "createdYmd": "2026-07-06",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": false
+    }
+   ],
+   "taken": [
+    "2026-07-02",
+    "2026-07-04",
+    "2026-07-06",
+    "2026-07-07",
+    "2026-07-08",
+    "2026-07-10",
+    "2026-07-11",
+    "2026-07-13"
+   ],
+   "want": {
+    "takenDueDays": 4,
+    "totalDueDays": 5
+   }
+  },
+  {
+   "fn": "supplementTakenRate",
+   "schedule": {
+    "scheduleType": "custom",
+    "daysOfWeek": [
+     6,
+     0,
+     2
+    ]
+   },
+   "createdYmd": "2026-07-04",
+   "window": [
+    {
+     "ymd": "2026-07-01",
+     "weekday": 3,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-02",
+     "weekday": 4,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-03",
+     "weekday": 5,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-04",
+     "weekday": 6,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-05",
+     "weekday": 0,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-06",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-07",
+     "weekday": 2,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-08",
+     "weekday": 3,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-09",
+     "weekday": 4,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-10",
+     "weekday": 5,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-11",
+     "weekday": 6,
+     "isTrainingDay": true
+    },
+    {
+     "ymd": "2026-07-12",
+     "weekday": 0,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-13",
+     "weekday": 1,
+     "isTrainingDay": false
+    },
+    {
+     "ymd": "2026-07-14",
+     "weekday": 2,
+     "isTrainingDay": true
+    }
+   ],
+   "taken": [
+    "2026-07-02",
+    "2026-07-04",
+    "2026-07-06",
+    "2026-07-07",
+    "2026-07-09",
+    "2026-07-12"
+   ],
+   "want": {
+    "takenDueDays": 3,
+    "totalDueDays": 6
+   }
+  }
+ ]
+}
