@@ -5,6 +5,25 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-24 (late night) · Phase 2 PR 2B — web auth
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR into `feat/backend-rewrite-with-go`):
+- `$api` browser client (openapi-react-query), `problemMessage`, zod auth schemas with
+  legacy messages, password checklist; screens: login, register, forgot, reset, verify.
+- `/` routes by role via `GET /me` (`app/lib/me-data.ts`, request-cached); status page
+  moved to `/status` (CI stack job updated). `(app)` layout checks the session and renders
+  `AppShell`; nav gets `coachNav` + `communityNav` (from `/me` features) as props —
+  `lib/nav.ts` holds routes, active-tab and visibility logic (tested).
+- Profile: change password + logout. Dashboard/coaching are placeholders.
+- `proxy.ts`: cookie-presence redirect only; auth pages bounce a *verified* session home,
+  so a stale cookie never loops. `serverApi()` reads cookies first so builds don't
+  prerender API-backed pages.
+- Verified: typecheck, lint, 39 web tests, `next build`; on the compose stack via Caddy
+  with Playwright: bad/good login, role landing, nav gating, change password, logout.
+
+**Next steps**: merge 2B → Phase 2 done. Phase 3.1 (onboarding / weekly routine) — first
+module slice: sqlc queries + handlers + port the pages.
+
 ## 2026-09-24 (night) · #63 merged (Phase 1 done) · Phase 2 PR 2A — auth API
 
 **Done**: #63 merged → Phase 1 complete. This PR is the auth API:

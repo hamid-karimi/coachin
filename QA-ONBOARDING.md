@@ -13,6 +13,10 @@ Coaches connect to trainees via invite codes and can monitor adherence,
 generate plans for them, and (with consent) see their nutrition.
 
 Stack: Next.js (App Router) + Supabase (Postgres with row-level security).
+**On `feat/backend-rewrite-with-go`** the same app is being rebuilt as a Go API +
+frontend-only Next.js on Docker (no Supabase). Modules move over one at a time; until
+a module is ported its page is a placeholder. Journey 0 below covers what already runs
+there — see "Running the app locally" for that stack.
 All rules for XP, streaks, tiers, goals, and date math live in
 [`FORMULAS.md`](FORMULAS.md) — **that file is the source of truth** when you
 need to check whether a number is correct.
@@ -46,9 +50,39 @@ inactive; every coach feature checks for an **active** relationship.
 | `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions | [README](legacy/app/coaching/README.md) |
 | `/community` | Social/leaderboard surfaces — **currently disabled** (feature flag; redirects to dashboard, nav item hidden). Coach invite codes are redeemed on `/profile` → "My coach" while off. | [README](legacy/app/community/README.md) |
 | `/profile` | Four tabs (`?tab=`): **Overview** (stats, hearts, goals, recent XP), **Progress** (charts, measurements, progress photos), **Body** (body profile, body photos, watch import), **Settings** (theme, nutrition sharing, my coach, logout) | — |
-| `/auth` | Login / signup | [README](legacy/app/auth/README.md) |
+| `/auth` | Login / signup; on the rewrite also forgot / reset password and email verification | [README](legacy/app/auth/README.md) |
+| `/status` | Rewrite only: API, database, and storage health | — |
 
 ## Core journeys to test
+
+### 0. Accounts & sign-in (rewrite stack)
+
+Run `make up` then `make seed`; demo accounts `trainee@coachin.local` /
+`coach@coachin.local`, password `Coachin-demo1`. Emails land in Mailpit
+(http://localhost:8025).
+
+1. Open http://localhost:8080 signed out → you land on `/auth/login`. Any app page
+   (`/dashboard`, `/profile`, `/coaching`…) also sends you there.
+2. Wrong password → "Invalid login credentials". Correct password → trainee lands on
+   `/dashboard`, coach on `/coaching` (`both`/`admin` on `/dashboard`).
+3. Nav: Today, Training, Calendar, Nutrition/Meals, Profile for everyone; **Coaching**
+   only for coach/both/admin; **Community** only when `FEATURE_COMMUNITY=true`. A trainee
+   opening `/coaching` directly is sent to `/dashboard`.
+4. Signed in, opening `/auth/login`, `/auth/register`, or `/auth/forgot-password` sends
+   you to your home.
+5. Register a new account → signed in immediately; a "Confirm your CoachIn email"
+   mail arrives; its link confirms the address once (second click: "This link is
+   invalid or has expired"). Duplicate email (any case) → "User already registered".
+   The password checklist ticks live; the rules are 8+ chars with upper, lower, number.
+6. Forgot password → always the same success message (even for unknown addresses); the
+   mailed link opens `/auth/reset-password`; after a reset, every other signed-in
+   browser is signed out.
+7. Profile → Password: wrong current password → "Current password is incorrect";
+   success keeps this browser signed in and signs out other devices.
+8. Profile → Log out (confirm dialog) → back on `/auth/login`; `/dashboard` now
+   redirects to sign in.
+9. A burst of more than 10 auth attempts from one address → "Too many attempts. Please
+   wait a minute and try again." (one more attempt frees up every 6 s).
 
 ### 1. Onboarding & weekly routine
 
@@ -209,6 +243,11 @@ All from [`FORMULAS.md`](FORMULAS.md) — spot-check against it, not intuition:
   hearts, or tiers.
 
 ## Running the app locally
+
+**Rewrite stack (`feat/backend-rewrite-with-go`)**: Docker only — `make up`, then
+`make seed`, open http://localhost:8080. See the root [`README.md`](README.md).
+
+**Legacy app (`main` / `develop`)**:
 
 ```bash
 pnpm install

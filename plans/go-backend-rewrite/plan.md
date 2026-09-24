@@ -40,7 +40,7 @@ Goal: `make up` on your Mac starts an empty but working stack.
       build, Storybook) + Docker stack smoke test through Caddy. (`sqlc diff` joins when
       sqlc does, Phase 2.1.)
 - [x] 0.7 CLAUDE.md + root README: new layout, `make` commands, per-app verify commands.
-- **Gate**: `make up` → `http://localhost:8080` shows the status page with API, database,
+- **Gate**: `make up` → `http://localhost:8080` shows the status page (now at `/status`) with API, database,
   and storage healthy; Mailpit at `:8025`.
 
 ## Phase 1 — Clean schema + domain port (M)
@@ -97,12 +97,16 @@ API — PR 2A
       stack through Caddy + Mailpit.
 
 Web — PR 2B
-- [ ] 2.5 `lib/api/`: generated `schema.d.ts`, server client (`API_INTERNAL_URL` + forwarded
+- [x] 2.5 `lib/api/`: generated `schema.d.ts`, server client (`API_INTERNAL_URL` + forwarded
       cookie), browser client, `$api` (openapi-react-query), `getQueryClient()`,
       `QueryProvider` + `NuqsAdapter` in the root layout. `make gen` regenerates.
-- [ ] 2.6 Auth screens ported (login, register) + new (forgot, reset, verify, change
+- [x] 2.6 Auth screens ported (login, register) + new (forgot, reset, verify, change
       password) with RHF + zod; `proxy.ts` cookie redirect; root page role routing via
-      `GET /me`; app shell / nav with the community flag from `/me`.
+      `GET /me`; app shell / nav with the community flag from `/me`. Done: `/` routes by
+      role, the status page moved to `/status`, `(app)` layout checks the session,
+      Profile has change password + logout; dashboard/coaching are placeholders until
+      their Phase 3 slices. The proxy only checks for the cookie; login/register/forgot
+      redirect a live session home after a real `/me` check (no stale-cookie loop).
 - **Gate**: full auth journey works in the browser on the local stack.
 
 ## Phase 3 — Module slices (L, one PR per module)
