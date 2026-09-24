@@ -13,7 +13,7 @@ export function TodayHeader({ name }: { name: string }) {
       <div>
         <p className='text-muted-foreground text-[13px]'>{dateLabel(date)}</p>
         <h1 className='text-foreground font-display text-2xl font-bold tracking-tight md:text-[28px]'>
-          Hi, {firstName(name)}
+          {`Hi, ${firstName(name)}`}
         </h1>
       </div>
       <div className='flex items-center gap-2.5'>
