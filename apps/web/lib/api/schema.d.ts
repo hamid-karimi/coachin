@@ -160,6 +160,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/foods": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search the local foods table (up to 8) */
+        get: operations["searchFoods"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/foods/usda": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search USDA FoodData Central (up to 6, on request only)
+         * @description 502 when USDA is not configured or fails.
+         */
+        get: operations["searchUsdaFoods"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/healthz": {
         parameters: {
             query?: never;
@@ -186,6 +223,60 @@ export interface paths {
         };
         /** The signed-in user */
         get: operations["me"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/meals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Log a meal (search, USDA, or manual)
+         * @description +5 XP for each of the first 3 meals a day; also settles yesterday's +30 calorie-goal bonus.
+         */
+        post: operations["logMeal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/meals/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a meal (its meal XP is given back) */
+        delete: operations["deleteMeal"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/nutrition/day": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Today's meals and totals against the calorie goal, with 7- and 30-day trends */
+        get: operations["getNutritionDay"];
         put?: never;
         post?: never;
         delete?: never;
@@ -746,6 +837,13 @@ export interface components {
         Features: {
             community: boolean;
         };
+        FoodBody: {
+            id: string;
+            name: string;
+            per100g: components["schemas"]["NutrientsBody"];
+            /** @enum {string} */
+            source: "seed" | "usda" | "custom";
+        };
         ForgotInputBody: {
             email: string;
         };
@@ -784,6 +882,24 @@ export interface components {
             /** Format: double */
             weightKg: number | null;
         };
+        LogMealInputBody: {
+            /** @description A local food, with quantityG */
+            foodId?: string;
+            /** @description A hand-entered meal when no food is picked */
+            manual?: components["schemas"]["ManualStruct"];
+            /** @enum {string} */
+            mealType: "breakfast" | "lunch" | "dinner" | "snack";
+            /**
+             * Format: double
+             * @description Grams (0–5000]
+             */
+            quantityG?: number;
+            /**
+             * Format: int64
+             * @description A USDA food (re-read from USDA), with quantityG
+             */
+            usdaFdcId?: number;
+        };
         LogSessionInputBody: {
             /** Format: double */
             avgHr?: number;
@@ -810,6 +926,17 @@ export interface components {
             email: string;
             password: string;
         };
+        ManualStruct: {
+            /** Format: double */
+            carbsG?: number;
+            /** Format: double */
+            fatG?: number;
+            /** Format: double */
+            kcal: number;
+            name: string;
+            /** Format: double */
+            proteinG?: number;
+        };
         MeBody: {
             email: string;
             emailVerified: boolean;
@@ -818,6 +945,47 @@ export interface components {
             id: string;
             /** @enum {string} */
             role: "student" | "coach" | "both" | "admin";
+        };
+        MealBody: {
+            /** @enum {string} */
+            entryMethod: "search" | "photo" | "manual";
+            id: string;
+            /** @enum {string} */
+            mealType: "breakfast" | "lunch" | "dinner" | "snack";
+            name: string | null;
+            nutrients: components["schemas"]["NutrientsBody"];
+            /** Format: double */
+            quantityG: number | null;
+        };
+        NutrientsBody: {
+            /** Format: double */
+            carbsG: number;
+            /** Format: double */
+            fatG: number;
+            /** Format: double */
+            fiberG: number;
+            /** Format: double */
+            kcal: number;
+            /** Format: double */
+            proteinG: number;
+            /** Format: double */
+            sodiumMg: number;
+            /** Format: double */
+            sugarG: number;
+        };
+        NutritionDayBody: {
+            /** Format: date */
+            date: string;
+            meals: components["schemas"]["MealBody"][];
+            month: components["schemas"]["TrendBody"];
+            /**
+             * Format: double
+             * @description Active calorie-intake goal (kcal/day)
+             */
+            target: number | null;
+            totals: components["schemas"]["NutrientsBody"];
+            usdaEnabled: boolean;
+            week: components["schemas"]["TrendBody"];
         };
         PlanCreatedBody: {
             forStudent: boolean;
@@ -1145,6 +1313,27 @@ export interface components {
         };
         TokenInputBody: {
             token: string;
+        };
+        TrendBody: {
+            /** @description Averaged over logged days only */
+            avg: components["schemas"]["NutrientsBody"];
+            /** Format: int64 */
+            daysLogged: number;
+            /** @description One point per day, oldest first; unlogged days are zero */
+            series: components["schemas"]["TrendPointBody"][];
+            /** Format: int64 */
+            totalDays: number;
+        };
+        TrendPointBody: {
+            /** Format: date */
+            date: string;
+            totals: components["schemas"]["NutrientsBody"];
+        };
+        USDAFoodBody: {
+            /** Format: int64 */
+            fdcId: number;
+            name: string;
+            per100g: components["schemas"]["NutrientsBody"];
         };
         WorkoutLoggedBody: {
             /** Format: int64 */
@@ -1704,6 +1893,124 @@ export interface operations {
             };
         };
     };
+    searchFoods: {
+        parameters: {
+            query?: {
+                /** @description At least 2 characters */
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FoodBody"][];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    searchUsdaFoods: {
+        parameters: {
+            query?: {
+                /** @description At least 2 characters */
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["USDAFoodBody"][];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
     healthz: {
         parameters: {
             query?: never;
@@ -1749,6 +2056,180 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MeBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    logMeal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LogMealInputBody"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    deleteMeal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getNutritionDay: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionDayBody"];
                 };
             };
             /** @description Unauthorized */

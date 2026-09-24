@@ -66,6 +66,10 @@ level = floor(totalXp / 1000) + 1
   plans** each item's award stands on its own and the totals simply **sum across plans** —
   no double-counting, nothing special per discipline.
 - **Meal daily cap = 3** awarded meals per date; extras log but earn 0 (`capped: true`).
+- **Deleting a meal gives its XP back** (`-5`, reason `meal_log_undo:<id>`; Go
+  `store.NutritionStore.DeleteMeal`). The cap counts the date's *remaining* awarded
+  logs, so without the refund log → delete → log farmed unlimited XP (legacy bug); now a
+  day nets at most 15 meal XP. Logs are awarded one at a time under the profile lock.
 - Plan-item **undo** writes a compensating `-XP` txn (`plan_item_undo:<id>`) so
   done→undo→done nets zero. See `complete_plan_item`.
 

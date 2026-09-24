@@ -172,6 +172,15 @@ Order (dependencies first, risk front-loaded):
       `app/(app)/components`. ICS export shipped in 3.3a. Meal-plan line → 3.5.
 - [ ] 3.5 **Nutrition** — USDA proxy, meal logs, photo estimate + batch confirm, day/trends,
       meal plans (M)
+  - [x] 3.5a Meal logging: `GET /nutrition/day` (meals, totals, goal, 7/30-day trends),
+        `GET /foods`, `GET /foods/usda` (`adapters/usda`), `POST /meals` (local / USDA
+        re-read by `fdcId` and stored once — migration 00007 `foods.fdc_id` — / manual;
+        `award_meal_xp` + `award_day_adherence` in one tx under the profile lock),
+        `DELETE /meals/{id}` (refunds the meal XP); web `/nutrition` (`lib/food-units`
+        replays `nutrition.json`).
+  - [ ] 3.5b Photo estimate (AI vision, up to 3 photos + hint, review sheet, batch confirm).
+  - [ ] 3.5c AI meal plan (`/nutrition/plan`, grocery list), Today's menu card, the
+        calendar's meal line + adherence.
 - [ ] 3.6 **Profile** — profile/measurements, goals, activity import, photos (Garage
       adapter, pure-Go re-encode, Gemini moderation, streamed `GET /photos/{id}`),
       analyze / extract, `?tab=` (L)

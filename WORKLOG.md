@@ -5,7 +5,20 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
-## 2026-09-24 (night, final+2) · #72 merged (3.3d) · Phase 3.4 — Calendar
+## 2026-09-24 (night, final+3) · #73 merged (3.4) · Phase 3.5a — meal logging
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): migration 00007 (`foods.fdc_id`
+unique), `USDA_API_KEY` config, `adapters/usda` (search + re-read by id, lenient nutrient
+shapes; sandbox can't reach USDA — tested against a fake), `domain/nutrition.Portion`,
+`app/nutrition` (day, search, log, delete) + `NutritionStore` (meal XP + adherence in one
+tx under the profile lock; delete refunds meal XP — FORMULAS §1 updated), endpoints; web
+`/nutrition` (summary, logger with search/USDA/manual + household units, meal groups,
+trends). e2e: oats 0.5 cup → 120 g "+5 XP", manual soup, delete "-5 XP".
+
+**Next steps**: 3.5b photo estimate (Gemini/Claude vision; up to 3 compressed photos +
+hint; review sheet; batch confirm via `LogMeals`), then 3.5c meal plans.
+
+## 2026-09-24 (night, final+2) · #72 merged (3.3d) · Phase 3.4 — Calendar (merged as #73)
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): `app/calendar`
 + `CalendarStore` (schedules overlapping the week, items of every active plan's week in

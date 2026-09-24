@@ -46,7 +46,7 @@ inactive; every coach feature checks for an **active** relationship.
 | `/calendar` | Week view blending routine + all active plan items + logged state. **Rewrite: ported** (meal-plan line arrives with Nutrition) | [README](apps/web/app/(app)/calendar/README.md) |
 | `/training` | Program manager: create (AI wizards), archive, weekly check-ins. **Rewrite: list, archive, .ics export, AI wizards (with watch-file upload), check-ins ported**. | [README](apps/web/app/(app)/training/README.md) |
 | `/training/new` | Plan wizards (running / muscle building); coach mode via `?student=<id>` | [README](legacy/app/training/README.md) |
-| `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan | [README](legacy/app/nutrition/README.md) |
+| `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan. **Rewrite: search / USDA / manual logging, day summary, trends ported**; photo and meal plan next | [README](apps/web/app/(app)/nutrition/README.md) |
 | `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions | [README](legacy/app/coaching/README.md) |
 | `/community` | Social/leaderboard surfaces — **currently disabled** (feature flag; redirects to dashboard, nav item hidden). Coach invite codes are redeemed on `/profile` → "My coach" while off. | [README](legacy/app/community/README.md) |
 | `/profile` | Four tabs (`?tab=`): **Overview** (stats, hearts, goals, recent XP), **Progress** (charts, measurements, progress photos), **Body** (body profile, body photos, watch import), **Settings** (theme, nutrition sharing, my coach, logout) | — |
@@ -298,6 +298,28 @@ adherence) arrives with Nutrition.
    silently kept the old one). Max 20 supplements ("Keep the stack under 20 items");
    names are cut to 60 characters, doses to 40. Removing a supplement also removes
    its logs.
+8. **Rewrite stack — meal logging (3.5a)**: `/nutrition` (the Meals tab).
+   - "Today" card: "787 / 2,000 kcal" with a progress bar when a calorie-intake goal is
+     active (otherwise the "Set a daily calorie-intake goal…" hint), then protein · carbs
+     · fat and sugar · fiber · sodium lines.
+   - Logger: meal-type chips (Breakfast / Lunch / Dinner / Snack) and Search / Manual.
+     Search matches the food list as you type (2+ letters; `%` and `_` are literal);
+     "Search USDA database" appears only when `USDA_API_KEY` is set, and asks USDA
+     only on click (rate limited). Pick a food → amount + unit (g, ml, tsp, tbsp, cup,
+     oz, slice, piece, handful, serving → grams, e.g. 0.5 cup = 120 g) → Log.
+     Manual: food, kcal (1–5000), optional protein.
+   - Toasts: "Meal logged · +5 XP." for the first 3 meals of a day, then "Meal logged ·
+     daily meal XP cap reached."; the first log after a day within ±10% of the goal with
+     2+ meals adds " · +30 XP for hitting yesterday's calorie goal".
+   - Errors (legacy copy): "Enter the amount in grams", "Name the food or pick one from
+     search", "Enter the calories (1-5000)", "Food not found".
+   - Meals list by type with each group's kcal; ✕ removes a meal: "Meal removed · -5
+     XP." when it had earned XP (**new**: the XP is given back, so delete + re-log can't
+     farm past 15 meal XP a day). Empty day: "Nothing logged today".
+   - Trends (once anything is logged): "This week" avg kcal with 7 daily bars (brand
+     when the goal was hit, dashed goal line) and "This month" — averages over logged
+     days only, "N of 7/30 days logged".
+   - A USDA pick is re-read from USDA by the API and stored once in the food list.
 
 ### 6. Coaching
 
