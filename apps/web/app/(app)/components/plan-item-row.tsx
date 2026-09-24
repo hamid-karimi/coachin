@@ -20,8 +20,10 @@ import {
   planItemVideoUrl,
   planItemVisualType,
 } from "@/lib/plan-items";
+import { isLoggable } from "@/lib/session-log";
 import { cn } from "@/lib/utils";
 import { usePlanItemCompletion } from "../hooks/use-plan-item-completion";
+import { SessionLogSheet } from "./session-log-sheet";
 
 type PlanItem = components["schemas"]["PlanItemBody"];
 
@@ -54,7 +56,8 @@ interface PlanItemRowProps {
 /**
  * One AI plan item with its done toggle. Done opens on the item's day and
  * the day after; undo is always allowed. The toggle shows the pending value
- * right away (optimistic) and settles when the API answers.
+ * right away (optimistic) and settles when the API answers. A completed run
+ * or strength item offers the optional session log below it.
  */
 export function PlanItemRow({ item, date, today }: PlanItemRowProps) {
   const toggle = usePlanItemCompletion();
@@ -67,49 +70,59 @@ export function PlanItemRow({ item, date, today }: PlanItemRowProps) {
   const videoUrl = planItemVideoUrl(item.details);
 
   return (
-    <div className={cn("border-border flex items-start gap-3 rounded-xl border p-3", completed && "opacity-70")}>
-      <span className={cn("grid size-8 shrink-0 place-items-center rounded-lg", meta.tone)}>
-        <Icon className='size-4' aria-hidden />
-      </span>
-      <div className='min-w-0 flex-1'>
-        <p className={cn("text-sm font-medium", completed && "line-through")}>{item.title}</p>
-        {detailLine && <p className='text-muted-foreground text-xs'>{detailLine}</p>}
-        {item.description && (
-          <p className='text-muted-foreground mt-0.5 text-xs whitespace-pre-line'>{item.description}</p>
-        )}
-        {item.details.notes && <p className='text-muted-foreground mt-0.5 text-xs'>{item.details.notes}</p>}
-        {videoUrl && (
-          <a
-            href={videoUrl}
-            target='_blank'
-            rel='noopener noreferrer'
-            className='text-brand-ink mt-1 inline-flex items-center gap-1 text-xs font-medium hover:underline'>
-            <Play className='size-3' aria-hidden />
-            Watch how
-          </a>
+    <div className='space-y-2'>
+      <div className={cn("border-border flex items-start gap-3 rounded-xl border p-3", completed && "opacity-70")}>
+        <span className={cn("grid size-8 shrink-0 place-items-center rounded-lg", meta.tone)}>
+          <Icon className='size-4' aria-hidden />
+        </span>
+        <div className='min-w-0 flex-1'>
+          <p className={cn("text-sm font-medium", completed && "line-through")}>{item.title}</p>
+          {detailLine && <p className='text-muted-foreground text-xs'>{detailLine}</p>}
+          {item.description && (
+            <p className='text-muted-foreground mt-0.5 text-xs whitespace-pre-line'>{item.description}</p>
+          )}
+          {item.details.notes && <p className='text-muted-foreground mt-0.5 text-xs'>{item.details.notes}</p>}
+          {videoUrl && (
+            <a
+              href={videoUrl}
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-brand-ink mt-1 inline-flex items-center gap-1 text-xs font-medium hover:underline'>
+              <Play className='size-3' aria-hidden />
+              Watch how
+            </a>
+          )}
+        </div>
+        {isCheckable(item.itemType) && (
+          <button
+            type='button'
+            onClick={() => toggle.mutate({ params: { path: { id: item.id } }, body: { completed: !completed } })}
+            disabled={toggle.isPending || !canMarkDone}
+            title={label}
+            aria-label={label}
+            aria-pressed={completed}
+            className={cn(
+              "grid size-7 shrink-0 place-items-center rounded-full border transition-colors",
+              completed
+                ? "bg-brand border-brand text-brand-foreground"
+                : "border-border text-muted-foreground hover:border-brand/50",
+              !canMarkDone && "hover:border-border cursor-not-allowed opacity-40",
+            )}>
+            {toggle.isPending ? (
+              <Loader2 className='size-3.5 animate-spin' aria-hidden />
+            ) : (
+              <Check className='size-3.5' aria-hidden />
+            )}
+          </button>
         )}
       </div>
-      {isCheckable(item.itemType) && (
-        <button
-          type='button'
-          onClick={() => toggle.mutate({ params: { path: { id: item.id } }, body: { completed: !completed } })}
-          disabled={toggle.isPending || !canMarkDone}
-          title={label}
-          aria-label={label}
-          aria-pressed={completed}
-          className={cn(
-            "grid size-7 shrink-0 place-items-center rounded-full border transition-colors",
-            completed
-              ? "bg-brand border-brand text-brand-foreground"
-              : "border-border text-muted-foreground hover:border-brand/50",
-            !canMarkDone && "hover:border-border cursor-not-allowed opacity-40",
-          )}>
-          {toggle.isPending ? (
-            <Loader2 className='size-3.5 animate-spin' aria-hidden />
-          ) : (
-            <Check className='size-3.5' aria-hidden />
-          )}
-        </button>
+      {completed && isLoggable(item.itemType) && (
+        <SessionLogSheet
+          itemId={item.id}
+          sport={item.itemType}
+          itemTitle={item.title}
+          itemDescription={item.description}
+        />
       )}
     </div>
   );

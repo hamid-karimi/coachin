@@ -114,3 +114,32 @@ func Slice(s string, n int) string {
 	}
 	return string(utf16.Decode(units[:n]))
 }
+
+// FormatEnUS is x.toLocaleString("en-US"): thousands separated by commas, at
+// most three fraction digits (rounded half away from zero), no trailing zeros.
+func FormatEnUS(x float64) string {
+	if math.IsNaN(x) || math.IsInf(x, 0) {
+		return FormatNumber(x)
+	}
+	sign := ""
+	if x < 0 {
+		sign, x = "-", -x
+	}
+	fixed := strconv.FormatFloat(Round(x*1000)/1000, 'f', 3, 64)
+	whole, fraction, _ := strings.Cut(fixed, ".")
+	fraction = strings.TrimRight(fraction, "0")
+	var b strings.Builder
+	for i, digit := range whole {
+		if i > 0 && (len(whole)-i)%3 == 0 {
+			b.WriteByte(',')
+		}
+		b.WriteRune(digit)
+	}
+	if fraction != "" {
+		b.WriteString("." + fraction)
+	}
+	if b.String() == "0" && fraction == "" {
+		sign = ""
+	}
+	return sign + b.String()
+}

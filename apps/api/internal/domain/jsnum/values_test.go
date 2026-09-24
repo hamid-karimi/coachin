@@ -51,3 +51,13 @@ func TestSliceCountsUTF16Units(t *testing.T) {
 		t.Errorf("got %q", got)
 	}
 }
+
+func TestFormatEnUS(t *testing.T) {
+	cases := map[float64]string{0: "0", 12: "12", 999.5: "999.5", 1000: "1,000", 12345.5: "12,345.5",
+		1234567.125: "1,234,567.125", 0.0004: "0", 2.1239: "2.124", -4200: "-4,200"}
+	for in, want := range cases {
+		if got := FormatEnUS(in); got != want {
+			t.Errorf("FormatEnUS(%v) = %q, want %q", in, got, want)
+		}
+	}
+}

@@ -13,7 +13,9 @@ card; the day-by-day schedule lives in Calendar, logging happens on Today.
 | `GET /training/intake-context?student=` | Whose plan the wizard builds (self or a coached trainee) and their body profile; 403 for coach mode without an active relationship |
 | `POST /training/plans/running` | Validates the wizard (legacy messages), generates with AI (Claude → Gemini), saves via `create_training_plan`; replaces the same-discipline active plan. 502 when AI is unavailable |
 | `POST /training/plans/hypertrophy` | Same for muscle building |
-| `PUT /plan-items/{id}/completion` | Done/undo (see the dashboard README) |
+| `PUT /plan-items/{id}/completion` · `POST /plan-items/{id}/session-log` | Done/undo and "Log details" (see the dashboard README) |
+| `GET /training/plans/{id}/checkin` | The check-in proposal, 404 unless one is due (a fully elapsed week that is not the last, not yet reviewed, with a next week): `scorecard` of the reviewed week (+ stalled-lift cautions from week 3), `decision` + `reasons` (FORMULAS.md §7), and next week's `items` rewritten by the AI within that decision — or unchanged with "Keeping week N as planned. …". Each call is an AI call (rate limited) |
+| `POST /training/plans/{id}/checkin` | `{checkinWeek, summary, items}` → `apply_week_adjustment`: records the check-in, rewrites **only** the target week, +20 XP once. The scorecard and decision are recomputed here (legacy trusted the posted ones); items are revalidated like generated plans and forced onto the target week; 409 when the week moved on or was already checked in |
 
 ## Structure
 
@@ -36,7 +38,13 @@ card; the day-by-day schedule lives in Calendar, logging happens on Today.
   `lib/running.ts` (goal suggestion) replays the API's `running.json` golden vectors
 - `hooks/use-generate-plan.ts` — generation mutations (toast, refetch, go to programs or
   Coaching)
-- `checkin/page.tsx` — placeholder until 3.3c
+- `checkin/page.tsx` — loads the proposal once on the server (`app/lib/checkin-data.ts`;
+  never refetched in the browser, as each fetch is an AI call), redirects to `/training`
+  when none is due; `checkin/loading.tsx` while the AI works
+- `components/checkin-view.tsx` (stat cards, flags, decision, proposed week) +
+  `confirm-checkin-button.tsx`; `hooks/use-confirm-checkin.ts` (refetches programs,
+  Today, My week, then back to `/training`); `lib/checkin.ts` (decision copy, flag list,
+  confirm body; unit-tested)
 
 The watch-file upload step of the legacy running wizard returns with FIT/GPX parsing
 (3.3d).

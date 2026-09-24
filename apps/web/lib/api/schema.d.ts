@@ -177,6 +177,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/plan-items/{id}/session-log": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Log how a run or strength session went
+         * @description Marks the item done, awards +10 XP once, and adds AI coach feedback (never fails the log).
+         */
+        post: operations["logSession"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/readyz": {
         parameters: {
             query?: never;
@@ -476,6 +496,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/training/plans/{id}/checkin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Score the last elapsed week and propose the next one
+         * @description 404 unless a check-in is due. The AI rewrites next week within the rule-based decision; without it the week is kept.
+         */
+        get: operations["getCheckinProposal"];
+        put?: never;
+        /**
+         * Confirm the check-in: rewrite only the next week (+20 XP once)
+         * @description The scorecard and decision are recomputed server-side; items are revalidated and forced onto the target week.
+         */
+        post: operations["confirmCheckin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/training/programs": {
         parameters: {
             query?: never;
@@ -522,6 +566,42 @@ export interface components {
             confirmPassword: string;
             currentPassword: string;
             password: string;
+        };
+        CheckinConfirmedBody: {
+            /** Format: int64 */
+            awardedXp: number;
+            message: string;
+            /** @enum {string} */
+            status: "success" | "info";
+        };
+        CheckinProposalBody: {
+            /** @enum {string} */
+            decision: "advance" | "repeat" | "deload";
+            items: components["schemas"]["ProposedItemBody"][];
+            planId: string;
+            reasons: string[];
+            /**
+             * Format: int64
+             * @description The last fully elapsed week
+             */
+            reviewWeek: number;
+            scorecard: components["schemas"]["ScorecardBody"];
+            /** @description The AI's summary, or "Keeping week N as planned…" without it */
+            summary: string;
+            /**
+             * Format: int64
+             * @description The only week the check-in rewrites
+             */
+            targetWeek: number;
+        };
+        ConfirmCheckinInputBody: {
+            /**
+             * Format: int64
+             * @description The reviewed week, as proposed
+             */
+            checkinWeek: number;
+            items: components["schemas"]["ProposedItemBody"][];
+            summary?: string;
         };
         ErrorDetail: {
             /** @description Where the error occurred, e.g. 'body.items[3].tags' or 'path.thing-id' */
@@ -604,6 +684,24 @@ export interface components {
             trainingHistory: string | null;
             /** Format: double */
             weightKg: number | null;
+        };
+        LogSessionInputBody: {
+            /** Format: double */
+            avgHr?: number;
+            /** Format: double */
+            distanceKm?: number;
+            /** Format: double */
+            durationMin?: number;
+            /** @description Strength: [{name, sets: [{reps, weight_kg}]}] */
+            exercises?: unknown[];
+            note?: string;
+            /**
+             * Format: int64
+             * @description Perceived effort 1–10
+             */
+            rpe?: number;
+            /** @enum {string} */
+            sport: "run" | "strength";
         };
         LogWorkoutInputBody: {
             /** Format: int64 */
@@ -691,6 +789,14 @@ export interface components {
         ProgressPhotoBody: {
             due: boolean;
             hasPhotos: boolean;
+        };
+        ProposedItemBody: {
+            /** Format: int64 */
+            dayOfWeek: number;
+            details: components["schemas"]["PlanItemDetailsBody"];
+            /** @enum {string} */
+            itemType: "run" | "strength" | "stretch" | "mobility" | "recovery" | "meal_note";
+            title: string;
         };
         QuotaBody: {
             /**
@@ -786,6 +892,42 @@ export interface components {
             sportTypeId: number | null;
             /** @description HH:MM */
             time: string | null;
+        };
+        ScorecardBody: {
+            /** Format: double */
+            actualKm: number;
+            /**
+             * Format: double
+             * @description Completed / planned non-meal items, one decimal
+             */
+            adherencePct: number;
+            cautionFlags: string[];
+            /** Format: int64 */
+            completedItems: number;
+            /** Format: int64 */
+            plannedItems: number;
+            /** Format: double */
+            plannedKm: number;
+            redFlags: string[];
+        };
+        SessionFeedbackBody: {
+            /** @enum {string} */
+            flag: "ok" | "caution" | "red";
+            message: string;
+        };
+        SessionLoggedBody: {
+            /** Format: int64 */
+            awardedXp: number;
+            /** @description Absent when the AI is unavailable and nothing was flagged */
+            feedback?: components["schemas"]["SessionFeedbackBody"];
+            message: string;
+            /** @enum {string} */
+            status: "success" | "info";
+            /**
+             * Format: double
+             * @description Strength: Σ weight × reps; 0 for runs
+             */
+            totalVolumeKg: number;
         };
         SportTypeBody: {
             /** Format: int64 */
@@ -1462,6 +1604,95 @@ export interface operations {
             };
             /** @description Unprocessable Entity */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    logSession: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LogSessionInputBody"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionLoggedBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2449,6 +2680,153 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getCheckinProposal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CheckinProposalBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    confirmCheckin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmCheckinInputBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CheckinConfirmedBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

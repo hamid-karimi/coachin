@@ -5,6 +5,30 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-24 (night, final) · #70 merged (3.3b) · Phase 3.3c — session logs + weekly check-in
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): `domain/aigen` session-feedback and
+week-adjustment ports (red-flag precheck, parse rules; golden `ai.json` now 78 cases),
+`jsnum.FormatEnUS`; `app/training` `Sessions.LogSession` (legacy messages, actual JSON in
+legacy key order, one-tx log + done + `award_session_log_xp`, non-fatal AI feedback with
+the persisted flagged-note fallback) and `Checkins` (Proposal / Confirm around
+`apply_week_adjustment`); store + sqlc queries; `POST /plan-items/{id}/session-log`,
+`GET/POST /training/plans/{id}/checkin`. Web: "Log details" sheet on Today's plan rows
+(RPE, run fields, per-set strength editor; `lib/workout-sets` replays `workout-sets.json`),
+check-in page (server-fetched proposal, loading state), `components/ui/textarea` (+ story;
+the wizards use it now). e2e on the sandbox stack with the fake AI (now also answering
+feedback/adjustment prompts): log → "+10 XP · You lifted 600 kg total — that's a horse
+🐎 · 🏃 …"; check-in → "Week 3 updated · +20 XP", banner gone, re-open redirects.
+
+**Decisions**: confirm recomputes scorecard + decision server-side (legacy trusted the
+client); the proposal is fetched once on the server, never through TanStack (each GET is
+an AI call, rate limited 5 then 1/10 s; session logs 6 then 1/10 s). "Share it" cards are
+left for the share-card step. No formatter is configured: when formatting, use
+`prettier --print-width 120 --jsx-single-quote --bracket-same-line` on changed files only.
+
+**Next steps**: 3.3d FIT/GPX parsing (running wizard upload + profile watch import), then
+3.4 Calendar.
+
 ## 2026-09-24 (night, very late) · #69 merged (3.3a) · Phase 3.3b — AI plan generation
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): `domain/aigen` (schema hint,

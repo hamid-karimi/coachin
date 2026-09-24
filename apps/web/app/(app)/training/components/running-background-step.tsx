@@ -2,8 +2,9 @@
 
 import type { Dispatch } from "react";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import type { PbKey, RunningAction, RunningDraft } from "../lib/running-wizard";
-import { Field, SELECT_CLASS, TEXTAREA_CLASS, WizardCard } from "./wizard-fields";
+import { Field, SELECT_CLASS, WizardCard } from "./wizard-fields";
 
 const PB_FIELDS: [PbKey, string, string][] = [
   ["pb_5k", "5k", "22:30"],
@@ -71,14 +72,13 @@ export function RunningBackgroundStep({ draft, dispatch }: { draft: RunningDraft
       </div>
 
       <Field id='injuries' label='Injuries or limitations (optional)'>
-        <textarea
+        <Textarea
           id='injuries'
           rows={2}
           maxLength={500}
           placeholder='Example: right knee gets sore over 25km/week'
           value={draft.injuries}
           onChange={(e) => dispatch({ type: "set", field: "injuries", value: e.target.value })}
-          className={TEXTAREA_CLASS}
         />
       </Field>
     </WizardCard>

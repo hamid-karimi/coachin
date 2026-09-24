@@ -30,6 +30,8 @@ type Deps struct {
 	Supplements      SupplementService
 	Programs         ProgramService
 	Generation       GenerationService
+	Sessions         SessionLogService
+	Checkins         CheckinService
 	Cookies          CookieSettings
 	CommunityEnabled bool
 }
@@ -67,6 +69,8 @@ func New(deps Deps) (http.Handler, huma.API) {
 	registerSupplements(api, deps)
 	registerTraining(api, deps)
 	registerGeneration(api, deps)
+	registerSessionLogs(api, deps)
+	registerCheckins(api, deps)
 
 	// Rejects cross-site state-changing requests (Sec-Fetch-Site / Origin),
 	// the CSRF guard for cookie sessions.

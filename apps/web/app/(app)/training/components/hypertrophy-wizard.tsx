@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { Dumbbell, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { useGenerateHypertrophyPlan } from "../hooks/use-generate-plan";
 import { HYPERTROPHY_OPTIONS, INITIAL_HYPERTROPHY_DRAFT, type HypertrophyDraft } from "../lib/hypertrophy-wizard";
 import { ProfileCard } from "./profile-card";
-import { Field, SELECT_CLASS, TEXTAREA_CLASS, WizardCard } from "./wizard-fields";
+import { Field, SELECT_CLASS, WizardCard } from "./wizard-fields";
 
 interface HypertrophyWizardProps {
   profileSummary: string;
@@ -72,14 +73,13 @@ export function HypertrophyWizard({ profileSummary, hasBodyProfile, targetStuden
           ))}
         </div>
         <Field id='injuries' label='Injuries or limitations (optional)'>
-          <textarea
+          <Textarea
             id='injuries'
             rows={2}
             maxLength={500}
             placeholder='Example: lower-back issues — avoid heavy deadlifts'
             value={draft.injuries}
             onChange={(e) => setDraft({ ...draft, injuries: e.target.value })}
-            className={TEXTAREA_CLASS}
           />
         </Field>
       </WizardCard>

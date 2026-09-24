@@ -79,6 +79,8 @@ func serve(ctx context.Context, _ []string, _ *slog.Logger) error {
 		Supplements:      supplements.NewService(store.NewSupplementStore(pool), nil),
 		Programs:         training.NewPrograms(store.NewTrainingStore(pool), nil),
 		Generation:       training.NewGeneration(store.NewTrainingStore(pool), generator, nil),
+		Sessions:         training.NewSessions(store.NewTrainingStore(pool), generator),
+		Checkins:         training.NewCheckins(store.NewTrainingStore(pool), generator, nil),
 		Cookies:          httpapi.CookieSettings{Secure: cfg.CookieSecure},
 		CommunityEnabled: cfg.CommunityEnabled,
 	})

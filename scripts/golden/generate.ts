@@ -68,6 +68,8 @@ import { geminiSchemaToHint } from "@/lib/ai/schema-hint";
 import { anchorsPromptBlock, type PlanAnchor } from "@/lib/ai/anchors";
 import { generateMarathonPlan, validateItems, type MarathonIntake } from "@/lib/ai/marathon";
 import { generateHypertrophyPlan, type HypertrophyIntake } from "@/lib/ai/hypertrophy";
+import { generateSessionFeedback, redFlagPrecheck } from "@/lib/ai/session-feedback";
+import { generateWeekAdjustment } from "@/lib/ai/week-adjustment";
 // Resolved to scripts/golden/stubs/text-json.mjs by hooks.mjs.
 // @ts-expect-error -- the stub's helpers are not in the legacy module's types
 import { calls as aiCalls, setReply as setAiReply } from "@/lib/ai/text-json";
@@ -839,6 +841,68 @@ async function aiCases(): Promise<Case[]> {
     const result = await generateMarathonPlan(intake);
     const { raw: _raw, ...shown } = result as Record<string, unknown>;
     cases.push({ fn: "planResult", weeksTotal: intake.weeks_total, text, want: shown });
+  }
+  // Session feedback: the deterministic pre-check, the prompt, and parsing
+  // (the AI may never downgrade the pre-check).
+  for (const [note, rpe] of [
+    [null, null], [null, 8], [null, 9], ["felt great", 10], ["knee pain", 5], ["knee pain", 8],
+    ["sharp pain in calf", 3], ["Schmerz im Knie", null], ["It HURT a bit", 7], ["verletzt, stark", null], ["", 9],
+  ] as const) {
+    cases.push({ fn: "redFlagPrecheck", note, rpe, want: redFlagPrecheck(note, rpe, "run") });
+  }
+  const feedbackInputs = [
+    { itemTitle: "Tempo run", itemType: "run", planned: { distance_km: 8, pace_min_km: "5:10", notes: "Steady" },
+      actual: { distance_km: 7.5, duration_min: 41, avg_hr: 162 }, rpe: 7, note: "Legs heavy" },
+    { itemTitle: "Upper body — Day A", itemType: "strength", planned: null,
+      actual: { exercises: [{ name: "Bench press", sets: [{ weight_kg: 60, reps: 8 }] }] }, rpe: null, note: null },
+    { itemTitle: "Long run", itemType: "run", planned: {}, actual: {}, rpe: 9, note: "sharp pain in my knee" },
+  ];
+  for (const input of feedbackInputs) {
+    for (const reply of [
+      null,
+      '{"message":"  Nice work — keep the easy days easy.  ","flag":"ok"}',
+      '{"message":"' + "x".repeat(320) + '","flag":"weird"}',
+      '{"message":"   ","flag":"ok"}',
+      "not json",
+    ]) {
+      aiCalls.length = 0;
+      setAiReply(reply === null ? null : { text: reply, model: "test-model" });
+      const want = await generateSessionFeedback(input);
+      const request = aiCalls[0];
+      cases.push({
+        fn: "sessionFeedback", input, reply, want,
+        prompt: request.prompt, maxTokens: request.maxTokens ?? null,
+        schemaHint: JSON.stringify(geminiSchemaToHint(request.schema)),
+      });
+    }
+  }
+
+  // Weekly check-in rewrite of one week.
+  const scorecard = { adherence_pct: 60, planned_items: 5, completed_items: 3, planned_km: 32.5, actual_km: 20, red_flags: [], caution_flags: ["Long run: RPE 9"] };
+  const nextWeekItems = validateItems([
+    { week: 4, day_of_week: 2, item_type: "run", title: "Easy run 6k", details: { distance_km: 6, pace_min_km: "6:00", notes: "Easy" } },
+    { week: 4, day_of_week: 6, item_type: "run", title: "Long run 14k", details: { distance_km: 14 } },
+    { week: 4, day_of_week: 4, item_type: "strength", title: "Strength", details: {} },
+  ]);
+  for (const decision of ["advance", "repeat", "deload"] as const) {
+    for (const reply of [
+      null,
+      JSON.stringify({ summary: "  Lighter week to recover.  ", items: [{ week: 9, day_of_week: 2, item_type: "run", title: "Easy run 4k", details: { distance_km: 4.04 } }] }),
+      JSON.stringify({ summary: "", items: [{ week: 5, day_of_week: 2, item_type: "run", title: "Run" }] }),
+      JSON.stringify({ summary: "No items", items: [] }),
+      "{broken",
+    ]) {
+      aiCalls.length = 0;
+      setAiReply(reply === null ? null : { text: reply, model: "test-model" });
+      const input = { scorecard, decision, reasons: ["Adherence 60%.", "One caution flag."], nextWeekItems, targetWeek: 5, intakeSummary: decision === "repeat" ? "" : "21.0975km race plan · regular runner · 4 days/week · Summary" };
+      const want = await generateWeekAdjustment(input);
+      const request = aiCalls[0];
+      cases.push({
+        fn: "weekAdjustment", input, reply, want,
+        prompt: request.prompt, maxTokens: request.maxTokens ?? null,
+        schemaHint: JSON.stringify(geminiSchemaToHint(request.schema)),
+      });
+    }
   }
   return cases;
 }

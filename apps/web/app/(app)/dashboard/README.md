@@ -10,6 +10,7 @@ The daily execution surface: see today's plan, log it, watch XP and the streak m
 | `POST /today/workouts` | `{sportTypeId}` → `round(60 × multiplier)` XP; log, ledger row, and balance in one transaction; once per sport per day (409 otherwise) |
 | `POST /supplements` · `PUT /supplements/{id}/schedule` · `DELETE /supplements/{id}` · `PUT /supplements/{id}/taken` | Daily stack (max 20); the stack with `dueToday`/`takenToday` comes with `GET /today` |
 | `PUT /plan-items/{id}/completion` | `{completed}` → XP delta (`+60/+30/+20` by type, compensated on undo); done only on the item's day or the day after |
+| `POST /plan-items/{id}/session-log` | Run/strength "how did it go": `{sport, rpe?, note?, distanceKm?, durationMin?, avgHr?, exercises?}` → log + item done + `award_session_log_xp` (+10, once) in one transaction, then AI feedback (non-fatal); `{message, awardedXp, feedback?, totalVolumeKg}`; 409 "Session already logged" |
 
 ## Structure
 
@@ -37,20 +38,26 @@ The daily execution surface: see today's plan, log it, watch XP and the streak m
     done state for sports logged earlier today
 
 Shared: `app/(app)/components/plan-item-row.tsx` + `app/(app)/hooks/use-plan-item-completion.ts`
-(optimistic done toggle, used by Training and Calendar later),
+(optimistic done toggle, used by Training and Calendar later); under a done run/strength
+item, `session-log-sheet.tsx` ("Log details": `rpe-picker`, `run-log-fields`,
+`strength-sets-editor`, `session-log-result`; `hooks/use-session-log.ts`; logic in
+`lib/session-log.ts`, `lib/strength-sets.ts`, `lib/workout-sets.ts` — the last replays
+the API's `workout-sets.json` golden vectors),
 `components/hooks/use-confetti-burst.ts` (colors from theme tokens).
 
 ## Not yet ported (arrive with their modules)
 
 Today's meal-plan menu (Nutrition), featured goal strip
-(Profile), coaching card (Coaching), group-streak nudge (Community), session "Log details"
-(Training).
+(Profile), coaching card (Coaching), group-streak nudge (Community), the session "Share
+it" card (share cards).
 
 ## Differences from legacy
 
 - A second log of the same sport on the same day is refused by the API (legacy only hid
   the button); the XP ledger reason carries the date.
 - The plan-item log window is enforced by the API too, not only by the disabled button.
+- A session log, the item's done flag, and its +10 XP are one transaction (legacy ran
+  three calls, so a failure could leave a log without XP).
 - A sport with no multiplier earns 60 XP (legacy produced NaN).
 - Editing a supplement's schedule saves (legacy lacked the database UPDATE policy);
   checking off another user's supplement is refused (legacy only checked the log's owner).
