@@ -1,7 +1,7 @@
 import { ChevronRight, Sparkles } from "lucide-react";
 import { planItemDetailLine } from "@/lib/plan-items";
 import { cn } from "@/lib/utils";
-import { PlanTypeIcon } from "./plan-type-icon";
+import { PlanTypeIcon } from "../../components/plan-type-icon";
 import type { PlanItem } from "./types";
 
 /**

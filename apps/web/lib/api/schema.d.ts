@@ -143,6 +143,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/calendar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A week of routine, plan items, and logged workouts on real dates */
+        get: operations["getCalendar"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/healthz": {
         parameters: {
             query?: never;
@@ -604,6 +621,45 @@ export interface components {
              * @enum {string}
              */
             scheduleType: "daily" | "training_days" | "custom";
+        };
+        CalendarBody: {
+            days: components["schemas"]["CalendarDayBody"][];
+            isCurrentWeek: boolean;
+            /** Format: date */
+            nextWeek: string;
+            /** Format: date */
+            prevWeek: string;
+            /** @description Weekly targets scored on the viewed week */
+            quotas: components["schemas"]["QuotaBody"][];
+            /** Format: date */
+            today: string;
+            /** Format: date */
+            weekEnd: string;
+            /** Format: date */
+            weekStart: string;
+        };
+        CalendarDayBody: {
+            /** Format: date */
+            date: string;
+            /** Format: int64 */
+            dayOfWeek: number;
+            /** @description 2+ run/strength items that day */
+            hardCollision: boolean;
+            isToday: boolean;
+            /** @description Any completed log that day */
+            logged: boolean;
+            /** @description Blended across every active plan, each in its own week */
+            planItems: components["schemas"]["PlanItemBody"][];
+            routines: components["schemas"]["CalendarRoutineBody"][];
+        };
+        CalendarRoutineBody: {
+            /** @description A completed log of the sport that day */
+            done: boolean;
+            sportName: string | null;
+            /** Format: int64 */
+            sportTypeId: number | null;
+            /** @description HH:MM */
+            time: string | null;
         };
         ChangeInputBody: {
             confirmPassword: string;
@@ -1580,6 +1636,56 @@ export interface operations {
             };
             /** @description Too Many Requests */
             429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getCalendar: {
+        parameters: {
+            query?: {
+                /** @description Any date of the week (YYYY-MM-DD); this week when missing or invalid */
+                week?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CalendarBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -1,0 +1,93 @@
+package httpapi
+
+import (
+	"context"
+	"net/http"
+
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/google/uuid"
+
+	"github.com/hamid-karimi/coachin/apps/api/internal/app/calendar"
+)
+
+// CalendarService builds calendar weeks.
+type CalendarService interface {
+	Week(ctx context.Context, userID uuid.UUID, anchor string) (calendar.Week, error)
+}
+
+// CalendarRoutineBody is a fixed session on a calendar day.
+type CalendarRoutineBody struct {
+	SportTypeID *int64  `json:"sportTypeId"`
+	SportName   *string `json:"sportName"`
+	Time        *string `json:"time" doc:"HH:MM"`
+	Done        bool    `json:"done" doc:"A completed log of the sport that day"`
+}
+
+// CalendarDayBody is one day cell.
+type CalendarDayBody struct {
+	Date          string                `json:"date" format:"date"`
+	DayOfWeek     int                   `json:"dayOfWeek" minimum:"0" maximum:"6"`
+	IsToday       bool                  `json:"isToday"`
+	Logged        bool                  `json:"logged" doc:"Any completed log that day"`
+	Routines      []CalendarRoutineBody `json:"routines"`
+	PlanItems     []PlanItemBody        `json:"planItems" doc:"Blended across every active plan, each in its own week"`
+	HardCollision bool                  `json:"hardCollision" doc:"2+ run/strength items that day"`
+}
+
+// CalendarBody is one Monday–Sunday week.
+type CalendarBody struct {
+	WeekStart     string            `json:"weekStart" format:"date"`
+	WeekEnd       string            `json:"weekEnd" format:"date"`
+	PrevWeek      string            `json:"prevWeek" format:"date"`
+	NextWeek      string            `json:"nextWeek" format:"date"`
+	Today         string            `json:"today" format:"date"`
+	IsCurrentWeek bool              `json:"isCurrentWeek"`
+	Quotas        []QuotaBody       `json:"quotas" doc:"Weekly targets scored on the viewed week"`
+	Days          []CalendarDayBody `json:"days"`
+}
+
+type calendarInput struct {
+	Week string `query:"week" doc:"Any date of the week (YYYY-MM-DD); this week when missing or invalid"`
+}
+
+type calendarWeekOutput struct {
+	Body CalendarBody
+}
+
+func registerCalendar(api huma.API, deps Deps) {
+	svc, logger := deps.Calendar, deps.logger()
+
+	huma.Register(api, huma.Operation{
+		OperationID: "getCalendar", Method: http.MethodGet, Path: "/calendar",
+		Summary: "A week of routine, plan items, and logged workouts on real dates",
+		Tags:    []string{"calendar"}, Middlewares: huma.Middlewares{requireUser(api)}, Errors: []int{401},
+	}, func(ctx context.Context, in *calendarInput) (*calendarWeekOutput, error) {
+		userID, _ := userFrom(ctx)
+		week, err := svc.Week(ctx, userID, in.Week)
+		if err != nil {
+			return nil, toProblem(ctx, logger, err)
+		}
+		body := CalendarBody{
+			WeekStart: week.Monday, WeekEnd: week.Sunday, PrevWeek: week.PrevWeek, NextWeek: week.NextWeek,
+			Today: week.Today, IsCurrentWeek: week.IsCurrentWeek,
+			Quotas: make([]QuotaBody, len(week.Quotas)), Days: make([]CalendarDayBody, len(week.Days)),
+		}
+		for i, q := range week.Quotas {
+			body.Quotas[i] = quotaBody(q)
+		}
+		for i, d := range week.Days {
+			day := CalendarDayBody{
+				Date: d.Date, DayOfWeek: d.Weekday, IsToday: d.IsToday, Logged: d.Logged, HardCollision: d.HardCollision,
+				Routines: make([]CalendarRoutineBody, len(d.Routines)), PlanItems: make([]PlanItemBody, len(d.PlanItems)),
+			}
+			for j, r := range d.Routines {
+				day.Routines[j] = CalendarRoutineBody{SportTypeID: r.SportTypeID, SportName: r.SportName, Time: r.Time, Done: r.Done}
+			}
+			for j, item := range d.PlanItems {
+				day.PlanItems[j] = planItemBody(item)
+			}
+			body.Days[i] = day
+		}
+		return &calendarWeekOutput{Body: body}, nil
+	})
+}
