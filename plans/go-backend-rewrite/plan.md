@@ -45,14 +45,18 @@ Goal: `make up` on your Mac starts an empty but working stack.
 
 ## Phase 1 — Clean schema + domain port (M)
 
-- [ ] 1.1 `apps/api/db/migrations/00002_baseline.sql`: replay `legacy/supabase/migrations` into a
-      scratch Postgres, `pg_dump --schema-only`, then clean it per ADR-2 (`users` table,
-      `app.current_user_id()`, `coachin_owner`/`coachin_app` roles, no `auth`/`storage`
-      schemas). `00003_auth.sql`: `sessions`, `auth_tokens`.
-- [ ] 1.2 `apps/api/db/seed/` + `make seed`: sport types (from the seed migration), a trainee, a coach, an active
-      relationship, one running plan, one hypertrophy plan.
-- [ ] 1.3 RLS smoke test (testcontainers): as `coachin_app` with user A, every table read
-      returns zero rows of user B.
+- [x] 1.1 `apps/api/db/migrations/00002_baseline.sql`: the 40 legacy migrations replayed
+      into Postgres 18 (with a scratch auth/storage shim), `pg_dump --schema-only`, then a
+      mechanical rewrite per ADR-2: `public.users` replaces `auth.users`,
+      `app.current_user_id()` replaces `auth.uid()`, `TO coachin_app` replaces
+      `TO authenticated`, storage policies dropped. 28 tables, 23 functions (kept for
+      Step A), 69 policies. `00003_reference_data.sql`: sport types + starter foods
+      (legacy seeds, plus the core sports production had entered by hand).
+- [ ] 1.2 → moved to Phase 2 (2.2): seeded users need real password hashes to log in.
+- [x] 1.3 RLS tests (testcontainers, as `coachin_app`): every public table has RLS; a user
+      sees only their own private rows and account; no user context → no rows.
+      `store.WithUser` (transaction-local `app.user_id`) added here, used by everything
+      after.
 - [ ] 1.4 `scripts/export-golden.ts` (runs in `legacy/`): pure `lib/*` functions over the
       inputs in `lib/*.test.ts` → `testdata/golden/<topic>.json`.
 - [ ] 1.5 Port to `apps/api/internal/domain/` with table-driven tests on the vectors: xp §1 ·
@@ -67,10 +71,12 @@ Goal: `make up` on your Mac starts an empty but working stack.
 ## Phase 2 — Auth + platform slice (L)
 
 API
-- [ ] 2.1 `store`: pgx pool as `coachin_app`, `WithUser` / `WithSystem`, sqlc setup.
-- [ ] 2.2 `app/auth`: argon2id + bcrypt-legacy verify/rehash, sessions, register, login,
+- [ ] 2.1 `store`: `WithSystem`, sqlc setup (`WithUser` landed in 1.3).
+- [ ] 2.2 Migration `00004_auth.sql` (`sessions`, `auth_tokens`); `app/auth`: argon2id + bcrypt-legacy verify/rehash, sessions, register, login,
       logout, verify email, forgot/reset/change password, `GET /me`. `mail` adapter with
-      HTML + text templates (Mailpit locally).
+      HTML + text templates (Mailpit locally). `api seed` + `make seed`: sport types come
+      from 00003; adds a trainee, a coach, an active relationship, one running plan, one
+      hypertrophy plan (was 1.2).
 - [ ] 2.3 Middleware: session → user, request ID, problem+json, rate limits, 8 MB body cap.
 - [ ] 2.4 Integration tests: register → email in Mailpit → verify → logout → login →
       forgot → reset → old sessions revoked; rate limits trigger; cross-user access denied.

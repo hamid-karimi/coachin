@@ -5,6 +5,27 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-24 (evening) · Phase 0 merged (#58) · Phase 1 PR A — clean schema
+
+**Done**: #58 merged into `feat/backend-rewrite-with-go` after 2 CI fixes (pnpm 12
+`minimumReleaseAge` → pinned lucide-react 1.47.0 / vite 8.3.0; Caddy now waits for a
+healthy `web`, removing a startup 502). Owner said to ignore the failing Vercel status on
+rewrite PRs (Vercel still builds every branch; not ours to fix).
+
+Phase 1 PR A (this branch):
+- `00002_baseline.sql` — legacy schema replayed + dumped + rewritten (users table,
+  `app.current_user_id()`, `coachin_app`), 28 tables / 23 SQL functions / 69 policies.
+  Recipe is documented in the file header; the converter script was one-off.
+- `00003_reference_data.sql` — sport types (legacy seed + core sports that prod had
+  hand-entered, neutral 1.0 multiplier) and 73 starter foods.
+- `store.WithUser` + RLS tests (every table has RLS; cross-user isolation; fail-closed).
+
+**Decisions**: demo seed moved to Phase 2 (needs password hashing); auth tables become
+`00004_auth.sql`; importer (Phase 7) must replace sport_types/foods with prod rows + ids.
+
+**Next steps**: merge PR A → Phase 1 PR B: `scripts/export-golden.ts` + port pure `lib/`
+modules to `internal/domain` with golden vectors, a few topics per PR.
+
 ## 2026-09-24 · `claude/lucid-tesla-3737vk` → PR into `feat/backend-rewrite-with-go` — Phase 0 done
 
 **Done** (plan Phase 0, all boxes ticked in `plan.md`):
