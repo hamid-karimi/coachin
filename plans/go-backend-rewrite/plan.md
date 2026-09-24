@@ -62,10 +62,10 @@ Goal: `make up` on your Mac starts an empty but working stack.
       random inputs (clock pinned per case, `TZ=UTC`) → `testdata/golden/<topic>.json`. CI
       regenerates and fails on drift.
 - [ ] 1.5 Port to `apps/api/internal/domain/` with table-driven tests on the vectors. Done:
-      xp §1, streak §2, tiers §3, running §4, dates §9 (+ `jsnum` for JavaScript rounding /
-      `Number()` parity). Remaining: race intake §5 · goals §6 · scorecard / check-in /
-      stall §7 · nutrition §8/§10 · quotas §11 · volume §12 ·
-      supplements + meal adherence §13 · activity summary §14 · charts + photo nudge §15 ·
+      xp §1, streak §2, tiers §3, running §4, goals §6, scorecard / check-in / stall §7,
+      dates §9, quotas §11, workout sets / volume §12 (+ `jsnum`: JavaScript `Math.round`,
+      `Number()`, `String()`, `trim`/`slice` parity). Remaining: race intake §5 ·
+      nutrition §8/§10 · supplements + meal adherence §13 · activity summary §14 · charts + photo nudge §15 ·
       plan-items, schedule-inserts, food-units, grocery, share-card privacy, sports,
       user-country, AI extract-json / schema-hint / anchors.
 - [ ] 1.6 FORMULAS.md: add the Go path next to each "source of truth" (done for every

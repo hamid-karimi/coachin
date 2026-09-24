@@ -1,0 +1,1798 @@
+{
+ "generatedBy": "scripts/golden/generate.ts",
+ "topic": "quotas",
+ "cases": [
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 1
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-08",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-11",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-09",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-09",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-12",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-08",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-12",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-12",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-06",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-06",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-08",
+     "status": "completed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 1,
+     "done": 1
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 4
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 4
+    },
+    {
+     "sport_type_id": 3,
+     "sessions_per_week": 2
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-12",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-08",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-09",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-06",
+     "status": "skipped"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 4,
+     "done": 1
+    },
+    {
+     "sport_type_id": 2,
+     "target": 4,
+     "done": 0
+    },
+    {
+     "sport_type_id": 3,
+     "target": 2,
+     "done": 1
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 5
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 5
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-12",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-09",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-11",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-09",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-08",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": null,
+     "date": "2026-07-06",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-06",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-12",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-11",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-12",
+     "status": "skipped"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 5,
+     "done": 1
+    },
+    {
+     "sport_type_id": 2,
+     "target": 5,
+     "done": 0
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 1
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 2
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-11",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-11",
+     "status": "missed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 1,
+     "done": 0
+    },
+    {
+     "sport_type_id": 2,
+     "target": 2,
+     "done": 0
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 2
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 3
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-09",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-07",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-06",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": null,
+     "date": "2026-07-06",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-07",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-08",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-11",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-09",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-06",
+     "status": "completed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 2,
+     "done": 3
+    },
+    {
+     "sport_type_id": 2,
+     "target": 3,
+     "done": 1
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 5
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 4
+    },
+    {
+     "sport_type_id": 3,
+     "sessions_per_week": 3
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-08",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-12",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-09",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-12",
+     "status": "missed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 5,
+     "done": 0
+    },
+    {
+     "sport_type_id": 2,
+     "target": 4,
+     "done": 2
+    },
+    {
+     "sport_type_id": 3,
+     "target": 3,
+     "done": 0
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 3
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 4
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-07",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-11",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-10",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-07",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-11",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-12",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-10",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-10",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-09",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-09",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-07",
+     "status": "completed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 3,
+     "done": 1
+    },
+    {
+     "sport_type_id": 2,
+     "target": 4,
+     "done": 1
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 3
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-09",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-12",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-12",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-07",
+     "status": "missed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 3,
+     "done": 0
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 1
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-07",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-09",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": null,
+     "date": "2026-07-06",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-07",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-09",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-08",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-07",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-11",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-06",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-09",
+     "status": "completed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 1,
+     "done": 0
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 3
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 4
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-07",
+     "status": "completed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 3,
+     "done": 1
+    },
+    {
+     "sport_type_id": 2,
+     "target": 4,
+     "done": 0
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 1
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 1
+    },
+    {
+     "sport_type_id": 3,
+     "sessions_per_week": 5
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-10",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-10",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-09",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": null,
+     "date": "2026-07-12",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-08",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-11",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-10",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-10",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-10",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-07",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-08",
+     "status": "missed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 1,
+     "done": 1
+    },
+    {
+     "sport_type_id": 2,
+     "target": 1,
+     "done": 1
+    },
+    {
+     "sport_type_id": 3,
+     "target": 5,
+     "done": 1
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 3
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-06",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-09",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-06",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-09",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-09",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-07",
+     "status": "completed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 3,
+     "done": 1
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 4
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 2
+    },
+    {
+     "sport_type_id": 3,
+     "sessions_per_week": 1
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-09",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-10",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-06",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-11",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-09",
+     "status": "missed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 4,
+     "done": 0
+    },
+    {
+     "sport_type_id": 2,
+     "target": 2,
+     "done": 0
+    },
+    {
+     "sport_type_id": 3,
+     "target": 1,
+     "done": 1
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 4
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 3
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-12",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-07",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-12",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-11",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-10",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-08",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": null,
+     "date": "2026-07-07",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-11",
+     "status": "completed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 4,
+     "done": 2
+    },
+    {
+     "sport_type_id": 2,
+     "target": 3,
+     "done": 0
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 3
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 5
+    },
+    {
+     "sport_type_id": 3,
+     "sessions_per_week": 4
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-08",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-11",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-06",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-07",
+     "status": "completed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 3,
+     "done": 1
+    },
+    {
+     "sport_type_id": 2,
+     "target": 5,
+     "done": 0
+    },
+    {
+     "sport_type_id": 3,
+     "target": 4,
+     "done": 1
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 2
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-11",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": null,
+     "date": "2026-07-07",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-07",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-06",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-06",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-09",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-08",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-12",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-08",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-06",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-09",
+     "status": "skipped"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 2,
+     "done": 0
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 2
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 1
+    },
+    {
+     "sport_type_id": 3,
+     "sessions_per_week": 3
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": null,
+     "date": "2026-07-06",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-11",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-09",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-12",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-11",
+     "status": "completed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 2,
+     "done": 0
+    },
+    {
+     "sport_type_id": 2,
+     "target": 1,
+     "done": 0
+    },
+    {
+     "sport_type_id": 3,
+     "target": 3,
+     "done": 0
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 2
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 3
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-11",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-10",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": null,
+     "date": "2026-07-11",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-11",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-12",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-07",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-08",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-06",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-11",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-11",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-10",
+     "status": "completed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 2,
+     "done": 1
+    },
+    {
+     "sport_type_id": 2,
+     "target": 3,
+     "done": 2
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 1
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 4
+    },
+    {
+     "sport_type_id": 3,
+     "sessions_per_week": 3
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-10",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-07",
+     "status": "completed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 1,
+     "done": 0
+    },
+    {
+     "sport_type_id": 2,
+     "target": 4,
+     "done": 0
+    },
+    {
+     "sport_type_id": 3,
+     "target": 3,
+     "done": 1
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 1
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 1
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-10",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-06",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-12",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-09",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-11",
+     "status": "missed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 1,
+     "done": 0
+    },
+    {
+     "sport_type_id": 2,
+     "target": 1,
+     "done": 1
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 5
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 5
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": null,
+     "date": "2026-07-07",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-11",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-11",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-07",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-09",
+     "status": "skipped"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 5,
+     "done": 0
+    },
+    {
+     "sport_type_id": 2,
+     "target": 5,
+     "done": 0
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 1
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 1
+    },
+    {
+     "sport_type_id": 3,
+     "sessions_per_week": 2
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-11",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-06",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-08",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-12",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": null,
+     "date": "2026-07-12",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-09",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-08",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-06",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": null,
+     "date": "2026-07-07",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-10",
+     "status": "completed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 1,
+     "done": 0
+    },
+    {
+     "sport_type_id": 2,
+     "target": 1,
+     "done": 1
+    },
+    {
+     "sport_type_id": 3,
+     "target": 2,
+     "done": 0
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 2
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 2
+    },
+    {
+     "sport_type_id": 3,
+     "sessions_per_week": 3
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-06",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-06",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-06",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-07",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-12",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-06",
+     "status": "completed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 2,
+     "done": 1
+    },
+    {
+     "sport_type_id": 2,
+     "target": 2,
+     "done": 0
+    },
+    {
+     "sport_type_id": 3,
+     "target": 3,
+     "done": 1
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 5
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 3
+    },
+    {
+     "sport_type_id": 3,
+     "sessions_per_week": 3
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-06",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-09",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": null,
+     "date": "2026-07-07",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-12",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-09",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-11",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-07",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": null,
+     "date": "2026-07-09",
+     "status": "completed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 5,
+     "done": 1
+    },
+    {
+     "sport_type_id": 2,
+     "target": 3,
+     "done": 0
+    },
+    {
+     "sport_type_id": 3,
+     "target": 3,
+     "done": 0
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 1
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 1
+    }
+   ],
+   "logs": [],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 1,
+     "done": 0
+    },
+    {
+     "sport_type_id": 2,
+     "target": 1,
+     "done": 0
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 2
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 2
+    },
+    {
+     "sport_type_id": 3,
+     "sessions_per_week": 4
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-08",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-11",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-12",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-10",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-08",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-11",
+     "status": "completed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 2,
+     "done": 0
+    },
+    {
+     "sport_type_id": 2,
+     "target": 2,
+     "done": 2
+    },
+    {
+     "sport_type_id": 3,
+     "target": 4,
+     "done": 1
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 3
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 2
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-12",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-09",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-08",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-11",
+     "status": "completed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 3,
+     "done": 1
+    },
+    {
+     "sport_type_id": 2,
+     "target": 2,
+     "done": 1
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 3
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 2
+    },
+    {
+     "sport_type_id": 3,
+     "sessions_per_week": 3
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-09",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-06",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-08",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-07",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-07",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-09",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-10",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 1,
+     "date": "2026-07-06",
+     "status": "completed"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 3,
+     "done": 1
+    },
+    {
+     "sport_type_id": 2,
+     "target": 2,
+     "done": 1
+    },
+    {
+     "sport_type_id": 3,
+     "target": 3,
+     "done": 2
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 1
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": null,
+     "date": "2026-07-10",
+     "status": "missed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-06",
+     "status": "skipped"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-11",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-11",
+     "status": "skipped"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 1,
+     "done": 0
+    }
+   ]
+  },
+  {
+   "quotas": [
+    {
+     "sport_type_id": 1,
+     "sessions_per_week": 3
+    },
+    {
+     "sport_type_id": 2,
+     "sessions_per_week": 5
+    },
+    {
+     "sport_type_id": 3,
+     "sessions_per_week": 4
+    }
+   ],
+   "logs": [
+    {
+     "sport_type_id": 3,
+     "date": "2026-07-10",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-12",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-09",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 2,
+     "date": "2026-07-10",
+     "status": "completed"
+    },
+    {
+     "sport_type_id": 4,
+     "date": "2026-07-07",
+     "status": "skipped"
+    }
+   ],
+   "want": [
+    {
+     "sport_type_id": 1,
+     "target": 3,
+     "done": 0
+    },
+    {
+     "sport_type_id": 2,
+     "target": 5,
+     "done": 1
+    },
+    {
+     "sport_type_id": 3,
+     "target": 4,
+     "done": 1
+    }
+   ]
+  }
+ ]
+}
