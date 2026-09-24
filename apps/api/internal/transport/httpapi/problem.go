@@ -23,6 +23,8 @@ var appStatus = map[apperr.Kind]int{
 	apperr.NotFound:  http.StatusNotFound,
 	apperr.Forbidden: http.StatusForbidden,
 	apperr.Conflict:  http.StatusConflict,
+	// 502: the upstream AI answered badly or not at all.
+	apperr.Unavailable: http.StatusBadGateway,
 }
 
 // toProblem turns a use-case error into an HTTP problem: expected failures

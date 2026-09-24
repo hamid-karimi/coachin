@@ -147,8 +147,14 @@ Order (dependencies first, risk front-loaded):
         check-in due), `POST /training/plans/{id}/archive`, `GET /training/calendar.ics`
         (`domain/ics`, `planitem.DetailLine`/`VideoURL`); web `/training` + `lib/plan-title`;
         placeholders for `/training/new` and `/training/checkin`.
-  - [ ] 3.3b AI adapters (Claude → Gemini) + plan generation (running + hypertrophy
-        wizards, anchors, FIT/GPX intake parsing).
+  - [x] 3.3b AI adapter `adapters/ai` (Claude streamed, Gemini schema-JSON fallback),
+        `domain/aigen` (schema hint, extract-json, anchors, prompts, item validation —
+        golden vectors `ai.json` captured from the legacy builders via stubbed SDK/provider
+        modules), `POST /training/plans/{running,hypertrophy}` (`create_training_plan`,
+        coach mode), `GET /training/intake-context`; web wizards + `lib/running` (replays
+        `running.json`).
+  - [ ] 3.3d FIT/GPX parsing (`muktihari/fit`, `encoding/xml`) for the running wizard's
+        upload step and the profile watch import.
   - [ ] 3.3c Session logs ("Log details", strength sets, +10 XP, AI feedback) + weekly
         check-in (scorecard, AI week adjustment, +20 XP).
 - [ ] 3.4 **Calendar** — `GET /calendar?week=`, ICS endpoint (S)

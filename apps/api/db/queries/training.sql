@@ -35,3 +35,48 @@ FROM public.plan_items i
 JOIN public.training_plans p ON p.id = i.plan_id
 WHERE p.user_id = sqlc.arg(user_id) AND p.status = 'active'
 ORDER BY p.plan_kind, i.week, i.day_of_week, i.id;
+
+-- name: ProfileRole :one
+SELECT COALESCE(role, 'student')::text AS role FROM public.profiles WHERE id = sqlc.arg(id);
+
+-- name: CoachesStudent :one
+SELECT EXISTS (
+  SELECT 1 FROM public.coaching_relationships
+  WHERE coach_id = sqlc.arg(coach_id) AND student_id = sqlc.arg(student_id) AND status = 'active'
+);
+
+-- name: AthleteProfile :one
+-- numeric as stored: 61.00 reads 61, as the legacy JSON API returned it.
+SELECT birth_date, sex, height_cm, weight_kg, training_history, full_name, email
+FROM public.profiles WHERE id = sqlc.arg(id);
+
+-- name: ListAnchors :many
+-- The athlete's fixed sessions active on a date (max 21, as the legacy app).
+SELECT s.day_of_week, s."time", st.name AS sport_name
+FROM public.schedules s
+LEFT JOIN public.sport_types st ON st.id = s.sport_type_id
+WHERE s.user_id = sqlc.arg(user_id)::uuid
+  AND (s.starts_on IS NULL OR s.starts_on <= CAST(sqlc.arg(on_date)::text AS date))
+  AND (s.ends_on IS NULL OR s.ends_on >= CAST(sqlc.arg(on_date)::text AS date))
+ORDER BY s.created_at, s.id
+LIMIT 21;
+
+-- name: ActiveCalorieGoal :one
+SELECT target_value::float8 AS target_value FROM public.goals
+WHERE user_id = sqlc.arg(user_id) AND goal_type = 'calorie_intake' AND status = 'active'
+LIMIT 1;
+
+-- name: LatestBodyAnalysis :one
+SELECT analysis FROM public.body_photos
+WHERE user_id = sqlc.arg(user_id) AND analysis IS NOT NULL
+ORDER BY analyzed_at DESC NULLS LAST
+LIMIT 1;
+
+-- name: CreateTrainingPlan :one
+-- Step A (ADR-5): archives the same-discipline plan and saves this one,
+-- re-verifying the coaching relationship for coach-generated plans.
+SELECT public.create_training_plan(
+  CAST(sqlc.narg(race_date)::text AS date), sqlc.narg(goal_time)::text, sqlc.arg(weeks_total)::int,
+  sqlc.arg(summary)::text, sqlc.arg(intake)::jsonb, sqlc.arg(raw)::jsonb, sqlc.arg(model)::text,
+  sqlc.arg(items)::jsonb, sqlc.arg(plan_kind)::text, sqlc.narg(target_user_id)::uuid
+)::text AS result;

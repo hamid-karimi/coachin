@@ -63,6 +63,15 @@ import { isProgressPhotoDue } from "@/lib/progress-photo-nudge";
 import { buildScheduleInserts } from "@/lib/schedule-inserts";
 import { countryNameFromCode, resolveUserCountry } from "@/lib/user-country";
 
+import { extractJson } from "@/lib/ai/extract-json";
+import { geminiSchemaToHint } from "@/lib/ai/schema-hint";
+import { anchorsPromptBlock, type PlanAnchor } from "@/lib/ai/anchors";
+import { generateMarathonPlan, validateItems, type MarathonIntake } from "@/lib/ai/marathon";
+import { generateHypertrophyPlan, type HypertrophyIntake } from "@/lib/ai/hypertrophy";
+// Resolved to scripts/golden/stubs/text-json.mjs by hooks.mjs.
+// @ts-expect-error -- the stub's helpers are not in the legacy module's types
+import { calls as aiCalls, setReply as setAiReply } from "@/lib/ai/text-json";
+
 if (process.env.TZ !== "UTC") {
   throw new Error("run with TZ=UTC (the API's pinned zone) — use `make golden`");
 }
@@ -644,6 +653,197 @@ function profileCases(): Case[] {
   return cases;
 }
 
+const ANCHORS: PlanAnchor[] = [
+  { day_of_week: 0, time: "10:00:00", sport: "Rock Climbing" },
+  { day_of_week: 2, time: "19:00", sport: "Football" },
+  { day_of_week: 6, time: null, sport: "a fixed session" },
+];
+
+const BASE_MARATHON: MarathonIntake = {
+  plan_kind: "race",
+  race_date: "2027-04-18",
+  race_target: "full",
+  race_distance_km: 42.195,
+  experience_level: "regular",
+  first_time_at_distance: false,
+  goal_time: "3:45:00",
+  weeks_total: 16,
+  days_per_week: 5,
+  pb_5k: "22:10",
+  pb_10k: "46:30",
+  pb_half: "1:42:00",
+  pb_full: "3:58:12",
+  weekly_km: 45,
+  longest_run_km: 21.1,
+  injuries: "Left achilles tightness",
+  age: 38,
+  sex: "female",
+  height_cm: 168.5,
+  weight_kg: 61,
+  training_history: "Ran two marathons",
+  activities: [
+    { date: "2026-09-01", distance_km: 10.2, duration_min: 55, avg_hr: 148 } as never,
+    { date: "2026-09-03", distance_km: 6, duration_min: 33.5, avg_hr: null } as never,
+  ],
+  anchors: [],
+};
+
+const MARATHON_INTAKES: MarathonIntake[] = [
+  BASE_MARATHON,
+  { ...BASE_MARATHON, anchors: ANCHORS },
+  {
+    ...BASE_MARATHON,
+    race_target: "half",
+    race_distance_km: 21.0975,
+    first_time_at_distance: true,
+    goal_time: null,
+    pb_half: null,
+    pb_full: null,
+    experience_level: "new",
+    injuries: null,
+    activities: [],
+    age: null,
+    sex: null,
+    height_cm: null,
+    weight_kg: null,
+    training_history: null,
+    weekly_km: null,
+    longest_run_km: null,
+  },
+  {
+    ...BASE_MARATHON,
+    race_date: null,
+    race_target: "base",
+    race_distance_km: 0,
+    goal_time: null,
+    weeks_total: 8,
+    days_per_week: 3,
+    experience_level: "new",
+    first_time_at_distance: true,
+    pb_5k: null,
+    pb_10k: null,
+    pb_half: null,
+    pb_full: null,
+    anchors: [ANCHORS[1]],
+  },
+  { ...BASE_MARATHON, race_target: "ultra", race_distance_km: 50, experience_level: "competitive" },
+  { ...BASE_MARATHON, race_target: "other", race_distance_km: 15, experience_level: null },
+];
+
+const BASE_HYPERTROPHY: HypertrophyIntake = {
+  goal: "muscle_gain",
+  experience_level: "regular",
+  equipment: "gym",
+  days_per_week: 4,
+  weeks_total: 12,
+  injuries: "Bad right shoulder",
+  calorie_target: 2800,
+  body_analysis: "Lean build. Slight forward head posture.",
+  age: 29,
+  sex: "male",
+  height_cm: 181,
+  weight_kg: 77.4,
+  training_history: "2 years of lifting",
+  anchors: [],
+};
+
+const HYPERTROPHY_INTAKES: HypertrophyIntake[] = [
+  BASE_HYPERTROPHY,
+  { ...BASE_HYPERTROPHY, anchors: ANCHORS },
+  {
+    ...BASE_HYPERTROPHY,
+    goal: "recomp",
+    experience_level: "new",
+    equipment: "home",
+    days_per_week: 2,
+    weeks_total: 8,
+    injuries: null,
+    calorie_target: null,
+    body_analysis: null,
+    age: null,
+    sex: null,
+    height_cm: null,
+    weight_kg: null,
+    training_history: null,
+  },
+  { ...BASE_HYPERTROPHY, experience_level: null, equipment: "bodyweight", weeks_total: 10 },
+  { ...BASE_HYPERTROPHY, equipment: "unknown", weeks_total: 4 },
+];
+
+const RAW_ITEMS: unknown[] = [
+  { week: 1, day_of_week: 2, item_type: "run", title: "  Easy run 6k  ", description: "  Keep it easy  ",
+    details: { distance_km: 6.04, pace_min_km: "6:10", duration_min: 36.6, notes: "Relaxed", video_query: "  easy run form " } },
+  { week: "3", day_of_week: "0", item_type: "strength", title: "x".repeat(250), description: "d".repeat(2100),
+    details: { notes: "n".repeat(600), video_query: "v".repeat(100) } },
+  { week: 0, day_of_week: 1, item_type: "run", title: "Too early" },
+  { week: 25, day_of_week: 1, item_type: "run", title: "Too late" },
+  { week: 2.5, day_of_week: 1, item_type: "run", title: "Fraction" },
+  { week: 2, day_of_week: 7, item_type: "run", title: "Bad day" },
+  { week: 2, day_of_week: 1, item_type: "swim", title: "Unknown type" },
+  { week: 2, day_of_week: 1, item_type: "run", title: "   " },
+  { week: 2, day_of_week: 1, item_type: "meal_note", title: "Fuel", details: null },
+  { week: 2, day_of_week: 1, item_type: "recovery", title: "Rest", description: 42, details: "nope" },
+  { week: 2, day_of_week: 1, item_type: "stretch", title: "Stretch", details: { distance_km: "5", duration_min: "30", video_query: "   " } },
+  { week: true, day_of_week: null, item_type: "mobility", title: "Truthy week" },
+  null,
+  "not an object",
+  [1, 2],
+];
+
+async function aiCases(): Promise<Case[]> {
+  const cases: Case[] = [];
+  for (const text of [
+    null, undefined, "", "   ", "no json here", '{"a":1}', "  [1, 2, 3]  ", '```json\n{"a":1}\n```',
+    "```\n[1]\n```", 'Here is the plan: {"a":1}. Done.', 'prefix {"a":{"b":[1,2]},"c":3} suffix',
+    "{ unterminated", 'list [1, {"x": 2}] and {"y": 3} end', "} backwards {", "```JSON\n  {\"k\": true}  \n```",
+  ]) {
+    cases.push({ fn: "extractJson", text: text ?? null, want: extractJson(text) });
+  }
+  for (const anchors of [[], [ANCHORS[1]], ANCHORS, [{ day_of_week: 9, time: "7", sport: "Odd" }]] as PlanAnchor[][]) {
+    cases.push({ fn: "anchorsPromptBlock", anchors, want: anchorsPromptBlock(anchors) });
+  }
+  cases.push({ fn: "validateItems", raw: RAW_ITEMS, want: validateItems(RAW_ITEMS) });
+  cases.push({ fn: "validateItems", raw: { not: "an array" }, want: validateItems({ not: "an array" }) });
+  const many = Array.from({ length: 405 }, (_, i) => ({ week: 1, day_of_week: i % 7, item_type: "run", title: `Run ${i}` }));
+  cases.push({ fn: "validateItems", raw: many, want: validateItems(many) });
+
+  const record = async (fn: string, intake: unknown, run: () => Promise<unknown>) => {
+    aiCalls.length = 0;
+    setAiReply(null);
+    const unavailable = await run();
+    const request = aiCalls[0];
+    cases.push({
+      fn,
+      intake,
+      prompt: request.prompt,
+      maxTokens: request.maxTokens,
+      schemaHint: JSON.stringify(geminiSchemaToHint(request.schema)),
+      unavailable,
+    });
+  };
+  for (const intake of MARATHON_INTAKES) {
+    await record("marathonRequest", intake, () => generateMarathonPlan(intake));
+  }
+  for (const intake of HYPERTROPHY_INTAKES) {
+    await record("hypertrophyRequest", intake, () => generateHypertrophyPlan(intake));
+  }
+
+  // Response handling: parse + validate + completeness (weeks_total × 3 items).
+  const fullWeek = (week: number) =>
+    [1, 3, 5].map((day) => ({ week, day_of_week: day, item_type: "run", title: `Run w${week}d${day}` }));
+  const complete = JSON.stringify({ summary: "S".repeat(1200), items: Array.from({ length: 8 }, (_, i) => fullWeek(i + 1)).flat() });
+  const short = JSON.stringify({ summary: "Short", items: fullWeek(1) });
+  const intake = { ...MARATHON_INTAKES[3], weeks_total: 8 };
+  for (const text of [complete, short, "not json", '{"summary": 5, "items": "none"}']) {
+    setAiReply({ text, model: "test-model" });
+    const result = await generateMarathonPlan(intake);
+    const { raw: _raw, ...shown } = result as Record<string, unknown>;
+    cases.push({ fn: "planResult", weeksTotal: intake.weeks_total, text, want: shown });
+  }
+  return cases;
+}
+
+write("ai", await aiCases());
 write("activity-import", activityCases());
 write("progress", progressCases());
 write("profile", profileCases());

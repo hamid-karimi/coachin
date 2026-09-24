@@ -1,0 +1,6167 @@
+{
+ "generatedBy": "scripts/golden/generate.ts",
+ "topic": "ai",
+ "cases": [
+  {
+   "fn": "extractJson",
+   "text": null,
+   "want": null
+  },
+  {
+   "fn": "extractJson",
+   "text": null,
+   "want": null
+  },
+  {
+   "fn": "extractJson",
+   "text": "",
+   "want": null
+  },
+  {
+   "fn": "extractJson",
+   "text": "   ",
+   "want": null
+  },
+  {
+   "fn": "extractJson",
+   "text": "no json here",
+   "want": null
+  },
+  {
+   "fn": "extractJson",
+   "text": "{\"a\":1}",
+   "want": "{\"a\":1}"
+  },
+  {
+   "fn": "extractJson",
+   "text": "  [1, 2, 3]  ",
+   "want": "[1, 2, 3]"
+  },
+  {
+   "fn": "extractJson",
+   "text": "```json\n{\"a\":1}\n```",
+   "want": "{\"a\":1}"
+  },
+  {
+   "fn": "extractJson",
+   "text": "```\n[1]\n```",
+   "want": "[1]"
+  },
+  {
+   "fn": "extractJson",
+   "text": "Here is the plan: {\"a\":1}. Done.",
+   "want": "{\"a\":1}"
+  },
+  {
+   "fn": "extractJson",
+   "text": "prefix {\"a\":{\"b\":[1,2]},\"c\":3} suffix",
+   "want": "{\"a\":{\"b\":[1,2]},\"c\":3}"
+  },
+  {
+   "fn": "extractJson",
+   "text": "{ unterminated",
+   "want": null
+  },
+  {
+   "fn": "extractJson",
+   "text": "list [1, {\"x\": 2}] and {\"y\": 3} end",
+   "want": "[1, {\"x\": 2}]"
+  },
+  {
+   "fn": "extractJson",
+   "text": "} backwards {",
+   "want": null
+  },
+  {
+   "fn": "extractJson",
+   "text": "```JSON\n  {\"k\": true}  \n```",
+   "want": "{\"k\": true}"
+  },
+  {
+   "fn": "anchorsPromptBlock",
+   "anchors": [],
+   "want": ""
+  },
+  {
+   "fn": "anchorsPromptBlock",
+   "anchors": [
+    {
+     "day_of_week": 2,
+     "time": "19:00",
+     "sport": "Football"
+    }
+   ],
+   "want": "The athlete has fixed weekly commitments that this plan must respect: [Tue 19:00 Football]. Do not schedule plan sessions that conflict with those slots. Treat them as training load: avoid scheduling HARD sessions (long runs, intervals, heavy strength) on the same day as an intense fixed commitment; prefer easy/recovery or rest on those days and place key sessions on free days."
+  },
+  {
+   "fn": "anchorsPromptBlock",
+   "anchors": [
+    {
+     "day_of_week": 0,
+     "time": "10:00:00",
+     "sport": "Rock Climbing"
+    },
+    {
+     "day_of_week": 2,
+     "time": "19:00",
+     "sport": "Football"
+    },
+    {
+     "day_of_week": 6,
+     "time": null,
+     "sport": "a fixed session"
+    }
+   ],
+   "want": "The athlete has fixed weekly commitments that this plan must respect: [Tue 19:00 Football, Sat a fixed session, Sun 10:00 Rock Climbing]. Do not schedule plan sessions that conflict with those slots. Treat them as training load: avoid scheduling HARD sessions (long runs, intervals, heavy strength) on the same day as an intense fixed commitment; prefer easy/recovery or rest on those days and place key sessions on free days."
+  },
+  {
+   "fn": "anchorsPromptBlock",
+   "anchors": [
+    {
+     "day_of_week": 9,
+     "time": "7",
+     "sport": "Odd"
+    }
+   ],
+   "want": "The athlete has fixed weekly commitments that this plan must respect: [day 9 7 Odd]. Do not schedule plan sessions that conflict with those slots. Treat them as training load: avoid scheduling HARD sessions (long runs, intervals, heavy strength) on the same day as an intense fixed commitment; prefer easy/recovery or rest on those days and place key sessions on free days."
+  },
+  {
+   "fn": "validateItems",
+   "raw": [
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "  Easy run 6k  ",
+     "description": "  Keep it easy  ",
+     "details": {
+      "distance_km": 6.04,
+      "pace_min_km": "6:10",
+      "duration_min": 36.6,
+      "notes": "Relaxed",
+      "video_query": "  easy run form "
+     }
+    },
+    {
+     "week": "3",
+     "day_of_week": "0",
+     "item_type": "strength",
+     "title": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+     "description": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "details": {
+      "notes": "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+      "video_query": "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"
+     }
+    },
+    {
+     "week": 0,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Too early"
+    },
+    {
+     "week": 25,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Too late"
+    },
+    {
+     "week": 2.5,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Fraction"
+    },
+    {
+     "week": 2,
+     "day_of_week": 7,
+     "item_type": "run",
+     "title": "Bad day"
+    },
+    {
+     "week": 2,
+     "day_of_week": 1,
+     "item_type": "swim",
+     "title": "Unknown type"
+    },
+    {
+     "week": 2,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "   "
+    },
+    {
+     "week": 2,
+     "day_of_week": 1,
+     "item_type": "meal_note",
+     "title": "Fuel",
+     "details": null
+    },
+    {
+     "week": 2,
+     "day_of_week": 1,
+     "item_type": "recovery",
+     "title": "Rest",
+     "description": 42,
+     "details": "nope"
+    },
+    {
+     "week": 2,
+     "day_of_week": 1,
+     "item_type": "stretch",
+     "title": "Stretch",
+     "details": {
+      "distance_km": "5",
+      "duration_min": "30",
+      "video_query": "   "
+     }
+    },
+    {
+     "week": true,
+     "day_of_week": null,
+     "item_type": "mobility",
+     "title": "Truthy week"
+    },
+    null,
+    "not an object",
+    [
+     1,
+     2
+    ]
+   ],
+   "want": [
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Easy run 6k",
+     "description": "Keep it easy",
+     "details": {
+      "distance_km": 6,
+      "pace_min_km": "6:10",
+      "duration_min": 37,
+      "notes": "Relaxed",
+      "video_query": "easy run form"
+     }
+    },
+    {
+     "week": 3,
+     "day_of_week": 0,
+     "item_type": "strength",
+     "title": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+     "description": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "details": {
+      "notes": "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+      "video_query": "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"
+     }
+    },
+    {
+     "week": 2,
+     "day_of_week": 1,
+     "item_type": "meal_note",
+     "title": "Fuel",
+     "details": {}
+    },
+    {
+     "week": 2,
+     "day_of_week": 1,
+     "item_type": "recovery",
+     "title": "Rest",
+     "details": {}
+    },
+    {
+     "week": 2,
+     "day_of_week": 1,
+     "item_type": "stretch",
+     "title": "Stretch",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "mobility",
+     "title": "Truthy week",
+     "details": {}
+    }
+   ]
+  },
+  {
+   "fn": "validateItems",
+   "raw": {
+    "not": "an array"
+   },
+   "want": []
+  },
+  {
+   "fn": "validateItems",
+   "raw": [
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 0"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 1"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 2"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 3"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 4"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 5"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 6"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 7"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 8"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 9"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 10"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 11"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 12"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 13"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 14"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 15"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 16"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 17"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 18"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 19"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 20"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 21"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 22"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 23"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 24"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 25"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 26"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 27"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 28"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 29"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 30"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 31"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 32"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 33"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 34"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 35"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 36"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 37"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 38"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 39"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 40"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 41"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 42"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 43"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 44"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 45"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 46"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 47"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 48"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 49"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 50"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 51"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 52"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 53"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 54"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 55"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 56"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 57"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 58"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 59"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 60"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 61"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 62"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 63"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 64"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 65"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 66"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 67"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 68"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 69"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 70"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 71"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 72"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 73"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 74"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 75"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 76"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 77"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 78"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 79"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 80"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 81"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 82"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 83"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 84"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 85"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 86"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 87"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 88"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 89"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 90"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 91"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 92"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 93"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 94"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 95"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 96"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 97"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 98"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 99"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 100"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 101"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 102"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 103"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 104"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 105"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 106"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 107"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 108"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 109"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 110"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 111"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 112"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 113"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 114"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 115"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 116"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 117"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 118"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 119"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 120"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 121"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 122"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 123"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 124"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 125"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 126"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 127"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 128"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 129"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 130"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 131"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 132"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 133"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 134"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 135"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 136"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 137"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 138"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 139"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 140"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 141"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 142"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 143"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 144"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 145"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 146"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 147"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 148"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 149"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 150"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 151"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 152"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 153"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 154"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 155"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 156"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 157"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 158"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 159"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 160"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 161"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 162"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 163"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 164"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 165"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 166"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 167"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 168"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 169"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 170"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 171"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 172"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 173"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 174"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 175"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 176"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 177"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 178"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 179"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 180"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 181"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 182"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 183"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 184"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 185"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 186"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 187"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 188"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 189"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 190"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 191"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 192"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 193"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 194"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 195"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 196"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 197"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 198"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 199"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 200"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 201"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 202"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 203"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 204"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 205"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 206"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 207"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 208"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 209"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 210"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 211"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 212"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 213"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 214"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 215"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 216"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 217"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 218"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 219"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 220"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 221"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 222"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 223"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 224"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 225"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 226"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 227"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 228"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 229"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 230"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 231"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 232"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 233"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 234"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 235"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 236"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 237"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 238"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 239"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 240"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 241"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 242"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 243"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 244"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 245"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 246"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 247"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 248"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 249"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 250"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 251"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 252"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 253"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 254"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 255"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 256"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 257"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 258"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 259"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 260"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 261"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 262"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 263"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 264"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 265"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 266"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 267"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 268"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 269"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 270"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 271"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 272"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 273"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 274"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 275"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 276"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 277"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 278"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 279"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 280"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 281"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 282"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 283"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 284"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 285"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 286"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 287"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 288"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 289"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 290"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 291"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 292"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 293"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 294"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 295"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 296"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 297"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 298"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 299"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 300"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 301"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 302"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 303"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 304"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 305"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 306"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 307"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 308"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 309"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 310"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 311"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 312"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 313"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 314"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 315"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 316"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 317"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 318"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 319"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 320"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 321"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 322"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 323"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 324"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 325"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 326"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 327"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 328"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 329"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 330"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 331"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 332"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 333"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 334"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 335"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 336"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 337"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 338"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 339"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 340"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 341"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 342"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 343"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 344"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 345"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 346"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 347"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 348"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 349"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 350"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 351"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 352"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 353"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 354"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 355"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 356"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 357"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 358"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 359"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 360"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 361"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 362"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 363"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 364"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 365"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 366"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 367"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 368"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 369"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 370"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 371"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 372"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 373"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 374"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 375"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 376"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 377"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 378"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 379"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 380"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 381"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 382"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 383"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 384"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 385"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 386"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 387"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 388"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 389"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 390"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 391"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 392"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 393"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 394"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 395"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 396"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 397"
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 398"
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 399"
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 400"
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 401"
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 402"
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 403"
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 404"
+    }
+   ],
+   "want": [
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 0",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 1",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 2",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 3",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 4",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 5",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 6",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 7",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 8",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 9",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 10",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 11",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 12",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 13",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 14",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 15",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 16",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 17",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 18",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 19",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 20",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 21",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 22",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 23",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 24",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 25",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 26",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 27",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 28",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 29",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 30",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 31",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 32",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 33",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 34",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 35",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 36",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 37",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 38",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 39",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 40",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 41",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 42",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 43",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 44",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 45",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 46",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 47",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 48",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 49",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 50",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 51",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 52",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 53",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 54",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 55",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 56",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 57",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 58",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 59",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 60",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 61",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 62",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 63",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 64",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 65",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 66",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 67",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 68",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 69",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 70",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 71",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 72",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 73",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 74",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 75",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 76",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 77",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 78",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 79",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 80",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 81",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 82",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 83",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 84",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 85",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 86",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 87",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 88",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 89",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 90",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 91",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 92",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 93",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 94",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 95",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 96",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 97",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 98",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 99",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 100",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 101",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 102",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 103",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 104",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 105",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 106",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 107",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 108",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 109",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 110",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 111",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 112",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 113",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 114",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 115",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 116",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 117",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 118",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 119",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 120",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 121",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 122",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 123",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 124",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 125",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 126",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 127",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 128",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 129",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 130",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 131",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 132",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 133",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 134",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 135",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 136",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 137",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 138",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 139",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 140",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 141",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 142",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 143",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 144",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 145",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 146",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 147",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 148",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 149",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 150",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 151",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 152",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 153",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 154",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 155",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 156",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 157",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 158",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 159",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 160",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 161",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 162",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 163",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 164",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 165",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 166",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 167",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 168",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 169",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 170",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 171",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 172",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 173",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 174",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 175",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 176",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 177",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 178",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 179",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 180",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 181",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 182",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 183",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 184",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 185",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 186",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 187",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 188",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 189",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 190",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 191",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 192",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 193",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 194",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 195",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 196",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 197",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 198",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 199",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 200",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 201",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 202",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 203",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 204",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 205",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 206",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 207",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 208",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 209",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 210",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 211",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 212",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 213",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 214",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 215",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 216",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 217",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 218",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 219",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 220",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 221",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 222",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 223",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 224",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 225",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 226",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 227",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 228",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 229",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 230",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 231",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 232",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 233",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 234",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 235",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 236",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 237",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 238",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 239",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 240",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 241",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 242",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 243",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 244",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 245",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 246",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 247",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 248",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 249",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 250",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 251",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 252",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 253",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 254",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 255",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 256",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 257",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 258",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 259",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 260",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 261",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 262",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 263",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 264",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 265",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 266",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 267",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 268",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 269",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 270",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 271",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 272",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 273",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 274",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 275",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 276",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 277",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 278",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 279",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 280",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 281",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 282",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 283",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 284",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 285",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 286",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 287",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 288",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 289",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 290",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 291",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 292",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 293",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 294",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 295",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 296",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 297",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 298",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 299",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 300",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 301",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 302",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 303",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 304",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 305",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 306",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 307",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 308",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 309",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 310",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 311",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 312",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 313",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 314",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 315",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 316",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 317",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 318",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 319",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 320",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 321",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 322",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 323",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 324",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 325",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 326",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 327",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 328",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 329",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 330",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 331",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 332",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 333",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 334",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 335",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 336",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 337",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 338",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 339",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 340",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 341",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 342",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 343",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 344",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 345",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 346",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 347",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 348",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 349",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 350",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 351",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 352",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 353",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 354",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 355",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 356",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 357",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 358",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 359",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 360",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 361",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 362",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 363",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 364",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 365",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 366",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 367",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 368",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 369",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 370",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 371",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 372",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 373",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 374",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 375",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 376",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 377",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 378",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 379",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 380",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 381",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 382",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 383",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 384",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 385",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 386",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 387",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 388",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 389",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 390",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 391",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 392",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 1,
+     "item_type": "run",
+     "title": "Run 393",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 2,
+     "item_type": "run",
+     "title": "Run 394",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 3,
+     "item_type": "run",
+     "title": "Run 395",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 4,
+     "item_type": "run",
+     "title": "Run 396",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 5,
+     "item_type": "run",
+     "title": "Run 397",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 6,
+     "item_type": "run",
+     "title": "Run 398",
+     "details": {}
+    },
+    {
+     "week": 1,
+     "day_of_week": 0,
+     "item_type": "run",
+     "title": "Run 399",
+     "details": {}
+    }
+   ]
+  },
+  {
+   "fn": "marathonRequest",
+   "intake": {
+    "plan_kind": "race",
+    "race_date": "2027-04-18",
+    "race_target": "full",
+    "race_distance_km": 42.195,
+    "experience_level": "regular",
+    "first_time_at_distance": false,
+    "goal_time": "3:45:00",
+    "weeks_total": 16,
+    "days_per_week": 5,
+    "pb_5k": "22:10",
+    "pb_10k": "46:30",
+    "pb_half": "1:42:00",
+    "pb_full": "3:58:12",
+    "weekly_km": 45,
+    "longest_run_km": 21.1,
+    "injuries": "Left achilles tightness",
+    "age": 38,
+    "sex": "female",
+    "height_cm": 168.5,
+    "weight_kg": 61,
+    "training_history": "Ran two marathons",
+    "activities": [
+     {
+      "date": "2026-09-01",
+      "distance_km": 10.2,
+      "duration_min": 55,
+      "avg_hr": 148
+     },
+     {
+      "date": "2026-09-03",
+      "distance_km": 6,
+      "duration_min": 33.5,
+      "avg_hr": null
+     }
+    ],
+    "anchors": []
+   },
+   "prompt": "Create a 16-week training plan for a 42.195km race (full).\nAthlete: age 38, female, 168.5cm, 61kg. Experience: regular racer (trains consistently, has raced before). Training history: Ran two marathons.\nPBs: 5k 22:10, 10k 46:30, half 1:42:00, marathon 3:58:12. Current weekly volume: 45km, longest recent run 21.1km.\nRecent uploaded runs: 2026-09-01: 10.2km in 55min (avg HR 148); 2026-09-03: 6km in 33.5min.\nRace date: 2027-04-18. Goal time: 3:45:00.\nInjuries/limitations: Left achilles tightness.\nRules:\n- Weekly structure: quality run(s), easy runs, one long run (progressing, stepback every 4th week, taper appropriately for the race distance), strength 1-2x, stretch 1x, and ONE mobility item (item_type \"mobility\": hip/ankle mobility or yoga-for-runners).\n- Scale everything to the 42.195km target: long-run peaks, interval distances, and taper length must fit the race distance and the athlete's experience level.\n- Titles short and concrete (\"Easy run 8k\", \"Intervals 6x800m\", \"Long run 26k\").\n- Exactly 5 training days per week (day_of_week: 0=Sunday..6=Saturday); remaining days get ONE recovery item.\n- Every item: \"title\" is a SHORT human-readable session name, max 60 characters (e.g. \"Easy run 5k\", \"Strength — hips & core\", \"Long run 18k\"). Put the full exercise list and session detail in \"description\" — NEVER in the title.\n- Every run item: details.distance_km, details.pace_min_km (like \"5:40\"), short details.notes.\n- Add ONE meal_note item per week (day_of_week of the long run) with practical fueling guidance in details.notes.\n- Strength items must be RUNNER-SPECIFIC — hips, glutes, calves, core, with a single-leg bias — short title (e.g. \"Strength — single-leg focus\") and the concrete exercise list with sets x reps in \"description\" (e.g. \"Single-leg RDL 3x10 + calf raises 3x15 + side plank 3x30s\").\n- Every strength, stretch and mobility item (and run items with drills) gets details.video_query: a concise English YouTube SEARCH query for exercise form (e.g. \"single leg romanian deadlift form\"), max 80 chars. NEVER produce a youtube.com URL or a video id — only the search words.\n- Respect the athlete's current volume: never jump weekly km more than ~10%.\n- summary: 2-3 sentences describing the plan's approach.",
+   "maxTokens": 24000,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"mobility\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"description\":{\"type\":[\"string\",\"null\"]},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]},\"video_query\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}",
+   "unavailable": {
+    "error": "AI plan generation is temporarily unavailable (quota or network) — try again later"
+   }
+  },
+  {
+   "fn": "marathonRequest",
+   "intake": {
+    "plan_kind": "race",
+    "race_date": "2027-04-18",
+    "race_target": "full",
+    "race_distance_km": 42.195,
+    "experience_level": "regular",
+    "first_time_at_distance": false,
+    "goal_time": "3:45:00",
+    "weeks_total": 16,
+    "days_per_week": 5,
+    "pb_5k": "22:10",
+    "pb_10k": "46:30",
+    "pb_half": "1:42:00",
+    "pb_full": "3:58:12",
+    "weekly_km": 45,
+    "longest_run_km": 21.1,
+    "injuries": "Left achilles tightness",
+    "age": 38,
+    "sex": "female",
+    "height_cm": 168.5,
+    "weight_kg": 61,
+    "training_history": "Ran two marathons",
+    "activities": [
+     {
+      "date": "2026-09-01",
+      "distance_km": 10.2,
+      "duration_min": 55,
+      "avg_hr": 148
+     },
+     {
+      "date": "2026-09-03",
+      "distance_km": 6,
+      "duration_min": 33.5,
+      "avg_hr": null
+     }
+    ],
+    "anchors": [
+     {
+      "day_of_week": 0,
+      "time": "10:00:00",
+      "sport": "Rock Climbing"
+     },
+     {
+      "day_of_week": 2,
+      "time": "19:00",
+      "sport": "Football"
+     },
+     {
+      "day_of_week": 6,
+      "time": null,
+      "sport": "a fixed session"
+     }
+    ]
+   },
+   "prompt": "Create a 16-week training plan for a 42.195km race (full).\nAthlete: age 38, female, 168.5cm, 61kg. Experience: regular racer (trains consistently, has raced before). Training history: Ran two marathons.\nPBs: 5k 22:10, 10k 46:30, half 1:42:00, marathon 3:58:12. Current weekly volume: 45km, longest recent run 21.1km.\nRecent uploaded runs: 2026-09-01: 10.2km in 55min (avg HR 148); 2026-09-03: 6km in 33.5min.\nRace date: 2027-04-18. Goal time: 3:45:00.\nInjuries/limitations: Left achilles tightness.\nThe athlete has fixed weekly commitments that this plan must respect: [Tue 19:00 Football, Sat a fixed session, Sun 10:00 Rock Climbing]. Do not schedule plan sessions that conflict with those slots. Treat them as training load: avoid scheduling HARD sessions (long runs, intervals, heavy strength) on the same day as an intense fixed commitment; prefer easy/recovery or rest on those days and place key sessions on free days.\nRules:\n- Weekly structure: quality run(s), easy runs, one long run (progressing, stepback every 4th week, taper appropriately for the race distance), strength 1-2x, stretch 1x, and ONE mobility item (item_type \"mobility\": hip/ankle mobility or yoga-for-runners).\n- Scale everything to the 42.195km target: long-run peaks, interval distances, and taper length must fit the race distance and the athlete's experience level.\n- Titles short and concrete (\"Easy run 8k\", \"Intervals 6x800m\", \"Long run 26k\").\n- Exactly 5 training days per week (day_of_week: 0=Sunday..6=Saturday); remaining days get ONE recovery item.\n- Every item: \"title\" is a SHORT human-readable session name, max 60 characters (e.g. \"Easy run 5k\", \"Strength — hips & core\", \"Long run 18k\"). Put the full exercise list and session detail in \"description\" — NEVER in the title.\n- Every run item: details.distance_km, details.pace_min_km (like \"5:40\"), short details.notes.\n- Add ONE meal_note item per week (day_of_week of the long run) with practical fueling guidance in details.notes.\n- Strength items must be RUNNER-SPECIFIC — hips, glutes, calves, core, with a single-leg bias — short title (e.g. \"Strength — single-leg focus\") and the concrete exercise list with sets x reps in \"description\" (e.g. \"Single-leg RDL 3x10 + calf raises 3x15 + side plank 3x30s\").\n- Every strength, stretch and mobility item (and run items with drills) gets details.video_query: a concise English YouTube SEARCH query for exercise form (e.g. \"single leg romanian deadlift form\"), max 80 chars. NEVER produce a youtube.com URL or a video id — only the search words.\n- Respect the athlete's current volume: never jump weekly km more than ~10%.\n- summary: 2-3 sentences describing the plan's approach.",
+   "maxTokens": 24000,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"mobility\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"description\":{\"type\":[\"string\",\"null\"]},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]},\"video_query\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}",
+   "unavailable": {
+    "error": "AI plan generation is temporarily unavailable (quota or network) — try again later"
+   }
+  },
+  {
+   "fn": "marathonRequest",
+   "intake": {
+    "plan_kind": "race",
+    "race_date": "2027-04-18",
+    "race_target": "half",
+    "race_distance_km": 21.0975,
+    "experience_level": "new",
+    "first_time_at_distance": true,
+    "goal_time": null,
+    "weeks_total": 16,
+    "days_per_week": 5,
+    "pb_5k": "22:10",
+    "pb_10k": "46:30",
+    "pb_half": null,
+    "pb_full": null,
+    "weekly_km": null,
+    "longest_run_km": null,
+    "injuries": null,
+    "age": null,
+    "sex": null,
+    "height_cm": null,
+    "weight_kg": null,
+    "training_history": null,
+    "activities": [],
+    "anchors": []
+   },
+   "prompt": "Create a 16-week training plan for a 21.0975km race (half).\nAthlete: unknown. Experience: new to structured running (build from walk/run basics, prioritize consistency over speed). Training history: unknown.\nThis is the athlete's FIRST race at this distance — no PB at or beyond 21.0975km. Prioritize finishing healthy over time goals; be conservative with volume and pace targets.\nPBs: 5k 22:10, 10k 46:30. Current weekly volume: unknownkm, longest recent run unknownkm.\nRecent uploaded runs: none provided.\nRace date: 2027-04-18. Goal time: finish comfortably.\nInjuries/limitations: none reported.\nRules:\n- Weekly structure: quality run(s), easy runs, one long run (progressing, stepback every 4th week, taper appropriately for the race distance), strength 1-2x, stretch 1x, and ONE mobility item (item_type \"mobility\": hip/ankle mobility or yoga-for-runners).\n- Scale everything to the 21.0975km target: long-run peaks, interval distances, and taper length must fit the race distance and the athlete's experience level.\n- Titles short and concrete (\"Easy run 8k\", \"Intervals 6x800m\", \"Long run 26k\").\n- Exactly 5 training days per week (day_of_week: 0=Sunday..6=Saturday); remaining days get ONE recovery item.\n- Every item: \"title\" is a SHORT human-readable session name, max 60 characters (e.g. \"Easy run 5k\", \"Strength — hips & core\", \"Long run 18k\"). Put the full exercise list and session detail in \"description\" — NEVER in the title.\n- Every run item: details.distance_km, details.pace_min_km (like \"5:40\"), short details.notes.\n- Add ONE meal_note item per week (day_of_week of the long run) with practical fueling guidance in details.notes.\n- Strength items must be RUNNER-SPECIFIC — hips, glutes, calves, core, with a single-leg bias — short title (e.g. \"Strength — single-leg focus\") and the concrete exercise list with sets x reps in \"description\" (e.g. \"Single-leg RDL 3x10 + calf raises 3x15 + side plank 3x30s\"). The athlete is new: bodyweight-first strength, no barbell work.\n- Every strength, stretch and mobility item (and run items with drills) gets details.video_query: a concise English YouTube SEARCH query for exercise form (e.g. \"single leg romanian deadlift form\"), max 80 chars. NEVER produce a youtube.com URL or a video id — only the search words.\n- Respect the athlete's current volume: never jump weekly km more than ~10%.\n- summary: 2-3 sentences describing the plan's approach.",
+   "maxTokens": 24000,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"mobility\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"description\":{\"type\":[\"string\",\"null\"]},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]},\"video_query\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}",
+   "unavailable": {
+    "error": "AI plan generation is temporarily unavailable (quota or network) — try again later"
+   }
+  },
+  {
+   "fn": "marathonRequest",
+   "intake": {
+    "plan_kind": "race",
+    "race_date": null,
+    "race_target": "base",
+    "race_distance_km": 0,
+    "experience_level": "new",
+    "first_time_at_distance": true,
+    "goal_time": null,
+    "weeks_total": 8,
+    "days_per_week": 3,
+    "pb_5k": null,
+    "pb_10k": null,
+    "pb_half": null,
+    "pb_full": null,
+    "weekly_km": 45,
+    "longest_run_km": 21.1,
+    "injuries": "Left achilles tightness",
+    "age": 38,
+    "sex": "female",
+    "height_cm": 168.5,
+    "weight_kg": 61,
+    "training_history": "Ran two marathons",
+    "activities": [
+     {
+      "date": "2026-09-01",
+      "distance_km": 10.2,
+      "duration_min": 55,
+      "avg_hr": 148
+     },
+     {
+      "date": "2026-09-03",
+      "distance_km": 6,
+      "duration_min": 33.5,
+      "avg_hr": null
+     }
+    ],
+    "anchors": [
+     {
+      "day_of_week": 2,
+      "time": "19:00",
+      "sport": "Football"
+     }
+    ]
+   },
+   "prompt": "Create a 8-week BASE-BUILDING running plan for someone who just wants to start running and build a consistent, injury-free habit. There is NO race and NO goal time — do NOT include a taper, goal-pace work, or race-specific peaking.\nAthlete: age 38, female, 168.5cm, 61kg. Experience: new to structured running (build from walk/run basics, prioritize consistency over speed). Training history: Ran two marathons.\nPBs: none. Current weekly volume: 45km, longest recent run 21.1km.\nRecent uploaded runs: 2026-09-01: 10.2km in 55min (avg HR 148); 2026-09-03: 6km in 33.5min.\nInjuries/limitations: Left achilles tightness.\nThe athlete has fixed weekly commitments that this plan must respect: [Tue 19:00 Football]. Do not schedule plan sessions that conflict with those slots. Treat them as training load: avoid scheduling HARD sessions (long runs, intervals, heavy strength) on the same day as an intense fixed commitment; prefer easy/recovery or rest on those days and place key sessions on free days.\nRules:\n- Weekly structure: mostly EASY, conversational-pace runs (use run/walk intervals for a new runner), ONE slightly longer run that grows gently, strength 1-2x, stretch 1x, and ONE mobility item (item_type \"mobility\": hip/ankle mobility or yoga-for-runners).\n- Progress volume gradually week over week with a lighter \"stepback\" every 4th week; keep intensity low — the goal is aerobic base and consistency, not speed.\n- Titles short and concrete (\"Easy run 4k\", \"Run/walk 30min\", \"Easy run 6k\").\n- Exactly 3 training days per week (day_of_week: 0=Sunday..6=Saturday); remaining days get ONE recovery item.\n- Every item: \"title\" is a SHORT human-readable session name, max 60 characters (e.g. \"Easy run 5k\", \"Strength — hips & core\", \"Long run 18k\"). Put the full exercise list and session detail in \"description\" — NEVER in the title.\n- Every run item: details.distance_km, details.pace_min_km (like \"5:40\"), short details.notes.\n- Add ONE meal_note item per week (day_of_week of the long run) with practical fueling guidance in details.notes.\n- Strength items must be RUNNER-SPECIFIC — hips, glutes, calves, core, with a single-leg bias — short title (e.g. \"Strength — single-leg focus\") and the concrete exercise list with sets x reps in \"description\" (e.g. \"Single-leg RDL 3x10 + calf raises 3x15 + side plank 3x30s\"). The athlete is new: bodyweight-first strength, no barbell work.\n- Every strength, stretch and mobility item (and run items with drills) gets details.video_query: a concise English YouTube SEARCH query for exercise form (e.g. \"single leg romanian deadlift form\"), max 80 chars. NEVER produce a youtube.com URL or a video id — only the search words.\n- Respect the athlete's current volume: never jump weekly km more than ~10%.\n- summary: 2-3 sentences describing the plan's approach.",
+   "maxTokens": 24000,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"mobility\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"description\":{\"type\":[\"string\",\"null\"]},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]},\"video_query\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}",
+   "unavailable": {
+    "error": "AI plan generation is temporarily unavailable (quota or network) — try again later"
+   }
+  },
+  {
+   "fn": "marathonRequest",
+   "intake": {
+    "plan_kind": "race",
+    "race_date": "2027-04-18",
+    "race_target": "ultra",
+    "race_distance_km": 50,
+    "experience_level": "competitive",
+    "first_time_at_distance": false,
+    "goal_time": "3:45:00",
+    "weeks_total": 16,
+    "days_per_week": 5,
+    "pb_5k": "22:10",
+    "pb_10k": "46:30",
+    "pb_half": "1:42:00",
+    "pb_full": "3:58:12",
+    "weekly_km": 45,
+    "longest_run_km": 21.1,
+    "injuries": "Left achilles tightness",
+    "age": 38,
+    "sex": "female",
+    "height_cm": 168.5,
+    "weight_kg": 61,
+    "training_history": "Ran two marathons",
+    "activities": [
+     {
+      "date": "2026-09-01",
+      "distance_km": 10.2,
+      "duration_min": 55,
+      "avg_hr": 148
+     },
+     {
+      "date": "2026-09-03",
+      "distance_km": 6,
+      "duration_min": 33.5,
+      "avg_hr": null
+     }
+    ],
+    "anchors": []
+   },
+   "prompt": "Create a 16-week training plan for a 50km race (ultra).\nAthlete: age 38, female, 168.5cm, 61kg. Experience: competitive runner (high volume, structured training background). Training history: Ran two marathons.\nPBs: 5k 22:10, 10k 46:30, half 1:42:00, marathon 3:58:12. Current weekly volume: 45km, longest recent run 21.1km.\nRecent uploaded runs: 2026-09-01: 10.2km in 55min (avg HR 148); 2026-09-03: 6km in 33.5min.\nRace date: 2027-04-18. Goal time: 3:45:00.\nInjuries/limitations: Left achilles tightness.\nRules:\n- Weekly structure: quality run(s), easy runs, one long run (progressing, stepback every 4th week, taper appropriately for the race distance), strength 1-2x, stretch 1x, and ONE mobility item (item_type \"mobility\": hip/ankle mobility or yoga-for-runners).\n- Scale everything to the 50km target: long-run peaks, interval distances, and taper length must fit the race distance and the athlete's experience level.\n- Titles short and concrete (\"Easy run 8k\", \"Intervals 6x800m\", \"Long run 26k\").\n- Exactly 5 training days per week (day_of_week: 0=Sunday..6=Saturday); remaining days get ONE recovery item.\n- Every item: \"title\" is a SHORT human-readable session name, max 60 characters (e.g. \"Easy run 5k\", \"Strength — hips & core\", \"Long run 18k\"). Put the full exercise list and session detail in \"description\" — NEVER in the title.\n- Every run item: details.distance_km, details.pace_min_km (like \"5:40\"), short details.notes.\n- Add ONE meal_note item per week (day_of_week of the long run) with practical fueling guidance in details.notes.\n- Strength items must be RUNNER-SPECIFIC — hips, glutes, calves, core, with a single-leg bias — short title (e.g. \"Strength — single-leg focus\") and the concrete exercise list with sets x reps in \"description\" (e.g. \"Single-leg RDL 3x10 + calf raises 3x15 + side plank 3x30s\").\n- Every strength, stretch and mobility item (and run items with drills) gets details.video_query: a concise English YouTube SEARCH query for exercise form (e.g. \"single leg romanian deadlift form\"), max 80 chars. NEVER produce a youtube.com URL or a video id — only the search words.\n- Respect the athlete's current volume: never jump weekly km more than ~10%.\n- summary: 2-3 sentences describing the plan's approach.",
+   "maxTokens": 24000,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"mobility\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"description\":{\"type\":[\"string\",\"null\"]},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]},\"video_query\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}",
+   "unavailable": {
+    "error": "AI plan generation is temporarily unavailable (quota or network) — try again later"
+   }
+  },
+  {
+   "fn": "marathonRequest",
+   "intake": {
+    "plan_kind": "race",
+    "race_date": "2027-04-18",
+    "race_target": "other",
+    "race_distance_km": 15,
+    "experience_level": null,
+    "first_time_at_distance": false,
+    "goal_time": "3:45:00",
+    "weeks_total": 16,
+    "days_per_week": 5,
+    "pb_5k": "22:10",
+    "pb_10k": "46:30",
+    "pb_half": "1:42:00",
+    "pb_full": "3:58:12",
+    "weekly_km": 45,
+    "longest_run_km": 21.1,
+    "injuries": "Left achilles tightness",
+    "age": 38,
+    "sex": "female",
+    "height_cm": 168.5,
+    "weight_kg": 61,
+    "training_history": "Ran two marathons",
+    "activities": [
+     {
+      "date": "2026-09-01",
+      "distance_km": 10.2,
+      "duration_min": 55,
+      "avg_hr": 148
+     },
+     {
+      "date": "2026-09-03",
+      "distance_km": 6,
+      "duration_min": 33.5,
+      "avg_hr": null
+     }
+    ],
+    "anchors": []
+   },
+   "prompt": "Create a 16-week training plan for a 15km race (other).\nAthlete: age 38, female, 168.5cm, 61kg. Experience: unknown experience level. Training history: Ran two marathons.\nPBs: 5k 22:10, 10k 46:30, half 1:42:00, marathon 3:58:12. Current weekly volume: 45km, longest recent run 21.1km.\nRecent uploaded runs: 2026-09-01: 10.2km in 55min (avg HR 148); 2026-09-03: 6km in 33.5min.\nRace date: 2027-04-18. Goal time: 3:45:00.\nInjuries/limitations: Left achilles tightness.\nRules:\n- Weekly structure: quality run(s), easy runs, one long run (progressing, stepback every 4th week, taper appropriately for the race distance), strength 1-2x, stretch 1x, and ONE mobility item (item_type \"mobility\": hip/ankle mobility or yoga-for-runners).\n- Scale everything to the 15km target: long-run peaks, interval distances, and taper length must fit the race distance and the athlete's experience level.\n- Titles short and concrete (\"Easy run 8k\", \"Intervals 6x800m\", \"Long run 26k\").\n- Exactly 5 training days per week (day_of_week: 0=Sunday..6=Saturday); remaining days get ONE recovery item.\n- Every item: \"title\" is a SHORT human-readable session name, max 60 characters (e.g. \"Easy run 5k\", \"Strength — hips & core\", \"Long run 18k\"). Put the full exercise list and session detail in \"description\" — NEVER in the title.\n- Every run item: details.distance_km, details.pace_min_km (like \"5:40\"), short details.notes.\n- Add ONE meal_note item per week (day_of_week of the long run) with practical fueling guidance in details.notes.\n- Strength items must be RUNNER-SPECIFIC — hips, glutes, calves, core, with a single-leg bias — short title (e.g. \"Strength — single-leg focus\") and the concrete exercise list with sets x reps in \"description\" (e.g. \"Single-leg RDL 3x10 + calf raises 3x15 + side plank 3x30s\").\n- Every strength, stretch and mobility item (and run items with drills) gets details.video_query: a concise English YouTube SEARCH query for exercise form (e.g. \"single leg romanian deadlift form\"), max 80 chars. NEVER produce a youtube.com URL or a video id — only the search words.\n- Respect the athlete's current volume: never jump weekly km more than ~10%.\n- summary: 2-3 sentences describing the plan's approach.",
+   "maxTokens": 24000,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"run\",\"strength\",\"stretch\",\"mobility\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"description\":{\"type\":[\"string\",\"null\"]},\"details\":{\"type\":\"object\",\"properties\":{\"distance_km\":{\"type\":[\"number\",\"null\"]},\"pace_min_km\":{\"type\":[\"string\",\"null\"]},\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]},\"video_query\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}",
+   "unavailable": {
+    "error": "AI plan generation is temporarily unavailable (quota or network) — try again later"
+   }
+  },
+  {
+   "fn": "hypertrophyRequest",
+   "intake": {
+    "goal": "muscle_gain",
+    "experience_level": "regular",
+    "equipment": "gym",
+    "days_per_week": 4,
+    "weeks_total": 12,
+    "injuries": "Bad right shoulder",
+    "calorie_target": 2800,
+    "body_analysis": "Lean build. Slight forward head posture.",
+    "age": 29,
+    "sex": "male",
+    "height_cm": 181,
+    "weight_kg": 77.4,
+    "training_history": "2 years of lifting",
+    "anchors": []
+   },
+   "prompt": "Create a 12-week muscle building (hypertrophy) training plan.\nAthlete: age 29, male, 181cm, 77.4kg. Experience: regular. Training history: 2 years of lifting.\nBody-photo analysis (consented): Lean build. Slight forward head posture.\nInjuries/limitations: Bad right shoulder.\nFull gym available: barbells, dumbbells, machines, cables.\nThe athlete targets 2800 kcal/day — align protein guidance with it.\nRules:\n- Exactly 4 strength days per week (day_of_week: 0=Sunday..6=Saturday) using a sensible split for that frequency; remaining days get ONE recovery item.\n- Every item: \"title\" is a SHORT human-readable session name, max 60 characters (e.g. \"Upper body — Day A\", \"Legs & core\"). Put the full exercise list in \"description\" — NEVER in the title.\n- Every strength item (item_type \"strength\"): short split-name title, the concrete exercise list with sets x reps in \"description\" (e.g. \"Bench press 4x8 + incline DB press 3x10 + lateral raises 3x15\"), details.duration_min, short details.notes on progression (add weight/reps week to week; deload around week 10).\n- ONE mobility item per week (item_type \"mobility\").\n- ONE meal_note item per week with practical protein guidance in details.notes (target ~139g protein/day for 77.4kg bodyweight).\n- Every strength and mobility item gets details.video_query: a concise English YouTube SEARCH query for exercise form, max 80 chars. NEVER produce a youtube.com URL or a video id — only the search words.\n- Progressive overload across weeks: same split repeats with small load/volume increases, not new random exercises each week.\n- summary: 2-3 sentences describing the plan's approach.",
+   "maxTokens": 24000,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"strength\",\"mobility\",\"stretch\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"description\":{\"type\":[\"string\",\"null\"]},\"details\":{\"type\":\"object\",\"properties\":{\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]},\"video_query\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}",
+   "unavailable": {
+    "error": "AI plan generation is temporarily unavailable (quota or network) — try again later"
+   }
+  },
+  {
+   "fn": "hypertrophyRequest",
+   "intake": {
+    "goal": "muscle_gain",
+    "experience_level": "regular",
+    "equipment": "gym",
+    "days_per_week": 4,
+    "weeks_total": 12,
+    "injuries": "Bad right shoulder",
+    "calorie_target": 2800,
+    "body_analysis": "Lean build. Slight forward head posture.",
+    "age": 29,
+    "sex": "male",
+    "height_cm": 181,
+    "weight_kg": 77.4,
+    "training_history": "2 years of lifting",
+    "anchors": [
+     {
+      "day_of_week": 0,
+      "time": "10:00:00",
+      "sport": "Rock Climbing"
+     },
+     {
+      "day_of_week": 2,
+      "time": "19:00",
+      "sport": "Football"
+     },
+     {
+      "day_of_week": 6,
+      "time": null,
+      "sport": "a fixed session"
+     }
+    ]
+   },
+   "prompt": "Create a 12-week muscle building (hypertrophy) training plan.\nAthlete: age 29, male, 181cm, 77.4kg. Experience: regular. Training history: 2 years of lifting.\nBody-photo analysis (consented): Lean build. Slight forward head posture.\nInjuries/limitations: Bad right shoulder.\nFull gym available: barbells, dumbbells, machines, cables.\nThe athlete targets 2800 kcal/day — align protein guidance with it.\nThe athlete has fixed weekly commitments that this plan must respect: [Tue 19:00 Football, Sat a fixed session, Sun 10:00 Rock Climbing]. Do not schedule plan sessions that conflict with those slots. Treat them as training load: avoid scheduling HARD sessions (long runs, intervals, heavy strength) on the same day as an intense fixed commitment; prefer easy/recovery or rest on those days and place key sessions on free days.\nRules:\n- Exactly 4 strength days per week (day_of_week: 0=Sunday..6=Saturday) using a sensible split for that frequency; remaining days get ONE recovery item.\n- Every item: \"title\" is a SHORT human-readable session name, max 60 characters (e.g. \"Upper body — Day A\", \"Legs & core\"). Put the full exercise list in \"description\" — NEVER in the title.\n- Every strength item (item_type \"strength\"): short split-name title, the concrete exercise list with sets x reps in \"description\" (e.g. \"Bench press 4x8 + incline DB press 3x10 + lateral raises 3x15\"), details.duration_min, short details.notes on progression (add weight/reps week to week; deload around week 10).\n- ONE mobility item per week (item_type \"mobility\").\n- ONE meal_note item per week with practical protein guidance in details.notes (target ~139g protein/day for 77.4kg bodyweight).\n- Every strength and mobility item gets details.video_query: a concise English YouTube SEARCH query for exercise form, max 80 chars. NEVER produce a youtube.com URL or a video id — only the search words.\n- Progressive overload across weeks: same split repeats with small load/volume increases, not new random exercises each week.\n- summary: 2-3 sentences describing the plan's approach.",
+   "maxTokens": 24000,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"strength\",\"mobility\",\"stretch\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"description\":{\"type\":[\"string\",\"null\"]},\"details\":{\"type\":\"object\",\"properties\":{\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]},\"video_query\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}",
+   "unavailable": {
+    "error": "AI plan generation is temporarily unavailable (quota or network) — try again later"
+   }
+  },
+  {
+   "fn": "hypertrophyRequest",
+   "intake": {
+    "goal": "recomp",
+    "experience_level": "new",
+    "equipment": "home",
+    "days_per_week": 2,
+    "weeks_total": 8,
+    "injuries": null,
+    "calorie_target": null,
+    "body_analysis": null,
+    "age": null,
+    "sex": null,
+    "height_cm": null,
+    "weight_kg": null,
+    "training_history": null,
+    "anchors": []
+   },
+   "prompt": "Create a 8-week body recomposition training plan.\nAthlete: unknown. Experience: new. Training history: unknown.\nInjuries/limitations: none reported.\nHome setup only: dumbbells and resistance bands — no barbell or machines.\nRules:\n- Exactly 2 strength days per week (day_of_week: 0=Sunday..6=Saturday) using a sensible split for that frequency; remaining days get ONE recovery item.\n- Every item: \"title\" is a SHORT human-readable session name, max 60 characters (e.g. \"Upper body — Day A\", \"Legs & core\"). Put the full exercise list in \"description\" — NEVER in the title.\n- Every strength item (item_type \"strength\"): short split-name title, the concrete exercise list with sets x reps in \"description\" (e.g. \"Bench press 4x8 + incline DB press 3x10 + lateral raises 3x15\"), details.duration_min, short details.notes on progression (add weight/reps week to week; deload around week 6).\n- ONE mobility item per week (item_type \"mobility\").\n- ONE meal_note item per week with practical protein guidance in details.notes (about 1.6-2g protein per kg bodyweight).\n- Every strength and mobility item gets details.video_query: a concise English YouTube SEARCH query for exercise form, max 80 chars. NEVER produce a youtube.com URL or a video id — only the search words.\n- The athlete is new to training: master form first, start light, higher-rep ranges, simple movements.\n- Progressive overload across weeks: same split repeats with small load/volume increases, not new random exercises each week.\n- summary: 2-3 sentences describing the plan's approach.",
+   "maxTokens": 24000,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"strength\",\"mobility\",\"stretch\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"description\":{\"type\":[\"string\",\"null\"]},\"details\":{\"type\":\"object\",\"properties\":{\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]},\"video_query\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}",
+   "unavailable": {
+    "error": "AI plan generation is temporarily unavailable (quota or network) — try again later"
+   }
+  },
+  {
+   "fn": "hypertrophyRequest",
+   "intake": {
+    "goal": "muscle_gain",
+    "experience_level": null,
+    "equipment": "bodyweight",
+    "days_per_week": 4,
+    "weeks_total": 10,
+    "injuries": "Bad right shoulder",
+    "calorie_target": 2800,
+    "body_analysis": "Lean build. Slight forward head posture.",
+    "age": 29,
+    "sex": "male",
+    "height_cm": 181,
+    "weight_kg": 77.4,
+    "training_history": "2 years of lifting",
+    "anchors": []
+   },
+   "prompt": "Create a 10-week muscle building (hypertrophy) training plan.\nAthlete: age 29, male, 181cm, 77.4kg. Experience: unknown. Training history: 2 years of lifting.\nBody-photo analysis (consented): Lean build. Slight forward head posture.\nInjuries/limitations: Bad right shoulder.\nNo equipment: bodyweight progressions only (push-up/squat/row variations).\nThe athlete targets 2800 kcal/day — align protein guidance with it.\nRules:\n- Exactly 4 strength days per week (day_of_week: 0=Sunday..6=Saturday) using a sensible split for that frequency; remaining days get ONE recovery item.\n- Every item: \"title\" is a SHORT human-readable session name, max 60 characters (e.g. \"Upper body — Day A\", \"Legs & core\"). Put the full exercise list in \"description\" — NEVER in the title.\n- Every strength item (item_type \"strength\"): short split-name title, the concrete exercise list with sets x reps in \"description\" (e.g. \"Bench press 4x8 + incline DB press 3x10 + lateral raises 3x15\"), details.duration_min, short details.notes on progression (add weight/reps week to week; deload around week 8).\n- ONE mobility item per week (item_type \"mobility\").\n- ONE meal_note item per week with practical protein guidance in details.notes (target ~139g protein/day for 77.4kg bodyweight).\n- Every strength and mobility item gets details.video_query: a concise English YouTube SEARCH query for exercise form, max 80 chars. NEVER produce a youtube.com URL or a video id — only the search words.\n- Progressive overload across weeks: same split repeats with small load/volume increases, not new random exercises each week.\n- summary: 2-3 sentences describing the plan's approach.",
+   "maxTokens": 24000,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"strength\",\"mobility\",\"stretch\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"description\":{\"type\":[\"string\",\"null\"]},\"details\":{\"type\":\"object\",\"properties\":{\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]},\"video_query\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}",
+   "unavailable": {
+    "error": "AI plan generation is temporarily unavailable (quota or network) — try again later"
+   }
+  },
+  {
+   "fn": "hypertrophyRequest",
+   "intake": {
+    "goal": "muscle_gain",
+    "experience_level": "regular",
+    "equipment": "unknown",
+    "days_per_week": 4,
+    "weeks_total": 4,
+    "injuries": "Bad right shoulder",
+    "calorie_target": 2800,
+    "body_analysis": "Lean build. Slight forward head posture.",
+    "age": 29,
+    "sex": "male",
+    "height_cm": 181,
+    "weight_kg": 77.4,
+    "training_history": "2 years of lifting",
+    "anchors": []
+   },
+   "prompt": "Create a 4-week muscle building (hypertrophy) training plan.\nAthlete: age 29, male, 181cm, 77.4kg. Experience: regular. Training history: 2 years of lifting.\nBody-photo analysis (consented): Lean build. Slight forward head posture.\nInjuries/limitations: Bad right shoulder.\nNo equipment: bodyweight progressions only (push-up/squat/row variations).\nThe athlete targets 2800 kcal/day — align protein guidance with it.\nRules:\n- Exactly 4 strength days per week (day_of_week: 0=Sunday..6=Saturday) using a sensible split for that frequency; remaining days get ONE recovery item.\n- Every item: \"title\" is a SHORT human-readable session name, max 60 characters (e.g. \"Upper body — Day A\", \"Legs & core\"). Put the full exercise list in \"description\" — NEVER in the title.\n- Every strength item (item_type \"strength\"): short split-name title, the concrete exercise list with sets x reps in \"description\" (e.g. \"Bench press 4x8 + incline DB press 3x10 + lateral raises 3x15\"), details.duration_min, short details.notes on progression (add weight/reps week to week; deload around week 4).\n- ONE mobility item per week (item_type \"mobility\").\n- ONE meal_note item per week with practical protein guidance in details.notes (target ~139g protein/day for 77.4kg bodyweight).\n- Every strength and mobility item gets details.video_query: a concise English YouTube SEARCH query for exercise form, max 80 chars. NEVER produce a youtube.com URL or a video id — only the search words.\n- Progressive overload across weeks: same split repeats with small load/volume increases, not new random exercises each week.\n- summary: 2-3 sentences describing the plan's approach.",
+   "maxTokens": 24000,
+   "schemaHint": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"items\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"week\":{\"type\":\"integer\"},\"day_of_week\":{\"type\":\"integer\"},\"item_type\":{\"type\":\"string\",\"enum\":[\"strength\",\"mobility\",\"stretch\",\"recovery\",\"meal_note\"]},\"title\":{\"type\":\"string\"},\"description\":{\"type\":[\"string\",\"null\"]},\"details\":{\"type\":\"object\",\"properties\":{\"duration_min\":{\"type\":[\"number\",\"null\"]},\"notes\":{\"type\":[\"string\",\"null\"]},\"video_query\":{\"type\":[\"string\",\"null\"]}}}},\"required\":[\"week\",\"day_of_week\",\"item_type\",\"title\"]}}},\"required\":[\"summary\",\"items\"]}",
+   "unavailable": {
+    "error": "AI plan generation is temporarily unavailable (quota or network) — try again later"
+   }
+  },
+  {
+   "fn": "planResult",
+   "weeksTotal": 8,
+   "text": "{\"summary\":\"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS\",\"items\":[{\"week\":1,\"day_of_week\":1,\"item_type\":\"run\",\"title\":\"Run w1d1\"},{\"week\":1,\"day_of_week\":3,\"item_type\":\"run\",\"title\":\"Run w1d3\"},{\"week\":1,\"day_of_week\":5,\"item_type\":\"run\",\"title\":\"Run w1d5\"},{\"week\":2,\"day_of_week\":1,\"item_type\":\"run\",\"title\":\"Run w2d1\"},{\"week\":2,\"day_of_week\":3,\"item_type\":\"run\",\"title\":\"Run w2d3\"},{\"week\":2,\"day_of_week\":5,\"item_type\":\"run\",\"title\":\"Run w2d5\"},{\"week\":3,\"day_of_week\":1,\"item_type\":\"run\",\"title\":\"Run w3d1\"},{\"week\":3,\"day_of_week\":3,\"item_type\":\"run\",\"title\":\"Run w3d3\"},{\"week\":3,\"day_of_week\":5,\"item_type\":\"run\",\"title\":\"Run w3d5\"},{\"week\":4,\"day_of_week\":1,\"item_type\":\"run\",\"title\":\"Run w4d1\"},{\"week\":4,\"day_of_week\":3,\"item_type\":\"run\",\"title\":\"Run w4d3\"},{\"week\":4,\"day_of_week\":5,\"item_type\":\"run\",\"title\":\"Run w4d5\"},{\"week\":5,\"day_of_week\":1,\"item_type\":\"run\",\"title\":\"Run w5d1\"},{\"week\":5,\"day_of_week\":3,\"item_type\":\"run\",\"title\":\"Run w5d3\"},{\"week\":5,\"day_of_week\":5,\"item_type\":\"run\",\"title\":\"Run w5d5\"},{\"week\":6,\"day_of_week\":1,\"item_type\":\"run\",\"title\":\"Run w6d1\"},{\"week\":6,\"day_of_week\":3,\"item_type\":\"run\",\"title\":\"Run w6d3\"},{\"week\":6,\"day_of_week\":5,\"item_type\":\"run\",\"title\":\"Run w6d5\"},{\"week\":7,\"day_of_week\":1,\"item_type\":\"run\",\"title\":\"Run w7d1\"},{\"week\":7,\"day_of_week\":3,\"item_type\":\"run\",\"title\":\"Run w7d3\"},{\"week\":7,\"day_of_week\":5,\"item_type\":\"run\",\"title\":\"Run w7d5\"},{\"week\":8,\"day_of_week\":1,\"item_type\":\"run\",\"title\":\"Run w8d1\"},{\"week\":8,\"day_of_week\":3,\"item_type\":\"run\",\"title\":\"Run w8d3\"},{\"week\":8,\"day_of_week\":5,\"item_type\":\"run\",\"title\":\"Run w8d5\"}]}",
+   "want": {
+    "summary": "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+    "items": [
+     {
+      "week": 1,
+      "day_of_week": 1,
+      "item_type": "run",
+      "title": "Run w1d1",
+      "details": {}
+     },
+     {
+      "week": 1,
+      "day_of_week": 3,
+      "item_type": "run",
+      "title": "Run w1d3",
+      "details": {}
+     },
+     {
+      "week": 1,
+      "day_of_week": 5,
+      "item_type": "run",
+      "title": "Run w1d5",
+      "details": {}
+     },
+     {
+      "week": 2,
+      "day_of_week": 1,
+      "item_type": "run",
+      "title": "Run w2d1",
+      "details": {}
+     },
+     {
+      "week": 2,
+      "day_of_week": 3,
+      "item_type": "run",
+      "title": "Run w2d3",
+      "details": {}
+     },
+     {
+      "week": 2,
+      "day_of_week": 5,
+      "item_type": "run",
+      "title": "Run w2d5",
+      "details": {}
+     },
+     {
+      "week": 3,
+      "day_of_week": 1,
+      "item_type": "run",
+      "title": "Run w3d1",
+      "details": {}
+     },
+     {
+      "week": 3,
+      "day_of_week": 3,
+      "item_type": "run",
+      "title": "Run w3d3",
+      "details": {}
+     },
+     {
+      "week": 3,
+      "day_of_week": 5,
+      "item_type": "run",
+      "title": "Run w3d5",
+      "details": {}
+     },
+     {
+      "week": 4,
+      "day_of_week": 1,
+      "item_type": "run",
+      "title": "Run w4d1",
+      "details": {}
+     },
+     {
+      "week": 4,
+      "day_of_week": 3,
+      "item_type": "run",
+      "title": "Run w4d3",
+      "details": {}
+     },
+     {
+      "week": 4,
+      "day_of_week": 5,
+      "item_type": "run",
+      "title": "Run w4d5",
+      "details": {}
+     },
+     {
+      "week": 5,
+      "day_of_week": 1,
+      "item_type": "run",
+      "title": "Run w5d1",
+      "details": {}
+     },
+     {
+      "week": 5,
+      "day_of_week": 3,
+      "item_type": "run",
+      "title": "Run w5d3",
+      "details": {}
+     },
+     {
+      "week": 5,
+      "day_of_week": 5,
+      "item_type": "run",
+      "title": "Run w5d5",
+      "details": {}
+     },
+     {
+      "week": 6,
+      "day_of_week": 1,
+      "item_type": "run",
+      "title": "Run w6d1",
+      "details": {}
+     },
+     {
+      "week": 6,
+      "day_of_week": 3,
+      "item_type": "run",
+      "title": "Run w6d3",
+      "details": {}
+     },
+     {
+      "week": 6,
+      "day_of_week": 5,
+      "item_type": "run",
+      "title": "Run w6d5",
+      "details": {}
+     },
+     {
+      "week": 7,
+      "day_of_week": 1,
+      "item_type": "run",
+      "title": "Run w7d1",
+      "details": {}
+     },
+     {
+      "week": 7,
+      "day_of_week": 3,
+      "item_type": "run",
+      "title": "Run w7d3",
+      "details": {}
+     },
+     {
+      "week": 7,
+      "day_of_week": 5,
+      "item_type": "run",
+      "title": "Run w7d5",
+      "details": {}
+     },
+     {
+      "week": 8,
+      "day_of_week": 1,
+      "item_type": "run",
+      "title": "Run w8d1",
+      "details": {}
+     },
+     {
+      "week": 8,
+      "day_of_week": 3,
+      "item_type": "run",
+      "title": "Run w8d3",
+      "details": {}
+     },
+     {
+      "week": 8,
+      "day_of_week": 5,
+      "item_type": "run",
+      "title": "Run w8d5",
+      "details": {}
+     }
+    ],
+    "model": "test-model"
+   }
+  },
+  {
+   "fn": "planResult",
+   "weeksTotal": 8,
+   "text": "{\"summary\":\"Short\",\"items\":[{\"week\":1,\"day_of_week\":1,\"item_type\":\"run\",\"title\":\"Run w1d1\"},{\"week\":1,\"day_of_week\":3,\"item_type\":\"run\",\"title\":\"Run w1d3\"},{\"week\":1,\"day_of_week\":5,\"item_type\":\"run\",\"title\":\"Run w1d5\"}]}",
+   "want": {
+    "error": "AI returned an incomplete plan — try again"
+   }
+  },
+  {
+   "fn": "planResult",
+   "weeksTotal": 8,
+   "text": "not json",
+   "want": {
+    "error": "AI plan generation is temporarily unavailable (quota or network) — try again later"
+   }
+  },
+  {
+   "fn": "planResult",
+   "weeksTotal": 8,
+   "text": "{\"summary\": 5, \"items\": \"none\"}",
+   "want": {
+    "error": "AI returned an incomplete plan — try again"
+   }
+  }
+ ]
+}
