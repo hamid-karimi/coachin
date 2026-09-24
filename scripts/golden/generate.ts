@@ -57,6 +57,12 @@ import { supplementTakenRate } from "@/lib/supplement-adherence";
 import { buildGroceryList } from "@/lib/meal-plan-grocery";
 import { summarizePeriod, type DatedNutrients } from "@/lib/nutrition-trends";
 
+import { sanitizeActivities, splitImportableActivities } from "@/lib/activity-import";
+import { exerciseTopSets, weeklyKm, weeklyVolume, weightSeries, type SessionLogRow } from "@/lib/progress-charts";
+import { isProgressPhotoDue } from "@/lib/progress-photo-nudge";
+import { buildScheduleInserts } from "@/lib/schedule-inserts";
+import { countryNameFromCode, resolveUserCountry } from "@/lib/user-country";
+
 if (process.env.TZ !== "UTC") {
   throw new Error("run with TZ=UTC (the API's pinned zone) — use `make golden`");
 }
@@ -520,6 +526,127 @@ function supplementCases(): Case[] {
   return cases;
 }
 
+// ---- watch-file import (FORMULAS §14) ---------------------------------------
+function activityCases(): Case[] {
+  const next = rng(13);
+  const cases: Case[] = [];
+  const raws: unknown[] = [
+    null,
+    "nope",
+    [],
+    [
+      { date: "2026-07-01", distance_km: 10.123, duration_min: 55.55, avg_hr: 151.6, source: "fit" },
+      { date: "2026-07-02", distance_km: "5", duration_min: "30", avg_hr: null, source: "gpx" },
+      { date: "2026/07/03", distance_km: 5, duration_min: 30 },
+      { date: "2026-07-04", distance_km: 0, duration_min: 30 },
+      { date: "2026-07-05", distance_km: 501, duration_min: 30 },
+      { date: "2026-07-06", distance_km: 8, duration_min: -1 },
+      { date: "2026-07-07", distance_km: 8, duration_min: 40, avg_hr: -5, source: "strava" },
+      null,
+      "junk",
+      { date: 20260708, distance_km: 8, duration_min: 40 },
+    ],
+    Array.from({ length: 25 }, (_, i) => ({ date: `2026-07-${String(1 + (i % 28)).padStart(2, "0")}`, distance_km: 3 + i, duration_min: 20 + i })),
+  ];
+  for (const raw of raws) cases.push({ fn: "sanitizeActivities", raw, want: sanitizeActivities(raw) });
+  for (let i = 0; i < 20; i++) {
+    const today = `2026-${String(1 + Math.floor(next() * 12)).padStart(2, "0")}-${String(1 + Math.floor(next() * 28)).padStart(2, "0")}`;
+    const base = new Date(`${today}T00:00:00Z`).getTime();
+    const ymd = (offset: number) => new Date(base + offset * 86_400_000).toISOString().slice(0, 10);
+    const activities = Array.from({ length: Math.floor(next() * 10) }, () => ({
+      date: ymd(-Math.floor(next() * 20) + 2),
+      distance_km: 5, duration_min: 30, avg_pace_min_km: null, avg_hr: null, source: "gpx" as const,
+    }));
+    const existing = Array.from({ length: Math.floor(next() * 4) }, () => ymd(-Math.floor(next() * 14)));
+    cases.push({ fn: "splitImportableActivities", activities, existing, today, want: splitImportableActivities(activities, existing, today) });
+  }
+  return cases;
+}
+
+// ---- progress charts + photo nudge (FORMULAS §15) ---------------------------
+function progressCases(): Case[] {
+  const next = rng(14);
+  const cases: Case[] = [];
+  const names = ["Squat", "squat", "Bench", "Deadlift", "Row", "OHP"];
+  for (let i = 0; i < 15; i++) {
+    const today = new Date(Date.UTC(2026, 6 + Math.floor(next() * 3), 1 + Math.floor(next() * 28), Math.floor(next() * 24)));
+    const logs: SessionLogRow[] = Array.from({ length: Math.floor(next() * 30) }, () => {
+      const created = new Date(today.getTime() - Math.floor(next() * 70) * 86_400_000 - Math.floor(next() * 86_400_000));
+      const sport = ["strength", "run", "yoga"][Math.floor(next() * 3)];
+      const actual =
+        sport === "run"
+          ? { distance_km: next() < 0.9 ? Math.round(next() * 200) / 10 : "8" }
+          : sport === "strength"
+            ? { exercises: Array.from({ length: 1 + Math.floor(next() * 3) }, () => ({
+                name: names[Math.floor(next() * names.length)],
+                sets: [{ weight_kg: Math.round(next() * 1500) / 10, reps: 1 + Math.floor(next() * 12) }],
+              })) }
+            : null;
+      return { created_at: created.toISOString(), sport, actual };
+    });
+    const weeks = [8, 4, 12][Math.floor(next() * 3)];
+    const todayIso = today.toISOString();
+    cases.push({ fn: "weeklyVolume", logs, today: todayIso, weeks, want: weeklyVolume(logs, today, weeks) });
+    cases.push({ fn: "weeklyKm", logs, today: todayIso, weeks, want: weeklyKm(logs, today, weeks) });
+    cases.push({ fn: "exerciseTopSets", logs, minSessions: 3, maxExercises: 3, want: exerciseTopSets(logs, 3, 3) });
+    cases.push({ fn: "exerciseTopSets", logs, minSessions: 1, maxExercises: 5, want: exerciseTopSets(logs, 1, 5) });
+  }
+  const measurements = [
+    { measured_at: "2026-07-03", weight_kg: 81.25 },
+    { measured_at: "2026-06-20", weight_kg: 82 },
+    { measured_at: "2026-07-10T08:30:00Z", weight_kg: 80.44 },
+    { measured_at: "2026-06-25", weight_kg: null },
+    { measured_at: "2026-06-28", weight_kg: 0 },
+    { measured_at: "2026-07-01", weight_kg: "80.9" },
+  ];
+  cases.push({ fn: "weightSeries", measurements, want: weightSeries(measurements as never) });
+  for (const [currentStreak, weekLogCount, lastPhotoAt, today] of [
+    [0, 0, null, "2026-07-10T12:00:00Z"],
+    [3, 0, null, "2026-07-10T12:00:00Z"],
+    [0, 2, "2026-06-12T12:00:00Z", "2026-07-10T12:00:00Z"],
+    [0, 2, "2026-06-12T11:59:59Z", "2026-07-10T12:00:00Z"],
+    [5, 1, "2026-07-01T00:00:00Z", "2026-07-10T12:00:00Z"],
+  ] as const) {
+    cases.push({
+      fn: "isProgressPhotoDue", currentStreak, weekLogCount, lastPhotoAt, today,
+      want: isProgressPhotoDue({ currentStreak, weekLogCount, lastPhotoAt: lastPhotoAt ? new Date(lastPhotoAt) : null, today: new Date(today) }),
+    });
+  }
+  return cases;
+}
+
+// ---- onboarding schedule rows + user country --------------------------------
+function profileCases(): Case[] {
+  const cases: Case[] = [];
+  for (const [days, time, endsOn] of [
+    [[1, 3, 5], "07:30", null],
+    [[1, 1, 3], "  ", "2026-12-31"],
+    [[0, 6, 7, -1, 2.5], null, "  2026-09-01  "],
+    [[], "18:00", null],
+  ] as const) {
+    const params = { userId: "u1", sportTypeId: 4, days: [...days], time, endsOn };
+    cases.push({ fn: "buildScheduleInserts", params, want: buildScheduleInserts(params) });
+  }
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  for (const a of letters) {
+    for (const b of letters) {
+      cases.push({ fn: "countryNameFromCode", code: a + b, want: countryNameFromCode(a + b) });
+    }
+  }
+  for (const code of [null, "", " de ", "deu", "1A", "x"]) {
+    cases.push({ fn: "countryNameFromCode", code, want: countryNameFromCode(code) });
+  }
+  for (const [profile, header] of [
+    ["Germany", "FR"], ["  ", "FR"], [null, "IR"], [null, null], ["x".repeat(70), null], ["", "ZZ"],
+  ] as const) {
+    cases.push({ fn: "resolveUserCountry", profile, header, want: resolveUserCountry(profile, header) });
+  }
+  return cases;
+}
+
+write("activity-import", activityCases());
+write("progress", progressCases());
+write("profile", profileCases());
 write("nutrition-targets", nutritionTargetCases());
 write("nutrition", nutritionCases());
 write("supplements", supplementCases());

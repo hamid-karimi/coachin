@@ -377,6 +377,7 @@ consumed by `legacy/app/calendar/page.tsx` + `legacy/app/calendar/components/day
 
 ## 14. Watch-file activity import
 
+**Go:** `apps/api/internal/domain/activity` (`Sanitize`, `SplitImportable`).
 **Source of truth:** `legacy/lib/activity-import.ts` (`sanitizeActivities`,
 `splitImportableActivities`, unit-tested), `importActivitiesAction`
 (`legacy/app/profile/actions.ts`), parser `legacy/lib/activity-parse.ts`.
@@ -396,6 +397,7 @@ consumed by `legacy/app/calendar/page.tsx` + `legacy/app/calendar/components/day
 
 ## 15. Progress charts & photo nudge
 
+**Go:** `apps/api/internal/domain/progress` (`WeeklyVolume`, `WeeklyKm`, `ExerciseTopSets`, `WeightSeries`, `IsPhotoDue`).
 **Source of truth:** `legacy/lib/progress-charts.ts` (`weeklyVolume`, `weeklyKm`,
 `exerciseTopSets`, `weightSeries`) and `legacy/lib/progress-photo-nudge.ts`
 (`isProgressPhotoDue`) — both unit-tested. Rendered on Profile → Progress;

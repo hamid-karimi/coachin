@@ -5,6 +5,25 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-24 (night, latest) · #62 merged · Phase 1 PR B4 — last domain ports; Phase 1 done
+
+**Done**: #62 (nutrition + supplements) merged. This PR ports activity import §14
+(`domain/activity`), progress charts + photo nudge §15 (`domain/progress`), and schedule
+rows + country resolution (`domain/profile`) — 783 new vectors, all matching. Vectors are now
+generated with Node 24 (same ICU/CLDR 48 as CI; committed files unchanged).
+Phase 1 complete: plan 1.1, 1.3–1.6 ticked (1.2 seed → Phase 2).
+
+**Decisions**:
+- Country names: Go's x/text CLDR is older (Turkey/Swaziland/Macedonia) → a static
+  279-entry table generated from Node 24 ICU (`country_names_gen.go`).
+- `resolveUserCountry` used Vercel's `x-vercel-ip-country` header; there is no geo header on
+  the VPS, so only the profile country applies unless a proxy adds one later.
+- Moved to Phase 3.3: race-intake gates §5 and the AI helpers (extract-json, schema-hint,
+  anchors) — they live beside the AI adapter / training use case.
+
+**Next steps**: merge B4 → Phase 2 (auth): `00004_auth.sql`, argon2id + bcrypt legacy,
+sessions, email verify/reset via Mailpit, `/me`, `api seed` + `make seed`, web auth screens.
+
 ## 2026-09-24 (night, later) · #61 merged · Phase 1 PR B3 — nutrition + supplements
 
 **Done**: #61 merged. This PR ports nutrition targets §10, food units, nutrition trends,
