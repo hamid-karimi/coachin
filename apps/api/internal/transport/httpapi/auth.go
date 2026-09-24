@@ -2,8 +2,6 @@ package httpapi
 
 import (
 	"context"
-	"errors"
-	"log/slog"
 	"net/http"
 	"time"
 
@@ -113,23 +111,6 @@ type MeBody struct {
 
 type meOutput struct {
 	Body MeBody
-}
-
-var authStatus = map[auth.Kind]int{
-	auth.Invalid:      http.StatusBadRequest,
-	auth.Unauthorized: http.StatusUnauthorized,
-	auth.Conflict:     http.StatusConflict,
-}
-
-// toProblem turns a use-case error into an HTTP problem: user-facing auth
-// errors keep their message; anything else is logged and hidden.
-func toProblem(ctx context.Context, logger *slog.Logger, err error) error {
-	var authErr *auth.Error
-	if errors.As(err, &authErr) {
-		return huma.NewError(authStatus[authErr.Kind], authErr.Message)
-	}
-	logger.ErrorContext(ctx, "request failed", "error", err)
-	return huma.Error500InternalServerError("Something went wrong. Please try again.")
 }
 
 func registerAuth(api huma.API, deps Deps) {

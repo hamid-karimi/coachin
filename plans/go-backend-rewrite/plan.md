@@ -123,7 +123,10 @@ Per module:
   checks green.
 
 Order (dependencies first, risk front-loaded):
-- [ ] 3.1 **Onboarding / My week** — sport types, schedules, weekly quotas, complete (S)
+- [x] 3.1 **Onboarding / My week** — sport types, schedules, weekly quotas, complete (S).
+      `app/routine` + `GET /routine`, `/sport-types`, schedule/quota mutations; web page
+      with prefetch + hydration, `useMutationFeedback`, `prefetchQueries`. Shared
+      `apperr` (use-case errors → problem+json) and `domain/planitem` (lenient AI details).
 - [ ] 3.2 **Today** — `GET /today`, streak settle, workout log, supplements + logs,
       optimistic toggles (M)
 - [ ] 3.3 **Training** — AI adapters (Claude → Gemini, prompts verbatim; port `extract-json`,

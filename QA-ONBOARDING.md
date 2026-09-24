@@ -41,7 +41,7 @@ inactive; every coach feature checks for an **active** relationship.
 
 | Route | What it does | Docs |
 | --- | --- | --- |
-| `/onboarding` | "My week" editor: fixed weekly sessions (anchors) + weekly targets (quotas). Also the first-run flow. | [README](legacy/app/onboarding/README.md) |
+| `/onboarding` | "My week" editor: fixed weekly sessions (anchors) + weekly targets (quotas). Also the first-run flow. **Ported to the rewrite.** | [README](apps/web/app/(app)/onboarding/README.md) |
 | `/dashboard` | "Today": today's routine + plan items, logging, streaks, hearts, XP | [README](legacy/app/dashboard/README.md) |
 | `/calendar` | Week view blending routine + all active plan items + logged state | [README](legacy/app/calendar/README.md) |
 | `/training` | Program manager: create (AI wizards), archive, weekly check-ins | [README](legacy/app/training/README.md) |
@@ -98,6 +98,25 @@ Run `make up` then `make seed`; demo accounts `trainee@coachin.local` /
    Badminton — each with a sensible icon.
 4. Fixed sessions become "required days" for the streak; weekly targets are
    informational only (never affect streaks/hearts/XP — FORMULAS.md §11).
+
+**Rewrite stack** (`make seed` trainee already has Mon/Wed Running 07:00 and Fri
+Strength training 18:30): reach `/onboarding` from Today → **Edit my week** (the
+Training tab is highlighted there).
+- Saving shows a toast — "1 session added to your schedule.", "Weekly target saved.",
+  "Weekly target removed.", "Activity removed from your schedule." — the sheet closes
+  and the agenda updates without a page reload.
+- Adding a weekly target for a sport that already has one **updates** it (still one
+  row). Badge reads `done/target this week`, counting distinct days with a completed
+  log of that sport, Monday–Sunday; it turns volt once met.
+- The footer shows "N days planned · est. ~X XP / week" (60 XP × sport multiplier
+  per fixed session, FORMULAS.md §1); **Finish** is disabled until one fixed session
+  exists and goes to Today.
+- With an active AI plan, this week's plan sessions show read-only (neutral cards,
+  "AI plan" tag, legend above); tapping one opens its details (stat line, notes,
+  type, day, "Watch how"). Only the newest active plan is shown.
+- Today's row has a volt rail and a "today" pill (your device's date).
+- Another user's sessions/targets can never be seen or removed (API filters by
+  the signed-in user; the database enforces it too).
 
 ### 2. AI training plans
 

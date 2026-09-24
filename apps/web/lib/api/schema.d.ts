@@ -174,10 +174,106 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/routine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My week: fixed sessions, weekly targets, and this week of the active plan */
+        get: operations["getRoutine"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/routine/quotas/{sportTypeId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Set the weekly target for a sport (replaces an existing one) */
+        put: operations["saveQuota"];
+        post?: never;
+        /** Remove the weekly target for a sport */
+        delete: operations["deleteQuota"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/routine/schedules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add a sport as a fixed session on one or more weekdays */
+        post: operations["addSchedules"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/routine/schedules/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a fixed session */
+        delete: operations["deleteSchedule"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sport-types": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Selectable sports */
+        get: operations["listSportTypes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AddSchedulesInputBody: {
+            /** @description 0=Sunday … 6=Saturday */
+            days: number[];
+            /** @description Repeat until (YYYY-MM-DD), optional */
+            endsOn?: string;
+            /** Format: int64 */
+            sportTypeId: number;
+            /** @description HH:MM, optional */
+            time?: string;
+        };
         ChangeInputBody: {
             confirmPassword: string;
             currentPassword: string;
@@ -198,7 +294,7 @@ export interface components {
              */
             detail?: string;
             /** @description Optional list of individual error details */
-            errors?: components["schemas"]["ErrorDetail"][] | null;
+            errors?: components["schemas"]["ErrorDetail"][];
             /**
              * Format: uri
              * @description A URI reference that identifies the specific occurrence of the problem.
@@ -250,6 +346,38 @@ export interface components {
             /** @enum {string} */
             role: "student" | "coach" | "both" | "admin";
         };
+        PlanItemBody: {
+            /** Format: int64 */
+            dayOfWeek: number;
+            description: string | null;
+            details: components["schemas"]["PlanItemDetailsBody"];
+            id: string;
+            isCompleted: boolean;
+            itemType: string;
+            title: string;
+        };
+        PlanItemDetailsBody: {
+            /** Format: double */
+            distanceKm?: number;
+            /** Format: double */
+            durationMin?: number;
+            notes?: string;
+            paceMinKm?: string;
+            videoQuery?: string;
+        };
+        QuotaBody: {
+            /**
+             * Format: int64
+             * @description Distinct days this Mon–Sun week with a completed log of the sport
+             */
+            doneThisWeek: number;
+            id: string;
+            /** Format: int64 */
+            sessionsPerWeek: number;
+            sportName: string | null;
+            /** Format: int64 */
+            sportTypeId: number;
+        };
         ReadyBody: {
             /** @description Dependency name to "ok" or the failure message. */
             checks: {
@@ -273,6 +401,43 @@ export interface components {
             message: string;
             /** @enum {string} */
             status: "success" | "info";
+        };
+        RoutineBody: {
+            /** Format: int64 */
+            estimatedWeeklyXp: number;
+            /** @description Current week of the newest active AI plan (read-only here) */
+            planItems: components["schemas"]["PlanItemBody"][];
+            quotas: components["schemas"]["QuotaBody"][];
+            schedules: components["schemas"]["ScheduleBody"][];
+        };
+        SaveQuotaInputBody: {
+            /** Format: int64 */
+            sessionsPerWeek: number;
+        };
+        ScheduleBody: {
+            /**
+             * Format: int64
+             * @description 0=Sunday … 6=Saturday
+             */
+            dayOfWeek: number;
+            /** Format: date */
+            endsOn: string | null;
+            id: string;
+            sportName: string | null;
+            /** Format: int64 */
+            sportTypeId: number | null;
+            /** @description HH:MM */
+            time: string | null;
+        };
+        SportTypeBody: {
+            /** Format: int64 */
+            id: number;
+            name: string;
+            /**
+             * Format: double
+             * @description Effective multiplier (unset counts as 1)
+             */
+            xpMultiplier: number;
         };
         TokenInputBody: {
             token: string;
@@ -795,6 +960,302 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReadyBody"];
+                };
+            };
+        };
+    };
+    getRoutine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoutineBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    saveQuota: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sportTypeId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveQuotaInputBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    deleteQuota: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sportTypeId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    addSchedules: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddSchedulesInputBody"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    deleteSchedule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    listSportTypes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SportTypeBody"][];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
                 };
             };
         };
