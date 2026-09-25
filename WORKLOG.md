@@ -5,6 +5,24 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · #78 merged (3.6b) · Phase 3.6c — photos
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): `objectstore` Put/Get/Delete;
+`adapters/imaging` (pure Go: JPEG/PNG/WebP decode, EXIF orientation parser, CatmullRom
+fit ≤1600, JPEG q82; dep `golang.org/x/image`); `aigen.ModerationRequest`/`ParseModeration`,
+`Request.Strict` + `Result.Blocked` in `adapters/ai`; `app/photos` + `store.PhotoStore`
+(cap-checked insert under the profile lock — 8 concurrent → 5); `POST/GET /photos`,
+streamed `GET /photos/{id}`, `DELETE`; web Body photos + Progress photos (compare). e2e
+with the fake moderator (wide = report, square = explicit, tall = body): batch 2 kept + 1
+rejected, stream 600×900, delete, journal + compare, report refused in journal, 401
+signed out.
+
+**Next steps**: 3.6d analysis (consent, all body photos in one call, stored on the newest)
++ report extraction → "Save as measurement"; then 3.7 Coaching (check whether legacy let
+the active coach read trainee photos — architecture ADR says "owner, or active coach";
+`GET /photos/{id}` is owner-only for now), 3.8 Community, share
+cards (incl. "Share progress"), Phases 4–7.
+
 ## 2026-09-25 · #77 merged (3.6a) · Phase 3.6b — watch-data import
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): `app/activities.Importer` +

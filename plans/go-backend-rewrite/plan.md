@@ -200,8 +200,15 @@ Order (dependencies first, risk front-loaded):
   - [x] 3.6b Watch-data import: `POST /activities/import` (`app/activities.Importer`:
         `activity.Sanitize` + `SplitImportable`, runs + ledger rows + XP in one tx under
         the profile lock); web Body tab "Watch data" (parse → review → log).
-  - [ ] 3.6c Photos: Garage adapter, re-encode, moderation, `GET /photos/{id}`,
-        body/progress photos, analyze / extract.
+  - [x] 3.6c Photos: `objectstore` Put/Get/Delete, `adapters/imaging` (pure-Go decode
+        JPEG/PNG/WebP, EXIF orientation, ≤1600 px, JPEG q82 — metadata dropped),
+        `aigen.ModerationRequest` (+ `Request.Strict`: Gemini strict safety, Claude
+        refusal → `Result.Blocked`), `app/photos` (analysis set batch, progress journal,
+        cap-checked insert under the profile lock), `POST /photos`, `GET /photos`,
+        streamed `GET /photos/{id}`, `DELETE /photos/{id}`; web Body photos + Progress
+        photos (compare).
+  - [ ] 3.6d Consent-gated body analysis (`POST /photos/analyze`) and report extraction
+        (`POST /photos/{id}/extract` → confirm as a measurement).
 - [ ] 3.7 **Coaching** — invite codes, join statuses, roster/adherence, consent-gated
       trainee nutrition/supplements, assign weekly plan, coach-mode plan generation (M)
 - [ ] 3.8 **Community** — clubs, follows, groups, leaderboard, discover; `404` while the

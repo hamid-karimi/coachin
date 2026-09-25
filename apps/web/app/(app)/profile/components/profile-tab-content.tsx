@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { ThemeToggle } from "@/components/design-system/theme-toggle";
 import type { ProfileTab } from "../lib/profile";
 import { ActivityImportSection } from "./activity-import-section";
+import { BodyPhotosSection } from "./body-photos-section";
 import { BodyProfileForm } from "./body-profile-form";
 import { ChangePasswordForm } from "./change-password-form";
 import { GoalsSection } from "./goals-section";
@@ -10,6 +11,7 @@ import { MeasurementsSection } from "./measurements-section";
 import { NutritionSharingToggle } from "./nutrition-sharing-toggle";
 import { ProfileSection } from "./profile-section";
 import { ProfileStats } from "./profile-stats";
+import { ProgressPhotosSection } from "./progress-photos-section";
 import { ProgressCharts } from "./progress-charts";
 import { RecentXp } from "./recent-xp";
 import { TrainingLinks } from "./training-links";
@@ -37,12 +39,18 @@ const TABS: Record<ProfileTab, () => ReactNode> = {
       <ProfileSection title='Measurements'>
         <MeasurementsSection />
       </ProfileSection>
+      <ProfileSection title='Progress photos'>
+        <ProgressPhotosSection />
+      </ProfileSection>
     </>
   ),
   body: () => (
     <>
       <ProfileSection title='Body profile'>
         <BodyProfileForm />
+      </ProfileSection>
+      <ProfileSection title='Body photos'>
+        <BodyPhotosSection />
       </ProfileSection>
       <ProfileSection title='Watch data'>
         <ActivityImportSection />

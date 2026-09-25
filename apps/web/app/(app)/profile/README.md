@@ -17,6 +17,10 @@ measurements, the body profile that feeds the AI plans, and settings. Four tabs
 | `DELETE /measurements/{id}` | "Measurement deleted." (the snapshot keeps its value, as in legacy) |
 | `GET /me/body` · `PUT /me/body` | Birth date, sex, height, training history, country (+ the weight / body-fat snapshot and `nutritionSharing` on read). Blank fields clear. "Profile updated." |
 | `POST /activities/import` | `{activities}` as returned by `POST /activities/parse` → sanitized (`activity.Sanitize`), last 14 days only, one run per date without a completed running log (FORMULAS §14); each becomes a completed log with a ledger row (`workout_log:<sport>:<date>`), XP 60 × running multiplier, all in one transaction under the profile lock. "Imported 2 runs · +120 XP · 1 skipped (…)"; 400 "Those days already have a logged run" / "Only runs from the last 14 days can be imported" / "No importable runs in those files" |
+| `POST /photos` | Multipart `photos` + `set` (`body`: the analysis set, up to 5 per upload; `progress`: exactly one). Per file: sniffed JPEG/PNG/WebP ≤ 5 MB → re-encoded (`adapters/imaging`: EXIF orientation applied, ≤1600 px, JPEG q82, every metadata block dropped) → AI moderation (`aigen.ModerationRequest`, strict safety) sorts it into body photo / report or rejects it → object stored at `<user>/<uuid>.jpg`, then the row, capped (5 body photos, 3 reports, 24 progress) under the profile lock. Rejections are per file ("…; rejected — x.jpg: …"); moderation down stops the batch (502). Rate limited |
+| `GET /photos` | `bodyPhotos`, `reports`, `progress` (id, createdAt), newest first |
+| `GET /photos/{id}` | Streams the JPEG after the ownership check (storage is private; no signed URLs). `Cache-Control: private, max-age=31536000, immutable` — an id never gets other bytes |
+| `DELETE /photos/{id}` | Row first, then the object (an orphaned object is harmless; a row without one is not). "Photo deleted." |
 | `PUT /me/nutrition-sharing` | `{enabled}` → the active coach may read meal logs and the meal plan (RLS) |
 
 ## Structure
@@ -35,9 +39,13 @@ measurements, the body profile that feeds the AI plans, and settings. Four tabs
   - Overview: `profile-stats.tsx` (stat grid + hearts), `goals-section.tsx`
     (`goal-form.tsx`, remove confirm), `training-links.tsx`, `recent-xp.tsx`
   - Progress: `progress-charts.tsx` (design-system `progress-chart`),
-    `measurements-section.tsx` (log form, confetti on a goal payout, list with delete)
+    `measurements-section.tsx` (log form, confetti on a goal payout, list with delete),
+    `progress-photos-section.tsx` (add one, grid, compare two — oldest left)
+  - `photo-tile.tsx` — a stored photo (`<img src="/api/v1/photos/{id}">`) in a 3:4 frame
+    + the corner ✕; `lib/photos.ts` — url, labels, upload form, compare picking (tested)
   - Body: `body-profile-form.tsx` (uses `components/ui/native-select`),
-    `activity-import-section.tsx` (reuses the training module's `useParseActivities` and
+    `body-photos-section.tsx` (picker with previews via `hooks/use-pending-photos.ts`,
+    photo grid, report rows, delete confirm), `activity-import-section.tsx` (reuses the training module's `useParseActivities` and
     `activityLine`; "Log N runs" refetches Today, the calendar, My week, the overview)
   - Settings: `nutrition-sharing-toggle.tsx`, theme, `change-password-form.tsx`,
     `logout-button.tsx`
@@ -53,10 +61,16 @@ measurements, the body profile that feeds the AI plans, and settings. Four tabs
   refunds as negative ("-5").
 - Two measurements on one day chart in the order logged (legacy reversed them).
 - Training history is capped at 2,000 characters.
+- Photos: types are sniffed from the bytes (legacy trusted the browser's type); caps
+  hold under concurrent uploads (checked in the insert, under the profile lock); images
+  stream through the API instead of hour-long signed URLs; moderation uses Claude first
+  (a refusal counts as a safety block) with Gemini's strict filter as the fallback; the
+  batch message no longer ends in "..".
 - Imported runs write XP ledger rows and are serialized under the profile lock (legacy
   bumped the balance only, with a read-then-write race).
 
 ## Not yet ported
 
-Body and progress photos, analysis, report extraction (3.6c);
+Consent-gated body analysis and report extraction → measurement (3.6d); "Share
+progress" (share cards);
 "My coach" invite redemption (Coaching).

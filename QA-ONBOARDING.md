@@ -49,7 +49,7 @@ inactive; every coach feature checks for an **active** relationship.
 | `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan. **Rewrite: fully ported** (search / USDA / photo / manual logging, day summary, trends, `/nutrition/plan`) | [README](apps/web/app/(app)/nutrition/README.md) |
 | `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions | [README](legacy/app/coaching/README.md) |
 | `/community` | Social/leaderboard surfaces — **currently disabled** (feature flag; redirects to dashboard, nav item hidden). Coach invite codes are redeemed on `/profile` → "My coach" while off. | [README](legacy/app/community/README.md) |
-| `/profile` | Four tabs (`?tab=`): **Overview** (stats, hearts, goals, recent XP), **Progress** (charts, measurements, progress photos), **Body** (body profile, body photos, watch import), **Settings** (theme, nutrition sharing, my coach, logout). **Rewrite: tabs, goals, measurements, charts, body profile, sharing, watch import ported**; photos next | [README](apps/web/app/(app)/profile/README.md) |
+| `/profile` | Four tabs (`?tab=`): **Overview** (stats, hearts, goals, recent XP), **Progress** (charts, measurements, progress photos), **Body** (body profile, body photos, watch import), **Settings** (theme, nutrition sharing, my coach, logout). **Rewrite: tabs, goals, measurements, charts, body profile, sharing, watch import, photos ported**; photo analysis / report extraction next | [README](apps/web/app/(app)/profile/README.md) |
 | `/auth` | Login / signup; on the rewrite also forgot / reset password and email verification | [README](legacy/app/auth/README.md) |
 | `/status` | Rewrite only: API, database, and storage health | — |
 
@@ -401,6 +401,19 @@ the goal strip — journey 9; coaching card and group nudge arrive with their mo
    "Share progress" builds a two-photo card after an explicit consent note.
    Dashboard shows a quiet "add a progress photo" hint for active users
    after 28+ days without one.
+   **Rewrite stack (3.6c)**: Progress → Progress photos → "Add photo" (compressed on the
+   phone) → "Progress photo added."; a report there: "That looks like a report — upload
+   it in the analysis set instead"; 24 max ("You already have 24 progress photos — delete
+   an old one first"). Compare (2+ photos) → tap two → side by side, oldest left, "Done"
+   to leave. "Share progress" arrives with share cards.
+   **Body photos (Profile → Body)**: "Add images" (up to 5, previews with ✕, "N of 5
+   selected") → "Upload N" → "Checking…" → e.g. "2 images uploaded; report metrics can
+   be extracted below; rejected — x.jpg: This photo looks too explicit. Sports attire or
+   athletic progress photos are fine." Body photos show in a grid (max 5), reports as
+   "Analysis report · Sep 25" rows (max 3); ✕ → "Delete this photo?" → "Photo deleted."
+   Photos load only for their owner: opening a photo URL signed out (or as someone else)
+   returns 401 / 404. AI down: "AI moderation is temporarily unavailable — try again
+   later" and nothing is stored. Analysis and report extraction arrive next (3.6d).
 3. **Progress charts** (Profile → Progress tab): weekly volume bars, weekly km,
    body-weight trend (needs ≥2 measurements), and top-set trends for
    exercises logged ≥3 times. Charts hide individually without data; an

@@ -2,6 +2,7 @@
 
 import { useMutationFeedback } from "@/components/hooks/use-mutation-feedback";
 import { $api } from "@/lib/api/browser";
+import { photosForm } from "../lib/photos";
 
 export function useProfileOverview() {
   return $api.useSuspenseQuery("get", "/me/overview").data;
@@ -68,5 +69,40 @@ export function useImportActivities(onDone?: () => void) {
       ],
       onDone,
     ),
+  );
+}
+
+export function usePhotos() {
+  return $api.useSuspenseQuery("get", "/photos").data;
+}
+
+/** New photos land in the list and can end Today's photo nudge. */
+export function useUploadPhotos(onDone?: () => void) {
+  const mutation = $api.useMutation(
+    "post",
+    "/photos",
+    useMutationFeedback(
+      [
+        ["get", "/photos"],
+        ["get", "/today"],
+      ],
+      onDone,
+    ),
+  );
+  return {
+    ...mutation,
+    upload: (files: File[], set: "body" | "progress") =>
+      mutation.mutate({ body: { photos: [] }, bodySerializer: () => photosForm(files, set) }),
+  };
+}
+
+export function useDeletePhoto() {
+  return $api.useMutation(
+    "delete",
+    "/photos/{id}",
+    useMutationFeedback([
+      ["get", "/photos"],
+      ["get", "/today"],
+    ]),
   );
 }
