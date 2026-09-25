@@ -132,3 +132,51 @@ jobs:
       - name: Tear down
         if: always()
         run: docker compose down -v
+
+  e2e:
+    name: E2E journeys (Playwright)
+    runs-on: ubuntu-latest
+    needs: [api, web]
+    env:
+      COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
+      E2E_COMPOSE: docker compose -f compose.yaml -f compose.e2e.yaml
+    steps:
+      - uses: actions/checkout@v7
+      - run: cp .env.example .env
+      - name: Build and start (fake Claude, Community on)
+        run: $E2E_COMPOSE up -d --build
+      - name: Seed the demo accounts
+        run: $E2E_COMPOSE run --rm migrate seed
+      - name: Wait for the stack
+        run: |
+          for i in $(seq 1 60); do
+            curl -fsS http://localhost:8080/status | grep -q "All systems go" && exit 0
+            sleep 2
+          done
+          exit 1
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: corepack enable
+      - name: Install
+        working-directory: apps/web
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm exec playwright install --with-deps chromium
+      - name: QA journeys
+        working-directory: apps/web
+        run: pnpm e2e
+      - name: Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: playwright-report
+          path: |
+            apps/web/playwright-report
+            apps/web/test-results
+      - name: Logs on failure
+        if: failure()
+        run: $E2E_COMPOSE logs --no-color
+      - name: Tear down
+        if: always()
+        run: $E2E_COMPOSE down -v

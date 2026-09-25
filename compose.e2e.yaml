@@ -1,0 +1,16 @@
+# End-to-end overlay: `docker compose -f compose.yaml -f compose.e2e.yaml up -d --build`.
+# A fake Claude (deploy/e2e/fakeai.mjs) answers every AI call, and Community is on,
+# so the Playwright suite (apps/web/e2e) can run each QA journey without API keys.
+services:
+  fakeai:
+    image: node:24-alpine
+    command: ["node", "/srv/fakeai.mjs"]
+    volumes:
+      - ./deploy/e2e/fakeai.mjs:/srv/fakeai.mjs:ro
+  api:
+    environment:
+      CLAUDE_API_KEY: fake-key
+      ANTHROPIC_BASE_URL: http://fakeai:8000
+      FEATURE_COMMUNITY: "true"
+    depends_on:
+      - fakeai

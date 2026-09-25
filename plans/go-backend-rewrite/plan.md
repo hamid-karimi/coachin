@@ -289,6 +289,11 @@ Order (dependencies first, risk front-loaded):
 ## Phase 5 — Hardening & cutover in the repo (M)
 
 - [ ] 5.1 Playwright suite for QA journeys 1–8 against the compose stack, in CI.
+  - [x] 5.1a `apps/web/e2e` + `compose.e2e.yaml` (fake Claude, Community on) + `make e2e`
+        + CI job "E2E journeys": journeys 0, 2, 3, 5 (+ share card), 6, 9, 10. It caught a
+        real bug: `<main>` in the app shell lacked `min-w-0`, so a long email in a page
+        header widened the whole phone layout (fixed).
+  - [ ] 5.1b journeys 1 (onboarding / my week), 4 (calendar), 7 (watch import), photos.
 - [ ] 5.2 Security review of auth, uploads, authorization (`/security-review`), and fixes.
 - [ ] 5.3 Delete `legacy/` (and with it `supabase/`, Vercel/Next server code). Verify spec
       §8 criteria 1–7. Rewrite root README (stack, `make up`), QA-ONBOARDING ("Stack",

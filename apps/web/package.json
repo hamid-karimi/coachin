@@ -12,7 +12,8 @@
     "test": "vitest run",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "gen:api": "openapi-typescript ../../openapi/openapi.json -o lib/api/schema.d.ts"
+    "gen:api": "openapi-typescript ../../openapi/openapi.json -o lib/api/schema.d.ts",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@hookform/resolvers": "5.9.1",
@@ -39,6 +40,7 @@
     "zod": "4.6.5"
   },
   "devDependencies": {
+    "@playwright/test": "1.63.0",
     "@storybook/nextjs-vite": "10.6.0",
     "@tailwindcss/postcss": "4.3.3",
     "@tanstack/eslint-plugin-query": "5.103.2",

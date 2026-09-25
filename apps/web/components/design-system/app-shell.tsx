@@ -19,7 +19,7 @@ export function AppShell({ children, coachNav, communityNav }: AppShellProps) {
   return (
     <div className='flex min-h-screen'>
       <AppSidebar active={active} coachNav={coachNav} communityNav={communityNav} />
-      <main className='flex-1 px-4 py-6 pb-24 md:px-8 md:py-8 md:pb-8'>{children}</main>
+      <main className='min-w-0 flex-1 px-4 py-6 pb-24 md:px-8 md:py-8 md:pb-8'>{children}</main>
       <div className='fixed inset-x-0 bottom-0 z-40 md:hidden'>
         <BottomNav active={active} coachNav={coachNav} communityNav={communityNav} />
       </div>

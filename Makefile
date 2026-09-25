@@ -2,7 +2,7 @@
 COMPOSE := docker compose -f compose.yaml -f compose.dev.yaml
 
 .DEFAULT_GOAL := help
-.PHONY: help up infra down logs ps migrate migrate-status reset-db seed gen golden golden-activity test lint
+.PHONY: help up infra down logs ps migrate migrate-status reset-db seed gen golden golden-activity e2e test lint
 
 help: ## List the available commands
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  make %-15s %s\n", $$1, $$2}'
@@ -51,6 +51,11 @@ golden: ## History: snapshot testdata/golden from the legacy TypeScript (overwri
 golden-activity: ## Rebuild the watch-file fixtures + vectors (GOLDEN_DEPS=dir with @garmin/fitsdk@21 fast-xml-parser@5 installed)
 	@test -n "$(GOLDEN_DEPS)" || (echo "npm i --prefix /tmp/golden-deps @garmin/fitsdk@21 fast-xml-parser@5, then GOLDEN_DEPS=/tmp/golden-deps/node_modules make golden-activity" && exit 1)
 	GOLDEN_DEPS=$(GOLDEN_DEPS) TZ=UTC node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/golden/register.mjs scripts/golden/activity-files.ts
+
+e2e: .env ## Run the Playwright QA journeys against the stack with the fake Claude (compose.e2e.yaml)
+	docker compose -f compose.yaml -f compose.e2e.yaml up -d --build
+	docker compose -f compose.yaml -f compose.e2e.yaml run --rm migrate seed
+	cd apps/web && pnpm e2e
 
 test: ## Run Go and web unit/integration tests (Go tests need Docker)
 	cd apps/api && go test ./...
