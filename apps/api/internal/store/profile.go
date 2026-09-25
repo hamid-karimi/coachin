@@ -139,20 +139,6 @@ func (s *ProfileStore) SessionLogsSince(ctx context.Context, userID uuid.UUID, s
 	return logs, nil
 }
 
-// goalResult is achieve_goal's answer.
-type goalResult struct {
-	Success bool   `json:"success"`
-	Status  string `json:"status"`
-	Error   string `json:"error"`
-}
-
-func (r *goalResult) failure() string {
-	if r.Success {
-		return ""
-	}
-	return "achieve_goal: " + r.Error
-}
-
 // AddMeasurement inserts the reading, refreshes the snapshot, and settles
 // the active measurement goals (locked) in one transaction.
 func (s *ProfileStore) AddMeasurement(ctx context.Context, userID uuid.UUID, weightKg, bodyFatPct *float64, decide appprofile.Decide) ([]appprofile.AchievedGoal, error) {
@@ -190,15 +176,12 @@ func settle(ctx context.Context, q *queries.Queries, userID uuid.UUID, g appprof
 	if d.Outcome != goals.Achieve {
 		return nil
 	}
-	raw, err := q.AchieveGoal(ctx, g.ID)
-	var result goalResult
-	if err := decodeRPC(raw, err, &result); err != nil {
+	n, err := q.MarkGoalAchieved(ctx, queries.MarkGoalAchievedParams{ID: g.ID, UserID: userID})
+	if err != nil || n == 0 {
 		return err
 	}
-	if result.Status == "achieved" {
-		*achieved = append(*achieved, appprofile.AchievedGoal{Type: g.Type, Target: g.Target})
-	}
-	return nil
+	*achieved = append(*achieved, appprofile.AchievedGoal{Type: g.Type, Target: g.Target})
+	return addXP(ctx, q, userID, goals.AchievedXP, "goal_achieved:"+g.ID.String())
 }
 
 // DeleteMeasurement removes one of the user's readings.

@@ -43,9 +43,9 @@ level = floor(totalXp / 1000) + 1
 | Plan item — mobility | **30** | `plan_item:<id>` | per item | Go: `domain/planitem` |
 | Plan item — recovery | **20** | `plan_item:<id>` | per item | Go: `domain/planitem` |
 | Session log (how'd it go) | **10** | `session_log:<id>` | per log | Go: `xp.SessionLogXP` via `store.TrainingStore.CreateSessionLog` |
-| Meal log | **5** | `meal_log:<id>` | per log, **max 3/day** | `award_meal_xp` |
-| Calorie-goal day | **30** | `calorie_goal:<date>` | per day | `award_day_adherence` |
-| Goal achieved | **200** | `goal_achieved:<id>` | per goal | `achieve_goal` |
+| Meal log | **5** | `meal_log:<id>` | per log, **max 3/day** | Go: `domain/nutrition.MealAward` via `store.NutritionStore.LogMeals` |
+| Calorie-goal day | **30** | `calorie_goal:<date>` | per day | Go: `domain/nutrition.CalorieDayXP` via `store.NutritionStore.LogMeals` |
+| Goal achieved | **200** | `goal_achieved:<id>` | per goal | Go: `goals.AchievedXP` via `store.ProfileStore.AddMeasurement` |
 | Weekly check-in | **20** | `weekly_checkin:<planId>:<week>` | per week | weekly-checkins RPC |
 | Group streak day | `LEAST(10 + streak × 2, 50)` | `group_streak:<gid>:<day>` | per group-day | `evaluate_group_days` |
 
@@ -244,8 +244,8 @@ measurement's transaction.
   one. Other goal types have no start.
 - Each new measurement, per active weight / body-fat goal: no reading for that metric →
   unchanged; **no start** → the reading becomes the start (the baseline) and pays
-  nothing; otherwise **achieved** per the rule above → `achieve_goal` (status
-  `achieved`, `+200` XP, reason `goal_achieved:<id>`, once).
+  nothing; otherwise **achieved** per the rule above → status `achieved`, `+200` XP
+  (`goals.AchievedXP`), reason `goal_achieved:<id>`, once (only an active goal settles).
 - Legacy saved goals without a start, so a "lose to 70" goal read as "gain to 70" and
   paid out on the first reading above 70; the baseline rule closes that.
 
@@ -287,7 +287,9 @@ measurement's transaction.
 - **Meal log XP = 5**, capped at **3 awarded meals/day** (§1).
 - **Calorie-goal bonus = 30 XP/day**, awarded when a *past* day's intake is **within ±10%**
   of the active `calorie_intake` goal **and ≥ 2 meals** were logged. Never evaluated for
-  "today" (still in progress). Idempotent per date.
+  "today" (still in progress). Idempotent per date. The band is exact at its edges:
+  `total × 10` is compared with `target × 9` and `target × 11` (`nutrition.CalorieDayXP`),
+  so 1,800 and 2,200 kcal both count for a 2,000 goal.
 
 ---
 

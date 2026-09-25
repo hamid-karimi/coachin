@@ -136,15 +136,10 @@ func foodFrom(r queries.GetFoodRow) appnutrition.Food {
 	}}
 }
 
-// mealAward is award_meal_xp's answer.
-type mealAward struct {
-	rpcResult
-	Capped bool `json:"capped"`
-}
-
-// LogMeals stores the meals and their XP, and settles the calorie-goal bonus,
-// in one transaction; the profile lock serializes the 3-a-day cap.
-func (s *NutritionStore) LogMeals(ctx context.Context, userID uuid.UUID, date, adherenceDate string, meals []appnutrition.NewMeal) (appnutrition.Awards, error) {
+// LogMeals stores the meals and their XP (meal_log:<id>, capped per date), and
+// settles adherenceDate's calorie-goal bonus (calorie_goal:<date>), in one
+// transaction; the profile lock serializes the 3-a-day cap.
+func (s *NutritionStore) LogMeals(ctx context.Context, userID uuid.UUID, date, adherenceDate string, meals []appnutrition.NewMeal, rules appnutrition.MealRules) (appnutrition.Awards, error) {
 	var awards appnutrition.Awards
 	err := s.asUser(ctx, userID, func(q *queries.Queries) error {
 		if err := q.LockProfile(ctx, userID); err != nil {
@@ -155,45 +150,45 @@ func (s *NutritionStore) LogMeals(ctx context.Context, userID uuid.UUID, date, a
 			if err != nil {
 				return fmt.Errorf("insert meal: %w", err)
 			}
-			raw, err := q.AwardMealXP(ctx, id)
-			var award mealAward
-			if err := decodeRPC(raw, err, &award); err != nil {
+			awarded, err := q.CountMealAwardsOn(ctx, queries.CountMealAwardsOnParams{UserID: &userID, OnDate: date})
+			if err != nil {
+				return fmt.Errorf("count meal awards: %w", err)
+			}
+			xp, capped := rules.Award(int(awarded))
+			if err := addXP(ctx, q, userID, xp, "meal_log:"+id.String()); err != nil {
 				return err
 			}
-			awards.MealXP += award.AwardedXP
-			awards.Capped = awards.Capped || award.Capped
+			awards.MealXP += xp
+			awards.Capped = awards.Capped || capped
 		}
-		raw, err := q.AwardDayAdherence(ctx, adherenceDate)
-		var bonus rpcResult
-		if err := decodeRPC(raw, err, &bonus); err != nil {
-			return err
-		}
-		awards.Adherence = bonus.AwardedXP
-		return nil
+		bonus, err := calorieDay(ctx, q, userID, adherenceDate, rules.CalorieDay)
+		awards.Adherence = bonus
+		return err
 	})
 	return awards, err
 }
 
-// decodeRPC decodes a Step A function's jsonb answer (and the call's error),
-// failing on {"error": …}.
-func decodeRPC(raw string, callErr error, out interface{ failure() string }) error {
-	if callErr != nil {
-		return callErr
+// calorieDay pays day's calorie-goal bonus once, when rule says it was met.
+func calorieDay(ctx context.Context, q *queries.Queries, userID uuid.UUID, day string, rule func(target *float64, kcal float64, meals int) int) (int, error) {
+	reason := "calorie_goal:" + day
+	paid, err := q.LedgerHasReason(ctx, queries.LedgerHasReasonParams{UserID: &userID, Reason: reason})
+	if err != nil || paid {
+		return 0, err
 	}
-	if err := json.Unmarshal([]byte(raw), out); err != nil {
-		return err
+	var target *float64
+	value, err := q.ActiveCalorieGoal(ctx, userID)
+	switch {
+	case err == nil:
+		target = &value
+	case !errors.Is(err, pgx.ErrNoRows):
+		return 0, fmt.Errorf("calorie goal: %w", err)
 	}
-	if msg := out.failure(); msg != "" {
-		return errors.New(msg)
+	intake, err := q.DayIntake(ctx, queries.DayIntakeParams{UserID: userID, OnDate: day})
+	if err != nil {
+		return 0, fmt.Errorf("day intake: %w", err)
 	}
-	return nil
-}
-
-func (r *rpcResult) failure() string {
-	if r.Success {
-		return ""
-	}
-	return r.Error
+	bonus := rule(target, intake.Kcal, int(intake.Meals))
+	return bonus, addXP(ctx, q, userID, bonus, reason)
 }
 
 func mealParams(userID uuid.UUID, date string, m appnutrition.NewMeal) queries.InsertMealLogParams {

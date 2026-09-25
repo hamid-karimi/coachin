@@ -57,13 +57,23 @@ VALUES (sqlc.arg(user_id)::uuid, CAST(sqlc.arg(on_date)::text AS date), sqlc.arg
         sqlc.arg(sodium_mg)::float8, sqlc.arg(entry_method)::text, sqlc.narg(photo_estimate)::jsonb, clock_timestamp())
 RETURNING id;
 
--- name: AwardMealXP :one
--- Step A (ADR-5): +5 once per log, at most 3 awarded logs per date.
-SELECT public.award_meal_xp(sqlc.arg(meal_log_id))::text AS result;
+-- name: CountMealAwardsOn :one
+-- How many of the date's (remaining) meals hold a meal award — the 3-a-day cap.
+SELECT count(*) AS awarded
+FROM public.xp_transactions x
+JOIN public.meal_logs m ON x.reason = 'meal_log:' || m.id::text
+WHERE x.user_id = sqlc.arg(user_id) AND m.user_id = sqlc.arg(user_id)
+  AND m.date = CAST(sqlc.arg(on_date)::text AS date);
 
--- name: AwardDayAdherence :one
--- Step A (ADR-5): +30 once for a past day within ±10% of the calorie goal (2+ meals).
-SELECT public.award_day_adherence(CAST(sqlc.arg(on_date)::text AS date))::text AS result;
+-- name: LedgerHasReason :one
+SELECT EXISTS (
+  SELECT 1 FROM public.xp_transactions WHERE user_id = sqlc.arg(user_id) AND reason = sqlc.arg(reason)::text
+)::bool AS awarded;
+
+-- name: DayIntake :one
+SELECT COALESCE(SUM(kcal), 0)::float8 AS kcal, count(*) AS meals
+FROM public.meal_logs
+WHERE user_id = sqlc.arg(user_id) AND date = CAST(sqlc.arg(on_date)::text AS date);
 
 -- name: DeleteMealLog :execrows
 DELETE FROM public.meal_logs WHERE id = sqlc.arg(id) AND user_id = sqlc.arg(user_id);

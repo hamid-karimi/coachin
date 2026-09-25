@@ -78,11 +78,11 @@ func TestNutritionOnPostgres(t *testing.T) {
 		return appnutrition.NewMeal{MealType: "lunch", FoodID: &first.ID, Name: "Bananas, raw", QuantityG: &grams, EntryMethod: "search",
 			Nutrients: nutrition.Nutrients{Kcal: kcal}}
 	}
-	awards, err := st.LogMeals(ctx, ada, today, yesterday, []appnutrition.NewMeal{meal(89), meal(90), meal(91)})
+	awards, err := st.LogMeals(ctx, ada, today, yesterday, []appnutrition.NewMeal{meal(89), meal(90), meal(91)}, appnutrition.DefaultMealRules)
 	if err != nil || awards != (appnutrition.Awards{MealXP: 15, Adherence: 30}) {
 		t.Fatalf("awards = %+v, %v", awards, err)
 	}
-	awards, _ = st.LogMeals(ctx, ada, today, yesterday, []appnutrition.NewMeal{meal(92)})
+	awards, _ = st.LogMeals(ctx, ada, today, yesterday, []appnutrition.NewMeal{meal(92)}, appnutrition.DefaultMealRules)
 	if awards != (appnutrition.Awards{Capped: true}) || xpOf() != 45 {
 		t.Fatalf("4th meal = %+v, xp %d", awards, xpOf())
 	}
@@ -110,7 +110,7 @@ func TestNutritionOnPostgres(t *testing.T) {
 	if refunded, _ := st.DeleteMeal(ctx, ada, meals[3].ID); refunded != 0 {
 		t.Errorf("an unawarded meal refunded %d", refunded)
 	}
-	awards, _ = st.LogMeals(ctx, ada, today, yesterday, []appnutrition.NewMeal{meal(93)})
+	awards, _ = st.LogMeals(ctx, ada, today, yesterday, []appnutrition.NewMeal{meal(93)}, appnutrition.DefaultMealRules)
 	if awards.MealXP != 5 || xpOf() != 45 {
 		t.Errorf("re-log = %+v, xp %d", awards, xpOf())
 	}

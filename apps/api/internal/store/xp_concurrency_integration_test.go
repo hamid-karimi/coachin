@@ -9,8 +9,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
+	appnutrition "github.com/hamid-karimi/coachin/apps/api/internal/app/nutrition"
+	appprofile "github.com/hamid-karimi/coachin/apps/api/internal/app/profile"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/training"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/dates"
+	"github.com/hamid-karimi/coachin/apps/api/internal/domain/nutrition"
 	"github.com/hamid-karimi/coachin/apps/api/internal/store"
 )
 
@@ -115,5 +118,42 @@ func TestParallelAwardsPayOnce(t *testing.T) {
 	}
 	if ledger, profile, _ := balance(); ledger != 70 || profile != 70 {
 		t.Fatalf("after session logs: ledger %d, profile %d", ledger, profile)
+	}
+
+	// 8 single-meal logs at once: the 3-a-day cap still pays exactly 15.
+	meals := store.NewNutritionStore(pool)
+	day, yesterday := dates.ToYMD(now), dates.ToYMD(now.AddDate(0, 0, -1))
+	mealXP := parallel(8, func() int {
+		meal := appnutrition.NewMeal{MealType: "snack", Name: "Apple", EntryMethod: "manual", Nutrients: nutrition.Nutrients{Kcal: 80}}
+		awards, err := meals.LogMeals(ctx, ada, day, yesterday, []appnutrition.NewMeal{meal}, appnutrition.DefaultMealRules)
+		if err != nil {
+			t.Error(err)
+		}
+		return awards.MealXP
+	})
+	if mealXP != 15 {
+		t.Fatalf("8 parallel meals paid %d, want 15", mealXP)
+	}
+
+	// Parallel readings that all reach one goal pay its +200 once.
+	profiles := appprofile.NewService(store.NewProfileStore(pool), nil)
+	if _, err := profiles.CreateGoal(ctx, ada, appprofile.GoalInput{Type: "weight", Target: 70}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := profiles.AddMeasurement(ctx, ada, ptrTo(80.0), nil); err != nil { // the baseline
+		t.Fatal(err)
+	}
+	achieved := parallel(8, func() int {
+		logged, err := profiles.AddMeasurement(ctx, ada, ptrTo(69.5), nil)
+		if err != nil {
+			t.Error(err)
+		}
+		return len(logged.Achieved)
+	})
+	if achieved != 1 {
+		t.Fatalf("8 parallel crossings achieved %d goals, want 1", achieved)
+	}
+	if ledger, profile, _ := balance(); ledger != 70+15+200 || profile != ledger {
+		t.Fatalf("after meals and goal: ledger %d, profile %d", ledger, profile)
 	}
 }

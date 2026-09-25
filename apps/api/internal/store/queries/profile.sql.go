@@ -31,17 +31,6 @@ func (q *Queries) AbandonGoal(ctx context.Context, arg AbandonGoalParams) (int64
 	return result.RowsAffected(), nil
 }
 
-const achieveGoal = `-- name: AchieveGoal :one
-SELECT public.achieve_goal($1)::text
-`
-
-func (q *Queries) AchieveGoal(ctx context.Context, goalID uuid.UUID) (string, error) {
-	row := q.db.QueryRow(ctx, achieveGoal, goalID)
-	var column_1 string
-	err := row.Scan(&column_1)
-	return column_1, err
-}
-
 const deleteMeasurement = `-- name: DeleteMeasurement :execrows
 DELETE FROM public.body_measurements WHERE id = $1 AND user_id = $2
 `
@@ -339,6 +328,25 @@ func (q *Queries) LockActiveMeasurementGoals(ctx context.Context, userID uuid.UU
 		return nil, err
 	}
 	return items, nil
+}
+
+const markGoalAchieved = `-- name: MarkGoalAchieved :execrows
+UPDATE public.goals SET status = 'achieved', achieved_at = now()
+WHERE id = $1 AND user_id = $2 AND status = 'active'
+`
+
+type MarkGoalAchievedParams struct {
+	ID     uuid.UUID `json:"id"`
+	UserID uuid.UUID `json:"user_id"`
+}
+
+// Only an active goal settles (0 rows: already settled).
+func (q *Queries) MarkGoalAchieved(ctx context.Context, arg MarkGoalAchievedParams) (int64, error) {
+	result, err := q.db.Exec(ctx, markGoalAchieved, arg.ID, arg.UserID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const profileOverview = `-- name: ProfileOverview :one

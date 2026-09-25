@@ -97,9 +97,12 @@ const (
 	// start can't tell "lose to 70" from "gain to 70", so it never pays out
 	// on its first reading.
 	SetBaseline
-	// Achieve settles the goal (+200 XP).
+	// Achieve settles the goal (+AchievedXP).
 	Achieve
 )
+
+// AchievedXP is what reaching a goal pays, once (goal_achieved:<id>).
+const AchievedXP = 200
 
 // Settle decides what a reading does to an active goal.
 func Settle(start *float64, target float64, reading *float64) Settlement {
