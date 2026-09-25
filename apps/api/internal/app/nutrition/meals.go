@@ -75,6 +75,8 @@ type Store interface {
 	// DeleteMeal removes the log and gives back its meal XP; ErrNotFound when
 	// it isn't the user's.
 	DeleteMeal(ctx context.Context, userID, id uuid.UUID) (refundedXP int, err error)
+	// Country is the profile's free-text country, nil when unset.
+	Country(ctx context.Context, userID uuid.UUID) (*string, error)
 }
 
 // USDA is FoodData Central.
@@ -88,15 +90,16 @@ type USDA interface {
 type Service struct {
 	store Store
 	usda  USDA
+	ai    AI
 	now   func() time.Time
 }
 
 // NewService builds the service; now defaults to time.Now.
-func NewService(store Store, usda USDA, now func() time.Time) *Service {
+func NewService(store Store, usda USDA, ai AI, now func() time.Time) *Service {
 	if now == nil {
 		now = time.Now
 	}
-	return &Service{store: store, usda: usda, now: now}
+	return &Service{store: store, usda: usda, ai: ai, now: now}
 }
 
 // Day is the nutrition page: today's meals and totals, the goal, and trends.

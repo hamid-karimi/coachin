@@ -2,6 +2,7 @@ package httpapi
 
 import (
 	"context"
+	"io"
 	"net/http"
 	"time"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/google/uuid"
 
 	appnutrition "github.com/hamid-karimi/coachin/apps/api/internal/app/nutrition"
+	"github.com/hamid-karimi/coachin/apps/api/internal/domain/aigen"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/nutrition"
 )
 
@@ -19,6 +21,61 @@ type NutritionService interface {
 	SearchUSDA(ctx context.Context, q string) ([]nutrition.USDAFood, error)
 	LogMeal(ctx context.Context, userID uuid.UUID, in appnutrition.MealInput) (string, error)
 	DeleteMeal(ctx context.Context, userID, id uuid.UUID) (string, error)
+	EstimatePhoto(ctx context.Context, userID uuid.UUID, photos []appnutrition.Photo, hint string) ([]aigen.EstimateItem, error)
+	ConfirmPhotoMeal(ctx context.Context, userID uuid.UUID, mealType string, items []appnutrition.ReviewedItem) (string, error)
+}
+
+// EstimateItemBody is one food on a photo review (for its portion).
+type EstimateItemBody struct {
+	Name         string  `json:"name" maxLength:"200"`
+	EstQuantityG float64 `json:"estQuantityG"`
+	EstKcal      float64 `json:"estKcal"`
+	ProteinG     float64 `json:"proteinG"`
+	CarbsG       float64 `json:"carbsG"`
+	FatG         float64 `json:"fatG"`
+	SugarG       float64 `json:"sugarG"`
+	FiberG       float64 `json:"fiberG"`
+	SodiumMg     float64 `json:"sodiumMg"`
+}
+
+// PhotoEstimateBody is an AI estimate awaiting review; nothing is saved.
+type PhotoEstimateBody struct {
+	ResultBody
+	Items []EstimateItemBody `json:"items"`
+}
+
+type photoEstimateOutput struct {
+	Body PhotoEstimateBody
+}
+
+type mealPhotos struct {
+	Photos  []huma.FormFile `form:"photos" doc:"1–3 photos of the same meal (JPEG/PNG/WebP/GIF, 2 MB each)"`
+	Context string          `form:"context" required:"false" doc:"Optional hint, e.g. restaurant pizza, large"`
+}
+
+type photoEstimateInput struct {
+	RawBody huma.MultipartFormFiles[mealPhotos]
+}
+
+// ReviewedItemBody is a confirmed review row; missing nutrients count as 0.
+type ReviewedItemBody struct {
+	Name         string  `json:"name" maxLength:"200"`
+	EstQuantityG float64 `json:"estQuantityG,omitempty"`
+	EstKcal      float64 `json:"estKcal"`
+	ProteinG     float64 `json:"proteinG,omitempty"`
+	CarbsG       float64 `json:"carbsG,omitempty"`
+	FatG         float64 `json:"fatG,omitempty"`
+	SugarG       float64 `json:"sugarG,omitempty"`
+	FiberG       float64 `json:"fiberG,omitempty"`
+	SodiumMg     float64 `json:"sodiumMg,omitempty"`
+	Source       string  `json:"source,omitempty" enum:"photo,search" doc:"search: added from food search in the review"`
+}
+
+type confirmPhotoMealInput struct {
+	Body struct {
+		MealType string             `json:"mealType" enum:"breakfast,lunch,dinner,snack"`
+		Items    []ReviewedItemBody `json:"items" maxItems:"20"`
+	}
 }
 
 // NutrientsBody are calories and nutrients (kcal and sodium whole, the rest to 0.1).
@@ -202,6 +259,63 @@ func registerNutrition(api huma.API, deps Deps) {
 			input.Manual = &appnutrition.ManualMeal{Name: m.Name, Kcal: m.Kcal, ProteinG: m.ProteinG, CarbsG: m.CarbsG, FatG: m.FatG}
 		}
 		message, err := svc.LogMeal(ctx, userID, input)
+		if err != nil {
+			return nil, toProblem(ctx, logger, err)
+		}
+		return &resultOutput{Body: ResultBody{Status: "success", Message: message}}, nil
+	})
+
+	// Photo estimates call a paid vision model.
+	estimating := huma.Middlewares{requireUser(api), rateLimited(api, newLimiter(10*time.Second, 5)), limitBody(8 << 20)}
+	huma.Register(api, huma.Operation{
+		OperationID: "estimateMealPhoto", Method: http.MethodPost, Path: "/meals/photo-estimate",
+		Summary:     "Estimate a meal from 1–3 photos (AI); nothing is saved",
+		Description: "The items come back for review; confirm them with POST /meals/batch.",
+		Tags:        tags, Middlewares: estimating, Errors: []int{400, 401, 422, 429, 502},
+	}, func(ctx context.Context, in *photoEstimateInput) (*photoEstimateOutput, error) {
+		userID, _ := userFrom(ctx)
+		form := in.RawBody.Data()
+		photos := make([]appnutrition.Photo, 0, len(form.Photos))
+		for _, f := range form.Photos[:min(len(form.Photos), appnutrition.MaxPhotos)] {
+			photo := appnutrition.Photo{Size: f.Size}
+			if f.Size <= appnutrition.MaxPhotoBytes {
+				data, err := io.ReadAll(io.LimitReader(f, appnutrition.MaxPhotoBytes+1))
+				if err != nil {
+					return nil, toProblem(ctx, logger, err)
+				}
+				photo.Data = data
+			}
+			photos = append(photos, photo)
+		}
+		items, err := svc.EstimatePhoto(ctx, userID, photos, form.Context)
+		if err != nil {
+			return nil, toProblem(ctx, logger, err)
+		}
+		body := PhotoEstimateBody{
+			ResultBody: ResultBody{Status: "info", Message: "Estimate ready — review and adjust before saving."},
+			Items:      make([]EstimateItemBody, len(items)),
+		}
+		for i, item := range items {
+			body.Items[i] = EstimateItemBody(item)
+		}
+		return &photoEstimateOutput{Body: body}, nil
+	})
+
+	huma.Register(api, huma.Operation{
+		OperationID: "confirmPhotoMeal", Method: http.MethodPost, Path: "/meals/batch",
+		Summary:     "Log reviewed photo items (each earns meal XP, 3 a day)",
+		Description: "Rows over 5000 kcal or without calories are skipped; at most 10 are read.",
+		Tags:        tags, DefaultStatus: http.StatusCreated, Middlewares: logging, Errors: []int{400, 401, 429},
+	}, func(ctx context.Context, in *confirmPhotoMealInput) (*resultOutput, error) {
+		userID, _ := userFrom(ctx)
+		items := make([]appnutrition.ReviewedItem, len(in.Body.Items))
+		for i, item := range in.Body.Items {
+			items[i] = appnutrition.ReviewedItem{FromSearch: item.Source == "search", EstimateItem: aigen.EstimateItem{
+				Name: item.Name, EstQuantityG: item.EstQuantityG, EstKcal: item.EstKcal, ProteinG: item.ProteinG, CarbsG: item.CarbsG,
+				FatG: item.FatG, SugarG: item.SugarG, FiberG: item.FiberG, SodiumMg: item.SodiumMg,
+			}}
+		}
+		message, err := svc.ConfirmPhotoMeal(ctx, userID, in.Body.MealType, items)
 		if err != nil {
 			return nil, toProblem(ctx, logger, err)
 		}

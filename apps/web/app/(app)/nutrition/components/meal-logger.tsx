@@ -1,7 +1,7 @@
 "use client";
 
 import { useReducer } from "react";
-import { PencilLine, Search } from "lucide-react";
+import { Camera, PencilLine, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLogMeal } from "../hooks/use-nutrition";
 import {
@@ -15,14 +15,16 @@ import {
 import { MEAL_TYPES } from "../lib/nutrition";
 import { FoodSearchField } from "./food-search-field";
 import { ManualMealForm } from "./manual-meal-form";
+import { PhotoMode } from "./photo-mode";
 import { PickedFoodForm } from "./picked-food-form";
 
 const MODES: { value: LoggerMode; label: string; icon: typeof Search }[] = [
   { value: "search", label: "Search", icon: Search },
+  { value: "photo", label: "Photo", icon: Camera },
   { value: "manual", label: "Manual", icon: PencilLine },
 ];
 
-/** Log a meal: pick the meal type, then search (local or USDA) or enter it by hand. */
+/** Log a meal: pick the meal type, then search (local or USDA), snap photos, or enter it by hand. */
 export function MealLogger({ usdaEnabled }: { usdaEnabled: boolean }) {
   const [state, dispatch] = useReducer(loggerReducer, INITIAL_LOGGER);
   const log = useLogMeal();
@@ -88,6 +90,8 @@ export function MealLogger({ usdaEnabled }: { usdaEnabled: boolean }) {
         ) : (
           <FoodSearchField usdaEnabled={usdaEnabled} onPick={(picked) => dispatch({ type: "pick", picked })} />
         ))}
+
+      {state.mode === "photo" && <PhotoMode mealType={state.mealType} usdaEnabled={usdaEnabled} />}
 
       {state.mode === "manual" && (
         <ManualMealForm

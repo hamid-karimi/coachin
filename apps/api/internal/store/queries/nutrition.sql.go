@@ -358,6 +358,17 @@ func (q *Queries) MealXPOutstanding(ctx context.Context, arg MealXPOutstandingPa
 	return xp, err
 }
 
+const profileCountry = `-- name: ProfileCountry :one
+SELECT country FROM public.profiles WHERE id = $1
+`
+
+func (q *Queries) ProfileCountry(ctx context.Context, id uuid.UUID) (*string, error) {
+	row := q.db.QueryRow(ctx, profileCountry, id)
+	var country *string
+	err := row.Scan(&country)
+	return country, err
+}
+
 const searchFoods = `-- name: SearchFoods :many
 SELECT id, name, kcal_per_100g::float8 AS kcal_per_100g, protein_g::float8 AS protein_g, carbs_g::float8 AS carbs_g,
        fat_g::float8 AS fat_g, COALESCE(sugar_g, 0)::float8 AS sugar_g, COALESCE(fiber_g, 0)::float8 AS fiber_g,

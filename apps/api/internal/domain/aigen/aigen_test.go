@@ -21,6 +21,7 @@ type aiCase struct {
 	RPE        *int            `json:"rpe"`
 	Input      json.RawMessage `json:"input"`
 	Reply      *string         `json:"reply"`
+	Images     int             `json:"images"`
 	Want       json.RawMessage `json:"want"`
 }
 
@@ -125,12 +126,32 @@ func TestMatchesLegacy(t *testing.T) {
 			if equal, diff := golden.Equal(t, got, c.Want); !equal {
 				t.Errorf("case %d ParseAdjustment: %s", i, diff)
 			}
+		case "mealPhoto":
+			in := golden.Decode[struct {
+				Photos  int     `json:"photos"`
+				Context *string `json:"context"`
+				Country *string `json:"country"`
+			}](t, c.Input)
+			req := MealPhotoRequest(make([]Image, in.Photos), in.Context, in.Country)
+			checkRequest(t, i, req, c)
+			if len(req.Images) != c.Images {
+				t.Errorf("case %d: %d images, want %d", i, len(req.Images), c.Images)
+			}
+			var got any = map[string]string{"error": ErrEstimateUnavailable.Error()}
+			if c.Reply != nil {
+				if items, err := ParseMealEstimate(*c.Reply); err == nil {
+					got = items
+				}
+			}
+			if equal, diff := golden.Equal(t, got, c.Want); !equal {
+				t.Errorf("case %d ParseMealEstimate: %s", i, diff)
+			}
 		default:
 			t.Fatalf("case %d: unknown fn %q", i, c.Fn)
 		}
 	}
 	for _, fn := range []string{"extractJson", "anchorsPromptBlock", "validateItems", "marathonRequest", "hypertrophyRequest",
-		"planResult", "redFlagPrecheck", "sessionFeedback", "weekAdjustment"} {
+		"planResult", "redFlagPrecheck", "sessionFeedback", "weekAdjustment", "mealPhoto"} {
 		if counts[fn] == 0 {
 			t.Errorf("no %s vectors", fn)
 		}

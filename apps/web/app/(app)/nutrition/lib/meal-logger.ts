@@ -9,7 +9,7 @@ export type LogMealBody = components["schemas"]["LogMealInputBody"];
 /** A food picked from search: a local row, or a USDA match (re-read by the API when logged). */
 export type PickedFood = { kind: "local"; food: LocalFood } | { kind: "usda"; food: UsdaFood };
 
-export type LoggerMode = "search" | "manual";
+export type LoggerMode = "search" | "photo" | "manual";
 
 export interface LoggerState {
   mealType: MealType;

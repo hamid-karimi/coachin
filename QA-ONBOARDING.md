@@ -46,7 +46,7 @@ inactive; every coach feature checks for an **active** relationship.
 | `/calendar` | Week view blending routine + all active plan items + logged state. **Rewrite: ported** (meal-plan line arrives with Nutrition) | [README](apps/web/app/(app)/calendar/README.md) |
 | `/training` | Program manager: create (AI wizards), archive, weekly check-ins. **Rewrite: list, archive, .ics export, AI wizards (with watch-file upload), check-ins ported**. | [README](apps/web/app/(app)/training/README.md) |
 | `/training/new` | Plan wizards (running / muscle building); coach mode via `?student=<id>` | [README](legacy/app/training/README.md) |
-| `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan. **Rewrite: search / USDA / manual logging, day summary, trends ported**; photo and meal plan next | [README](apps/web/app/(app)/nutrition/README.md) |
+| `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan. **Rewrite: search / USDA / photo / manual logging, day summary, trends ported**; meal plan next | [README](apps/web/app/(app)/nutrition/README.md) |
 | `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions | [README](legacy/app/coaching/README.md) |
 | `/community` | Social/leaderboard surfaces — **currently disabled** (feature flag; redirects to dashboard, nav item hidden). Coach invite codes are redeemed on `/profile` → "My coach" while off. | [README](legacy/app/community/README.md) |
 | `/profile` | Four tabs (`?tab=`): **Overview** (stats, hearts, goals, recent XP), **Progress** (charts, measurements, progress photos), **Body** (body profile, body photos, watch import), **Settings** (theme, nutrition sharing, my coach, logout) | — |
@@ -320,6 +320,15 @@ adherence) arrives with Nutrition.
      when the goal was hit, dashed goal line) and "This month" — averages over logged
      days only, "N of 7/30 days logged".
    - A USDA pick is re-read from USDA by the API and stored once in the food list.
+9. **Rewrite stack — photo logging (3.5b)**: Photo tab → optional hint → "Snap or choose
+   meal photos" (up to 3; they're shrunk to ≤1600 px JPEG on the phone first) →
+   "Estimating…" → toast "Estimate ready — review and adjust before saving." → a row per
+   food (name, grams, kcal — all editable, ✕ to drop), "Add item" searches a food and
+   adds it by amount + unit, "Total N kcal" → "Save N items" → "N items logged · +X
+   XP." (meal XP per row, 3 a day) or "Discard". Nothing is saved before Save. Without AI
+   keys: "AI estimation is temporarily unavailable — try again later"; a non-food photo:
+   "Couldn't recognize food in that photo — try another angle". Photo-logged meals show
+   a camera icon in the list.
 
 ### 6. Coaching
 

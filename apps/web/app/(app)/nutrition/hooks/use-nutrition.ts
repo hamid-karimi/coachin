@@ -3,6 +3,7 @@
 import { useMutationFeedback } from "@/components/hooks/use-mutation-feedback";
 import { useDebouncedValue } from "@/components/hooks/use-debounced-value";
 import { $api } from "@/lib/api/browser";
+import { photoForm } from "../lib/photo-review";
 
 /** Queries a meal changes: the nutrition page, and Today (XP). */
 const MEAL_KEYS = [
@@ -36,4 +37,19 @@ export function useUsdaSearch(q: string | null) {
     { params: { query: { q: q ?? "" } } },
     { enabled: q !== null, retry: false },
   );
+}
+
+/** Photo → AI estimate for review (nothing is saved). */
+export function useEstimatePhoto() {
+  const mutation = $api.useMutation("post", "/meals/photo-estimate", useMutationFeedback([]));
+  return {
+    ...mutation,
+    estimate: (photos: File[], hint: string, options?: Parameters<typeof mutation.mutate>[1]) =>
+      mutation.mutate({ body: { photos: [] }, bodySerializer: () => photoForm(photos, hint) }, options),
+  };
+}
+
+/** Log the reviewed photo items. */
+export function useConfirmPhotoMeal(onDone?: () => void) {
+  return $api.useMutation("post", "/meals/batch", useMutationFeedback(MEAL_KEYS, onDone));
 }

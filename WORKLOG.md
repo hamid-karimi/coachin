@@ -5,6 +5,21 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-24 (night, final+4) · #74 merged (3.5a) · Phase 3.5b — photo estimate
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): vision support in `adapters/ai`
+(`aigen.Request.Images`), `aigen.MealPhotoRequest`/`ParseMealEstimate` proven against the
+legacy builder (15 golden cases), `EstimatePhoto` / `ConfirmPhotoMeal` use cases,
+`POST /meals/photo-estimate` (multipart, 8 MB cap, content-sniffed images) and
+`POST /meals/batch`; web Photo tab (`lib/client-image` compression + EXIF strip, review
+reducer, search-to-add). Fixed the trends week chart (bars had no height). e2e with the
+fake AI: 2 photos reach the model, review edit + olive oil added, "3 items logged · +10
+XP" (cap respected).
+
+**Next steps**: 3.5c AI meal plan (`/nutrition/plan`: intake, targets via
+`domain/nutrition.ComputeTargets`, 7-day menu, grocery list, regenerate/discard),
+Today's menu card, calendar meal line + adherence.
+
 ## 2026-09-24 (night, final+3) · #73 merged (3.4) · Phase 3.5a — meal logging
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): migration 00007 (`foods.fdc_id`
