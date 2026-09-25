@@ -235,6 +235,11 @@ Order (dependencies first, risk front-loaded):
         `POST /community/groups/join`, `DELETE /community/groups/{id}/membership`,
         `GET /community/group-nudge`; migration 00008 (a new group settles from its 2nd
         member's join day, not yesterday); web `/community/groups` + Today's group nudge.
+- [x] 3.9 **Share cards** (web only): `lib/share-card.ts` (card builders + privacy rules,
+      tested), `lib/share-card-canvas.ts` (canvas, dark-theme tokens), design-system
+      `share-card-sheet` / `share-button` (+ stories), `components/hooks/use-share-card.ts`;
+      "Share it" (session log), "Share today" + meal share (nutrition), "Share progress"
+      (progress compare).
 
 ## Phase 4 — Retire SQL business logic (M)
 

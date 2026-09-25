@@ -55,11 +55,9 @@ item, `session-log-sheet.tsx` ("Log details": `rpe-picker`, `run-log-fields`,
 `strength-sets-editor`, `session-log-result`; `hooks/use-session-log.ts`; logic in
 `lib/session-log.ts`, `lib/strength-sets.ts`, `lib/workout-sets.ts` — the last replays
 the API's `workout-sets.json` golden vectors),
-`components/hooks/use-confetti-burst.ts` (colors from theme tokens).
-
-## Not yet ported (arrive with their modules)
-
-The session "Share it" card (share cards).
+`components/hooks/use-confetti-burst.ts` (colors from theme tokens). After a strength log
+with weights, "Share it" (design-system `share-button` → `share-card-sheet`) builds the
+session card: kg lifted, exercises, sets, and the equivalence line (`lib/share-card.ts`).
 
 ## Differences from legacy
 

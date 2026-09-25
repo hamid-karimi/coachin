@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { EMPTY_SESSION_LOG, sessionLogBody, sessionLogReducer, type LoggableSport } from "@/lib/session-log";
-import { buildEditableExercises, strengthSetsReducer } from "@/lib/strength-sets";
+import { sessionShareCard } from "@/lib/share-card";
+import { buildEditableExercises, strengthSetsReducer, toLoggedExercises } from "@/lib/strength-sets";
 import { useSessionLog } from "../hooks/use-session-log";
 import { RpePicker } from "./rpe-picker";
 import { RunLogFields } from "./run-log-fields";
@@ -34,7 +35,14 @@ export function SessionLogSheet({ itemId, sport, itemTitle, itemDescription }: S
   const log = useSessionLog();
   useConfettiBurst((log.data?.totalVolumeKg ?? 0) > 0);
 
-  if (log.data) return <SessionLogResult result={log.data} />;
+  if (log.data) {
+    const share = sessionShareCard({
+      title: itemTitle,
+      totalVolumeKg: log.data.totalVolumeKg,
+      exercises: toLoggedExercises(exercises),
+    });
+    return <SessionLogResult result={log.data} share={share} />;
+  }
 
   if (!open) {
     return (

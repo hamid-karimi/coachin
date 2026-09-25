@@ -1,7 +1,9 @@
+import { ShareButton } from "@/components/design-system/share-button";
 import { Progress } from "@/components/ui/progress";
+import { dayShareCard } from "@/lib/share-card";
 import { goalPercent, kcalText, macroLine, microLine, type NutritionDay } from "../lib/nutrition";
 
-/** Today's kcal against the goal, with macros and micros. */
+/** Today's kcal against the goal, with macros and micros, and "Share today" once something is logged. */
 export function DaySummary({ day }: { day: NutritionDay }) {
   const pct = goalPercent(day.totals.kcal, day.target);
   return (
@@ -25,6 +27,12 @@ export function DaySummary({ day }: { day: NutritionDay }) {
       )}
       <p className='text-muted-foreground text-xs'>{macroLine(day.totals)}</p>
       <p className='text-muted-foreground text-xs'>{microLine(day.totals)}</p>
+      {day.totals.kcal > 0 && (
+        <ShareButton
+          label='Share today'
+          data={dayShareCard({ kcal: day.totals.kcal, proteinG: day.totals.proteinG, mealsCount: day.meals.length })}
+        />
+      )}
     </div>
   );
 }

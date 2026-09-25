@@ -8,8 +8,9 @@ import { compressImage } from "@/lib/client-image";
 import { useDeletePhoto, usePhotos, useUploadPhotos } from "../hooks/use-profile";
 import { comparePair, photoMonthLabel, toggleCompare } from "../lib/photos";
 import { PhotoTile, TileRemoveButton } from "./photo-tile";
+import { ProgressShare } from "./progress-share";
 
-/** The private then-vs-now journal (max 24): add one at a time, compare two side by side. */
+/** The private then-vs-now journal (max 24): add one at a time, compare two side by side, share a pair. */
 export function ProgressPhotosSection() {
   const { progress } = usePhotos();
   const input = useRef<HTMLInputElement>(null);
@@ -113,16 +114,19 @@ export function ProgressPhotosSection() {
       )}
 
       {pair && (
-        <div className='grid grid-cols-2 gap-2'>
-          {pair.map((photo) => (
-            <figure key={photo.id}>
-              <PhotoTile id={photo.id} alt={`Progress photo, ${photoMonthLabel(photo.createdAt)}`} />
-              <figcaption className='text-muted-foreground mt-1 text-center text-xs'>
-                {photoMonthLabel(photo.createdAt)}
-              </figcaption>
-            </figure>
-          ))}
-        </div>
+        <>
+          <div className='grid grid-cols-2 gap-2'>
+            {pair.map((photo) => (
+              <figure key={photo.id}>
+                <PhotoTile id={photo.id} alt={`Progress photo, ${photoMonthLabel(photo.createdAt)}`} />
+                <figcaption className='text-muted-foreground mt-1 text-center text-xs'>
+                  {photoMonthLabel(photo.createdAt)}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+          <ProgressShare key={pair.map((photo) => photo.id).join()} pair={pair} />
+        </>
       )}
     </div>
   );

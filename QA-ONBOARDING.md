@@ -49,7 +49,7 @@ inactive; every coach feature checks for an **active** relationship.
 | `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan. **Rewrite: fully ported** (search / USDA / photo / manual logging, day summary, trends, `/nutrition/plan`) | [README](apps/web/app/(app)/nutrition/README.md) |
 | `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions. **Rewrite: ported** (+ `/coaching/trainees/<id>/nutrition`) | [README](apps/web/app/(app)/coaching/README.md) |
 | `/community` | Social/leaderboard surfaces — **currently disabled** (feature flag; redirects to dashboard, nav item hidden). Coach invite codes are redeemed on `/profile` → "My coach" while off. **Rewrite: boards, clubs, circle, group streaks ported**; test with `FEATURE_COMMUNITY=true` | [README](apps/web/app/(app)/community/README.md) |
-| `/profile` | Four tabs (`?tab=`): **Overview** (stats, hearts, goals, recent XP), **Progress** (charts, measurements, progress photos), **Body** (body profile, body photos, watch import), **Settings** (theme, nutrition sharing, my coach, logout). **Rewrite: fully ported** except "My coach" (Coaching) and "Share progress" (share cards) | [README](apps/web/app/(app)/profile/README.md) |
+| `/profile` | Four tabs (`?tab=`): **Overview** (stats, hearts, goals, recent XP), **Progress** (charts, measurements, progress photos), **Body** (body profile, body photos, watch import), **Settings** (theme, nutrition sharing, my coach, logout). **Rewrite: fully ported** | [README](apps/web/app/(app)/profile/README.md) |
 | `/auth` | Login / signup; on the rewrite also forgot / reset password and email verification | [README](legacy/app/auth/README.md) |
 | `/status` | Rewrite only: API, database, and storage health | — |
 
@@ -417,6 +417,12 @@ the goal strip — journey 9; the coaching card — journey 6; the group nudge �
    Verify: the "coachin" watermark is always on the image; **body weight
    never appears on a card**; nothing posts anywhere without the OS share
    sheet or an explicit save.
+   **Rewrite stack**: same entry points — Today → log a strength item with weights →
+   "Share it" (kg lifted · exercises · sets, "that's a horse 🐎"); Nutrition → "Share
+   today" (shown once a meal is logged: kcal · protein · meals — never the target) and
+   each meal row's share icon (kcal · protein). The sheet: Story (1080×1920) / Square
+   (1080×1080), "Add a photo" → "Change photo", then "Share" (mobile) or "Save image"
+   (desktop, downloads `coachin-card.png`). Counts are singular at one ("1 set").
 2. **Progress photos** (Profile → Progress tab): add photos (they're
    re-encoded — EXIF/location stripped — and AI-screened; reports are
    rejected here), max 24; Compare → pick two → oldest shows left →
@@ -427,7 +433,8 @@ the goal strip — journey 9; the coaching card — journey 6; the group nudge �
    phone) → "Progress photo added."; a report there: "That looks like a report — upload
    it in the analysis set instead"; 24 max ("You already have 24 progress photos — delete
    an old one first"). Compare (2+ photos) → tap two → side by side, oldest left, "Done"
-   to leave. "Share progress" arrives with share cards.
+   to leave; with two picked, "Share progress" → the two-photo card ("N weeks between",
+   "Sep 2026 → Dec 2026"), no photo picker.
    **Body photos (Profile → Body)**: "Add images" (up to 5, previews with ✕, "N of 5
    selected") → "Upload N" → "Checking…" → e.g. "2 images uploaded; report metrics can
    be extracted below; rejected — x.jpg: This photo looks too explicit. Sports attire or
