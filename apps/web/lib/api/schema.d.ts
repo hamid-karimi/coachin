@@ -180,6 +180,117 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/coaching": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The coach hub: trainees with this week's adherence, weekly XP, invite codes
+         * @description Coaches only (role coach, both, or admin); 403 otherwise.
+         */
+        get: operations["getCoachingHub"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/coaching/invite-codes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate (or replace) your invite code for a sport */
+        post: operations["createInviteCode"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/coaching/join": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Connect to a coach with their invite code */
+        post: operations["joinCoach"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/coaching/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Trainee count and how many trained this week (dashboard card) */
+        get: operations["getCoachingSummary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/coaching/trainees/{id}/nutrition": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A coached trainee's last 7 days of meals and supplements (read-only)
+         * @description Only for an active coaching relationship (404 otherwise), and only with the trainee's nutrition-sharing opt-in.
+         */
+        get: operations["getTraineeNutrition"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/coaching/trainees/{id}/weekly-plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Replace the trainee's weekly routine with yours
+         * @description Needs an active coaching relationship and a routine of your own.
+         */
+        post: operations["assignWeeklyPlan"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/foods": {
         parameters: {
             query?: never;
@@ -1163,6 +1274,19 @@ export interface components {
              */
             targetWeek: number;
         };
+        CoachingHubBody: {
+            inviteCodes: components["schemas"]["InviteCodeBody"][];
+            /** @description Roster order (joined first) */
+            trainees: components["schemas"]["TraineeBody"][];
+            /** Format: date */
+            weekStart: string;
+        };
+        CoachingSummaryBody: {
+            /** Format: int64 */
+            trainedThisWeek: number;
+            /** Format: int64 */
+            traineeCount: number;
+        };
         ConfirmCheckinInputBody: {
             /**
              * Format: int64
@@ -1343,6 +1467,26 @@ export interface components {
             /** Format: double */
             weightKg: number | null;
         };
+        InviteCodeBody: {
+            code: string;
+            /** Format: date-time */
+            expiresAt: string | null;
+            isActive: boolean;
+            sport?: components["schemas"]["SportRefBody"];
+        };
+        InviteCodeCreatedBody: {
+            code: string;
+            message: string;
+            /** @enum {string} */
+            status: "success" | "info";
+        };
+        InviteCodeInputBody: {
+            /** Format: int64 */
+            sportTypeId: number;
+        };
+        JoinCoachInputBody: {
+            code: string;
+        };
         LogMealInputBody: {
             /** @description A local food, with quantityG */
             foodId?: string;
@@ -1465,6 +1609,12 @@ export interface components {
             /** @description Absent without an active plan */
             plan?: components["schemas"]["MealPlanBody"];
         };
+        MealTargetsBody: {
+            /** Format: double */
+            kcal: number;
+            /** Format: double */
+            proteinG: number;
+        };
         MeasurementBody: {
             /** Format: double */
             bodyFatPct: number | null;
@@ -1553,6 +1703,13 @@ export interface components {
             progress: components["schemas"]["PhotoBody"][];
             /** @description Body-composition report photos (max 3) */
             reports: components["schemas"]["PhotoBody"][];
+        };
+        PlanAdherenceBody: {
+            /** Format: double */
+            adherencePct: number;
+            /** @description race (running) or hypertrophy (strength) */
+            kind: string;
+            planId: string;
         };
         PlanCreatedBody: {
             forStudent: boolean;
@@ -1837,6 +1994,11 @@ export interface components {
         SharingInputBody: {
             enabled: boolean;
         };
+        SportRefBody: {
+            /** Format: int64 */
+            id: number;
+            name: string;
+        };
         SportTypeBody: {
             /** Format: int64 */
             id: number;
@@ -1962,6 +2124,75 @@ export interface components {
         TokenInputBody: {
             token: string;
         };
+        TraineeBody: {
+            avatarUrl: string | null;
+            /**
+             * Format: int64
+             * @description Days with a completed log this week
+             */
+            doneCount: number;
+            email: string;
+            id: string;
+            /** Format: int64 */
+            level: number;
+            /** @description Full name, else email */
+            name: string;
+            nutritionShared: boolean;
+            plans: components["schemas"]["PlanAdherenceBody"][];
+            /**
+             * Format: int64
+             * @description Routine days per week
+             */
+            scheduledCount: number;
+            sport?: components["schemas"]["SportRefBody"];
+            tier: string;
+            /** @description Monday first */
+            week: components["schemas"]["WeekDotBody"][];
+            /** Format: int64 */
+            weeklyXp: number;
+            /** Format: int64 */
+            xp: number;
+        };
+        TraineeDayBody: {
+            /** Format: date */
+            date: string;
+            /** @description Logging order */
+            meals: components["schemas"]["TraineeMealBody"][];
+            /** Format: double */
+            totalKcal: number;
+            /** Format: double */
+            totalProteinG: number;
+        };
+        TraineeMealBody: {
+            id: string;
+            /** Format: double */
+            kcal: number;
+            label: string;
+            mealType: string;
+            /** Format: double */
+            proteinG: number;
+        };
+        TraineeNutritionBody: {
+            /** @description Days with meals, newest first */
+            days: components["schemas"]["TraineeDayBody"][];
+            name: string;
+            /** @description False: nothing else is read or returned */
+            sharingEnabled: boolean;
+            supplements: components["schemas"]["TraineeSupplementBody"][];
+            /** @description The active meal plan's daily targets */
+            targets?: components["schemas"]["MealTargetsBody"];
+            traineeId: string;
+        };
+        TraineeSupplementBody: {
+            dose: string | null;
+            id: string;
+            name: string;
+            scheduleLabel: string;
+            /** Format: int64 */
+            takenDueDays: number;
+            /** Format: int64 */
+            totalDueDays: number;
+        };
         TrendBody: {
             /** @description Averaged over logged days only */
             avg: components["schemas"]["NutrientsBody"];
@@ -1995,6 +2226,14 @@ export interface components {
             /** @description male, female, other; blank clears */
             sex?: string;
             trainingHistory?: string;
+        };
+        WeekDotBody: {
+            /** Format: date */
+            date: string;
+            /** @enum {string} */
+            state: "done" | "missed" | "planned_today" | "planned" | "rest";
+            /** Format: int64 */
+            weekday: number;
         };
         WorkoutLoggedBody: {
             /** Format: int64 */
@@ -2614,6 +2853,381 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getCoachingHub: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CoachingHubBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    createInviteCode: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InviteCodeInputBody"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InviteCodeCreatedBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    joinCoach: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["JoinCoachInputBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getCoachingSummary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CoachingSummaryBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getTraineeNutrition: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TraineeNutritionBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    assignWeeklyPlan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

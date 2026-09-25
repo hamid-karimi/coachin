@@ -3,6 +3,8 @@ import { HydrationBoundary } from "@tanstack/react-query";
 import { CalendarRange, UtensilsCrossed } from "lucide-react";
 import { getMe } from "@/app/lib/me-data";
 import { prefetchQueries } from "@/app/lib/prefetch";
+import { canCoach } from "@/lib/roles";
+import { CoachingCard } from "./components/coaching-card";
 import { EntryCard } from "./components/entry-card";
 import { GoalStrip } from "./components/goal-strip";
 import { PlanAndTargets } from "./components/plan-and-targets";
@@ -16,17 +18,18 @@ import { TodaysPlan } from "./components/todays-plan";
 export const metadata: Metadata = { title: "Today · CoachIn" };
 
 export default async function DashboardPage() {
-  const [me, state] = await Promise.all([
-    getMe(),
-    prefetchQueries((api, qc) => [
-      qc.prefetchQuery(api.queryOptions("get", "/today")),
-      qc.prefetchQuery(api.queryOptions("get", "/goals")),
-    ]),
+  const me = await getMe();
+  const coach = canCoach(me?.role);
+  const state = await prefetchQueries((api, qc) => [
+    qc.prefetchQuery(api.queryOptions("get", "/today")),
+    qc.prefetchQuery(api.queryOptions("get", "/goals")),
+    ...(coach ? [qc.prefetchQuery(api.queryOptions("get", "/coaching/summary"))] : []),
   ]);
   return (
     <HydrationBoundary state={state}>
       <div className='mx-auto flex w-full max-w-4xl flex-col gap-5'>
         <TodayHeader name={me?.fullName || me?.email || "athlete"} />
+        {coach && <CoachingCard />}
         <ProgressOverview />
         <PlanAndTargets />
         <EntryCard

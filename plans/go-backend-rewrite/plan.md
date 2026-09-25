@@ -211,8 +211,15 @@ Order (dependencies first, risk front-loaded):
         newest 5 body photos in one strict call, stored on the newest) and report
         extraction (`POST /photos/{id}/extract` → confirm as a measurement); `GET /photos`
         carries `analysis` + `consented`; `LatestBodyAnalysis` reads body photos only.
-- [ ] 3.7 **Coaching** — invite codes, join statuses, roster/adherence, consent-gated
+- [x] 3.7 **Coaching** — invite codes, join statuses, roster/adherence, consent-gated
       trainee nutrition/supplements, assign weekly plan, coach-mode plan generation (M)
+      `app/coaching` (+ `domain/coaching.WeekStrip`, `supplements.Window`): `GET /coaching`
+      (roster with the Monday-first strip, weekly XP via `get_weekly_leaderboard` for the
+      coach's trainees only, per-plan current-week adherence), `GET /coaching/summary`,
+      `POST /coaching/invite-codes`, `POST /coaching/join`,
+      `POST /coaching/trainees/{id}/weekly-plan`, `GET /coaching/trainees/{id}/nutrition`
+      (active relationship + sharing opt-in); web hub, trainee nutrition page, Today's
+      coaching card, Profile → "My coach" (coach-mode generation shipped in 3.3).
 - [ ] 3.8 **Community** — clubs, follows, groups, leaderboard, discover; `404` while the
       flag is off (M)
 

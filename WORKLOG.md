@@ -5,6 +5,27 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · #80 merged (3.6d, Profile done) · Phase 3.7 — Coaching
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): `domain/coaching` (WeekStrip, invite
+code shape), `supplements.Window`; `app/coaching` (Hub, Summary, GenerateInviteCode, Join,
+AssignWeeklyPlan; NutritionService.TraineeNutrition) + `store.CoachingStore` (weekly XP via
+`get_weekly_leaderboard` for the coach's trainees only, raw query — sqlc can't type the
+table function); `/coaching`, `/coaching/summary`, `/coaching/invite-codes`,
+`/coaching/join` (rate limited), `/coaching/trainees/{id}/weekly-plan`,
+`/coaching/trainees/{id}/nutrition`. Web hub (roster, `design-system/adherence-week-strip`
++ story, invite codes, leaderboard), trainee nutrition page, Today coaching card, Profile
+"My coach". e2e with the seeded coach + trainee.
+
+**Decisions**: coach photo access stays owner-only (legacy had no coach policy on
+`body_photos`; the ADR's "or active coach" was aspirational). "My coach" shows only while
+Community is off (legacy).
+
+**Next steps**: 3.8 Community (clubs, follows, groups, leaderboard, discover; 404 while
+the flag is off) — then share cards, Phases 4–7 (4.1 XP unique index, 4.5 profile column
+hardening: `profiles_select_authenticated` is `USING (true)` and
+`get_weekly_leaderboard` accepts any ids).
+
 ## 2026-09-25 · Phase 3.6d — body analysis + report extraction (Profile done)
 
 **Done** (branch `claude/lucid-tesla-3737vk`, on top of #79 until it merges):

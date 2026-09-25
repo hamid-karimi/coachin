@@ -6,6 +6,9 @@ package supplements
 import (
 	"slices"
 	"strings"
+	"time"
+
+	"github.com/hamid-karimi/coachin/apps/api/internal/domain/dates"
 )
 
 // ScheduleType is how often a supplement is due.
@@ -117,4 +120,41 @@ func Normalize(scheduleType string, days []int) Schedule {
 	}
 	slices.Sort(s.DaysOfWeek)
 	return s
+}
+
+// PlanDay is an active plan's item: the plan's start and length, and the
+// item's plan week and weekday.
+type PlanDay struct {
+	PlanCreatedAt time.Time
+	WeeksTotal    int
+	Week          int
+	Weekday       int
+}
+
+// RoutineDay is a routine session's weekday and its YYYY-MM-DD window (nil
+// = open-ended).
+type RoutineDay struct {
+	Weekday          int
+	StartsOn, EndsOn *string
+}
+
+// Window is the last `days` days ending at end (oldest first), each marked a
+// training day when a plan item or a routine session falls on it. With no
+// plan items and no routine at all every day counts as a training day, so a
+// "training days" supplement degrades to daily (legacy buildWindow).
+func Window(end time.Time, days int, plans []PlanDay, routine []RoutineDay) []WindowDay {
+	structured := len(plans) > 0 || len(routine) > 0
+	window := make([]WindowDay, 0, days)
+	for offset := days - 1; offset >= 0; offset-- {
+		date := end.AddDate(0, 0, -offset)
+		ymd, weekday := dates.ToYMD(date), int(date.Weekday())
+		trains := !structured || slices.ContainsFunc(plans, func(p PlanDay) bool {
+			week := dates.PlanWeekForDate(p.PlanCreatedAt, date)
+			return week >= 1 && week <= p.WeeksTotal && p.Week == week && p.Weekday == weekday
+		}) || slices.ContainsFunc(routine, func(r RoutineDay) bool {
+			return r.Weekday == weekday && (r.StartsOn == nil || ymd >= *r.StartsOn) && (r.EndsOn == nil || ymd <= *r.EndsOn)
+		})
+		window = append(window, WindowDay{YMD: ymd, Day: Day{Weekday: weekday, IsTrainingDay: trains}})
+	}
+	return window
 }

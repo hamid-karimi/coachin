@@ -50,7 +50,8 @@ measurements, the body profile that feeds the AI plans, and settings. Four tabs
     photo grid, `body-analysis-panel.tsx` — consent + result —, report rows with
     "Extract metrics" → `report-metrics-form.tsx` "Save as measurement", delete confirm), `activity-import-section.tsx` (reuses the training module's `useParseActivities` and
     `activityLine`; "Log N runs" refetches Today, the calendar, My week, the overview)
-  - Settings: `nutrition-sharing-toggle.tsx`, theme, `change-password-form.tsx`,
+  - Settings: `join-coach-form.tsx` ("My coach": redeem an invite code via
+    `POST /coaching/join`; shown only while Community is off), `nutrition-sharing-toggle.tsx`, theme, `change-password-form.tsx`,
     `logout-button.tsx`
 
 ## Differences from legacy
@@ -76,5 +77,4 @@ measurements, the body profile that feeds the AI plans, and settings. Four tabs
 
 ## Not yet ported
 
-"Share progress" (share cards);
-"My coach" invite redemption (Coaching).
+"Share progress" (share cards).

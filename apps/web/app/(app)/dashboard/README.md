@@ -20,6 +20,9 @@ The daily execution surface: see today's plan, log it, watch XP and the streak m
 - `hooks/use-supplements.ts` — add / reschedule / remove / taken, each refetching Today
 - `lib/supplements.ts` — schedule options, Sunday-first weekday chips, `toggleDay`,
   `scheduleBody`, `dueChecklist` (unit-tested)
+- `components/coaching-card.tsx` — coach-capable roles with 1+ trainee: "Coaching · 2
+  trainees · 1 trained this week" → `/coaching` (`GET /coaching/summary`, prefetched only
+  for coaches)
 - `components/goal-strip.tsx` — the tracked goal closest to done ("Weight goal · 74.6kg →
   72kg" + bar) linking to the profile; hidden without one (`profile/lib/profile.ts`
   `featuredGoal`)
@@ -53,8 +56,7 @@ the API's `workout-sets.json` golden vectors),
 
 ## Not yet ported (arrive with their modules)
 
-Coaching card (Coaching), group-streak nudge (Community), the session "Share
-it" card (share cards).
+Group-streak nudge (Community), the session "Share it" card (share cards).
 
 ## Differences from legacy
 
