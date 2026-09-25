@@ -55,8 +55,10 @@ FOR UPDATE;
 UPDATE public.goals SET start_value = sqlc.arg(start_value)::float8
 WHERE id = sqlc.arg(id) AND user_id = sqlc.arg(user_id);
 
--- name: AchieveGoal :one
-SELECT public.achieve_goal(sqlc.arg(goal_id))::text;
+-- name: MarkGoalAchieved :execrows
+-- Only an active goal settles (0 rows: already settled).
+UPDATE public.goals SET status = 'achieved', achieved_at = now()
+WHERE id = sqlc.arg(id) AND user_id = sqlc.arg(user_id) AND status = 'active';
 
 -- name: DeleteMeasurement :execrows
 DELETE FROM public.body_measurements WHERE id = sqlc.arg(id) AND user_id = sqlc.arg(user_id);

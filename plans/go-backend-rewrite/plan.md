@@ -257,6 +257,10 @@ Order (dependencies first, risk front-loaded):
         `CreateSessionLog` write the ledger under the profile lock — `complete_plan_item`
         / `award_session_log_xp` are no longer called (dropped in 4.3).
         `TestParallelAwardsPayOnce`.
+  - [x] 4.2b Meals + calorie day + goals: `nutrition.MealAward` / `CalorieDayXP`
+        (passed in as `appnutrition.MealRules`), `goals.AchievedXP`;
+        `NutritionStore.LogMeals` and `ProfileStore.AddMeasurement` write the ledger —
+        `award_meal_xp`, `award_day_adherence`, `achieve_goal` are no longer called.
 - [ ] 4.3 Migration dropping retired functions (keep `sync_league_tier` and photo-cap
       triggers).
 - [ ] 4.4 FORMULAS.md: Go files are the only source of truth.

@@ -5,6 +5,19 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · #87 merged (4.2a) · Phase 4.2b — meals, calorie day, goals in Go
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): `domain/nutrition`
+`MealAward` (5, cap 3/date) + `CalorieDayXP` (±10% via ×10 vs ×9/×11, 2+ meals; tested at
+the edges), `goals.AchievedXP`; `NutritionStore.LogMeals` counts the date's awarded meals
+and settles yesterday's bonus with `appnutrition.DefaultMealRules`;
+`ProfileStore.AddMeasurement` marks an active goal achieved and pays +200 via `addXP`.
+`decodeRPC` gone. `TestParallelAwardsPayOnce` += 8 parallel meals → 15, parallel goal
+crossings → one +200.
+
+**Next steps**: 4.2c streak settle (`evaluate_user_streak`) + weekly check-ins; then
+coaching joins/assign, community (clubs/groups/leaderboard); 4.3 drop retired functions.
+
 ## 2026-09-25 · #86 merged (4.1) · Phase 4.2a — plan items + session logs in Go
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): `domain/planitem`

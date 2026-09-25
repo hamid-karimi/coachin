@@ -24,28 +24,25 @@ func (q *Queries) ArchiveMealPlans(ctx context.Context, userID uuid.UUID) (int64
 	return result.RowsAffected(), nil
 }
 
-const awardDayAdherence = `-- name: AwardDayAdherence :one
-SELECT public.award_day_adherence(CAST($1::text AS date))::text AS result
+const countMealAwardsOn = `-- name: CountMealAwardsOn :one
+SELECT count(*) AS awarded
+FROM public.xp_transactions x
+JOIN public.meal_logs m ON x.reason = 'meal_log:' || m.id::text
+WHERE x.user_id = $1 AND m.user_id = $1
+  AND m.date = CAST($2::text AS date)
 `
 
-// Step A (ADR-5): +30 once for a past day within ±10% of the calorie goal (2+ meals).
-func (q *Queries) AwardDayAdherence(ctx context.Context, onDate string) (string, error) {
-	row := q.db.QueryRow(ctx, awardDayAdherence, onDate)
-	var result string
-	err := row.Scan(&result)
-	return result, err
+type CountMealAwardsOnParams struct {
+	UserID *uuid.UUID `json:"user_id"`
+	OnDate string     `json:"on_date"`
 }
 
-const awardMealXP = `-- name: AwardMealXP :one
-SELECT public.award_meal_xp($1)::text AS result
-`
-
-// Step A (ADR-5): +5 once per log, at most 3 awarded logs per date.
-func (q *Queries) AwardMealXP(ctx context.Context, mealLogID uuid.UUID) (string, error) {
-	row := q.db.QueryRow(ctx, awardMealXP, mealLogID)
-	var result string
-	err := row.Scan(&result)
-	return result, err
+// How many of the date's (remaining) meals hold a meal award — the 3-a-day cap.
+func (q *Queries) CountMealAwardsOn(ctx context.Context, arg CountMealAwardsOnParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countMealAwardsOn, arg.UserID, arg.OnDate)
+	var awarded int64
+	err := row.Scan(&awarded)
+	return awarded, err
 }
 
 const countTrainingDays = `-- name: CountTrainingDays :one
@@ -58,6 +55,29 @@ func (q *Queries) CountTrainingDays(ctx context.Context, userID uuid.UUID) (int3
 	var days int32
 	err := row.Scan(&days)
 	return days, err
+}
+
+const dayIntake = `-- name: DayIntake :one
+SELECT COALESCE(SUM(kcal), 0)::float8 AS kcal, count(*) AS meals
+FROM public.meal_logs
+WHERE user_id = $1 AND date = CAST($2::text AS date)
+`
+
+type DayIntakeParams struct {
+	UserID uuid.UUID `json:"user_id"`
+	OnDate string    `json:"on_date"`
+}
+
+type DayIntakeRow struct {
+	Kcal  float64 `json:"kcal"`
+	Meals int64   `json:"meals"`
+}
+
+func (q *Queries) DayIntake(ctx context.Context, arg DayIntakeParams) (DayIntakeRow, error) {
+	row := q.db.QueryRow(ctx, dayIntake, arg.UserID, arg.OnDate)
+	var i DayIntakeRow
+	err := row.Scan(&i.Kcal, &i.Meals)
+	return i, err
 }
 
 const deleteMealLog = `-- name: DeleteMealLog :execrows
@@ -381,6 +401,24 @@ func (q *Queries) InsertUSDAFood(ctx context.Context, arg InsertUSDAFoodParams) 
 		arg.FdcID,
 	)
 	return err
+}
+
+const ledgerHasReason = `-- name: LedgerHasReason :one
+SELECT EXISTS (
+  SELECT 1 FROM public.xp_transactions WHERE user_id = $1 AND reason = $2::text
+)::bool AS awarded
+`
+
+type LedgerHasReasonParams struct {
+	UserID *uuid.UUID `json:"user_id"`
+	Reason string     `json:"reason"`
+}
+
+func (q *Queries) LedgerHasReason(ctx context.Context, arg LedgerHasReasonParams) (bool, error) {
+	row := q.db.QueryRow(ctx, ledgerHasReason, arg.UserID, arg.Reason)
+	var awarded bool
+	err := row.Scan(&awarded)
+	return awarded, err
 }
 
 const listMealNutrientsSince = `-- name: ListMealNutrientsSince :many

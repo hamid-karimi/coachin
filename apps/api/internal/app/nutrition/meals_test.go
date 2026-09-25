@@ -47,7 +47,7 @@ func (f *fakeStore) SaveUSDAFood(_ context.Context, _ uuid.UUID, food nutrition.
 	f.saved = append(f.saved, food)
 	return Food{ID: uuid.New(), Name: food.Name, Source: "usda", Per100g: food.Per100g}, nil
 }
-func (f *fakeStore) LogMeals(_ context.Context, _ uuid.UUID, date, adherenceDate string, meals []NewMeal) (Awards, error) {
+func (f *fakeStore) LogMeals(_ context.Context, _ uuid.UUID, date, adherenceDate string, meals []NewMeal, _ MealRules) (Awards, error) {
 	f.logged = append(f.logged, meals...)
 	f.dates = [2]string{date, adherenceDate}
 	return f.awards, nil

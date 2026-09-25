@@ -55,6 +55,16 @@ type Awards struct {
 	Adherence int  // yesterday's calorie-goal bonus
 }
 
+// MealRules decide meal XP inside the store's transaction: a new meal's award
+// from its date's awarded count, and a finished day's calorie-goal bonus.
+type MealRules struct {
+	Award      func(awardedOnDate int) (xp int, capped bool)
+	CalorieDay func(target *float64, totalKcal float64, meals int) int
+}
+
+// DefaultMealRules are FORMULAS §2's meal rules.
+var DefaultMealRules = MealRules{Award: nutrition.MealAward, CalorieDay: nutrition.CalorieDayXP}
+
 // ErrNotFound means the food or meal doesn't exist (for this user).
 var ErrNotFound = errors.New("not found")
 
@@ -71,7 +81,7 @@ type Store interface {
 	SaveUSDAFood(ctx context.Context, userID uuid.UUID, food nutrition.USDAFood) (Food, error)
 	// LogMeals stores the meals dated date, awards their meal XP, and settles
 	// the calorie-goal bonus for adherenceDate, in one transaction.
-	LogMeals(ctx context.Context, userID uuid.UUID, date, adherenceDate string, meals []NewMeal) (Awards, error)
+	LogMeals(ctx context.Context, userID uuid.UUID, date, adherenceDate string, meals []NewMeal, rules MealRules) (Awards, error)
 	// DeleteMeal removes the log and gives back its meal XP; ErrNotFound when
 	// it isn't the user's.
 	DeleteMeal(ctx context.Context, userID, id uuid.UUID) (refundedXP int, err error)
@@ -270,7 +280,7 @@ func manualMeal(mealType string, m *ManualMeal) (NewMeal, error) {
 // log stores meals dated today and settles yesterday's calorie-goal bonus.
 func (s *Service) log(ctx context.Context, userID uuid.UUID, meals []NewMeal) (Awards, error) {
 	now := s.now()
-	awards, err := s.store.LogMeals(ctx, userID, dates.ToYMD(now), dates.ToYMD(now.AddDate(0, 0, -1)), meals)
+	awards, err := s.store.LogMeals(ctx, userID, dates.ToYMD(now), dates.ToYMD(now.AddDate(0, 0, -1)), meals, DefaultMealRules)
 	if err != nil {
 		return Awards{}, fmt.Errorf("log meals: %w", err)
 	}
