@@ -1,10 +1,12 @@
 "use client";
 
 import { Camera, Loader2, X } from "lucide-react";
+import { ShareButton } from "@/components/design-system/share-button";
+import { mealShareCard } from "@/lib/share-card";
 import { useDeleteMeal } from "../hooks/use-nutrition";
 import { mealDetail, type Meal } from "../lib/nutrition";
 
-/** A logged meal with its nutrients and a remove button (its meal XP is given back). */
+/** A logged meal with its nutrients, a share button, and a remove button (its meal XP is given back). */
 export function MealRow({ meal }: { meal: Meal }) {
   const remove = useDeleteMeal();
   const name = meal.name ?? "Meal";
@@ -21,6 +23,11 @@ export function MealRow({ meal }: { meal: Meal }) {
       </div>
       <div className='flex shrink-0 items-center gap-2'>
         <span className='text-stat text-brand-ink text-sm'>{Math.round(meal.nutrients.kcal)} kcal</span>
+        <ShareButton
+          iconOnly
+          label={`Share ${name}`}
+          data={mealShareCard({ title: name, kcal: meal.nutrients.kcal, proteinG: meal.nutrients.proteinG })}
+        />
         <button
           type='button'
           disabled={remove.isPending}

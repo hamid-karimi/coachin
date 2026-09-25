@@ -42,8 +42,11 @@ the rest to 0.1. Manual meals keep the entered macros (negatives → 0), kcal ro
   `nutrition.json` golden vectors; shared `lib/client-image.ts` compresses photos on the
   device (≤1600 px JPEG, ~1 MB) and strips EXIF
 - `components/`
-  - `nutrition-view.tsx` — header, `day-summary.tsx`, `meal-logger.tsx`,
-    `meal-groups.tsx` (`meal-row.tsx`), `nutrition-trends.tsx` (`week-bars.tsx`)
+  - `nutrition-view.tsx` — header, `day-summary.tsx` ("Share today" once something is
+    logged: kcal, protein, meals — never the target), `meal-logger.tsx`, `meal-groups.tsx`
+    (`meal-row.tsx`, with a share icon: kcal + protein), `nutrition-trends.tsx`
+    (`week-bars.tsx`). Cards: design-system `share-button` / `share-card-sheet`,
+    `lib/share-card.ts`
   - `meal-logger.tsx` — meal-type chips, Search / Photo / Manual; `food-search-field.tsx`,
     `picked-food-form.tsx` (`unit-select.tsx`), `manual-meal-form.tsx`
   - `photo-mode.tsx` — `photo-capture.tsx` (up to 3 photos + hint) → `photo-review.tsx`
@@ -73,8 +76,5 @@ the rest to 0.1. Manual meals keep the entered macros (negatives → 0), kcal ro
 
 - Saving a plan (archive old, insert plan + meals, set the calorie goal) is one
   transaction; legacy did it in separate calls and could leave a half-saved plan.
-
-## Not yet ported
-
-"Share today" / meal share cards (share-card step); the coach's read-only nutrition view
-(Coaching).
+- Share cards say "1 meal" / "1 set" / "1 exercise" (legacy always used the plural for
+  exercises and sets).

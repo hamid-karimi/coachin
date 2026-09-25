@@ -5,6 +5,24 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · #84 merged (3.8c) · Phase 3.9 — Share cards (Phase 3 complete)
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): web-only port of legacy share cards —
+`lib/share-card.ts` (session / meal / day / progress builders, privacy: additive stats,
+never body weight or targets; tested), `lib/share-card-canvas.ts` (canvas renderer; colors
+from the `.dark` theme tokens, page font, waits for fonts), design-system
+`share-card-sheet` + `share-button` (stories), `components/hooks/use-share-card.ts`
+(reducer). Entry points: "Share it" after a strength log, "Share today" + meal row icon on
+Nutrition, "Share progress" on the progress compare. e2e: all four render (1080×1920 /
+1080×1080), Save image downloads, photo backdrop works.
+
+**Decisions**: singular stat labels ("1 set"); no raw hex in the renderer (legacy
+mirrored the palette by hand).
+
+**Next steps**: Phase 4 — 4.1 XP ledger unique index (rewrite legacy reasons first), 4.2
+SQL functions → Go use cases (one PR per group, with concurrency tests), 4.5 RLS
+hardening (profiles `USING (true)`, `get_weekly_leaderboard` ids, `clubs` readable by all).
+
 ## 2026-09-25 · #83 merged (3.8b) · Phase 3.8c — Group streaks (Phase 3.8 done)
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): `community.GroupsService` (Groups —

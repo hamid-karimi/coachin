@@ -42,7 +42,9 @@ measurements, the body profile that feeds the AI plans, and settings. Four tabs
     (`goal-form.tsx`, remove confirm), `training-links.tsx`, `recent-xp.tsx`
   - Progress: `progress-charts.tsx` (design-system `progress-chart`),
     `measurements-section.tsx` (log form, confetti on a goal payout, list with delete),
-    `progress-photos-section.tsx` (add one, grid, compare two — oldest left)
+    `progress-photos-section.tsx` (add one, grid, compare two — oldest left — and
+    `progress-share.tsx`: "Share progress" loads both photos and opens the two-photo card:
+    weeks between, month range)
   - `photo-tile.tsx` — a stored photo (`<img src="/api/v1/photos/{id}">`) in a 3:4 frame
     + the corner ✕; `lib/photos.ts` — url, labels, upload form, compare picking (tested)
   - Body: `body-profile-form.tsx` (uses `components/ui/native-select`),
@@ -74,7 +76,3 @@ measurements, the body profile that feeds the AI plans, and settings. Four tabs
   so a newer report extraction hid the analysis (the prompt got no body notes).
 - Imported runs write XP ledger rows and are serialized under the profile lock (legacy
   bumped the balance only, with a read-then-write race).
-
-## Not yet ported
-
-"Share progress" (share cards).
