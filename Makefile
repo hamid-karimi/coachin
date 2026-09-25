@@ -7,7 +7,7 @@ PROD := docker compose
 .PHONY: help install up dev-web infra down logs ps migrate migrate-status reset-db seed import-supabase gen e2e test lint deploy backup backups restore
 
 help: ## List the available commands
-	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  make %-15s %s\n", $$1, $$2}'
+	@grep -hE '^[a-z0-9-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  make %-15s %s\n", $$1, $$2}'
 
 .env:
 	cp .env.example .env
