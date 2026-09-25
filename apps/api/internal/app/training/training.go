@@ -32,9 +32,13 @@ type Store interface {
 	// PlanItem returns ErrNotFound unless the item is in one of the user's plans.
 	PlanItem(ctx context.Context, userID, itemID uuid.UUID) (ItemRef, error)
 	// SetPlanItemCompleted toggles the item, adds/removes its log dated date,
-	// and awards/compensates XP idempotently; returns the XP delta.
-	SetPlanItemCompleted(ctx context.Context, userID, itemID uuid.UUID, completed bool, date string) (awardedXP int, err error)
+	// and writes the XP move xpFor decides (one transaction); returns the delta.
+	SetPlanItemCompleted(ctx context.Context, userID, itemID uuid.UUID, completed bool, date string, xpFor ToggleXP) (awardedXP int, err error)
 }
+
+// ToggleXP decides a completion's XP move from the item's type and how many
+// awards and undos the ledger already holds for it.
+type ToggleXP func(itemType string, awards, undos int) int
 
 // Service runs the use cases. now is injectable for tests.
 type Service struct {
@@ -70,7 +74,12 @@ func (s *Service) SetPlanItemCompleted(ctx context.Context, userID, itemID uuid.
 	if completed && !item.IsCompleted && !planitem.LogWindowOpen(itemDate, today) {
 		return 0, apperr.New(apperr.Invalid, "You can mark a session done on its day or the day after.")
 	}
-	awarded, err := s.store.SetPlanItemCompleted(ctx, userID, itemID, completed, dates.ToYMD(now))
+	awarded, err := s.store.SetPlanItemCompleted(ctx, userID, itemID, completed, dates.ToYMD(now), func(itemType string, awards, undos int) int {
+		return planitem.ToggleXP(itemType, completed, awards, undos)
+	})
+	if errors.Is(err, ErrNotFound) {
+		return 0, apperr.New(apperr.NotFound, "Plan item not found")
+	}
 	if err != nil {
 		return 0, fmt.Errorf("set plan item completed: %w", err)
 	}

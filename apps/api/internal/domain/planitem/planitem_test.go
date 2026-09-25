@@ -76,3 +76,38 @@ func TestDetailLineAndVideo(t *testing.T) {
 		t.Error("no query should give no URL")
 	}
 }
+
+func TestCompletionXP(t *testing.T) {
+	cases := map[string]int{"run": 60, "strength": 60, "stretch": 30, "mobility": 30, "recovery": 20, "other": 20}
+	for itemType, want := range cases {
+		if got := CompletionXP(itemType); got != want {
+			t.Errorf("%s: got %d, want %d", itemType, got, want)
+		}
+	}
+}
+
+func TestToggleXP(t *testing.T) {
+	cases := map[string]struct {
+		itemType      string
+		completed     bool
+		awards, undos int
+		want          int
+	}{
+		"first done pays":         {"run", true, 0, 0, 60},
+		"double tap pays once":    {"run", true, 1, 0, 0},
+		"undo refunds":            {"stretch", false, 1, 0, -30},
+		"undo twice refunds once": {"stretch", false, 1, 1, 0},
+		"undo never done":         {"run", false, 0, 0, 0},
+		"redo after undo pays":    {"recovery", true, 1, 1, 20},
+		"legacy surplus awards":   {"strength", true, 3, 1, 0},
+		"undo a legacy surplus":   {"strength", false, 3, 1, -60},
+	}
+	for name, tc := range cases {
+		if got := ToggleXP(tc.itemType, tc.completed, tc.awards, tc.undos); got != tc.want {
+			t.Errorf("%s: got %d, want %d", name, got, tc.want)
+		}
+	}
+	if AwardReason("a1") != "plan_item:a1" || UndoReason("a1") != "plan_item_undo:a1" {
+		t.Error("ledger keys changed")
+	}
+}

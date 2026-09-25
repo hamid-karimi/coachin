@@ -14,6 +14,7 @@ import (
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/training"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/aigen"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/scorecard"
+	"github.com/hamid-karimi/coachin/apps/api/internal/domain/xp"
 	"github.com/hamid-karimi/coachin/apps/api/internal/store/queries"
 )
 
@@ -46,18 +47,18 @@ type rpcResult struct {
 	Error     string `json:"error"`
 }
 
-// CreateSessionLog stores the log, marks the item done, and awards the XP in
-// one transaction.
+// CreateSessionLog stores the log, marks the item done, and awards the +10 XP
+// (session_log:<id>) in one transaction under the profile lock.
 func (s *TrainingStore) CreateSessionLog(ctx context.Context, userID uuid.UUID, log training.NewSessionLog) (uuid.UUID, int, error) {
-	var (
-		logID  uuid.UUID
-		result rpcResult
-	)
+	var logID uuid.UUID
 	rpe := pgtype.Int4{}
 	if log.RPE != nil {
 		rpe = pgtype.Int4{Int32: int32(*log.RPE), Valid: true}
 	}
 	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		if err := q.LockProfile(ctx, userID); err != nil {
+			return fmt.Errorf("lock profile: %w", err)
+		}
 		logID, err = q.InsertSessionLog(ctx, queries.InsertSessionLogParams{
 			UserID: userID, PlanItemID: log.PlanItemID, Sport: log.Sport, Rpe: rpe, Actual: log.Actual, Note: log.Note,
 		})
@@ -67,11 +68,7 @@ func (s *TrainingStore) CreateSessionLog(ctx context.Context, userID uuid.UUID, 
 		if err := q.MarkPlanItemCompleted(ctx, queries.MarkPlanItemCompletedParams{ID: log.PlanItemID, UserID: userID}); err != nil {
 			return err
 		}
-		raw, err := q.AwardSessionLogXP(ctx, logID)
-		if err != nil {
-			return err
-		}
-		return json.Unmarshal([]byte(raw), &result)
+		return addXP(ctx, q, userID, xp.SessionLogXP, "session_log:"+logID.String())
 	})
 	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) && pgErr.Code == uniqueViolation {
@@ -80,10 +77,7 @@ func (s *TrainingStore) CreateSessionLog(ctx context.Context, userID uuid.UUID, 
 	if err != nil {
 		return uuid.Nil, 0, err
 	}
-	if !result.Success {
-		return uuid.Nil, 0, fmt.Errorf("award_session_log_xp: %s", result.Error)
-	}
-	return logID, result.AwardedXP, nil
+	return logID, xp.SessionLogXP, nil
 }
 
 // SaveFeedback stores the AI's comment on a session log.

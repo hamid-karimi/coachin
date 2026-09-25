@@ -10,7 +10,7 @@ The daily execution surface: see today's plan, log it, watch XP and the streak m
 | `POST /today/workouts` | `{sportTypeId}` → `round(60 × multiplier)` XP; log, ledger row, and balance in one transaction; once per sport per day (409 otherwise) |
 | `POST /supplements` · `PUT /supplements/{id}/schedule` · `DELETE /supplements/{id}` · `PUT /supplements/{id}/taken` | Daily stack (max 20); the stack with `dueToday`/`takenToday` comes with `GET /today` |
 | `PUT /plan-items/{id}/completion` | `{completed}` → XP delta (`+60/+30/+20` by type, compensated on undo); done only on the item's day or the day after |
-| `POST /plan-items/{id}/session-log` | Run/strength "how did it go": `{sport, rpe?, note?, distanceKm?, durationMin?, avgHr?, exercises?}` → log + item done + `award_session_log_xp` (+10, once) in one transaction, then AI feedback (non-fatal); `{message, awardedXp, feedback?, totalVolumeKg}`; 409 "Session already logged" |
+| `POST /plan-items/{id}/session-log` | Run/strength "how did it go": `{sport, rpe?, note?, distanceKm?, durationMin?, avgHr?, exercises?}` → log + item done + `session_log:<id>` (+10, once) in one transaction under the profile lock, then AI feedback (non-fatal); `{message, awardedXp, feedback?, totalVolumeKg}`; 409 "Session already logged" |
 
 ## Structure
 

@@ -252,6 +252,11 @@ Order (dependencies first, risk front-loaded):
       per group: plan items + session logs · meals + calorie day · goals · streak settle ·
       check-ins / week adjustment · coaching joins/assign · clubs/groups/leaderboard.
       Each gets a concurrency test (parallel duplicates → exactly one award).
+  - [x] 4.2a Plan items + session logs: `planitem.CompletionXP` / `ToggleXP`,
+        `xp.SessionLogXP`; `TrainingStore.SetPlanItemCompleted` (decision callback) and
+        `CreateSessionLog` write the ledger under the profile lock — `complete_plan_item`
+        / `award_session_log_xp` are no longer called (dropped in 4.3).
+        `TestParallelAwardsPayOnce`.
 - [ ] 4.3 Migration dropping retired functions (keep `sync_league_tier` and photo-cap
       triggers).
 - [ ] 4.4 FORMULAS.md: Go files are the only source of truth.
