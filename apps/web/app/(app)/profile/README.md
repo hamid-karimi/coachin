@@ -18,7 +18,9 @@ measurements, the body profile that feeds the AI plans, and settings. Four tabs
 | `GET /me/body` · `PUT /me/body` | Birth date, sex, height, training history, country (+ the weight / body-fat snapshot and `nutritionSharing` on read). Blank fields clear. "Profile updated." |
 | `POST /activities/import` | `{activities}` as returned by `POST /activities/parse` → sanitized (`activity.Sanitize`), last 14 days only, one run per date without a completed running log (FORMULAS §14); each becomes a completed log with a ledger row (`workout_log:<sport>:<date>`), XP 60 × running multiplier, all in one transaction under the profile lock. "Imported 2 runs · +120 XP · 1 skipped (…)"; 400 "Those days already have a logged run" / "Only runs from the last 14 days can be imported" / "No importable runs in those files" |
 | `POST /photos` | Multipart `photos` + `set` (`body`: the analysis set, up to 5 per upload; `progress`: exactly one). Per file: sniffed JPEG/PNG/WebP ≤ 5 MB → re-encoded (`adapters/imaging`: EXIF orientation applied, ≤1600 px, JPEG q82, every metadata block dropped) → AI moderation (`aigen.ModerationRequest`, strict safety) sorts it into body photo / report or rejects it → object stored at `<user>/<uuid>.jpg`, then the row, capped (5 body photos, 3 reports, 24 progress) under the profile lock. Rejections are per file ("…; rejected — x.jpg: …"); moderation down stops the batch (502). Rate limited |
-| `GET /photos` | `bodyPhotos`, `reports`, `progress` (id, createdAt), newest first |
+| `GET /photos` | `bodyPhotos`, `reports`, `progress` (id, createdAt), newest first; `analysis` (the newest body photo's) and `consented` |
+| `POST /photos/analyze` | `{consent: true}` (else 400 "Tick the consent box to run AI analysis") → stamps `ai_photo_consent_at` once, sends the newest 5 body photos in one strict AI call (`aigen.BodyAnalysisRequest`), stores `{build_notes, posture_notes, training_considerations}` on the newest photo. "Body analysis ready."; 400 "Upload at least one body photo first"; 502 when AI is down. The training and meal-plan prompts read the build + posture notes |
+| `POST /photos/{id}/extract` | A report → `{weightKg, bodyFatPct, muscleMassKg, notes}` (numbers only when clearly read; also kept on the report row). Nothing is saved as a measurement until the user confirms. 400 when neither weight nor body fat was read; 404 for a non-report |
 | `GET /photos/{id}` | Streams the JPEG after the ownership check (storage is private; no signed URLs). `Cache-Control: private, max-age=31536000, immutable` — an id never gets other bytes |
 | `DELETE /photos/{id}` | Row first, then the object (an orphaned object is harmless; a row without one is not). "Photo deleted." |
 | `PUT /me/nutrition-sharing` | `{enabled}` → the active coach may read meal logs and the meal plan (RLS) |
@@ -45,7 +47,8 @@ measurements, the body profile that feeds the AI plans, and settings. Four tabs
     + the corner ✕; `lib/photos.ts` — url, labels, upload form, compare picking (tested)
   - Body: `body-profile-form.tsx` (uses `components/ui/native-select`),
     `body-photos-section.tsx` (picker with previews via `hooks/use-pending-photos.ts`,
-    photo grid, report rows, delete confirm), `activity-import-section.tsx` (reuses the training module's `useParseActivities` and
+    photo grid, `body-analysis-panel.tsx` — consent + result —, report rows with
+    "Extract metrics" → `report-metrics-form.tsx` "Save as measurement", delete confirm), `activity-import-section.tsx` (reuses the training module's `useParseActivities` and
     `activityLine`; "Log N runs" refetches Today, the calendar, My week, the overview)
   - Settings: `nutrition-sharing-toggle.tsx`, theme, `change-password-form.tsx`,
     `logout-button.tsx`
@@ -66,11 +69,12 @@ measurements, the body profile that feeds the AI plans, and settings. Four tabs
   stream through the API instead of hour-long signed URLs; moderation uses Claude first
   (a refusal counts as a safety block) with Gemini's strict filter as the fallback; the
   batch message no longer ends in "..".
+- The plan prompts read the newest analyzed **body photo** only; legacy read any kind,
+  so a newer report extraction hid the analysis (the prompt got no body notes).
 - Imported runs write XP ledger rows and are serialized under the profile lock (legacy
   bumped the balance only, with a read-then-write race).
 
 ## Not yet ported
 
-Consent-gated body analysis and report extraction → measurement (3.6d); "Share
-progress" (share cards);
+"Share progress" (share cards);
 "My coach" invite redemption (Coaching).

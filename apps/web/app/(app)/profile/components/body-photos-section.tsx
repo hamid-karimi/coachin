@@ -5,10 +5,15 @@ import { Camera, FileScan, ImagePlus, Loader2, X } from "lucide-react";
 import { ConfirmDialog } from "@/components/design-system/confirm-dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { useDeletePhoto, usePhotos, useUploadPhotos } from "../hooks/use-profile";
+import type { components } from "@/lib/api/schema";
+import { useDeletePhoto, useExtractReport, usePhotos, useUploadPhotos } from "../hooks/use-profile";
 import { usePendingPhotos } from "../hooks/use-pending-photos";
 import { MAX_BATCH, photoDayLabel, uploadLabel } from "../lib/photos";
+import { BodyAnalysisPanel } from "./body-analysis-panel";
 import { PhotoTile, TileRemoveButton } from "./photo-tile";
+import { ReportMetricsForm } from "./report-metrics-form";
+
+type ReportMetrics = components["schemas"]["ReportMetricsBody"];
 
 /** The AI analysis set: pick up to 5 images (previewed), upload, then the body photos and reports kept. */
 export function BodyPhotosSection() {
@@ -18,6 +23,8 @@ export function BodyPhotosSection() {
   const upload = useUploadPhotos(picker.clear);
   const remove = useDeletePhoto();
   const [confirming, setConfirming] = useState<string | null>(null);
+  const extract = useExtractReport();
+  const [metrics, setMetrics] = useState<ReportMetrics | null>(null);
 
   return (
     <div className='space-y-2.5'>
@@ -100,6 +107,8 @@ export function BodyPhotosSection() {
         </div>
       )}
 
+      <BodyAnalysisPanel />
+
       {reports.length > 0 && (
         <div className='bg-card border-border divide-border divide-y rounded-xl border px-4'>
           {reports.map((report) => (
@@ -108,17 +117,34 @@ export function BodyPhotosSection() {
                 <FileScan className='text-brand size-4 shrink-0' aria-hidden />
                 Analysis report · {photoDayLabel(report.createdAt)}
               </p>
-              <button
-                type='button'
-                aria-label='Delete report'
-                onClick={() => setConfirming(report.id)}
-                className='text-muted-foreground hover:bg-secondary hover:text-foreground grid size-6 place-items-center rounded-md transition-colors'>
-                <X className='size-3.5' aria-hidden />
-              </button>
+              <div className='flex shrink-0 items-center gap-2'>
+                <Button
+                  type='button'
+                  size='sm'
+                  variant='outline'
+                  disabled={extract.isPending}
+                  onClick={() =>
+                    extract.mutate({ params: { path: { id: report.id } } }, { onSuccess: (data) => setMetrics(data) })
+                  }>
+                  {extract.isPending && extract.variables?.params.path.id === report.id ? (
+                    <Loader2 className='animate-spin' aria-hidden />
+                  ) : null}
+                  Extract metrics
+                </Button>
+                <button
+                  type='button'
+                  aria-label='Delete report'
+                  onClick={() => setConfirming(report.id)}
+                  className='text-muted-foreground hover:bg-secondary hover:text-foreground grid size-6 place-items-center rounded-md transition-colors'>
+                  <X className='size-3.5' aria-hidden />
+                </button>
+              </div>
             </div>
           ))}
         </div>
       )}
+
+      {metrics && <ReportMetricsForm metrics={metrics} onSaved={() => setMetrics(null)} />}
 
       <ConfirmDialog
         open={confirming !== null}

@@ -106,3 +106,12 @@ export function useDeletePhoto() {
     ]),
   );
 }
+
+export function useAnalyzePhotos() {
+  return $api.useMutation("post", "/photos/analyze", useMutationFeedback([["get", "/photos"]]));
+}
+
+/** Extracted metrics are only a proposal; the caller shows them for confirmation. */
+export function useExtractReport() {
+  return $api.useMutation("post", "/photos/{id}/extract", useMutationFeedback([]));
+}

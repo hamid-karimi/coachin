@@ -11,13 +11,16 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/photos"
+	"github.com/hamid-karimi/coachin/apps/api/internal/domain/aigen"
 )
 
 // PhotoService is the body / progress photo use cases.
 type PhotoService interface {
 	UploadBodySet(ctx context.Context, userID uuid.UUID, uploads []photos.Upload) (photos.Uploaded, error)
 	UploadProgress(ctx context.Context, userID uuid.UUID, uploads []photos.Upload) (string, error)
-	Photos(ctx context.Context, userID uuid.UUID) ([]photos.Photo, error)
+	Library(ctx context.Context, userID uuid.UUID) (photos.Library, error)
+	Analyze(ctx context.Context, userID uuid.UUID, consent bool) (string, error)
+	Extract(ctx context.Context, userID, id uuid.UUID) (aigen.ReportMetrics, error)
 	Open(ctx context.Context, userID, id uuid.UUID) (io.ReadCloser, int64, error)
 	Delete(ctx context.Context, userID, id uuid.UUID) (string, error)
 }
@@ -28,11 +31,41 @@ type PhotoBody struct {
 	CreatedAt time.Time `json:"createdAt"`
 }
 
-// PhotosBody is the user's images by kind, newest first.
+// BodyAnalysisBody is the AI's read of the analysis set.
+type BodyAnalysisBody struct {
+	BuildNotes             string   `json:"buildNotes"`
+	PostureNotes           string   `json:"postureNotes"`
+	TrainingConsiderations []string `json:"trainingConsiderations"`
+}
+
+// PhotosBody is the user's images by kind (newest first), the latest body
+// analysis, and whether they consented to AI analysis.
 type PhotosBody struct {
-	BodyPhotos []PhotoBody `json:"bodyPhotos" doc:"The AI analysis set (max 5)"`
-	Reports    []PhotoBody `json:"reports" doc:"Body-composition report photos (max 3)"`
-	Progress   []PhotoBody `json:"progress" doc:"The progress journal (max 24)"`
+	BodyPhotos []PhotoBody       `json:"bodyPhotos" doc:"The AI analysis set (max 5)"`
+	Reports    []PhotoBody       `json:"reports" doc:"Body-composition report photos (max 3)"`
+	Progress   []PhotoBody       `json:"progress" doc:"The progress journal (max 24)"`
+	Analysis   *BodyAnalysisBody `json:"analysis,omitempty" doc:"On the newest analyzed body photo; fed to the plan prompts"`
+	Consented  bool              `json:"consented" doc:"AI photo analysis consent was given"`
+}
+
+type analyzeInput struct {
+	Body struct {
+		Consent bool `json:"consent" doc:"Must be true: the user agrees to AI analysis of their photos"`
+	}
+}
+
+// ReportMetricsBody is what a report photo says; nothing is saved as a
+// measurement until the user confirms it.
+type ReportMetricsBody struct {
+	ResultBody
+	WeightKg     *float64 `json:"weightKg"`
+	BodyFatPct   *float64 `json:"bodyFatPct"`
+	MuscleMassKg *float64 `json:"muscleMassKg"`
+	Notes        string   `json:"notes"`
+}
+
+type reportMetricsOutput struct {
+	Body ReportMetricsBody
 }
 
 type photosOutput struct {
@@ -56,10 +89,13 @@ const maxPhotoUploadBytes = 32 << 20
 // be cached for good — but only by this browser.
 const photoCacheControl = "private, max-age=31536000, immutable"
 
-func photosBody(list []photos.Photo) PhotosBody {
-	body := PhotosBody{BodyPhotos: []PhotoBody{}, Reports: []PhotoBody{}, Progress: []PhotoBody{}}
+func photosBody(lib photos.Library) PhotosBody {
+	body := PhotosBody{BodyPhotos: []PhotoBody{}, Reports: []PhotoBody{}, Progress: []PhotoBody{}, Consented: lib.Consented}
+	if a := lib.Analysis; a != nil {
+		body.Analysis = &BodyAnalysisBody{BuildNotes: a.BuildNotes, PostureNotes: a.PostureNotes, TrainingConsiderations: a.TrainingConsiderations}
+	}
 	groups := map[photos.Kind]*[]PhotoBody{photos.BodyPhoto: &body.BodyPhotos, photos.Report: &body.Reports, photos.Progress: &body.Progress}
-	for _, p := range list {
+	for _, p := range lib.Photos {
 		if group, ok := groups[p.Kind]; ok {
 			*group = append(*group, PhotoBody{ID: p.ID, CreatedAt: p.CreatedAt})
 		}
@@ -124,11 +160,43 @@ func registerPhotos(api huma.API, deps Deps) {
 		Summary: "The user's body photos, reports, and progress photos", Tags: tags, Middlewares: signedIn, Errors: []int{401},
 	}, func(ctx context.Context, _ *struct{}) (*photosOutput, error) {
 		userID, _ := userFrom(ctx)
-		list, err := svc.Photos(ctx, userID)
+		lib, err := svc.Library(ctx, userID)
 		if err != nil {
 			return nil, toProblem(ctx, logger, err)
 		}
-		return &photosOutput{Body: photosBody(list)}, nil
+		return &photosOutput{Body: photosBody(lib)}, nil
+	})
+
+	aiLimited := huma.Middlewares{requireUser(api), rateLimited(api, newLimiter(20*time.Second, 3))}
+
+	huma.Register(api, huma.Operation{
+		OperationID: "analyzePhotos", Method: http.MethodPost, Path: "/photos/analyze",
+		Summary:     "AI observations from your body photos (consent required)",
+		Description: "Records consent the first time, reads the newest 5 body photos in one call, and stores the result on the newest. Not medical advice.",
+		Tags:        tags, Middlewares: aiLimited, Errors: []int{400, 401, 429, 502},
+	}, func(ctx context.Context, in *analyzeInput) (*resultOutput, error) {
+		userID, _ := userFrom(ctx)
+		msg, err := svc.Analyze(ctx, userID, in.Body.Consent)
+		if err != nil {
+			return nil, toProblem(ctx, logger, err)
+		}
+		return &resultOutput{Body: ResultBody{Status: "success", Message: msg}}, nil
+	})
+
+	huma.Register(api, huma.Operation{
+		OperationID: "extractReport", Method: http.MethodPost, Path: "/photos/{id}/extract",
+		Summary: "Read weight / body fat from a report photo (to confirm as a measurement)",
+		Tags:    tags, Middlewares: aiLimited, Errors: []int{400, 401, 404, 429, 502},
+	}, func(ctx context.Context, in *idPathInput) (*reportMetricsOutput, error) {
+		userID, _ := userFrom(ctx)
+		m, err := svc.Extract(ctx, userID, in.ID)
+		if err != nil {
+			return nil, toProblem(ctx, logger, err)
+		}
+		return &reportMetricsOutput{Body: ReportMetricsBody{
+			ResultBody: ResultBody{Status: "info", Message: "Metrics extracted — review and save below."},
+			WeightKg:   m.WeightKg, BodyFatPct: m.BodyFatPct, MuscleMassKg: m.MuscleMassKg, Notes: m.Notes,
+		}}, nil
 	})
 
 	huma.Register(api, huma.Operation{

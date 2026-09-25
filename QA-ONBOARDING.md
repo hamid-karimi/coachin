@@ -49,7 +49,7 @@ inactive; every coach feature checks for an **active** relationship.
 | `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan. **Rewrite: fully ported** (search / USDA / photo / manual logging, day summary, trends, `/nutrition/plan`) | [README](apps/web/app/(app)/nutrition/README.md) |
 | `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions | [README](legacy/app/coaching/README.md) |
 | `/community` | Social/leaderboard surfaces — **currently disabled** (feature flag; redirects to dashboard, nav item hidden). Coach invite codes are redeemed on `/profile` → "My coach" while off. | [README](legacy/app/community/README.md) |
-| `/profile` | Four tabs (`?tab=`): **Overview** (stats, hearts, goals, recent XP), **Progress** (charts, measurements, progress photos), **Body** (body profile, body photos, watch import), **Settings** (theme, nutrition sharing, my coach, logout). **Rewrite: tabs, goals, measurements, charts, body profile, sharing, watch import, photos ported**; photo analysis / report extraction next | [README](apps/web/app/(app)/profile/README.md) |
+| `/profile` | Four tabs (`?tab=`): **Overview** (stats, hearts, goals, recent XP), **Progress** (charts, measurements, progress photos), **Body** (body profile, body photos, watch import), **Settings** (theme, nutrition sharing, my coach, logout). **Rewrite: fully ported** except "My coach" (Coaching) and "Share progress" (share cards) | [README](apps/web/app/(app)/profile/README.md) |
 | `/auth` | Login / signup; on the rewrite also forgot / reset password and email verification | [README](legacy/app/auth/README.md) |
 | `/status` | Rewrite only: API, database, and storage health | — |
 
@@ -413,7 +413,16 @@ the goal strip — journey 9; coaching card and group nudge arrive with their mo
    "Analysis report · Sep 25" rows (max 3); ✕ → "Delete this photo?" → "Photo deleted."
    Photos load only for their owner: opening a photo URL signed out (or as someone else)
    returns 401 / 404. AI down: "AI moderation is temporarily unavailable — try again
-   later" and nothing is stored. Analysis and report extraction arrive next (3.6d).
+   later" and nothing is stored.
+   **Analysis (3.6d)**: with body photos, a consent box ("I consent to AI analysis… Not
+   medical advice.") + "Analyze my photos". Unticked: "Tick the consent box to run AI
+   analysis". Ticked → "Analyzing…" → "Body analysis ready." and a "Body analysis" card
+   (build, posture, 2–4 considerations). Consent stays ticked afterwards. The build and
+   posture notes feed the next training / meal plan (a report's metrics never replace
+   them). Reports: "Extract metrics" → "Metrics extracted — review and save below." →
+   weight / body fat prefilled (editable, notes under) → "Save as measurement" →
+   "Measurement logged." (goals settle as in journey 9). Unreadable report: "Couldn't
+   read weight or body fat from this report — try a clearer photo".
 3. **Progress charts** (Profile → Progress tab): weekly volume bars, weekly km,
    body-weight trend (needs ≥2 measurements), and top-set trends for
    exercises logged ≥3 times. Charts hide individually without data; an

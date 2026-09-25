@@ -549,6 +549,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/photos/analyze": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * AI observations from your body photos (consent required)
+         * @description Records consent the first time, reads the newest 5 body photos in one call, and stores the result on the newest. Not medical advice.
+         */
+        post: operations["analyzePhotos"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/photos/{id}": {
         parameters: {
             query?: never;
@@ -565,6 +585,23 @@ export interface paths {
         post?: never;
         /** Delete a photo (row and stored image) */
         delete: operations["deletePhoto"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/photos/{id}/extract": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Read weight / body fat from a report photo (to confirm as a measurement) */
+        post: operations["extractReport"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -1016,6 +1053,15 @@ export interface components {
              * @enum {string}
              */
             scheduleType: "daily" | "training_days" | "custom";
+        };
+        AnalyzeInputBody: {
+            /** @description Must be true: the user agrees to AI analysis of their photos */
+            consent: boolean;
+        };
+        BodyAnalysisBody: {
+            buildNotes: string;
+            postureNotes: string;
+            trainingConsiderations: string[];
         };
         BodyProfileBody: {
             /** Format: date */
@@ -1497,8 +1543,12 @@ export interface components {
             status: "success" | "info";
         };
         PhotosBody: {
+            /** @description On the newest analyzed body photo; fed to the plan prompts */
+            analysis?: components["schemas"]["BodyAnalysisBody"];
             /** @description The AI analysis set (max 5) */
             bodyPhotos: components["schemas"]["PhotoBody"][];
+            /** @description AI photo analysis consent was given */
+            consented: boolean;
             /** @description The progress journal (max 24) */
             progress: components["schemas"]["PhotoBody"][];
             /** @description Body-composition report photos (max 3) */
@@ -1643,6 +1693,18 @@ export interface components {
             email: string;
             fullName: string;
             password: string;
+        };
+        ReportMetricsBody: {
+            /** Format: double */
+            bodyFatPct: number | null;
+            message: string;
+            /** Format: double */
+            muscleMassKg: number | null;
+            notes: string;
+            /** @enum {string} */
+            status: "success" | "info";
+            /** Format: double */
+            weightKg: number | null;
         };
         ResetInputBody: {
             confirmPassword: string;
@@ -3939,6 +4001,84 @@ export interface operations {
             };
         };
     };
+    analyzePhotos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnalyzeInputBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
     getPhoto: {
         parameters: {
             query?: never;
@@ -4046,6 +4186,91 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    extractReport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportMetricsBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
                 headers: {
                     [name: string]: unknown;
                 };

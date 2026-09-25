@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"strings"
 	"testing"
@@ -17,10 +18,33 @@ import (
 var user = uuid.New()
 
 type fakeStore struct {
-	counts  map[Kind]int
-	rows    map[string]Kind
-	full    bool
-	deleted string
+	counts    map[Kind]int
+	rows      map[string]Kind
+	full      bool
+	deleted   string
+	consented bool
+	body      []StoredPhoto
+	list      []Photo
+	saved     map[uuid.UUID]string
+}
+
+func (f *fakeStore) RecordConsent(context.Context, uuid.UUID) error {
+	f.consented = true
+	return nil
+}
+func (f *fakeStore) Consented(context.Context, uuid.UUID) (bool, error) { return f.consented, nil }
+func (f *fakeStore) PathsOfKind(context.Context, uuid.UUID, Kind, int) ([]StoredPhoto, error) {
+	return f.body, nil
+}
+func (f *fakeStore) PhotoPathOfKind(_ context.Context, _, id uuid.UUID, kind Kind) (string, bool, error) {
+	return "u/report.jpg", kind == Report && id != uuid.Nil, nil
+}
+func (f *fakeStore) SaveAnalysis(_ context.Context, _, id uuid.UUID, analysis []byte) error {
+	if f.saved == nil {
+		f.saved = map[uuid.UUID]string{}
+	}
+	f.saved[id] = string(analysis)
+	return nil
 }
 
 func (f *fakeStore) CountPhotos(context.Context, uuid.UUID) (map[Kind]int, error) {
@@ -37,7 +61,7 @@ func (f *fakeStore) InsertPhoto(_ context.Context, _ uuid.UUID, path string, kin
 	f.rows[path] = kind
 	return true, nil
 }
-func (f *fakeStore) Photos(context.Context, uuid.UUID) ([]Photo, error) { return nil, nil }
+func (f *fakeStore) Photos(context.Context, uuid.UUID) ([]Photo, error) { return f.list, nil }
 func (f *fakeStore) PhotoPath(_ context.Context, _, id uuid.UUID) (string, bool, error) {
 	return "u/" + id.String() + ".jpg", id != uuid.Nil, nil
 }
@@ -46,7 +70,10 @@ func (f *fakeStore) DeletePhoto(_ context.Context, _, id uuid.UUID) (string, boo
 	return "u/x.jpg", id != uuid.Nil, nil
 }
 
-type fakeObjects struct{ puts, deletes []string }
+type fakeObjects struct {
+	puts, deletes []string
+	report        string // what the report object holds
+}
 
 func (f *fakeObjects) Put(_ context.Context, key string, _ []byte, contentType string) error {
 	if contentType != "image/jpeg" || !strings.HasPrefix(key, user.String()+"/") {
@@ -55,8 +82,12 @@ func (f *fakeObjects) Put(_ context.Context, key string, _ []byte, contentType s
 	f.puts = append(f.puts, key)
 	return nil
 }
-func (f *fakeObjects) Get(context.Context, string) (io.ReadCloser, int64, error) {
-	return io.NopCloser(bytes.NewReader([]byte("jpeg"))), 4, nil
+func (f *fakeObjects) Get(_ context.Context, key string) (io.ReadCloser, int64, error) {
+	data := map[string]string{"u/report.jpg": f.report}[key]
+	if data == "" {
+		data = "jpeg"
+	}
+	return io.NopCloser(bytes.NewReader([]byte(data))), int64(len(data)), nil
 }
 func (f *fakeObjects) Delete(_ context.Context, key string) error {
 	f.deletes = append(f.deletes, key)
@@ -78,6 +109,14 @@ type ai struct{ calls int }
 
 func (a *ai) GenerateJSON(_ context.Context, req aigen.Request) (aigen.Result, bool) {
 	a.calls++
+	if strings.HasPrefix(req.Prompt, "These are fitness progress photos") {
+		return aigen.Result{Text: fmt.Sprintf(`{"build_notes":"Lean (%d photos)","posture_notes":"Upright","training_considerations":["Hips"]}`, len(req.Images))}, true
+	}
+	if strings.HasPrefix(req.Prompt, "Extract body-composition") {
+		answers := map[string]string{"report": `{"weight_kg":72.4,"body_fat_pct":18,"muscle_mass_kg":null,"notes":"InBody"}`, "blank": `{"weight_kg":null,"notes":""}`}
+		text, ok := answers[string(req.Images[0].Data)]
+		return aigen.Result{Text: text}, ok
+	}
 	answers := map[string]string{
 		"jpeg:body": `{"category":"body_photo","reason":""}`, "jpeg:report": `{"category":"analysis_report","reason":""}`,
 		"jpeg:nsfw": `{"category":"rejected_nudity","reason":""}`,
@@ -205,4 +244,42 @@ func TestBatchMessageEndsOnce(t *testing.T) {
 	if got.Message != "1 image uploaded; rejected — x.jpg: This photo looks too explicit." || got.Status != "info" {
 		t.Fatalf("got %+v", got)
 	}
+}
+
+func TestAnalyze(t *testing.T) {
+	newest, older := uuid.New(), uuid.New()
+	store := &fakeStore{body: []StoredPhoto{{ID: newest, Path: "u/a.jpg"}, {ID: older, Path: "u/b.jpg"}}}
+	svc := newService(store, &fakeObjects{}, &ai{})
+	_, err := svc.Analyze(context.Background(), user, false)
+	wantErr(t, err, apperr.Invalid, "Tick the consent box to run AI analysis")
+	msg, err := svc.Analyze(context.Background(), user, true)
+	if err != nil || msg != "Body analysis ready." || !store.consented || !strings.Contains(store.saved[newest], "Lean (2 photos)") {
+		t.Fatalf("analyze = %q, %v, %+v", msg, err, store)
+	}
+	_, err = newService(&fakeStore{}, &fakeObjects{}, &ai{}).Analyze(context.Background(), user, true)
+	wantErr(t, err, apperr.Invalid, "Upload at least one body photo first")
+
+	// The library shows the newest body photo's analysis only.
+	lib, _ := newService(&fakeStore{consented: true, list: []Photo{
+		{Kind: Report, Analysis: []byte(`{"weight_kg":70}`)},
+		{Kind: BodyPhoto, Analysis: []byte(`{"build_notes":"Lean","posture_notes":"","training_considerations":[]}`)},
+	}}, &fakeObjects{}, &ai{}).Library(context.Background(), user)
+	if !lib.Consented || lib.Analysis == nil || lib.Analysis.BuildNotes != "Lean" {
+		t.Fatalf("library = %+v", lib)
+	}
+}
+
+func TestExtract(t *testing.T) {
+	id := uuid.New()
+	store := &fakeStore{}
+	m, err := newService(store, &fakeObjects{report: "report"}, &ai{}).Extract(context.Background(), user, id)
+	if err != nil || *m.WeightKg != 72.4 || *m.BodyFatPct != 18 || m.MuscleMassKg != nil || !strings.Contains(store.saved[id], "InBody") {
+		t.Fatalf("extract = %+v, %v", m, err)
+	}
+	_, err = newService(&fakeStore{}, &fakeObjects{report: "blank"}, &ai{}).Extract(context.Background(), user, id)
+	wantErr(t, err, apperr.Invalid, "Couldn't read weight or body fat from this report — try a clearer photo")
+	_, err = newService(&fakeStore{}, &fakeObjects{report: "down"}, &ai{}).Extract(context.Background(), user, id)
+	wantErr(t, err, apperr.Unavailable, aigen.ExtractionUnavailable)
+	_, err = newService(&fakeStore{}, &fakeObjects{}, &ai{}).Extract(context.Background(), user, uuid.Nil)
+	wantErr(t, err, apperr.NotFound, "Report not found")
 }

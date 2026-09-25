@@ -188,7 +188,7 @@ Order (dependencies first, risk front-loaded):
         the old plan and sets the calorie goal), grocery list; `GET /today` `mealPlan`,
         `GET /calendar` `days[].meals` (+ adherence); web `/nutrition/plan`, Today's
         meals card, calendar meal line.
-- [ ] 3.6 **Profile** — profile/measurements, goals, activity import, photos (Garage
+- [x] 3.6 **Profile** — profile/measurements, goals, activity import, photos (Garage
       adapter, pure-Go re-encode, Gemini moderation, streamed `GET /photos/{id}`),
       analyze / extract, `?tab=` (L)
   - [x] 3.6a Profile tabs (`?tab=`), `GET/PUT /me/body`, `PUT /me/nutrition-sharing`,
@@ -207,8 +207,10 @@ Order (dependencies first, risk front-loaded):
         cap-checked insert under the profile lock), `POST /photos`, `GET /photos`,
         streamed `GET /photos/{id}`, `DELETE /photos/{id}`; web Body photos + Progress
         photos (compare).
-  - [ ] 3.6d Consent-gated body analysis (`POST /photos/analyze`) and report extraction
-        (`POST /photos/{id}/extract` → confirm as a measurement).
+  - [x] 3.6d Consent-gated body analysis (`POST /photos/analyze`: consent stamped once,
+        newest 5 body photos in one strict call, stored on the newest) and report
+        extraction (`POST /photos/{id}/extract` → confirm as a measurement); `GET /photos`
+        carries `analysis` + `consented`; `LatestBodyAnalysis` reads body photos only.
 - [ ] 3.7 **Coaching** — invite codes, join statuses, roster/adherence, consent-gated
       trainee nutrition/supplements, assign weekly plan, coach-mode plan generation (M)
 - [ ] 3.8 **Community** — clubs, follows, groups, leaderboard, discover; `404` while the
