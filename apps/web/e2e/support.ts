@@ -30,13 +30,29 @@ export async function newAthlete(page: Page, fullName: string): Promise<string> 
   return email;
 }
 
-/** Sign in through the form (the journey QA walks). */
+/** Sign in through the form (the journey QA walks), waiting out the auth rate limit. */
 export async function signIn(page: Page, email: string, password = DEMO.password) {
   await page.goto("/auth/login");
   await page.fill("#email", email);
   await page.fill("#password", password);
-  await page.click("button[type=submit]");
-  await page.waitForURL((url) => !url.pathname.startsWith("/auth"));
+  const limited = page.getByText("Too many attempts");
+  for (let attempt = 0; attempt < 6; attempt++) {
+    await page.click("button[type=submit]");
+    const outcome = await Promise.race([
+      page.waitForURL((url) => !url.pathname.startsWith("/auth")).then(() => "in" as const),
+      limited.waitFor().then(() => "limited" as const),
+    ]);
+    if (outcome === "in") return;
+    await page.waitForTimeout(6_500);
+  }
+  throw new Error(`Sign-in for ${email} stayed rate limited`);
+}
+
+/** The single file input labelled label — once streaming has swapped in the final page. */
+export async function fileInput(page: Page, label: string) {
+  const input = page.locator(`input[type=file][aria-label='${label}']`);
+  await expect(input).toHaveCount(1);
+  return input;
 }
 
 /** Calls the API as the signed-in user (arranging state a journey doesn't walk). */

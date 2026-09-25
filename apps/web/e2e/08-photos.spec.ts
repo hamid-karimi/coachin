@@ -1,11 +1,11 @@
 import { expect, test } from "@playwright/test";
-import { jpeg, newAthlete, toast } from "./support";
+import { fileInput, jpeg, newAthlete, toast } from "./support";
 
 // QA journey 8 — progress photos: add two, compare, "Share progress".
 test("add two progress photos, compare them, build the share card", async ({ page }) => {
   await newAthlete(page, "Pam Photos");
   await page.goto("/profile?tab=progress");
-  const input = page.getByLabel("Progress photo");
+  const input = await fileInput(page, "Progress photo");
   for (const [name, color] of [
     ["before.jpg", "#335"],
     ["after.jpg", "#533"],
