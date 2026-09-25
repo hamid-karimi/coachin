@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { boardCopy, boardHref, resolveBoard } from "./community";
+import { boardCopy, boardHref, groupCodeLine, groupNudgeTitle, groupStreakLine, resolveBoard } from "./community";
 
 describe("community boards", () => {
   it("resolves and links boards", () => {
@@ -22,5 +22,16 @@ describe("community boards", () => {
     expect(boardCopy({ board: "global", weekly: false }).rules).toBe(
       "lifetime XP (no XP logged this week yet) · everyone on CoachIn",
     );
+  });
+});
+
+describe("groups", () => {
+  it("describes a group", () => {
+    expect(groupStreakLine({ streakCount: 3, bestStreak: 5 })).toBe("3 day streak · best 5");
+    expect(groupCodeLine({ inviteCode: "GRP1", members: [{} as never] })).toBe(
+      "Invite code: GRP1 · needs a 2nd member to start",
+    );
+    expect(groupCodeLine({ inviteCode: "GRP1", members: [{} as never, {} as never] })).toBe("Invite code: GRP1");
+    expect(groupNudgeTitle("Dawn Patrol", 3)).toBe("Dawn Patrol's 3-day streak needs you");
   });
 });

@@ -37,6 +37,17 @@ func (q *Queries) CreateClubWithOwner(ctx context.Context, arg CreateClubWithOwn
 	return column_1, err
 }
 
+const createTrainingGroup = `-- name: CreateTrainingGroup :one
+SELECT public.create_training_group($1)::text
+`
+
+func (q *Queries) CreateTrainingGroup(ctx context.Context, name string) (string, error) {
+	row := q.db.QueryRow(ctx, createTrainingGroup, name)
+	var column_1 string
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
 const deleteClubMembership = `-- name: DeleteClubMembership :one
 DELETE FROM public.club_members WHERE user_id = $1 AND club_id = $2
 RETURNING is_primary
@@ -69,6 +80,107 @@ func (q *Queries) DeleteFollow(ctx context.Context, arg DeleteFollowParams) (int
 		return 0, err
 	}
 	return result.RowsAffected(), nil
+}
+
+const evaluateGroupDays = `-- name: EvaluateGroupDays :one
+SELECT public.evaluate_group_days($1)::text
+`
+
+// Settles past days (streak + member bonus XP, FORMULAS §2 Group streak); idempotent.
+func (q *Queries) EvaluateGroupDays(ctx context.Context, groupID uuid.UUID) (string, error) {
+	row := q.db.QueryRow(ctx, evaluateGroupDays, groupID)
+	var column_1 string
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
+const groupMembers = `-- name: GroupMembers :many
+SELECT gm.group_id, p.id, p.full_name, p.avatar_url
+FROM public.group_members gm JOIN public.profiles p ON p.id = gm.user_id
+WHERE gm.group_id = ANY($1::uuid[])
+ORDER BY gm.joined_at
+`
+
+type GroupMembersRow struct {
+	GroupID   uuid.UUID `json:"group_id"`
+	ID        uuid.UUID `json:"id"`
+	FullName  *string   `json:"full_name"`
+	AvatarUrl *string   `json:"avatar_url"`
+}
+
+func (q *Queries) GroupMembers(ctx context.Context, ids []uuid.UUID) ([]GroupMembersRow, error) {
+	rows, err := q.db.Query(ctx, groupMembers, ids)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GroupMembersRow{}
+	for rows.Next() {
+		var i GroupMembersRow
+		if err := rows.Scan(
+			&i.GroupID,
+			&i.ID,
+			&i.FullName,
+			&i.AvatarUrl,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const groupTrainedToday = `-- name: GroupTrainedToday :one
+SELECT public.group_trained_today($1)::uuid[] AS ids
+`
+
+func (q *Queries) GroupTrainedToday(ctx context.Context, groupID uuid.UUID) ([]uuid.UUID, error) {
+	row := q.db.QueryRow(ctx, groupTrainedToday, groupID)
+	var ids []uuid.UUID
+	err := row.Scan(&ids)
+	return ids, err
+}
+
+const groupsByIDs = `-- name: GroupsByIDs :many
+SELECT id, name, invite_code, streak_count, best_streak FROM public.training_groups
+WHERE id = ANY($1::uuid[]) ORDER BY created_at
+`
+
+type GroupsByIDsRow struct {
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	InviteCode  string    `json:"invite_code"`
+	StreakCount int32     `json:"streak_count"`
+	BestStreak  int32     `json:"best_streak"`
+}
+
+func (q *Queries) GroupsByIDs(ctx context.Context, ids []uuid.UUID) ([]GroupsByIDsRow, error) {
+	rows, err := q.db.Query(ctx, groupsByIDs, ids)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GroupsByIDsRow{}
+	for rows.Next() {
+		var i GroupsByIDsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.InviteCode,
+			&i.StreakCount,
+			&i.BestStreak,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const insertFollow = `-- name: InsertFollow :exec
@@ -107,6 +219,28 @@ SELECT public.join_club_via_invite_code($1)::text
 
 func (q *Queries) JoinClubByCode(ctx context.Context, code string) (string, error) {
 	row := q.db.QueryRow(ctx, joinClubByCode, code)
+	var column_1 string
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
+const joinTrainingGroup = `-- name: JoinTrainingGroup :one
+SELECT public.join_training_group($1)::text
+`
+
+func (q *Queries) JoinTrainingGroup(ctx context.Context, code string) (string, error) {
+	row := q.db.QueryRow(ctx, joinTrainingGroup, code)
+	var column_1 string
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
+const leaveTrainingGroup = `-- name: LeaveTrainingGroup :one
+SELECT public.leave_training_group($1)::text
+`
+
+func (q *Queries) LeaveTrainingGroup(ctx context.Context, groupID uuid.UUID) (string, error) {
+	row := q.db.QueryRow(ctx, leaveTrainingGroup, groupID)
 	var column_1 string
 	err := row.Scan(&column_1)
 	return column_1, err
@@ -288,6 +422,22 @@ func (q *Queries) ListMyCoaches(ctx context.Context, userID uuid.UUID) ([]ListMy
 	return items, nil
 }
 
+const loggedAnythingOn = `-- name: LoggedAnythingOn :one
+SELECT EXISTS (SELECT 1 FROM public.logs WHERE user_id = $1 AND date = CAST($2::text AS date))::bool AS logged
+`
+
+type LoggedAnythingOnParams struct {
+	UserID *uuid.UUID `json:"user_id"`
+	OnDate string     `json:"on_date"`
+}
+
+func (q *Queries) LoggedAnythingOn(ctx context.Context, arg LoggedAnythingOnParams) (bool, error) {
+	row := q.db.QueryRow(ctx, loggedAnythingOn, arg.UserID, arg.OnDate)
+	var logged bool
+	err := row.Scan(&logged)
+	return logged, err
+}
+
 const markPrimaryClub = `-- name: MarkPrimaryClub :exec
 UPDATE public.club_members SET is_primary = true WHERE user_id = $1 AND club_id = $2
 `
@@ -300,6 +450,30 @@ type MarkPrimaryClubParams struct {
 func (q *Queries) MarkPrimaryClub(ctx context.Context, arg MarkPrimaryClubParams) error {
 	_, err := q.db.Exec(ctx, markPrimaryClub, arg.UserID, arg.ClubID)
 	return err
+}
+
+const myGroupIDs = `-- name: MyGroupIDs :many
+SELECT group_id FROM public.group_members WHERE user_id = $1 ORDER BY joined_at
+`
+
+func (q *Queries) MyGroupIDs(ctx context.Context, userID uuid.UUID) ([]uuid.UUID, error) {
+	rows, err := q.db.Query(ctx, myGroupIDs, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []uuid.UUID{}
+	for rows.Next() {
+		var group_id uuid.UUID
+		if err := rows.Scan(&group_id); err != nil {
+			return nil, err
+		}
+		items = append(items, group_id)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const profileExists = `-- name: ProfileExists :one
@@ -321,6 +495,43 @@ WHERE id = (SELECT m.id FROM public.club_members m WHERE m.user_id = $1 ORDER BY
 func (q *Queries) PromoteNextPrimaryClub(ctx context.Context, userID uuid.UUID) error {
 	_, err := q.db.Exec(ctx, promoteNextPrimaryClub, userID)
 	return err
+}
+
+const recentGroupDays = `-- name: RecentGroupDays :many
+SELECT group_id, date::text AS on_date, all_trained FROM public.group_days
+WHERE group_id = ANY($1::uuid[]) AND date >= CAST($2::text AS date)
+ORDER BY date
+`
+
+type RecentGroupDaysParams struct {
+	Ids      []uuid.UUID `json:"ids"`
+	FromDate string      `json:"from_date"`
+}
+
+type RecentGroupDaysRow struct {
+	GroupID    uuid.UUID `json:"group_id"`
+	OnDate     string    `json:"on_date"`
+	AllTrained bool      `json:"all_trained"`
+}
+
+func (q *Queries) RecentGroupDays(ctx context.Context, arg RecentGroupDaysParams) ([]RecentGroupDaysRow, error) {
+	rows, err := q.db.Query(ctx, recentGroupDays, arg.Ids, arg.FromDate)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []RecentGroupDaysRow{}
+	for rows.Next() {
+		var i RecentGroupDaysRow
+		if err := rows.Scan(&i.GroupID, &i.OnDate, &i.AllTrained); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const searchPeople = `-- name: SearchPeople :many
@@ -385,6 +596,26 @@ func (q *Queries) SearchPeople(ctx context.Context, arg SearchPeopleParams) ([]S
 		return nil, err
 	}
 	return items, nil
+}
+
+const topStreakGroup = `-- name: TopStreakGroup :one
+SELECT g.name, g.streak_count FROM public.group_members gm JOIN public.training_groups g ON g.id = gm.group_id
+WHERE gm.user_id = $1 AND g.streak_count > 0
+ORDER BY g.streak_count DESC, g.created_at
+LIMIT 1
+`
+
+type TopStreakGroupRow struct {
+	Name        string `json:"name"`
+	StreakCount int32  `json:"streak_count"`
+}
+
+// The user's group with the longest live streak (the Today nudge).
+func (q *Queries) TopStreakGroup(ctx context.Context, userID uuid.UUID) (TopStreakGroupRow, error) {
+	row := q.db.QueryRow(ctx, topStreakGroup, userID)
+	var i TopStreakGroupRow
+	err := row.Scan(&i.Name, &i.StreakCount)
+	return i, err
 }
 
 const totalXPBoard = `-- name: TotalXPBoard :many

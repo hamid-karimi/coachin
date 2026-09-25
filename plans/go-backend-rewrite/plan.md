@@ -220,7 +220,7 @@ Order (dependencies first, risk front-loaded):
       `POST /coaching/trainees/{id}/weekly-plan`, `GET /coaching/trainees/{id}/nutrition`
       (active relationship + sharing opt-in); web hub, trainee nutrition page, Today's
       coaching card, Profile → "My coach" (coach-mode generation shipped in 3.3).
-- [ ] 3.8 **Community** — clubs, follows, groups, leaderboard, discover; `404` while the
+- [x] 3.8 **Community** — clubs, follows, groups, leaderboard, discover; `404` while the
       flag is off (M)
   - [x] 3.8a Boards + clubs: `app/community` (weekly leaderboard — global / primary club /
         followed — with the lifetime-XP fallback; create / join / primary / leave),
@@ -230,8 +230,11 @@ Order (dependencies first, risk front-loaded):
         coaches), `GET /community/people?q=&page=` (name contains, wildcards literal, or an
         exact email; 10 per page; never returns email), `POST /community/follows`,
         `DELETE /community/follows/{id}`; web `/community/circle`.
-  - [ ] 3.8c Group streaks (create / join / leave, trained-today, group-day evaluation) +
-        Today's group nudge.
+  - [x] 3.8c Group streaks: `community.GroupsService` — `GET /community/groups` (settles
+        each group's finished days first), `POST /community/groups`,
+        `POST /community/groups/join`, `DELETE /community/groups/{id}/membership`,
+        `GET /community/group-nudge`; migration 00008 (a new group settles from its 2nd
+        member's join day, not yesterday); web `/community/groups` + Today's group nudge.
 
 ## Phase 4 — Retire SQL business logic (M)
 

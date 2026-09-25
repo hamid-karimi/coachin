@@ -23,13 +23,16 @@ The daily execution surface: see today's plan, log it, watch XP and the streak m
 - `components/coaching-card.tsx` — coach-capable roles with 1+ trainee: "Coaching · 2
   trainees · 1 trained this week" → `/coaching` (`GET /coaching/summary`, prefetched only
   for coaches)
+- `components/group-nudge.tsx` — Community on, nothing logged today, a group with a live
+  streak: "Dawn Patrol's 4-day streak needs you" → `/community/groups`
+  (`GET /community/group-nudge`, prefetched only while the flag is on)
 - `components/goal-strip.tsx` — the tracked goal closest to done ("Weight goal · 74.6kg →
   72kg" + bar) linking to the profile; hidden without one (`profile/lib/profile.ts`
   `featuredGoal`)
 - `components/todays-meals-card.tsx` — "Today's meals" from the active meal plan
   (hidden without one), "Full meal plan" link, "N kcal planned · target X"
-- `hooks/use-today.ts` — `useToday` (suspense query), `useLogWorkout` (refetches Today and
-  My week)
+- `hooks/use-today.ts` — `useToday` (suspense query), `useLogWorkout` (refetches Today,
+  My week, and the group nudge)
 - `lib/today.ts` — greeting, initials, date label, tier labels, level %, plurals, plan
   card subtitle, multiplier suffix (unit-tested)
 - `components/`
@@ -56,7 +59,7 @@ the API's `workout-sets.json` golden vectors),
 
 ## Not yet ported (arrive with their modules)
 
-Group-streak nudge (Community), the session "Share it" card (share cards).
+The session "Share it" card (share cards).
 
 ## Differences from legacy
 

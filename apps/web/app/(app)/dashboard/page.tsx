@@ -7,6 +7,7 @@ import { canCoach } from "@/lib/roles";
 import { CoachingCard } from "./components/coaching-card";
 import { EntryCard } from "./components/entry-card";
 import { GoalStrip } from "./components/goal-strip";
+import { GroupNudge } from "./components/group-nudge";
 import { PlanAndTargets } from "./components/plan-and-targets";
 import { ProgressOverview } from "./components/progress-overview";
 import { ProgressPhotoNudge } from "./components/progress-photo-nudge";
@@ -20,10 +21,12 @@ export const metadata: Metadata = { title: "Today · CoachIn" };
 export default async function DashboardPage() {
   const me = await getMe();
   const coach = canCoach(me?.role);
+  const community = me?.features.community ?? false;
   const state = await prefetchQueries((api, qc) => [
     qc.prefetchQuery(api.queryOptions("get", "/today")),
     qc.prefetchQuery(api.queryOptions("get", "/goals")),
     ...(coach ? [qc.prefetchQuery(api.queryOptions("get", "/coaching/summary"))] : []),
+    ...(community ? [qc.prefetchQuery(api.queryOptions("get", "/community/group-nudge"))] : []),
   ]);
   return (
     <HydrationBoundary state={state}>
@@ -47,6 +50,7 @@ export default async function DashboardPage() {
         />
         <TodaysMealsCard />
         <ProgressPhotoNudge />
+        {community && <GroupNudge />}
         <SupplementsCard />
         <GoalStrip />
         <TodaysPlan />

@@ -102,6 +102,7 @@ func serve(ctx context.Context, _ []string, _ *slog.Logger) error {
 		TraineeNutrition: coaching.NewNutritionService(store.NewCoachingStore(pool), store.NewCoachingStore(pool), nil),
 		Community:        community.NewService(store.NewCommunityStore(pool)),
 		Circle:           community.NewCircleService(store.NewCommunityStore(pool)),
+		Groups:           community.NewGroupsService(store.NewCommunityStore(pool), nil),
 		Cookies:          httpapi.CookieSettings{Secure: cfg.CookieSecure},
 		CommunityEnabled: cfg.CommunityEnabled,
 	})

@@ -50,3 +50,19 @@ export function boardCopy(lb: Pick<Leaderboard, "board" | "primaryClubName" | "w
     empty: EMPTY[lb.board](club),
   };
 }
+
+export type TrainingGroup = components["schemas"]["GroupBody"];
+
+/** "3 day streak · best 5", plus the solo-group hint. */
+export function groupStreakLine(g: Pick<TrainingGroup, "streakCount" | "bestStreak">): string {
+  return `${g.streakCount} day streak · best ${g.bestStreak}`;
+}
+
+export function groupCodeLine(g: Pick<TrainingGroup, "inviteCode" | "members">): string {
+  return `Invite code: ${g.inviteCode}${g.members.length < 2 ? " · needs a 2nd member to start" : ""}`;
+}
+
+/** Today's nudge: "Dawn Patrol's 3-day streak needs you". */
+export function groupNudgeTitle(name: string, streak: number): string {
+  return `${name}'s ${streak}-day streak needs you`;
+}

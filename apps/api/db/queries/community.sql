@@ -75,3 +75,47 @@ INSERT INTO public.social_graph (follower_id, following_id) VALUES (sqlc.arg(fol
 
 -- name: DeleteFollow :execrows
 DELETE FROM public.social_graph WHERE follower_id = sqlc.arg(follower_id) AND following_id = sqlc.arg(following_id);
+
+-- name: MyGroupIDs :many
+SELECT group_id FROM public.group_members WHERE user_id = sqlc.arg(user_id) ORDER BY joined_at;
+
+-- name: EvaluateGroupDays :one
+-- Settles past days (streak + member bonus XP, FORMULAS §2 Group streak); idempotent.
+SELECT public.evaluate_group_days(sqlc.arg(group_id))::text;
+
+-- name: GroupsByIDs :many
+SELECT id, name, invite_code, streak_count, best_streak FROM public.training_groups
+WHERE id = ANY(sqlc.arg(ids)::uuid[]) ORDER BY created_at;
+
+-- name: GroupMembers :many
+SELECT gm.group_id, p.id, p.full_name, p.avatar_url
+FROM public.group_members gm JOIN public.profiles p ON p.id = gm.user_id
+WHERE gm.group_id = ANY(sqlc.arg(ids)::uuid[])
+ORDER BY gm.joined_at;
+
+-- name: RecentGroupDays :many
+SELECT group_id, date::text AS on_date, all_trained FROM public.group_days
+WHERE group_id = ANY(sqlc.arg(ids)::uuid[]) AND date >= CAST(sqlc.arg(from_date)::text AS date)
+ORDER BY date;
+
+-- name: GroupTrainedToday :one
+SELECT public.group_trained_today(sqlc.arg(group_id))::uuid[] AS ids;
+
+-- name: CreateTrainingGroup :one
+SELECT public.create_training_group(sqlc.arg(name))::text;
+
+-- name: JoinTrainingGroup :one
+SELECT public.join_training_group(sqlc.arg(code))::text;
+
+-- name: LeaveTrainingGroup :one
+SELECT public.leave_training_group(sqlc.arg(group_id))::text;
+
+-- name: LoggedAnythingOn :one
+SELECT EXISTS (SELECT 1 FROM public.logs WHERE user_id = sqlc.arg(user_id) AND date = CAST(sqlc.arg(on_date)::text AS date))::bool AS logged;
+
+-- name: TopStreakGroup :one
+-- The user's group with the longest live streak (the Today nudge).
+SELECT g.name, g.streak_count FROM public.group_members gm JOIN public.training_groups g ON g.id = gm.group_id
+WHERE gm.user_id = sqlc.arg(user_id) AND g.streak_count > 0
+ORDER BY g.streak_count DESC, g.created_at
+LIMIT 1;
