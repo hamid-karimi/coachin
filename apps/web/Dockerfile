@@ -1,7 +1,9 @@
 # syntax=docker/dockerfile:1
 # Built from the repo root (the pnpm workspace): docker build -f apps/web/Dockerfile .
 
-FROM node:24-alpine AS base
+# Dependencies and the build run on the builder's platform (the standalone output
+# is plain JS); only the runtime stage is per target platform (amd64 / arm64).
+FROM --platform=$BUILDPLATFORM node:24-alpine AS base
 ENV NEXT_TELEMETRY_DISABLED=1 COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 RUN corepack enable
 WORKDIR /app

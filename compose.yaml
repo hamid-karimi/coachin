@@ -2,8 +2,10 @@
 # layers compose.dev.yaml on top (see Makefile). Only Caddy publishes ports.
 name: coachin
 
+# Local builds are tagged :local; the VPS pulls release images instead
+# (API_IMAGE / WEB_IMAGE in .env, published to GHCR on each version tag).
 x-api-image: &api-image
-  image: coachin/api:local
+  image: ${API_IMAGE:-coachin/api:local}
   build: ./apps/api
 
 x-storage-env: &storage-env
@@ -112,7 +114,7 @@ services:
       start_period: 5s
 
   web:
-    image: coachin/web:local
+    image: ${WEB_IMAGE:-coachin/web:local}
     build:
       context: .
       dockerfile: apps/web/Dockerfile
@@ -139,6 +141,7 @@ services:
     ports:
       - "${HTTP_PORT:-8080}:80"
       - "${HTTPS_PORT:-8443}:443"
+      - "${HTTPS_PORT:-8443}:443/udp"
     volumes:
       - ./deploy/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy-data:/data
@@ -150,6 +153,34 @@ services:
         condition: service_healthy
       api:
         condition: service_healthy
+
+  # Nightly encrypted off-site backups (Phase 6.3; deploy/README.md): on the VPS set
+  # COMPOSE_PROFILES=backup. `make backup` / `make restore` run it by hand anywhere.
+  backup:
+    image: ${BACKUP_IMAGE:-coachin/backup:local}
+    build: ./deploy/backup
+    profiles: [backup]
+    restart: unless-stopped
+    environment:
+      <<: *storage-env
+      PGHOST: postgres
+      PGUSER: coachin_owner
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: coachin
+      BACKUP_SCHEDULE: ${BACKUP_SCHEDULE:-0 3 * * *}
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-14}
+      BACKUP_S3_ENDPOINT: ${BACKUP_S3_ENDPOINT:-}
+      BACKUP_S3_REGION: ${BACKUP_S3_REGION:-auto}
+      BACKUP_S3_BUCKET: ${BACKUP_S3_BUCKET:-}
+      BACKUP_S3_ACCESS_KEY_ID: ${BACKUP_S3_ACCESS_KEY_ID:-}
+      BACKUP_S3_SECRET_ACCESS_KEY: ${BACKUP_S3_SECRET_ACCESS_KEY:-}
+      BACKUP_PASSPHRASE: ${BACKUP_PASSPHRASE:-}
+      BACKUP_HEALTHCHECK_URL: ${BACKUP_HEALTHCHECK_URL:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      garage:
+        condition: service_started
 
 volumes:
   pgdata:

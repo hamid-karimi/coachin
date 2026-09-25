@@ -313,13 +313,18 @@ Order (dependencies first, risk front-loaded):
 
 ## Phase 6 — VPS readiness (M)
 
-- [ ] 6.1 Release workflow: build `api` + `web` images (amd64 + arm64) → GHCR on tag.
-- [ ] 6.2 Production Caddyfile (domain, automatic HTTPS, security headers, gzip/zstd),
-      production `.env` template, `__Host-` secure cookie.
-- [ ] 6.3 Backups: nightly `pg_dump` + Garage bucket sync to off-site storage, 14-day
-      retention; `make restore` + a tested restore runbook in `deploy/README.md`.
-- [ ] 6.4 VPS bootstrap runbook: Ubuntu LTS, Docker Engine, non-root deploy user, SSH
-      key-only, firewall (22/80/443), unattended security upgrades, `make deploy`.
+- [x] 6.1 Release workflow (`.github/workflows/release.yml`): `api`, `web`, and `backup`
+      images (amd64 + arm64; Go cross-compiles, web builds once on the builder) → GHCR on
+      `v*` tags. Compose takes `API_IMAGE` / `WEB_IMAGE` / `BACKUP_IMAGE` (local `:local`).
+- [x] 6.2 One Caddyfile for both: `SITE_ADDRESS` = the domain → automatic HTTPS + http→https
+      + HTTP/3 (udp/443 published); HSTS (inert over http), security headers, zstd/gzip.
+      `deploy/production.env.example`; `COOKIE_SECURE=true` → Secure `__Host-` cookie.
+- [x] 6.3 Backups (`deploy/backup`: postgres-alpine + rclone, crond): nightly `pg_dump` +
+      photo mirror to any S3 bucket, encrypted (rclone crypt), 14-day retention by date;
+      `make backup` / `backups` / `restore [DATE=]`. Tested on the sandbox: backup → delete
+      rows + an object → `make restore` → data and photo back, 14/14 e2e after.
+- [x] 6.4 VPS runbook (`deploy/README.md`): Ubuntu LTS, Docker Engine, `deploy` user, SSH
+      key-only, ufw 22/80/443(+udp), unattended upgrades, `make deploy` (pull + up).
 
 ## Phase 7 — Go-live (S–M)
 

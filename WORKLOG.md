@@ -5,6 +5,21 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · #95 (7.1), #96 (5.3 + monorepo) merged · Phase 6 — VPS readiness
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): 6.1 `release.yml` (api/web/backup →
+GHCR, amd64+arm64 on `v*` tags; `*_IMAGE` env in compose). 6.2 HSTS + HTTP/3 in the one
+Caddyfile, `deploy/production.env.example`. 6.3 `deploy/backup` (pg_dump + rclone crypt to
+any S3, crond nightly, 14-day retention by date), `make backup|backups|restore`, profile
+`backup`. 6.4 VPS runbook + `make deploy`. `make import-supabase` now uses the production
+compose (`--no-deps`, stack running). Sandbox: backup → damage → restore verified; 14/14 e2e.
+
+**Decisions**: rclone (not restic) — one static binary copied from its image, no apk in
+the build; photos restore to the latest mirror (deleted ones kept 14 days in changed-<date>).
+
+**Next steps**: merge; give the user local run instructions. Left for later (per the
+user): 7.2 provision + import, 7.3 live smoke test, 7.4 switch off Vercel/Supabase.
+
 ## 2026-09-25 · Monorepo (plan 5.4)
 
 **Done** (branch `claude/lucid-tesla-3737vk`, after 5.3): root `pnpm-workspace.yaml` +

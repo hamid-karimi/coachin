@@ -12,7 +12,7 @@ was not reviewed (it is deleted in 5.3).
 | 2 | High | `get_weekly_leaderboard` (SECURITY DEFINER, any ids) returned every user's **email**. | Recreated without the email column (nothing read it). |
 | 3 | Medium | `clubs_select_authenticated` was `USING (true)`: every club, **invite code included**, was readable, so anyone could join any club. | Clubs are readable by their owner and members; joining by code still runs in `join_club_via_invite_code`. |
 | 4 | Low | People search matched `lower(email)` on other users' rows (needs the private column). | `user_id_by_email(text)` returns only the id for an exact address. |
-| 5 | Low | No security headers at the edge; Next.js sent `X-Powered-By`. | Caddy sets `nosniff`, `X-Frame-Options DENY`, `frame-ancestors 'none'` / `base-uri` / `form-action` / `object-src` CSP, a strict referrer policy, a restrictive `Permissions-Policy`, and strips `Server` / `X-Powered-By`; `poweredByHeader: false`. HSTS comes with the production Caddyfile (6.2). |
+| 5 | Low | No security headers at the edge; Next.js sent `X-Powered-By`. | Caddy sets `nosniff`, `X-Frame-Options DENY`, `frame-ancestors 'none'` / `base-uri` / `form-action` / `object-src` CSP, a strict referrer policy, a restrictive `Permissions-Policy`, and strips `Server` / `X-Powered-By`; `poweredByHeader: false`. HSTS (1 year, subdomains) since 6.2. |
 | 6 | Low | The new card view would have inherited `INSERT/UPDATE/DELETE` from the schema's default privileges — a simple view is auto-updatable and runs as its owner, i.e. a write path around RLS. | The migration revokes everything but `SELECT`; `TestProfilePrivacy` asserts a write through the view fails. |
 
 `TestProfilePrivacy` (store, Postgres) pins 1–3 and 6: a stranger reads no private row but
@@ -24,7 +24,7 @@ the leaderboard has no email, and the view refuses writes.
 - **Passwords**: argon2id (PHC string); imported Supabase bcrypt hashes verify and are
   rehashed on the next login.
 - **Sessions**: opaque random tokens, stored as SHA-256 hashes; cookie `HttpOnly`,
-  `SameSite=Lax`, `Secure` in production (6.2 adds the `__Host-` prefix); password reset
+  `SameSite=Lax`, `Secure` + `__Host-` prefix in production (`COOKIE_SECURE=true`); password reset
   and change revoke the other sessions.
 - **CSRF**: `http.NewCrossOriginProtection` rejects cross-site state-changing requests
   (Sec-Fetch-Site / Origin) in front of every route.

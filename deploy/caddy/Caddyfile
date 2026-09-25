@@ -4,12 +4,15 @@
 }
 
 # Locally SITE_ADDRESS is ":80" (plain http, published on :8080).
-# On the VPS set it to your domain and Caddy obtains HTTPS certificates itself.
+# On the VPS set it to your domain: Caddy obtains and renews the HTTPS certificate
+# itself, redirects http → https, and serves HTTP/3 (udp/443).
 {$SITE_ADDRESS::80} {
 	encode zstd gzip
 
-	# Security headers on every response (HSTS is added by the production config).
+	# Security headers on every response. Browsers only honor HSTS over HTTPS, so it
+	# is inert on http://localhost and pins https on the VPS.
 	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		X-Content-Type-Options nosniff
 		X-Frame-Options DENY
 		Content-Security-Policy "frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
