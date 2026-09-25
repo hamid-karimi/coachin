@@ -19,6 +19,10 @@ import (
 // ErrNoRunningSport is returned by the store when no sport named like "run" exists.
 var ErrNoRunningSport = errors.New("no running sport type")
 
+// ErrAlreadyAwarded means a date's run XP is already in the ledger, though its
+// log is gone (the ledger's once-only index caught it).
+var ErrAlreadyAwarded = errors.New("run already awarded")
+
 // RunningSport is the sport imported runs are logged under.
 type RunningSport struct {
 	ID         int64
@@ -109,6 +113,9 @@ func (s *Importer) Import(ctx context.Context, userID uuid.UUID, raw []any) (str
 	})
 	if errors.Is(err, ErrNoRunningSport) {
 		return "", apperr.New(apperr.Unavailable, "No running sport type is configured")
+	}
+	if errors.Is(err, ErrAlreadyAwarded) {
+		return "", apperr.New(apperr.Conflict, "Those days already have a logged run")
 	}
 	if err != nil {
 		return "", err

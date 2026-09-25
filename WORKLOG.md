@@ -5,6 +5,22 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · #85 merged (3.9 share cards) · Phase 4.1 — XP ledger once-only index
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): migration 00009 — partial unique index `xp_transactions_once_idx` on
+`(user_id, reason)` except `plan_item:` / `plan_item_undo:` (toggle pair, counted) and
+legacy undated `workout_log:<sport>`; existing duplicates relabeled `#dup<n>` (amounts
+kept). `store.awardedTwice` maps a violation → `today.ErrAlreadyLogged` /
+`activities.ErrAlreadyAwarded` (409 "Those days already have a logged run").
+Integration test rolls 00009 back, seeds duplicates, re-migrates.
+
+**Decisions**: a negative list (everything once-only by default) so new reason kinds are
+protected without opting in. A relabeled legacy duplicate `meal_log:<id>#dup2` isn't
+refunded when that meal is deleted (only the original award is) — acceptable.
+
+**Next steps**: 4.2 SQL functions → Go (plan items + session logs first), each with a
+concurrency test; 4.5 RLS hardening.
+
 ## 2026-09-25 · #84 merged (3.8c) · Phase 3.9 — Share cards (Phase 3 complete)
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): web-only port of legacy share cards —

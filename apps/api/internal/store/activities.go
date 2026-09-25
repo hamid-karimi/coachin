@@ -55,6 +55,9 @@ func (s *ActivityStore) ImportRuns(ctx context.Context, userID uuid.UUID, dates 
 				return fmt.Errorf("insert log: %w", err)
 			}
 			if err := q.InsertXPTransaction(ctx, queries.InsertXPTransactionParams{UserID: userID, Amount: int32(run.XP), Reason: run.Reason}); err != nil { // #nosec G115 -- small award
+				if awardedTwice(err) {
+					return activities.ErrAlreadyAwarded
+				}
 				return fmt.Errorf("insert xp transaction: %w", err)
 			}
 			total += run.XP
