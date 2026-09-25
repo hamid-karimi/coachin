@@ -5,6 +5,20 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · #91 merged (4.3) · Phase 4.4 — Go is the formulas' source of truth
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): FORMULAS.md intro
+rewritten; the 17 "Source of truth: legacy/…" lines are now "Legacy origin"; §5 and §8
+gained their Go pointers. CI's "golden vectors match the legacy formulas" step removed
+(a Go-only formula change would fail it); `make golden` labeled history.
+
+**Decisions**: golden JSON stays — it pins Go and the web copies to the same vectors.
+
+**Next steps**: Phase 4 gate (full suites + golden + QA journeys re-run), then Phase 5:
+5.1 Playwright suite for the QA journeys in CI; 5.2 security review — include the RLS
+findings noted earlier (`profiles_select_authenticated` is `USING (true)`,
+`get_weekly_leaderboard` accepts any ids, `clubs` readable by everyone incl. invite codes).
+
 ## 2026-09-25 · #90 merged (4.2d) · Phase 4.3 — drop the retired SQL functions
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): migration 00010

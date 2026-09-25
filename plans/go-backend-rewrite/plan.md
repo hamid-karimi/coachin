@@ -280,7 +280,10 @@ Order (dependencies first, risk front-loaded):
       `award_session_log_xp`, `award_meal_xp`, `award_day_adherence`, `achieve_goal`,
       `evaluate_user_streak`, `apply_week_adjustment`); its Down restores them. The streak
       parity test installs legacy's function from `internal/store/testdata`.
-- [ ] 4.4 FORMULAS.md: Go files are the only source of truth.
+- [x] 4.4 FORMULAS.md: Go files are the only source of truth — every section names its
+      Go code; `legacy/` paths are "Legacy origin" history. `testdata/golden` is owned by
+      the Go + web tests (edited with a formula change); CI no longer regenerates it from
+      the legacy TypeScript.
 - **Gate**: full suites + golden vectors + every QA journey re-run.
 
 ## Phase 5 — Hardening & cutover in the repo (M)
