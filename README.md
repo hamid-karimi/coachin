@@ -43,6 +43,9 @@ Without them those features answer "temporarily unavailable"; everything else wo
 with password `Coachin-demo1`. Emails the app sends (sign-up confirmation, password
 reset) show up in Mailpit at http://localhost:8025.
 
+`make e2e` runs the Playwright QA journeys (`apps/web/e2e`) against the stack with a fake
+Claude and Community on (`compose.e2e.yaml`); CI runs the same suite.
+
 `make help` lists everything else (`down`, `logs`, `migrate`, `reset-db`, `gen`, `test`,
 `lint`, `infra`, `golden`).
 

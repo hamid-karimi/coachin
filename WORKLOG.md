@@ -5,6 +5,31 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · Phase 5.1b — the remaining QA journeys
+
+**Done** (branch `claude/lucid-tesla-3737vk`, added to PR #93): specs for journeys
+1 (my week), 4 (calendar), 7 (watch import; GPX built relative to today), 8 (progress
+photos drawn on a canvas, compare, "Share progress"); `support.jpeg`. 14/14 green on the
+sandbox (56 s — the register back-off waits out the auth burst of 10).
+
+**Next steps**: 5.2 security review (`/security-review`), including the RLS notes
+(profiles select USING (true), `get_weekly_leaderboard` ids, clubs readable with codes);
+then 5.3 delete `legacy/`.
+
+## 2026-09-25 · #92 merged (4.4) · Phase 5.1a — Playwright QA journeys in CI
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): `@playwright/test`
+1.63 in apps/web (`playwright.config.ts`, Pixel 7, 1 worker, `PW_CHROMIUM_PATH` for
+sandboxes), `e2e/support.ts` (fresh athlete via register with 429 back-off, demo accounts,
+toast helper), specs for journeys 0, 2, 3, 5 (+share), 6, 9, 10 — 10 tests, all green on
+the sandbox stack. `deploy/e2e/fakeai.mjs` + `compose.e2e.yaml`; `make e2e`; CI job
+"E2E journeys (Playwright)". Fix found by the suite: app-shell `<main>` gets `min-w-0`
+(a long email in the profile header made the phone layout 542px wide; Tara's was 419px).
+
+**Next steps**: 5.1b journeys 1, 4, 7 + photos; 5.2 security review (incl. the RLS notes:
+profiles select USING (true), leaderboard ids, clubs readable with codes); 5.3 delete
+legacy/ at cutover.
+
 ## 2026-09-25 · #91 merged (4.3) · Phase 4.4 — Go is the formulas' source of truth
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): FORMULAS.md intro
