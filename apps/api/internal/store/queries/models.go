@@ -285,6 +285,15 @@ type Profile struct {
 	Country                 *string        `json:"country"`
 }
 
+type ProfileCard struct {
+	ID         uuid.UUID   `json:"id"`
+	FullName   *string     `json:"full_name"`
+	AvatarUrl  *string     `json:"avatar_url"`
+	Xp         pgtype.Int4 `json:"xp"`
+	Level      pgtype.Int4 `json:"level"`
+	LeagueTier *string     `json:"league_tier"`
+}
+
 type Schedule struct {
 	ID          uuid.UUID   `json:"id"`
 	UserID      *uuid.UUID  `json:"user_id"`

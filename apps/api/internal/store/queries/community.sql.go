@@ -96,7 +96,7 @@ func (q *Queries) EvaluateGroupDays(ctx context.Context, groupID uuid.UUID) (str
 
 const groupMembers = `-- name: GroupMembers :many
 SELECT gm.group_id, p.id, p.full_name, p.avatar_url
-FROM public.group_members gm JOIN public.profiles p ON p.id = gm.user_id
+FROM public.group_members gm JOIN public.profile_cards p ON p.id = gm.user_id
 WHERE gm.group_id = ANY($1::uuid[])
 ORDER BY gm.joined_at
 `
@@ -337,7 +337,7 @@ func (q *Queries) ListFollowing(ctx context.Context, userID *uuid.UUID) ([]*uuid
 
 const listFollowingProfiles = `-- name: ListFollowingProfiles :many
 SELECT p.id, p.full_name, p.avatar_url, COALESCE(p.level, 1)::bigint AS level, p.league_tier, COALESCE(p.xp, 0)::bigint AS xp
-FROM public.social_graph g JOIN public.profiles p ON p.id = g.following_id
+FROM public.social_graph g JOIN public.profile_cards p ON p.id = g.following_id
 WHERE g.follower_id = $1
 ORDER BY g.created_at
 `
@@ -477,7 +477,7 @@ func (q *Queries) MyGroupIDs(ctx context.Context, userID uuid.UUID) ([]uuid.UUID
 }
 
 const profileExists = `-- name: ProfileExists :one
-SELECT EXISTS (SELECT 1 FROM public.profiles WHERE id = $1)::bool AS found
+SELECT EXISTS (SELECT 1 FROM public.profile_cards WHERE id = $1)::bool AS found
 `
 
 func (q *Queries) ProfileExists(ctx context.Context, id uuid.UUID) (bool, error) {
@@ -537,11 +537,11 @@ func (q *Queries) RecentGroupDays(ctx context.Context, arg RecentGroupDaysParams
 const searchPeople = `-- name: SearchPeople :many
 SELECT p.id, p.full_name, p.avatar_url, COALESCE(p.level, 1)::bigint AS level, p.league_tier, COALESCE(p.xp, 0)::bigint AS xp,
        EXISTS (SELECT 1 FROM public.social_graph g WHERE g.follower_id = $1 AND g.following_id = p.id)::bool AS following
-FROM public.profiles p
+FROM public.profile_cards p
 WHERE p.id <> $1
   AND ($2::text = ''
        OR p.full_name ILIKE '%' || replace(replace(replace($2::text, '\', '\\'), '%', '\%'), '_', '\_') || '%'
-       OR lower(p.email) = lower($2::text))
+       OR p.id = public.user_id_by_email($2::text))
 ORDER BY p.xp DESC NULLS LAST, p.id
 LIMIT $4::int OFFSET $3::int
 `
@@ -620,7 +620,7 @@ func (q *Queries) TopStreakGroup(ctx context.Context, userID uuid.UUID) (TopStre
 
 const totalXPBoard = `-- name: TotalXPBoard :many
 SELECT id, full_name, avatar_url, COALESCE(level, 1)::bigint AS level, league_tier, COALESCE(xp, 0)::bigint AS xp
-FROM public.profiles
+FROM public.profile_cards
 WHERE $1::uuid[] IS NULL OR id = ANY($1::uuid[])
 ORDER BY xp DESC NULLS LAST
 LIMIT $2::int

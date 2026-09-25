@@ -295,7 +295,9 @@ Order (dependencies first, risk front-loaded):
         header widened the whole phone layout (fixed).
   - [x] 5.1b journeys 1 (my week), 4 (calendar), 7 (watch import — GPX generated relative
         to today), 8 (progress photos drawn on a canvas → compare → share card). 14 tests.
-- [ ] 5.2 Security review of auth, uploads, authorization (`/security-review`), and fixes.
+- [x] 5.2 Security review of auth, uploads, authorization, and fixes —
+      [`security-review.md`](security-review.md): profiles private (cards view for
+      others), leaderboard without emails, clubs members-only, edge security headers.
 - [ ] 5.3 Delete `legacy/` (and with it `supabase/`, Vercel/Next server code). Verify spec
       §8 criteria 1–7. Rewrite root README (stack, `make up`), QA-ONBOARDING ("Stack",
       "Running the app locally"), module READMEs.

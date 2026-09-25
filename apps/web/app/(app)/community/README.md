@@ -51,7 +51,11 @@ meanwhile.
 ## Differences from legacy
 
 - Leaderboard rows never include email (legacy sent every user's email to every viewer
-  and used it as the fallback name).
+  and used it as the fallback name); the database function no longer returns it either.
+- Other people are read through `profile_cards` (name, avatar, XP, level, tier) — their
+  profile row (email, body data) is private to them and their active coach / trainee
+  (migration 00011, `plans/go-backend-rewrite/security-review.md`).
+- Clubs are readable by their members only (legacy exposed every club's invite code).
 - Club reads go through your memberships only; leaving and switching primary are single
   transactions.
 - Club names are capped at 80 characters, descriptions at 500.

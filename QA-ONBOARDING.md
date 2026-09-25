@@ -603,4 +603,6 @@ one active plan per discipline; quotas/volume having no XP effect;
 to the dashboard, user discovery API returns 404, and social mutations —
 clubs, follows, groups — are rejected server-side even if invoked directly;
 coach invite codes and plan assignment still work — behind a feature flag,
-not removed).
+not removed). Other people's profiles show only name, avatar, level,
+tier, and XP — body data and email are visible to the person and their active
+coach / trainee only; a club is visible to its members only.

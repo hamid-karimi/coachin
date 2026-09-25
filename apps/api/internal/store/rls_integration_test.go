@@ -143,3 +143,63 @@ func TestUsersOnlySeeTheirOwnPrivateRows(t *testing.T) {
 		t.Errorf("no user context sees %d supplements, want 0", n)
 	}
 }
+
+// Phase 5.2: a stranger sees only another user's public card; the coaching pair
+// sees each other's profile; the card view is read-only; clubs are members-only.
+func TestProfilePrivacy(t *testing.T) {
+	urls := migratedDB(t)
+	ctx := context.Background()
+	owner, err := pgx.Connect(ctx, urls.Owner)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = owner.Close(ctx) }()
+	pool, err := store.Open(ctx, urls.App)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer pool.Close()
+	ada, bob, coach := seedUser(t, owner, "ada@example.com"), seedUser(t, owner, "bob@example.com"), seedUser(t, owner, "coach@example.com")
+	for _, stmt := range []string{
+		`UPDATE profiles SET full_name = 'Bob', birth_date = '1990-01-01', weight_kg = 80 WHERE email = 'bob@example.com'`,
+		`INSERT INTO coaching_relationships (coach_id, student_id, status) VALUES ('` + coach.String() + `', '` + bob.String() + `', 'active')`,
+		`INSERT INTO clubs (name, owner_id, invite_code) VALUES ('Bob club', '` + bob.String() + `', 'CLUB-SECRET')`,
+	} {
+		if _, err := owner.Exec(ctx, stmt); err != nil {
+			t.Fatalf("%s: %v", stmt, err)
+		}
+	}
+	count := func(as uuid.UUID, sql string) int {
+		t.Helper()
+		var n int
+		if err := store.WithUser(ctx, pool, as, func(tx pgx.Tx) error { return tx.QueryRow(ctx, sql, bob).Scan(&n) }); err != nil {
+			t.Fatalf("%s: %v", sql, err)
+		}
+		return n
+	}
+	if n := count(ada, `SELECT count(*) FROM profiles WHERE id = $1`); n != 0 {
+		t.Errorf("a stranger read the private profile row")
+	}
+	if n := count(ada, `SELECT count(*) FROM profile_cards WHERE id = $1 AND full_name = 'Bob'`); n != 1 {
+		t.Errorf("a stranger can't read the public card")
+	}
+	if n := count(coach, `SELECT count(*) FROM profiles WHERE id = $1 AND weight_kg = 80`); n != 1 {
+		t.Errorf("the coach can't read the trainee's profile")
+	}
+	if n := count(ada, `SELECT count(*) FROM clubs WHERE owner_id = $1`); n != 0 {
+		t.Errorf("a non-member read the club and its invite code")
+	}
+	if n := count(bob, `SELECT count(*) FROM clubs WHERE owner_id = $1`); n != 1 {
+		t.Errorf("the owner can't read their club")
+	}
+	if n := count(ada, `SELECT count(*) FROM public.get_weekly_leaderboard(ARRAY[$1::uuid], 1) lb WHERE to_jsonb(lb) ? 'email'`); n != 0 {
+		t.Errorf("the weekly leaderboard still returns emails")
+	}
+	err = store.WithUser(ctx, pool, ada, func(tx pgx.Tx) error {
+		_, err := tx.Exec(ctx, `UPDATE profile_cards SET xp = 99999 WHERE id = $1`, ada)
+		return err
+	})
+	if err == nil {
+		t.Error("the card view accepted a write")
+	}
+}
