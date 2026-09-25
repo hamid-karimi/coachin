@@ -3,6 +3,7 @@ package store_test
 import (
 	"context"
 	"math/rand/v2"
+	"os"
 	"sync"
 	"testing"
 	"time"
@@ -16,7 +17,8 @@ import (
 
 // The Go streak settle (Phase 4.2c) must land exactly where legacy's
 // evaluate_user_streak does: two users get the same history, one is settled
-// by the SQL function (still installed until 4.3), the other by the store.
+// by the legacy SQL function (dropped in 4.3; installed here from testdata),
+// the other by the store.
 func TestStreakSettleMatchesSQL(t *testing.T) {
 	urls := migratedDB(t)
 	ctx := context.Background()
@@ -36,6 +38,11 @@ func TestStreakSettleMatchesSQL(t *testing.T) {
 			t.Fatalf("%s: %v", sql, err)
 		}
 	}
+	legacy, err := os.ReadFile("testdata/legacy_evaluate_user_streak.sql")
+	if err != nil {
+		t.Fatal(err)
+	}
+	exec(string(legacy))
 	// CURRENT_DATE drives the SQL function, so the store uses the same date.
 	var today time.Time
 	if err := owner.QueryRow(ctx, `SELECT CURRENT_DATE`).Scan(&today); err != nil {
@@ -100,7 +107,7 @@ func TestStreakSettleMatchesSQL(t *testing.T) {
 		seed(viaGo, scenario, settled)
 
 		if err := store.WithUser(ctx, pool, viaSQL, func(tx pgx.Tx) error {
-			_, err := tx.Exec(ctx, `SELECT public.evaluate_user_streak()`)
+			_, err := tx.Exec(ctx, `SELECT public.legacy_evaluate_user_streak()`)
 			return err
 		}); err != nil {
 			t.Fatal(err)

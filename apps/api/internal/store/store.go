@@ -65,6 +65,11 @@ func (m *Migrator) Down(ctx context.Context) (*goose.MigrationResult, error) {
 	return m.provider.Down(ctx)
 }
 
+// DownTo rolls back every migration after version.
+func (m *Migrator) DownTo(ctx context.Context, version int64) ([]*goose.MigrationResult, error) {
+	return m.provider.DownTo(ctx, version)
+}
+
 // Status lists every migration and whether it is applied.
 func (m *Migrator) Status(ctx context.Context) ([]*goose.MigrationStatus, error) {
 	return m.provider.Status(ctx)

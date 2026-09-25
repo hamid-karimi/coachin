@@ -5,6 +5,22 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · #90 merged (4.2d) · Phase 4.3 — drop the retired SQL functions
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): migration 00010
+drops `complete_plan_item`, `award_session_log_xp`, `award_meal_xp`,
+`award_day_adherence`, `achieve_goal`, `evaluate_user_streak`, `apply_week_adjustment`
+(Down restores the baseline bodies; default privileges re-grant EXECUTE). The streak
+parity test installs `legacy_evaluate_user_streak` from `internal/store/testdata`.
+`Migrator.DownTo` added (the 4.1 test now rolls back to version 8, not "one step").
+
+**Decisions**: the rest of the SQL functions are cross-user or membership-granting and
+stay (ADR-5 amendment): joins by code, club/group creation, leaving a group, schedule
+assign, group-day evaluation, group_trained_today, leaderboard, create_training_plan.
+
+**Next steps**: 4.4 FORMULAS.md — Go files the only source of truth (drop "Source of
+truth: legacy/…" lines, keep them as history); then Phase 4.5 RLS hardening, Phase 5.
+
 ## 2026-09-25 · #89 merged (4.2c) · Phase 4.2d — weekly check-ins in Go
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR):

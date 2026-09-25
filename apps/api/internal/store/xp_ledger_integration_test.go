@@ -28,13 +28,13 @@ func TestXPLedgerOnceOnlyIndex(t *testing.T) {
 	}
 	ada := seedUser(t, owner, "ada@example.com")
 
-	// Roll 00009 back, write the duplicates legacy data can hold, migrate again.
+	// Roll back to before 00009, write the duplicates legacy data can hold, migrate again.
 	m, err := store.NewMigrator(ctx, urls.Owner, migrations(t))
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer func() { _ = m.Close() }()
-	if _, err := m.Down(ctx); err != nil {
+	if _, err := m.DownTo(ctx, 8); err != nil {
 		t.Fatal(err)
 	}
 	for _, reason := range []string{

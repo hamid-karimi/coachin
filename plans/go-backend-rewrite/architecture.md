@@ -165,9 +165,10 @@ FORMULAS.md, QA-ONBOARDING.md, WORKLOG.md, CLAUDE.md, README.md
   `WithSystem` is reserved for migrations / importer / jobs, so moving these into Go
   would need either RLS policies that expose other users' rows (e.g. every invite code)
   or a request-time RLS bypass — both weaker than a function that does exactly one
-  cross-user step. Their XP rules stay pinned by Go-side tests; everything that touches
-  only the caller's rows is Step B (4.2a–d, plan creation, club / group creation and
-  leaving).
+  cross-user step. Functions that grant membership or write another user's rows stay
+  for the same reason: club / group creation (owner membership), leaving a group (deletes
+  it when empty), and plan creation (coach mode). Step B covered every function that
+  touches only the caller's rows (4.2a–d); migration 00010 dropped them.
 - **Parity**: `testdata/golden/*.json` generated from today's `lib/*.test.ts` cases; Go runs
   the same vectors. FORMULAS.md pointers move to `apps/api/internal/domain/*.go`.
 
