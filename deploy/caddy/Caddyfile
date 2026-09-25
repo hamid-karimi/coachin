@@ -8,6 +8,17 @@
 {$SITE_ADDRESS::80} {
 	encode zstd gzip
 
+	# Security headers on every response (HSTS is added by the production config).
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Content-Security-Policy "frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+		Referrer-Policy strict-origin-when-cross-origin
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+		-Server
+		-X-Powered-By
+	}
+
 	handle /api/* {
 		reverse_proxy api:8080
 	}

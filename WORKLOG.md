@@ -5,6 +5,21 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · #93 merged (5.1) · Phase 5.2 — security review
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR):
+`plans/go-backend-rewrite/security-review.md`. Migration 00011: profiles readable by self
++ active coaching pair only; `profile_cards` read-only security-barrier view for everyone
+else (community/circle/search/follows/group members use it); `user_id_by_email` for exact
+email search; `get_weekly_leaderboard` without email; clubs members-only. Caddy security
+headers; Next `poweredByHeader: false`. `TestProfilePrivacy`.
+
+**Decisions**: rate-limit keying was already correct (last X-Forwarded-For hop). HSTS and
+`__Host-` cookie wait for the production config (6.2).
+
+**Next steps**: 7.1 Supabase importer (needs the legacy schema → before 5.3), 5.3 delete
+legacy/, monorepo tooling (root pnpm workspace + go.work), Phase 6.
+
 ## 2026-09-25 · Phase 5.1b — the remaining QA journeys
 
 **Done** (branch `claude/lucid-tesla-3737vk`, added to PR #93): specs for journeys

@@ -13,7 +13,7 @@ SELECT user_id FROM public.club_members WHERE club_id = sqlc.arg(club_id);
 -- name: TotalXPBoard :many
 -- Lifetime-XP ranking (all users when ids is NULL).
 SELECT id, full_name, avatar_url, COALESCE(level, 1)::bigint AS level, league_tier, COALESCE(xp, 0)::bigint AS xp
-FROM public.profiles
+FROM public.profile_cards
 WHERE sqlc.narg(ids)::uuid[] IS NULL OR id = ANY(sqlc.narg(ids)::uuid[])
 ORDER BY xp DESC NULLS LAST
 LIMIT sqlc.arg(max_rows)::int;
@@ -43,7 +43,7 @@ WHERE id = (SELECT m.id FROM public.club_members m WHERE m.user_id = sqlc.arg(us
 
 -- name: ListFollowingProfiles :many
 SELECT p.id, p.full_name, p.avatar_url, COALESCE(p.level, 1)::bigint AS level, p.league_tier, COALESCE(p.xp, 0)::bigint AS xp
-FROM public.social_graph g JOIN public.profiles p ON p.id = g.following_id
+FROM public.social_graph g JOIN public.profile_cards p ON p.id = g.following_id
 WHERE g.follower_id = sqlc.arg(user_id)
 ORDER BY g.created_at;
 
@@ -59,16 +59,16 @@ ORDER BY cr.created_at;
 -- caller. Top lifetime XP first.
 SELECT p.id, p.full_name, p.avatar_url, COALESCE(p.level, 1)::bigint AS level, p.league_tier, COALESCE(p.xp, 0)::bigint AS xp,
        EXISTS (SELECT 1 FROM public.social_graph g WHERE g.follower_id = sqlc.arg(user_id) AND g.following_id = p.id)::bool AS following
-FROM public.profiles p
+FROM public.profile_cards p
 WHERE p.id <> sqlc.arg(user_id)
   AND (sqlc.arg(term)::text = ''
        OR p.full_name ILIKE '%' || replace(replace(replace(sqlc.arg(term)::text, '\', '\\'), '%', '\%'), '_', '\_') || '%'
-       OR lower(p.email) = lower(sqlc.arg(term)::text))
+       OR p.id = public.user_id_by_email(sqlc.arg(term)::text))
 ORDER BY p.xp DESC NULLS LAST, p.id
 LIMIT sqlc.arg(max_rows)::int OFFSET sqlc.arg(skip)::int;
 
 -- name: ProfileExists :one
-SELECT EXISTS (SELECT 1 FROM public.profiles WHERE id = sqlc.arg(id))::bool AS found;
+SELECT EXISTS (SELECT 1 FROM public.profile_cards WHERE id = sqlc.arg(id))::bool AS found;
 
 -- name: InsertFollow :exec
 INSERT INTO public.social_graph (follower_id, following_id) VALUES (sqlc.arg(follower_id), sqlc.arg(following_id));
@@ -89,7 +89,7 @@ WHERE id = ANY(sqlc.arg(ids)::uuid[]) ORDER BY created_at;
 
 -- name: GroupMembers :many
 SELECT gm.group_id, p.id, p.full_name, p.avatar_url
-FROM public.group_members gm JOIN public.profiles p ON p.id = gm.user_id
+FROM public.group_members gm JOIN public.profile_cards p ON p.id = gm.user_id
 WHERE gm.group_id = ANY(sqlc.arg(ids)::uuid[])
 ORDER BY gm.joined_at;
 

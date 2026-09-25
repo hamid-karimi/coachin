@@ -10,7 +10,8 @@ test("log today's routine session once", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Hi, Tom" })).toBeVisible();
   await expect(page.getByText("0 of 1 done").first()).toBeVisible();
   await page.getByRole("button", { name: "Log it" }).click();
-  await expect(page.getByText(/\+60 XP earned/)).toBeVisible();
+  // "+60 XP earned" flips to "Done · +60 XP" as soon as Today refetches.
+  await expect(page.getByText(/\+60 XP/).first()).toBeVisible();
 
   await page.reload();
   await expect(page.getByText(/Done · \+60 XP/)).toBeVisible();
