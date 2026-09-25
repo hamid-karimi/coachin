@@ -179,6 +179,9 @@ func (s *TodayStore) LogWorkout(ctx context.Context, userID uuid.UUID, log today
 			return fmt.Errorf("insert log: %w", err)
 		}
 		if err := q.InsertXPTransaction(ctx, queries.InsertXPTransactionParams{UserID: userID, Amount: int32(log.XP), Reason: log.Reason}); err != nil { // #nosec G115 -- small award
+			if awardedTwice(err) {
+				return today.ErrAlreadyLogged
+			}
 			return fmt.Errorf("insert xp transaction: %w", err)
 		}
 		total, err = q.AddProfileXP(ctx, queries.AddProfileXPParams{UserID: userID, Amount: int32(log.XP)}) // #nosec G115 -- small award

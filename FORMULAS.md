@@ -49,6 +49,12 @@ level = floor(totalXp / 1000) + 1
 | Weekly check-in | **20** | `weekly_checkin:<planId>:<week>` | per week | weekly-checkins RPC |
 | Group streak day | `LEAST(10 + streak × 2, 50)` | `group_streak:<gid>:<day>` | per group-day | `evaluate_group_days` |
 
+- **Reason keys are once-only** (migration 00009, unique index
+  `xp_transactions_once_idx` on `(user_id, reason)`): every reason except the plan-item
+  toggle pair (`plan_item:<id>` / `plan_item_undo:<id>`, counted awards vs undos) and
+  legacy's undated `workout_log:<sportId>`. A second award can't be written even past a
+  use case's own check; the API answers it as "already logged". Legacy duplicates were
+  kept (balances unchanged) and relabeled `<reason>#dup<n>`.
 - **Base workout XP = 60** (a "60-minute session" unit); routine workouts scale it by the
   sport's `xp_multiplier`, plan items use fixed per-type values above.
 - **Multiplier default:** a sport with no (or zero) `xp_multiplier` counts as **1**

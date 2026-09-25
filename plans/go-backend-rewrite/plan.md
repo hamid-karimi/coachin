@@ -243,10 +243,11 @@ Order (dependencies first, risk front-loaded):
 
 ## Phase 4 — Retire SQL business logic (M)
 
-- [ ] 4.1 Migration: unique index `xp_transactions (user_id, reason)`. Imported legacy
-      rows repeat reasons (`workout_log:<sportId>` has no date; `plan_item:<id>` repeats
-      after an undo) — rewrite them to unique keys (or index only new-format reasons)
-      before creating the index.
+- [x] 4.1 Migration 00009: partial unique index `xp_transactions_once_idx (user_id,
+      reason)` over every reason but the plan-item toggle pair (repeats by design:
+      awards vs undos are counted) and legacy's undated `workout_log:<sportId>`; existing
+      duplicates relabeled `#dup<n>` (amounts kept). The store maps a violation to the use
+      case's "already logged" error (`store.awardedTwice`).
 - [ ] 4.2 Replace each SQL function with a Go use case in one transaction (Step B), one PR
       per group: plan items + session logs · meals + calorie day · goals · streak settle ·
       check-ins / week adjustment · coaching joins/assign · clubs/groups/leaderboard.

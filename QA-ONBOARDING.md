@@ -539,6 +539,9 @@ All from [`FORMULAS.md`](FORMULAS.md) — spot-check against it, not intuition:
   required days; hearts absorb missed required days.
 - Goals: reaching a weight / body-fat target pays +200 XP once; a goal without a start
   takes the next reading as its baseline (never pays on it).
+- Every XP award is once-only (a database index backs the checks): the same workout,
+  meal, session log, goal, check-in, calorie day, or group day can never pay twice.
+  Only plan items toggle (done → undo → done pays, refunds, pays again).
 - Group streaks: a day counts only when **every** member logged a completed workout
   → streak +1 and each member earns `min(10 + 2 × streak, 50)` XP; a missed day
   **freezes** the streak (never resets). Days settle when they are over, starting the
