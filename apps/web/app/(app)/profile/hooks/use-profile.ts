@@ -53,3 +53,20 @@ export function useCreateGoal(onDone?: () => void) {
 export function useAbandonGoal() {
   return $api.useMutation("post", "/goals/{id}/abandon", useMutationFeedback(GOAL_KEYS));
 }
+
+/** Imported runs are completed workouts: Today, the calendar, My week, and the overview move. */
+export function useImportActivities(onDone?: () => void) {
+  return $api.useMutation(
+    "post",
+    "/activities/import",
+    useMutationFeedback(
+      [
+        ["get", "/today"],
+        ["get", "/calendar"],
+        ["get", "/routine"],
+        ["get", "/me/overview"],
+      ],
+      onDone,
+    ),
+  );
+}

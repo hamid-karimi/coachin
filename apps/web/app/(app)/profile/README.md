@@ -16,6 +16,7 @@ measurements, the body profile that feeds the AI plans, and settings. Four tabs
 | `POST /measurements` | `{weightKg?, bodyFatPct?}` → inserts the reading, refreshes the profile snapshot, and settles weight / body-fat goals (`goals.Settle`: baseline or `achieve_goal` +200) in one transaction. "Measurement logged." or "Goal achieved: Weight 70kg! +200 XP" with `achievedGoals` |
 | `DELETE /measurements/{id}` | "Measurement deleted." (the snapshot keeps its value, as in legacy) |
 | `GET /me/body` · `PUT /me/body` | Birth date, sex, height, training history, country (+ the weight / body-fat snapshot and `nutritionSharing` on read). Blank fields clear. "Profile updated." |
+| `POST /activities/import` | `{activities}` as returned by `POST /activities/parse` → sanitized (`activity.Sanitize`), last 14 days only, one run per date without a completed running log (FORMULAS §14); each becomes a completed log with a ledger row (`workout_log:<sport>:<date>`), XP 60 × running multiplier, all in one transaction under the profile lock. "Imported 2 runs · +120 XP · 1 skipped (…)"; 400 "Those days already have a logged run" / "Only runs from the last 14 days can be imported" / "No importable runs in those files" |
 | `PUT /me/nutrition-sharing` | `{enabled}` → the active coach may read meal logs and the meal plan (RLS) |
 
 ## Structure
@@ -35,7 +36,9 @@ measurements, the body profile that feeds the AI plans, and settings. Four tabs
     (`goal-form.tsx`, remove confirm), `training-links.tsx`, `recent-xp.tsx`
   - Progress: `progress-charts.tsx` (design-system `progress-chart`),
     `measurements-section.tsx` (log form, confetti on a goal payout, list with delete)
-  - Body: `body-profile-form.tsx` (uses `components/ui/native-select`)
+  - Body: `body-profile-form.tsx` (uses `components/ui/native-select`),
+    `activity-import-section.tsx` (reuses the training module's `useParseActivities` and
+    `activityLine`; "Log N runs" refetches Today, the calendar, My week, the overview)
   - Settings: `nutrition-sharing-toggle.tsx`, theme, `change-password-form.tsx`,
     `logout-button.tsx`
 
@@ -50,8 +53,10 @@ measurements, the body profile that feeds the AI plans, and settings. Four tabs
   refunds as negative ("-5").
 - Two measurements on one day chart in the order logged (legacy reversed them).
 - Training history is capped at 2,000 characters.
+- Imported runs write XP ledger rows and are serialized under the profile lock (legacy
+  bumped the balance only, with a read-then-write race).
 
 ## Not yet ported
 
-Watch-data import (3.6b); body and progress photos, analysis, report extraction (3.6c);
+Body and progress photos, analysis, report extraction (3.6c);
 "My coach" invite redemption (Coaching).

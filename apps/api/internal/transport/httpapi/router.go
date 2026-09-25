@@ -33,6 +33,7 @@ type Deps struct {
 	Sessions         SessionLogService
 	Checkins         CheckinService
 	Activities       ActivityService
+	ActivityImport   ActivityImporter
 	Calendar         CalendarService
 	Nutrition        NutritionService
 	MealPlan         MealPlanService

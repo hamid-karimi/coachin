@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { ThemeToggle } from "@/components/design-system/theme-toggle";
 import type { ProfileTab } from "../lib/profile";
+import { ActivityImportSection } from "./activity-import-section";
 import { BodyProfileForm } from "./body-profile-form";
 import { ChangePasswordForm } from "./change-password-form";
 import { GoalsSection } from "./goals-section";
@@ -39,9 +40,14 @@ const TABS: Record<ProfileTab, () => ReactNode> = {
     </>
   ),
   body: () => (
-    <ProfileSection title='Body profile'>
-      <BodyProfileForm />
-    </ProfileSection>
+    <>
+      <ProfileSection title='Body profile'>
+        <BodyProfileForm />
+      </ProfileSection>
+      <ProfileSection title='Watch data'>
+        <ActivityImportSection />
+      </ProfileSection>
+    </>
   ),
   settings: () => (
     <>

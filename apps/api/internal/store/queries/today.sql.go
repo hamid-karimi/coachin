@@ -55,6 +55,28 @@ func (q *Queries) HasLoggedSportOn(ctx context.Context, arg HasLoggedSportOnPara
 	return exists, err
 }
 
+const insertImportedLog = `-- name: InsertImportedLog :exec
+INSERT INTO public.logs (user_id, sport_type_id, date, status, notes)
+VALUES ($1::uuid, $2::bigint, CAST($3::text AS date), 'completed', $4::text)
+`
+
+type InsertImportedLogParams struct {
+	UserID      uuid.UUID `json:"user_id"`
+	SportTypeID int64     `json:"sport_type_id"`
+	OnDate      string    `json:"on_date"`
+	Notes       string    `json:"notes"`
+}
+
+func (q *Queries) InsertImportedLog(ctx context.Context, arg InsertImportedLogParams) error {
+	_, err := q.db.Exec(ctx, insertImportedLog,
+		arg.UserID,
+		arg.SportTypeID,
+		arg.OnDate,
+		arg.Notes,
+	)
+	return err
+}
+
 const insertWorkoutLog = `-- name: InsertWorkoutLog :exec
 INSERT INTO public.logs (user_id, sport_type_id, date, status)
 VALUES ($1::uuid, $2::bigint, CAST($3::text AS date), 'completed')
@@ -292,6 +314,56 @@ SELECT 1 FROM public.profiles WHERE id = $1 FOR UPDATE
 func (q *Queries) LockProfile(ctx context.Context, userID uuid.UUID) error {
 	_, err := q.db.Exec(ctx, lockProfile, userID)
 	return err
+}
+
+const loggedDatesOf = `-- name: LoggedDatesOf :many
+SELECT DISTINCT date::text AS on_date FROM public.logs
+WHERE user_id = $1 AND sport_type_id = $2 AND status = 'completed'
+  AND date = ANY(CAST($3::text[] AS date[]))
+`
+
+type LoggedDatesOfParams struct {
+	UserID      *uuid.UUID `json:"user_id"`
+	SportTypeID *int64     `json:"sport_type_id"`
+	Dates       []string   `json:"dates"`
+}
+
+// Which of the dates already have a completed log of the sport.
+func (q *Queries) LoggedDatesOf(ctx context.Context, arg LoggedDatesOfParams) ([]string, error) {
+	rows, err := q.db.Query(ctx, loggedDatesOf, arg.UserID, arg.SportTypeID, arg.Dates)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []string{}
+	for rows.Next() {
+		var on_date string
+		if err := rows.Scan(&on_date); err != nil {
+			return nil, err
+		}
+		items = append(items, on_date)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const runningSport = `-- name: RunningSport :one
+SELECT id, xp_multiplier FROM public.sport_types WHERE name ILIKE '%run%' ORDER BY id LIMIT 1
+`
+
+type RunningSportRow struct {
+	ID           int64    `json:"id"`
+	XpMultiplier *float32 `json:"xp_multiplier"`
+}
+
+// The sport watch-file imports log under (legacy: first sport named like "run").
+func (q *Queries) RunningSport(ctx context.Context) (RunningSportRow, error) {
+	row := q.db.QueryRow(ctx, runningSport)
+	var i RunningSportRow
+	err := row.Scan(&i.ID, &i.XpMultiplier)
+	return i, err
 }
 
 const settleStreak = `-- name: SettleStreak :one

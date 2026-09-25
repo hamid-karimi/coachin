@@ -58,7 +58,7 @@ func EstimatedWeeklyXP(sessionMultipliers []float64) int64 {
 }
 
 // ReasonLabel is the ledger reason as the profile's "Recent XP" list shows it
-// (legacy formatReason): "workout_log:<sport id>" → "<Sport> workout", anything
+// (legacy formatReason): "workout_log:<sport id>[:<date>]" → "<Sport> workout", anything
 // about streaks → "Streak bonus", otherwise the reason without its ":<id>"
 // suffix and with spaces for underscores (legacy kept the id: "goal
 // achieved:3f2a…").
@@ -67,8 +67,10 @@ func ReasonLabel(reason *string, sportNames map[int64]string) string {
 		return "XP earned"
 	}
 	r := *reason
-	if id, ok := strings.CutPrefix(r, "workout_log:"); ok {
-		if n, err := strconv.ParseInt(id, 10, 64); err == nil && isDigits(id) { // legacy /^workout_log:(\d+)$/
+	if rest, ok := strings.CutPrefix(r, "workout_log:"); ok {
+		// Legacy wrote workout_log:<sport id>; the API adds :<date>.
+		id, _, _ := strings.Cut(rest, ":")
+		if n, err := strconv.ParseInt(id, 10, 64); err == nil && isDigits(id) {
 			if name, ok := sportNames[n]; ok {
 				return name + " workout"
 			}

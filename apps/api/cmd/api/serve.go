@@ -88,6 +88,7 @@ func serve(ctx context.Context, _ []string, _ *slog.Logger) error {
 		Sessions:         training.NewSessions(store.NewTrainingStore(pool), generator),
 		Checkins:         training.NewCheckins(store.NewTrainingStore(pool), generator, nil),
 		Activities:       activities.NewService(watchfile.New(nil)),
+		ActivityImport:   activities.NewImporter(store.NewActivityStore(pool), nil),
 		Calendar:         calendar.NewService(store.NewCalendarStore(pool), nil),
 		Nutrition:        nutrition.NewService(store.NewNutritionStore(pool), usda.New(cfg.USDAAPIKey, ""), generator, nil),
 		MealPlan:         nutrition.NewPlans(store.NewNutritionStore(pool), generator, nil),

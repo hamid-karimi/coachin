@@ -49,7 +49,7 @@ inactive; every coach feature checks for an **active** relationship.
 | `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan. **Rewrite: fully ported** (search / USDA / photo / manual logging, day summary, trends, `/nutrition/plan`) | [README](apps/web/app/(app)/nutrition/README.md) |
 | `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions | [README](legacy/app/coaching/README.md) |
 | `/community` | Social/leaderboard surfaces — **currently disabled** (feature flag; redirects to dashboard, nav item hidden). Coach invite codes are redeemed on `/profile` → "My coach" while off. | [README](legacy/app/community/README.md) |
-| `/profile` | Four tabs (`?tab=`): **Overview** (stats, hearts, goals, recent XP), **Progress** (charts, measurements, progress photos), **Body** (body profile, body photos, watch import), **Settings** (theme, nutrition sharing, my coach, logout). **Rewrite: tabs, goals, measurements, charts, body profile, sharing ported**; photos and watch import next | [README](apps/web/app/(app)/profile/README.md) |
+| `/profile` | Four tabs (`?tab=`): **Overview** (stats, hearts, goals, recent XP), **Progress** (charts, measurements, progress photos), **Body** (body profile, body photos, watch import), **Settings** (theme, nutrition sharing, my coach, logout). **Rewrite: tabs, goals, measurements, charts, body profile, sharing, watch import ported**; photos next | [README](apps/web/app/(app)/profile/README.md) |
 | `/auth` | Login / signup; on the rewrite also forgot / reset password and email verification | [README](legacy/app/auth/README.md) |
 | `/status` | Rewrite only: API, database, and storage health | — |
 
@@ -378,6 +378,13 @@ the goal strip — journey 9; coaching card and group nudge arrive with their mo
 2. Rules to verify (FORMULAS.md §14): runs older than **14 days** or in the
    future are skipped; a date that already has a logged run is skipped;
    **re-importing the same file imports nothing** (no double XP).
+3. **Rewrite stack (3.6b)**: Profile → Body → Watch data → "Choose files" (up to 3) →
+   "N runs parsed." and a line per run ("2026-09-23: 5.34km · 30min · 151 bpm", FIT/GPX)
+   → "Log N runs" → "Imported 1 run · +60 XP · 1 skipped (already logged or older than
+   14 days)"; the list clears. Nothing importable: "Those days already have a logged run"
+   or "Only runs from the last 14 days can be imported" (the list stays). Imported runs
+   show on the calendar as "logged", tick the routine, and appear in Recent XP as
+   "Running workout".
 
 ### 8. Share cards & progress (Profile + logging surfaces)
 

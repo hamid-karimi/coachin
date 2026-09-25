@@ -5,6 +5,19 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · #77 merged (3.6a) · Phase 3.6b — watch-data import
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): `app/activities.Importer` +
+`store.ActivityStore.ImportRuns` (running sport, logged dates, logs + ledger + XP in one tx
+under the profile lock), `POST /activities/import`; web Body tab "Watch data" section.
+Fixed `xp.ReasonLabel` for the API's dated `workout_log:<sport>:<date>` reasons (was
+only the legacy form). e2e: 2 GPX files → 1 imported (+60), 1 out of window; re-import →
+"Those days already have a logged run"; calendar shows the day logged.
+
+**Next steps**: 3.6c photos (Garage adapter in `adapters/storage`?, pure-Go re-encode,
+Gemini moderation, `POST /photos`, streamed `GET /photos/{id}`, `DELETE`, analyze /
+extract, consent), then 3.7 Coaching, 3.8 Community, share cards, Phases 4–7.
+
 ## 2026-09-25 · #76 merged (3.5c) · Phase 3.6a — Profile tabs, goals, measurements
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): `app/profile` (body profile,

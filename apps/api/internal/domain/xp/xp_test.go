@@ -69,6 +69,7 @@ func TestReasonLabel(t *testing.T) {
 		{str(""), "XP earned"},
 		{str("workout_log:1"), "Running workout"},
 		{str("workout_log:9"), "Workout logged"},
+		{str("workout_log:1:2026-09-25"), "Running workout"},
 		{str("workout_log:1a"), "workout log"},
 		{str("streak_bonus:7"), "Streak bonus"},
 		{str("goal_achieved:abc"), "goal achieved"},
