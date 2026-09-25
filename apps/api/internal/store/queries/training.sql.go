@@ -26,38 +26,21 @@ func (q *Queries) ActiveCalorieGoal(ctx context.Context, userID uuid.UUID) (floa
 	return target_value, err
 }
 
-const applyWeekAdjustment = `-- name: ApplyWeekAdjustment :one
-SELECT public.apply_week_adjustment(
-  $1::uuid, $2::int, $3::jsonb, $4::text,
-  $5::text, $6::int, $7::jsonb
-)::text AS result
+const activePlanLength = `-- name: ActivePlanLength :one
+SELECT weeks_total FROM public.training_plans
+WHERE id = $1 AND user_id = $2 AND status = 'active'
 `
 
-type ApplyWeekAdjustmentParams struct {
-	PlanID      uuid.UUID `json:"plan_id"`
-	CheckinWeek int32     `json:"checkin_week"`
-	Scorecard   []byte    `json:"scorecard"`
-	Decision    string    `json:"decision"`
-	Summary     *string   `json:"summary"`
-	TargetWeek  int32     `json:"target_week"`
-	Items       []byte    `json:"items"`
+type ActivePlanLengthParams struct {
+	ID     uuid.UUID `json:"id"`
+	UserID uuid.UUID `json:"user_id"`
 }
 
-// Step A (ADR-5): records the check-in, rewrites only the target week, and
-// awards +20 XP once per reviewed week.
-func (q *Queries) ApplyWeekAdjustment(ctx context.Context, arg ApplyWeekAdjustmentParams) (string, error) {
-	row := q.db.QueryRow(ctx, applyWeekAdjustment,
-		arg.PlanID,
-		arg.CheckinWeek,
-		arg.Scorecard,
-		arg.Decision,
-		arg.Summary,
-		arg.TargetWeek,
-		arg.Items,
-	)
-	var result string
-	err := row.Scan(&result)
-	return result, err
+func (q *Queries) ActivePlanLength(ctx context.Context, arg ActivePlanLengthParams) (int32, error) {
+	row := q.db.QueryRow(ctx, activePlanLength, arg.ID, arg.UserID)
+	var weeks_total int32
+	err := row.Scan(&weeks_total)
+	return weeks_total, err
 }
 
 const archivePlan = `-- name: ArchivePlan :execrows
@@ -206,6 +189,21 @@ type DeletePlanItemLogParams struct {
 
 func (q *Queries) DeletePlanItemLog(ctx context.Context, arg DeletePlanItemLogParams) error {
 	_, err := q.db.Exec(ctx, deletePlanItemLog, arg.UserID, arg.PlanItemID)
+	return err
+}
+
+const deleteWeekItems = `-- name: DeleteWeekItems :exec
+DELETE FROM public.plan_items WHERE plan_id = $1 AND week = $2::int
+`
+
+type DeleteWeekItemsParams struct {
+	PlanID uuid.UUID `json:"plan_id"`
+	Week   int32     `json:"week"`
+}
+
+// Week-scoped: both the plan and the week, so no other week can be touched.
+func (q *Queries) DeleteWeekItems(ctx context.Context, arg DeleteWeekItemsParams) error {
+	_, err := q.db.Exec(ctx, deleteWeekItems, arg.PlanID, arg.Week)
 	return err
 }
 
@@ -374,6 +372,61 @@ func (q *Queries) InsertSessionLog(ctx context.Context, arg InsertSessionLogPara
 	var id uuid.UUID
 	err := row.Scan(&id)
 	return id, err
+}
+
+const insertWeekItem = `-- name: InsertWeekItem :exec
+INSERT INTO public.plan_items (plan_id, week, day_of_week, item_type, title, details, description)
+VALUES ($1, $2::int, $3::smallint, $4::text,
+        LEFT($5::text, 200), $6::jsonb, NULLIF(TRIM(LEFT($7::text, 2000)), ''))
+`
+
+type InsertWeekItemParams struct {
+	PlanID      uuid.UUID `json:"plan_id"`
+	Week        int32     `json:"week"`
+	DayOfWeek   int16     `json:"day_of_week"`
+	ItemType    string    `json:"item_type"`
+	Title       string    `json:"title"`
+	Details     []byte    `json:"details"`
+	Description *string   `json:"description"`
+}
+
+func (q *Queries) InsertWeekItem(ctx context.Context, arg InsertWeekItemParams) error {
+	_, err := q.db.Exec(ctx, insertWeekItem,
+		arg.PlanID,
+		arg.Week,
+		arg.DayOfWeek,
+		arg.ItemType,
+		arg.Title,
+		arg.Details,
+		arg.Description,
+	)
+	return err
+}
+
+const insertWeeklyCheckin = `-- name: InsertWeeklyCheckin :exec
+INSERT INTO public.weekly_checkins (plan_id, week, scorecard, decision, summary)
+VALUES ($1, $2::int, $3::jsonb, $4::text,
+        NULLIF(TRIM($5::text), ''))
+`
+
+type InsertWeeklyCheckinParams struct {
+	PlanID    uuid.UUID `json:"plan_id"`
+	Week      int32     `json:"week"`
+	Scorecard []byte    `json:"scorecard"`
+	Decision  string    `json:"decision"`
+	Summary   *string   `json:"summary"`
+}
+
+// The unique (plan_id, week) constraint refuses a second check-in of a week.
+func (q *Queries) InsertWeeklyCheckin(ctx context.Context, arg InsertWeeklyCheckinParams) error {
+	_, err := q.db.Exec(ctx, insertWeeklyCheckin,
+		arg.PlanID,
+		arg.Week,
+		arg.Scorecard,
+		arg.Decision,
+		arg.Summary,
+	)
+	return err
 }
 
 const latestBodyAnalysis = `-- name: LatestBodyAnalysis :one

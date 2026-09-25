@@ -44,7 +44,8 @@ type LoggedSession struct {
 	Log        scorecard.SessionLog
 }
 
-// WeekAdjustment is a confirmed check-in for apply_week_adjustment.
+// WeekAdjustment is a confirmed check-in: the reviewed week's record and the
+// target week's new items.
 type WeekAdjustment struct {
 	PlanID      uuid.UUID
 	CheckinWeek int
@@ -54,6 +55,9 @@ type WeekAdjustment struct {
 	Summary     *string
 	Items       []aigen.PlanItemInput
 }
+
+// maxWeekItems caps one rewritten week (legacy's limit).
+const maxWeekItems = 60
 
 // ErrAlreadyCheckedIn means the reviewed week already has a check-in.
 var ErrAlreadyCheckedIn = errors.New("week already checked in")
@@ -162,6 +166,9 @@ func (c *Checkins) Confirm(ctx context.Context, userID uuid.UUID, in CheckinInpu
 	items := revalidate(in.Items, target)
 	if len(items) == 0 {
 		return Confirmed{}, apperr.New(apperr.Invalid, "The adjusted week has no valid items")
+	}
+	if len(items) > maxWeekItems {
+		return Confirmed{}, apperr.New(apperr.Invalid, "The adjusted week has too many items")
 	}
 	awarded, err := c.store.ApplyWeekAdjustment(ctx, userID, WeekAdjustment{
 		PlanID: in.PlanID, CheckinWeek: r.week, TargetWeek: target, Scorecard: r.scorecard,

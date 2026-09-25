@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -38,13 +39,6 @@ func (s *TrainingStore) SessionItem(ctx context.Context, userID, itemID uuid.UUI
 		return nil
 	})
 	return item, err
-}
-
-// rpcResult is the jsonb answer of the Step A functions (ADR-5).
-type rpcResult struct {
-	Success   bool   `json:"success"`
-	AwardedXP int    `json:"awarded_xp"`
-	Error     string `json:"error"`
 }
 
 // CreateSessionLog stores the log, marks the item done, and awards the +10 XP
@@ -168,35 +162,69 @@ func (s *TrainingStore) SessionLogs(ctx context.Context, userID uuid.UUID, itemI
 	return logs, err
 }
 
-// ApplyWeekAdjustment calls apply_week_adjustment (ADR-5 Step A).
+// ApplyWeekAdjustment records the check-in, rewrites only the target week, and
+// pays +20 XP once per reviewed week (weekly_checkin:<plan>:<week>) — one
+// transaction under the profile lock.
 func (s *TrainingStore) ApplyWeekAdjustment(ctx context.Context, userID uuid.UUID, adj training.WeekAdjustment) (int, error) {
 	card, err := json.Marshal(adj.Scorecard)
 	if err != nil {
 		return 0, err
 	}
-	items, err := json.Marshal(adj.Items)
-	if err != nil {
-		return 0, err
-	}
-	var result rpcResult
+	var awarded int
 	err = s.asUser(ctx, userID, func(q *queries.Queries) error {
-		raw, err := q.ApplyWeekAdjustment(ctx, queries.ApplyWeekAdjustmentParams{
-			PlanID: adj.PlanID, CheckinWeek: int32(adj.CheckinWeek), Scorecard: card, Decision: string(adj.Decision),
-			Summary: adj.Summary, TargetWeek: int32(adj.TargetWeek), Items: items,
-		})
+		if err := q.LockProfile(ctx, userID); err != nil {
+			return fmt.Errorf("lock profile: %w", err)
+		}
+		weeks, err := q.ActivePlanLength(ctx, queries.ActivePlanLengthParams{ID: adj.PlanID, UserID: userID})
+		if errors.Is(err, pgx.ErrNoRows) {
+			return training.ErrNotFound
+		}
+		if err != nil {
+			return fmt.Errorf("load plan: %w", err)
+		}
+		if adj.CheckinWeek < 1 || adj.CheckinWeek > int(weeks) || adj.TargetWeek < 1 || adj.TargetWeek > int(weeks) {
+			return fmt.Errorf("check-in weeks %d → %d outside a %d-week plan", adj.CheckinWeek, adj.TargetWeek, weeks)
+		}
+		if err := q.InsertWeeklyCheckin(ctx, queries.InsertWeeklyCheckinParams{
+			PlanID: adj.PlanID, Week: int32(adj.CheckinWeek), Scorecard: card, Decision: string(adj.Decision), Summary: adj.Summary, // #nosec G115 -- ≤ 24 weeks
+		}); err != nil {
+			return err
+		}
+		if err := replaceWeek(ctx, q, adj.PlanID, adj.TargetWeek, adj.Items); err != nil {
+			return err
+		}
+		reason := "weekly_checkin:" + adj.PlanID.String() + ":" + strconv.Itoa(adj.CheckinWeek)
+		paid, err := q.LedgerHasReason(ctx, queries.LedgerHasReasonParams{UserID: &userID, Reason: reason})
+		if err != nil || paid {
+			return err
+		}
+		awarded = xp.WeeklyCheckinXP
+		return addXP(ctx, q, userID, awarded, reason)
+	})
+	var pgErr *pgconn.PgError
+	if errors.As(err, &pgErr) && pgErr.Code == uniqueViolation {
+		return 0, training.ErrAlreadyCheckedIn
+	}
+	return awarded, err
+}
+
+// replaceWeek swaps one week's items for items (their own week values are
+// ignored: the target week is forced).
+func replaceWeek(ctx context.Context, q *queries.Queries, planID uuid.UUID, week int, items []aigen.PlanItemInput) error {
+	if err := q.DeleteWeekItems(ctx, queries.DeleteWeekItemsParams{PlanID: planID, Week: int32(week)}); err != nil { // #nosec G115 -- ≤ 24 weeks
+		return fmt.Errorf("clear week: %w", err)
+	}
+	for _, item := range items {
+		details, err := json.Marshal(item.Details)
 		if err != nil {
 			return err
 		}
-		return json.Unmarshal([]byte(raw), &result)
-	})
-	if err != nil {
-		return 0, err
+		if err := q.InsertWeekItem(ctx, queries.InsertWeekItemParams{
+			PlanID: planID, Week: int32(week), DayOfWeek: int16(item.DayOfWeek), ItemType: item.ItemType, // #nosec G115 -- validated 0–6
+			Title: item.Title, Details: details, Description: item.Description,
+		}); err != nil {
+			return fmt.Errorf("insert item: %w", err)
+		}
 	}
-	if result.Error == "This week was already checked in" {
-		return 0, training.ErrAlreadyCheckedIn
-	}
-	if !result.Success {
-		return 0, fmt.Errorf("apply_week_adjustment: %s", result.Error)
-	}
-	return result.AwardedXP, nil
+	return nil
 }

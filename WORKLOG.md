@@ -5,6 +5,27 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · #89 merged (4.2c) · Phase 4.2d — weekly check-ins in Go
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR):
+`TrainingStore.ApplyWeekAdjustment` in Go under the profile lock — active plan length,
+week bounds, check-in insert (unique (plan, week) → `ErrAlreadyCheckedIn`),
+`replaceWeek` (delete + insert, target week forced), +20 via `addXP` once
+(`xp.WeeklyCheckinXP`). The use case caps a rewritten week at 60 items. `rpcResult` gone.
+Concurrency test: 8 parallel confirms → one +20, 7 refused.
+
+**Decisions**: rewritten items keep their `description` (legacy's SQL dropped it, so an
+adjusted strength week lost the log sheet's prefill).
+
+ADR-5 amended: cross-user functions (coach / club / group joins by code, coach schedule
+assign, `evaluate_group_days`, `group_trained_today`, `get_weekly_leaderboard`) stay
+narrow `SECURITY DEFINER` primitives — Go would need RLS holes or a request-time bypass.
+**Flag for the user** in the next summary.
+
+**Next steps**: 4.2e same-user remainder — `create_training_plan`,
+`create_club_with_owner`, `create_training_group`, `leave_training_group`; then 4.3 drop
+the retired functions (Step A calls gone).
+
 ## 2026-09-25 · #88 merged (4.2b) · Phase 4.2c — streak settle in Go
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): `domain/streak`

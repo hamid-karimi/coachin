@@ -151,10 +151,21 @@ SELECT plan_item_id, actual, ai_feedback, note
 FROM public.session_logs
 WHERE user_id = sqlc.arg(user_id) AND plan_item_id = ANY(sqlc.arg(item_ids)::uuid[]);
 
--- name: ApplyWeekAdjustment :one
--- Step A (ADR-5): records the check-in, rewrites only the target week, and
--- awards +20 XP once per reviewed week.
-SELECT public.apply_week_adjustment(
-  sqlc.arg(plan_id)::uuid, sqlc.arg(checkin_week)::int, sqlc.arg(scorecard)::jsonb, sqlc.arg(decision)::text,
-  sqlc.narg(summary)::text, sqlc.arg(target_week)::int, sqlc.arg(items)::jsonb
-)::text AS result;
+-- name: ActivePlanLength :one
+SELECT weeks_total FROM public.training_plans
+WHERE id = sqlc.arg(id) AND user_id = sqlc.arg(user_id) AND status = 'active';
+
+-- name: InsertWeeklyCheckin :exec
+-- The unique (plan_id, week) constraint refuses a second check-in of a week.
+INSERT INTO public.weekly_checkins (plan_id, week, scorecard, decision, summary)
+VALUES (sqlc.arg(plan_id), sqlc.arg(week)::int, sqlc.arg(scorecard)::jsonb, sqlc.arg(decision)::text,
+        NULLIF(TRIM(sqlc.narg(summary)::text), ''));
+
+-- name: DeleteWeekItems :exec
+-- Week-scoped: both the plan and the week, so no other week can be touched.
+DELETE FROM public.plan_items WHERE plan_id = sqlc.arg(plan_id) AND week = sqlc.arg(week)::int;
+
+-- name: InsertWeekItem :exec
+INSERT INTO public.plan_items (plan_id, week, day_of_week, item_type, title, details, description)
+VALUES (sqlc.arg(plan_id), sqlc.arg(week)::int, sqlc.arg(day_of_week)::smallint, sqlc.arg(item_type)::text,
+        LEFT(sqlc.arg(title)::text, 200), sqlc.arg(details)::jsonb, NULLIF(TRIM(LEFT(sqlc.narg(description)::text, 2000)), ''));

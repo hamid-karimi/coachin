@@ -46,7 +46,7 @@ level = floor(totalXp / 1000) + 1
 | Meal log | **5** | `meal_log:<id>` | per log, **max 3/day** | Go: `domain/nutrition.MealAward` via `store.NutritionStore.LogMeals` |
 | Calorie-goal day | **30** | `calorie_goal:<date>` | per day | Go: `domain/nutrition.CalorieDayXP` via `store.NutritionStore.LogMeals` |
 | Goal achieved | **200** | `goal_achieved:<id>` | per goal | Go: `goals.AchievedXP` via `store.ProfileStore.AddMeasurement` |
-| Weekly check-in | **20** | `weekly_checkin:<planId>:<week>` | per week | weekly-checkins RPC |
+| Weekly check-in | **20** | `weekly_checkin:<planId>:<week>` | per week | Go: `xp.WeeklyCheckinXP` via `store.TrainingStore.ApplyWeekAdjustment` |
 | Group streak day | `LEAST(10 + streak × 2, 50)` | `group_streak:<gid>:<day>` | per group-day | `evaluate_group_days` |
 
 - **Reason keys are once-only** (migration 00009, unique index
