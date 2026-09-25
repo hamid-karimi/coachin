@@ -250,3 +250,139 @@ func (s *CommunityStore) Unfollow(ctx context.Context, userID, id uuid.UUID) (bo
 	})
 	return n > 0, err
 }
+
+var _ appcommunity.GroupStore = (*CommunityStore)(nil)
+
+// MyGroupIDs lists the user's groups.
+func (s *CommunityStore) MyGroupIDs(ctx context.Context, userID uuid.UUID) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
+	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		ids, err = q.MyGroupIDs(ctx, userID)
+		return err
+	})
+	return ids, err
+}
+
+// EvaluateGroupDays runs evaluate_group_days.
+func (s *CommunityStore) EvaluateGroupDays(ctx context.Context, userID, groupID uuid.UUID) error {
+	return s.asUser(ctx, userID, func(q *queries.Queries) error {
+		_, err := q.EvaluateGroupDays(ctx, groupID)
+		return err
+	})
+}
+
+// Groups reads the groups' stored state.
+func (s *CommunityStore) Groups(ctx context.Context, userID uuid.UUID, ids []uuid.UUID) ([]appcommunity.GroupRow, error) {
+	var rows []queries.GroupsByIDsRow
+	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		rows, err = q.GroupsByIDs(ctx, ids)
+		return err
+	})
+	out := make([]appcommunity.GroupRow, len(rows))
+	for i, r := range rows {
+		out[i] = appcommunity.GroupRow{ID: r.ID, Name: r.Name, InviteCode: r.InviteCode, StreakCount: int(r.StreakCount), BestStreak: int(r.BestStreak)}
+	}
+	return out, err
+}
+
+// GroupMembers reads the groups' members.
+func (s *CommunityStore) GroupMembers(ctx context.Context, userID uuid.UUID, ids []uuid.UUID) ([]appcommunity.GroupMemberRow, error) {
+	var rows []queries.GroupMembersRow
+	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		rows, err = q.GroupMembers(ctx, ids)
+		return err
+	})
+	out := make([]appcommunity.GroupMemberRow, len(rows))
+	for i, r := range rows {
+		out[i] = appcommunity.GroupMemberRow{GroupID: r.GroupID, UserID: r.ID, FullName: r.FullName, AvatarURL: r.AvatarUrl}
+	}
+	return out, err
+}
+
+// GroupDays reads settled days since from.
+func (s *CommunityStore) GroupDays(ctx context.Context, userID uuid.UUID, ids []uuid.UUID, from string) ([]appcommunity.GroupDay, error) {
+	var rows []queries.RecentGroupDaysRow
+	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		rows, err = q.RecentGroupDays(ctx, queries.RecentGroupDaysParams{Ids: ids, FromDate: from})
+		return err
+	})
+	out := make([]appcommunity.GroupDay, len(rows))
+	for i, r := range rows {
+		out[i] = appcommunity.GroupDay{GroupID: r.GroupID, Date: r.OnDate, AllTrained: r.AllTrained}
+	}
+	return out, err
+}
+
+// TrainedToday runs group_trained_today.
+func (s *CommunityStore) TrainedToday(ctx context.Context, userID, groupID uuid.UUID) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
+	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		ids, err = q.GroupTrainedToday(ctx, groupID)
+		return err
+	})
+	return ids, err
+}
+
+// groupResult is the group functions' answer.
+type groupResult struct {
+	Success    bool   `json:"success"`
+	Status     string `json:"status"`
+	InviteCode string `json:"invite_code"`
+	Error      string `json:"error"`
+}
+
+func (s *CommunityStore) groupCall(ctx context.Context, userID uuid.UUID, call func(q *queries.Queries) (string, error)) (groupResult, error) {
+	var result groupResult
+	err := s.asUser(ctx, userID, func(q *queries.Queries) error {
+		raw, err := call(q)
+		if err != nil {
+			return err
+		}
+		return json.Unmarshal([]byte(raw), &result)
+	})
+	return result, err
+}
+
+// CreateGroup runs create_training_group.
+func (s *CommunityStore) CreateGroup(ctx context.Context, userID uuid.UUID, name string) (string, string, error) {
+	r, err := s.groupCall(ctx, userID, func(q *queries.Queries) (string, error) { return q.CreateTrainingGroup(ctx, name) })
+	return r.InviteCode, r.Error, err
+}
+
+// JoinGroup runs join_training_group.
+func (s *CommunityStore) JoinGroup(ctx context.Context, userID uuid.UUID, code string) (appcommunity.GroupJoin, error) {
+	r, err := s.groupCall(ctx, userID, func(q *queries.Queries) (string, error) { return q.JoinTrainingGroup(ctx, code) })
+	return appcommunity.GroupJoin{AlreadyMember: r.Status == "already_member", Failure: r.Error}, err
+}
+
+// LeaveGroup runs leave_training_group.
+func (s *CommunityStore) LeaveGroup(ctx context.Context, userID, groupID uuid.UUID) (string, error) {
+	r, err := s.groupCall(ctx, userID, func(q *queries.Queries) (string, error) { return q.LeaveTrainingGroup(ctx, groupID) })
+	return r.Error, err
+}
+
+// LoggedAnythingOn reports any log (any status) on a date.
+func (s *CommunityStore) LoggedAnythingOn(ctx context.Context, userID uuid.UUID, date string) (bool, error) {
+	var logged bool
+	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		logged, err = q.LoggedAnythingOn(ctx, queries.LoggedAnythingOnParams{UserID: &userID, OnDate: date})
+		return err
+	})
+	return logged, err
+}
+
+// TopStreakGroup is the user's group with the longest live streak.
+func (s *CommunityStore) TopStreakGroup(ctx context.Context, userID uuid.UUID) (*appcommunity.GroupRow, error) {
+	var row queries.TopStreakGroupRow
+	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		row, err = q.TopStreakGroup(ctx, userID)
+		return err
+	})
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &appcommunity.GroupRow{Name: row.Name, StreakCount: int(row.StreakCount)}, nil
+}

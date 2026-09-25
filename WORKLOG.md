@@ -5,6 +5,24 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · #83 merged (3.8b) · Phase 3.8c — Group streaks (Phase 3.8 done)
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): `community.GroupsService` (Groups —
+settles finished days via `evaluate_group_days` first —, CreateGroup, JoinGroup,
+LeaveGroup, Nudge) + store queries; `/community/groups` (+ join, membership) and
+`/community/group-nudge`. Web `/community/groups` (forms, group card, leave confirm),
+Today's `group-nudge.tsx` (prefetched only with the flag on). e2e with the flag on:
+create → coach joins (lowercase code) → both members → Today nudge → leave.
+
+**Decisions**: migration 00008 — a new group settles from the day it got its 2nd member
+(legacy settled yesterday on the first look: a group formed today paid every member for
+a day before it existed, repeatable with fresh groups). Members' weekly XP fixed (legacy
+read the wrong column → always 0). Group member rows show no tier (not returned).
+
+**Next steps**: share cards ("Share it", "Share today", meal share, "Share progress");
+then Phases 4–7 (4.1 XP unique index, 4.2 SQL functions → Go incl. group evaluation,
+4.5 profile/club RLS hardening).
+
 ## 2026-09-25 · #82 merged (3.8a) · Phase 3.8b — Community circle
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): `community.CircleService` (Circle,

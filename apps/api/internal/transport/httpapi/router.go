@@ -43,6 +43,7 @@ type Deps struct {
 	TraineeNutrition TraineeNutritionService
 	Community        CommunityService
 	Circle           CircleService
+	Groups           GroupsService
 	Cookies          CookieSettings
 	CommunityEnabled bool
 }
@@ -91,6 +92,7 @@ func New(deps Deps) (http.Handler, huma.API) {
 	registerCoaching(api, deps)
 	registerCommunity(api, deps)
 	registerCircle(api, deps)
+	registerGroups(api, deps)
 
 	// Rejects cross-site state-changing requests (Sec-Fetch-Site / Origin),
 	// the CSRF guard for cookie sessions.

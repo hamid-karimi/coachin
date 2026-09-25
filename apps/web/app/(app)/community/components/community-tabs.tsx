@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shield, Trophy, UserPlus, type LucideIcon } from "lucide-react";
+import { Shield, Trophy, UserPlus, UsersRound, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const TABS: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/community/boards", label: "Boards", icon: Trophy },
   { href: "/community/clubs", label: "Clubs", icon: Shield },
   { href: "/community/circle", label: "Circle", icon: UserPlus },
+  { href: "/community/groups", label: "Groups", icon: UsersRound },
 ];
 
 /** Pill tabs over the community segments. */

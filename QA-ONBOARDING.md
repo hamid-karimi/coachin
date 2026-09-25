@@ -48,7 +48,7 @@ inactive; every coach feature checks for an **active** relationship.
 | `/training/new` | Plan wizards (running / muscle building); coach mode via `?student=<id>` | [README](legacy/app/training/README.md) |
 | `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan. **Rewrite: fully ported** (search / USDA / photo / manual logging, day summary, trends, `/nutrition/plan`) | [README](apps/web/app/(app)/nutrition/README.md) |
 | `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions. **Rewrite: ported** (+ `/coaching/trainees/<id>/nutrition`) | [README](apps/web/app/(app)/coaching/README.md) |
-| `/community` | Social/leaderboard surfaces — **currently disabled** (feature flag; redirects to dashboard, nav item hidden). Coach invite codes are redeemed on `/profile` → "My coach" while off. **Rewrite: boards, clubs, circle ported** (groups next); test with `FEATURE_COMMUNITY=true` | [README](apps/web/app/(app)/community/README.md) |
+| `/community` | Social/leaderboard surfaces — **currently disabled** (feature flag; redirects to dashboard, nav item hidden). Coach invite codes are redeemed on `/profile` → "My coach" while off. **Rewrite: boards, clubs, circle, group streaks ported**; test with `FEATURE_COMMUNITY=true` | [README](apps/web/app/(app)/community/README.md) |
 | `/profile` | Four tabs (`?tab=`): **Overview** (stats, hearts, goals, recent XP), **Progress** (charts, measurements, progress photos), **Body** (body profile, body photos, watch import), **Settings** (theme, nutrition sharing, my coach, logout). **Rewrite: fully ported** except "My coach" (Coaching) and "Share progress" (share cards) | [README](apps/web/app/(app)/profile/README.md) |
 | `/auth` | Login / signup; on the rewrite also forgot / reset password and email verification | [README](legacy/app/auth/README.md) |
 | `/status` | Rewrite only: API, database, and storage health | — |
@@ -197,7 +197,7 @@ rewrites next week).
    logged").
 
 **Rewrite stack** (Today is ported, with the "Today's meals" card — journey 5, step 10;
-the goal strip — journey 9; coaching card and group nudge arrive with their modules; the daily stack is journey 5, steps 5–7):
+the goal strip — journey 9; the coaching card — journey 6; the group nudge — journey 10, step 4; the daily stack is journey 5, steps 5–7):
 - Header shows the date, "Hi, <first name>", the streak badge, and initials. Level
   ring + XP bar, hearts ("N hearts · a missed day costs one"), and (desktop) the
   Level / Streak / Total XP / League stat row.
@@ -507,6 +507,19 @@ With it on (restart the stack with `FEATURE_COMMUNITY=true`):
    followed." (the person moves to Following and onto the My Circle board); Following →
    "User unfollowed.". Trainee accounts also get "My coaches" (coach, sport, level) with
    the add-coach form.
+4. **Groups** (`/community/groups`): "Create a group" (3–60 characters) → "Group created
+   — share code GRP-ABC123 with your friends."; alone it says "needs a 2nd member to
+   start". A second account joins with the code (any case) → "Joined the group." (again:
+   "You are already in this group."; a wrong code: "Invite code not found"; an 11th
+   member: "This group is full (10 members max)"). The card shows the streak ("0 day
+   streak · best 0"), one dot per settled day (green = everyone trained, grey = frozen),
+   and members with "XP this week · Trained today / Not yet today". A group formed today
+   settles **nothing** until tomorrow — the first settled day is the day it got its 2nd
+   member. Both members log a workout, and the next day the streak is 1 and each member
+   got **+12 XP** ("Streak bonus" in Recent XP). On Today, while you've logged nothing
+   and a group of yours has a live streak: "Dawn Patrol's 4-day streak needs you" →
+   Groups; logging a workout hides it. "Leave group" (confirm) → "You left the group."
+   (the last one out deletes the group).
 
 ## Gamification rules QA must know
 
@@ -519,6 +532,10 @@ All from [`FORMULAS.md`](FORMULAS.md) — spot-check against it, not intuition:
   required days; hearts absorb missed required days.
 - Goals: reaching a weight / body-fat target pays +200 XP once; a goal without a start
   takes the next reading as its baseline (never pays on it).
+- Group streaks: a day counts only when **every** member logged a completed workout
+  → streak +1 and each member earns `min(10 + 2 × streak, 50)` XP; a missed day
+  **freezes** the streak (never resets). Days settle when they are over, starting the
+  day the group got its 2nd member.
 - Weekly targets (quotas), strength **total volume**, and **supplements**
   are informational / celebration only — they never move XP, streaks,
   hearts, or tiers.

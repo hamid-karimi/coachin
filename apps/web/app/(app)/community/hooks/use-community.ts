@@ -62,3 +62,25 @@ export function useFollow() {
 export function useUnfollow() {
   return $api.useMutation("delete", "/community/follows/{id}", useMutationFeedback(FOLLOW_KEYS));
 }
+
+export function useGroups() {
+  return $api.useSuspenseQuery("get", "/community/groups").data.groups;
+}
+
+/** Group changes move the groups and Today's nudge. */
+const GROUP_KEYS = [
+  ["get", "/community/groups"],
+  ["get", "/community/group-nudge"],
+];
+
+export function useCreateGroup(onDone?: () => void) {
+  return $api.useMutation("post", "/community/groups", useMutationFeedback(GROUP_KEYS, onDone));
+}
+
+export function useJoinGroup(onDone?: () => void) {
+  return $api.useMutation("post", "/community/groups/join", useMutationFeedback(GROUP_KEYS, onDone));
+}
+
+export function useLeaveGroup(onDone?: () => void) {
+  return $api.useMutation("delete", "/community/groups/{id}/membership", useMutationFeedback(GROUP_KEYS, onDone));
+}

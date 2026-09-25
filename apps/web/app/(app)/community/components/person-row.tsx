@@ -6,7 +6,8 @@ import { initials } from "@/app/(app)/dashboard/lib/today";
 interface PersonRowProps {
   name: string;
   avatarUrl?: string | null;
-  tier: string;
+  /** Omitted where the tier isn't known (group members). */
+  tier?: string;
   subtitle: string;
   /** Right-side action (follow toggle). */
   children?: ReactNode;
@@ -24,7 +25,7 @@ export function PersonRow({ name, avatarUrl, tier, subtitle, children }: PersonR
         <div className='min-w-0'>
           <p className='text-foreground flex items-center gap-2 truncate text-sm font-semibold'>
             {name}
-            <TierBadge tier={tier as Tier} />
+            {tier ? <TierBadge tier={tier as Tier} /> : null}
           </p>
           <p className='text-muted-foreground text-xs'>{subtitle}</p>
         </div>

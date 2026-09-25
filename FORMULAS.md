@@ -47,7 +47,7 @@ level = floor(totalXp / 1000) + 1
 | Calorie-goal day | **30** | `calorie_goal:<date>` | per day | `award_day_adherence` |
 | Goal achieved | **200** | `goal_achieved:<id>` | per goal | `achieve_goal` |
 | Weekly check-in | **20** | `weekly_checkin:<planId>:<week>` | per week | weekly-checkins RPC |
-| Group streak day | `LEAST(10 + streak × 2, 50)` | `group_streak:<gid>:<day>` | per group-day | `evaluate_group_streak` |
+| Group streak day | `LEAST(10 + streak × 2, 50)` | `group_streak:<gid>:<day>` | per group-day | `evaluate_group_days` |
 
 - **Base workout XP = 60** (a "60-minute session" unit); routine workouts scale it by the
   sport's `xp_multiplier`, plan items use fixed per-type values above.
@@ -116,7 +116,14 @@ Per settled day, given whether the user **trained** and whether it was a **requi
 - It takes **3 misses to empty hearts, a 4th to reset** the streak.
 
 ### Group streak
+**Go:** `evaluate_group_days` (SQL, `apps/api/db/migrations/00008_group_days_from_second_member.sql`),
+run for each of the caller's groups by `GET /community/groups` (`internal/app/community/groups.go`).
 **Source of truth:** `evaluate_group_streak` in `legacy/supabase/migrations/20260705140000_training_groups.sql`.
+
+- Days settle once they are over: from the day after the last evaluated day (a new group:
+  the day it got its **2nd member**) through **yesterday**. Groups with fewer than
+  **2 members** don't settle. Legacy started a new group at yesterday, so a group created
+  today could be paid for a day before it existed.
 
 - A day counts as a **full day** only when **every** member logged a completed workout.
 - Full day → `streak_count += 1`, `best_streak = max(best_streak, streak_count)`, and each

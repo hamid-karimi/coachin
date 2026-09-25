@@ -830,6 +830,19 @@
         ],
         "type": "object"
       },
+      "CreateGroupInputBody": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "maxLength": 200,
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
       "DayMealsBody": {
         "additionalProperties": false,
         "properties": {
@@ -1180,6 +1193,137 @@
         ],
         "type": "object"
       },
+      "GroupBody": {
+        "additionalProperties": false,
+        "properties": {
+          "bestStreak": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "id": {
+            "type": "string"
+          },
+          "inviteCode": {
+            "type": "string"
+          },
+          "members": {
+            "description": "Most XP this week first",
+            "items": {
+              "$ref": "#/components/schemas/GroupMemberBody"
+            },
+            "type": "array"
+          },
+          "name": {
+            "type": "string"
+          },
+          "recentDays": {
+            "description": "Up to the last 7 settled days, oldest first",
+            "items": {
+              "$ref": "#/components/schemas/GroupDayBody"
+            },
+            "type": "array"
+          },
+          "streakCount": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "inviteCode",
+          "streakCount",
+          "bestStreak",
+          "members",
+          "recentDays"
+        ],
+        "type": "object"
+      },
+      "GroupDayBody": {
+        "additionalProperties": false,
+        "properties": {
+          "allTrained": {
+            "type": "boolean"
+          },
+          "date": {
+            "format": "date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "date",
+          "allTrained"
+        ],
+        "type": "object"
+      },
+      "GroupMemberBody": {
+        "additionalProperties": false,
+        "properties": {
+          "avatarUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "isYou": {
+            "type": "boolean"
+          },
+          "name": {
+            "description": "Full name, else \"Member\"",
+            "type": "string"
+          },
+          "trainedToday": {
+            "type": "boolean"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "weeklyXp": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "userId",
+          "name",
+          "avatarUrl",
+          "weeklyXp",
+          "trainedToday",
+          "isYou"
+        ],
+        "type": "object"
+      },
+      "GroupNudgeBody": {
+        "additionalProperties": false,
+        "properties": {
+          "groupName": {
+            "type": "string"
+          },
+          "streakCount": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "streakCount"
+        ],
+        "type": "object"
+      },
+      "GroupsBody": {
+        "additionalProperties": false,
+        "properties": {
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/GroupBody"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "groups"
+        ],
+        "type": "object"
+      },
       "HealthBody": {
         "additionalProperties": false,
         "properties": {
@@ -1409,6 +1553,19 @@
         "type": "object"
       },
       "JoinCoachInputBody": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "maxLength": 64,
+            "type": "string"
+          }
+        },
+        "required": [
+          "code"
+        ],
+        "type": "object"
+      },
+      "JoinGroupInputBody": {
         "additionalProperties": false,
         "properties": {
           "code": {
@@ -5816,6 +5973,350 @@
           }
         },
         "summary": "Unfollow someone",
+        "tags": [
+          "community"
+        ]
+      }
+    },
+    "/community/group-nudge": {
+      "get": {
+        "operationId": "getGroupNudge",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupNudgeBody"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Your longest live group streak, while you haven't logged today",
+        "tags": [
+          "community"
+        ]
+      }
+    },
+    "/community/groups": {
+      "get": {
+        "description": "Settles each group's un-evaluated past days (streak + bonus XP, FORMULAS §2) before reading.",
+        "operationId": "listGroups",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupsBody"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Your training groups (past days settled first)",
+        "tags": [
+          "community"
+        ]
+      },
+      "post": {
+        "operationId": "createGroup",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGroupInputBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultBody"
+                }
+              }
+            },
+            "description": "Created"
+          },
+          "400": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Start a training group",
+        "tags": [
+          "community"
+        ]
+      }
+    },
+    "/community/groups/join": {
+      "post": {
+        "operationId": "joinGroup",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JoinGroupInputBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultBody"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Join a group by invite code (10 members max)",
+        "tags": [
+          "community"
+        ]
+      }
+    },
+    "/community/groups/{id}/membership": {
+      "delete": {
+        "operationId": "leaveGroup",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultBody"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Leave a group (the last one out removes it)",
         "tags": [
           "community"
         ]

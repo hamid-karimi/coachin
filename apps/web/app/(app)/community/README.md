@@ -19,6 +19,11 @@ meanwhile.
 | `GET /community/people?q=&page=` | Others ranked by lifetime XP, 10 per page (`hasNext`); `q` matches names (wildcards literal) or a complete email exactly — never partial emails, and emails are never returned. Each row says whether you follow them. Rate limited |
 | `POST /community/follows` · `DELETE /community/follows/{id}` | `{userId}` → "User followed." (400 yourself, 404 unknown user, 409 already following) / "User unfollowed." |
 | `DELETE /community/clubs/{id}/membership` | Leaves; a primary club hands primary to your oldest remaining club (one transaction) |
+| `GET /community/groups` | Settles each of your groups' finished days first (`evaluate_group_days`, FORMULAS §2 group streak), then: name, invite code, streak / best, the last 7 settled days, members (most XP this week first, `trainedToday`, `isYou`) |
+| `POST /community/groups` | `{name}` (3–60 characters) → a random `GRP-XXXXXX` code (retried on a clash); "Group created — share code … with your friends." |
+| `POST /community/groups/join` | `{code}` (any case) → "Joined the group." / info "You are already in this group."; 404 "Invite code not found", 409 "This group is full (10 members max)". Rate limited |
+| `DELETE /community/groups/{id}/membership` | "You left the group."; the last one out deletes it; 404 when not a member |
+| `GET /community/group-nudge` | `{groupName?, streakCount}` — your longest live group streak while you've logged nothing today (Today's nudge) |
 
 ## Structure
 
@@ -32,9 +37,16 @@ meanwhile.
   debounced query and paging, "My coaches" + Profile's `join-coach-form.tsx` for roles
   that can have a coach — `lib/roles.canTrain`); rows are `person-row.tsx` with
   `follow-button.tsx`
+- `groups/page.tsx` — `components/groups-view.tsx` (`group-forms.tsx` create / join,
+  `group-card.tsx` per group: code line, streak, 7 day dots, members as `person-row.tsx`
+  without a tier, leave with confirm)
 - `hooks/use-community.ts` — queries and mutations (club changes refetch clubs and boards;
-  follows refetch the circle, search, and boards)
-- `lib/community.ts` — boards, per-board title / rules / empty copy (unit-tested)
+  follows refetch the circle, search, and boards; group changes refetch groups and the
+  Today nudge)
+- `lib/community.ts` — boards, per-board title / rules / empty copy, group streak / code /
+  nudge lines (unit-tested)
+- Today's `dashboard/components/group-nudge.tsx` links here; prefetched only while the
+  flag is on
 
 ## Differences from legacy
 
@@ -46,7 +58,8 @@ meanwhile.
 - People search no longer matches partial emails (legacy's "search by name or email"
   listed everyone at a given email domain); a full address still finds that one person.
 - Following an unknown user id is refused (the `following_id` column has no foreign key).
-
-## Not yet ported
-
-Group streaks and Today's group nudge — 3.8c.
+- Group members' "XP this week" is real (legacy matched the weekly board on the wrong
+  column, so every member showed 0).
+- A new group settles from the day it got its 2nd member (legacy settled yesterday on the
+  first look, so a group created today could pay every member for a day before it
+  existed — repeatable with fresh groups).

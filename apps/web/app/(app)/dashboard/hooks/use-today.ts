@@ -8,7 +8,7 @@ export function useToday() {
   return $api.useSuspenseQuery("get", "/today").data;
 }
 
-/** Log a routine workout; refetches Today and My week (target progress). */
+/** Log a routine workout; refetches Today, My week (target progress), and the group nudge. */
 export function useLogWorkout() {
   return $api.useMutation(
     "post",
@@ -16,6 +16,7 @@ export function useLogWorkout() {
     useMutationFeedback([
       ["get", "/today"],
       ["get", "/routine"],
+      ["get", "/community/group-nudge"],
     ]),
   );
 }
