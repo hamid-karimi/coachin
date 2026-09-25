@@ -5,6 +5,17 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · #82 merged (3.8a) · Phase 3.8b — Community circle
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): `community.CircleService` (Circle,
+People, Follow, Unfollow) + store queries (`SearchPeople`: name ILIKE with escaped
+wildcards or exact email, following flag, paging); `/community/circle`,
+`/community/people`, `/community/follows`. Web `/community/circle` (following, search,
+my coaches + join form), `lib/roles.canTrain`. e2e with the flag on.
+
+**Next steps**: 3.8c group streaks (create / join / leave, trained-today, group-day
+evaluation, Today nudge); then share cards; Phases 4–7.
+
 ## 2026-09-25 · #81 merged (3.7 Coaching) · Phase 3.8a — Community boards + clubs
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): `app/community` (Leaderboard with

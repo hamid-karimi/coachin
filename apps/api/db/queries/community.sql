@@ -40,3 +40,38 @@ RETURNING is_primary;
 -- name: PromoteNextPrimaryClub :exec
 UPDATE public.club_members SET is_primary = true
 WHERE id = (SELECT m.id FROM public.club_members m WHERE m.user_id = sqlc.arg(user_id) ORDER BY m.joined_at LIMIT 1);
+
+-- name: ListFollowingProfiles :many
+SELECT p.id, p.full_name, p.avatar_url, COALESCE(p.level, 1)::bigint AS level, p.league_tier, COALESCE(p.xp, 0)::bigint AS xp
+FROM public.social_graph g JOIN public.profiles p ON p.id = g.following_id
+WHERE g.follower_id = sqlc.arg(user_id)
+ORDER BY g.created_at;
+
+-- name: ListMyCoaches :many
+SELECT p.id, p.full_name, p.avatar_url, COALESCE(p.level, 1)::bigint AS level, p.league_tier, st.name AS sport_name
+FROM public.coaching_relationships cr JOIN public.profiles p ON p.id = cr.coach_id
+LEFT JOIN public.sport_types st ON st.id = cr.sport_type_id
+WHERE cr.student_id = sqlc.arg(user_id) AND cr.status = 'active'
+ORDER BY cr.created_at;
+
+-- name: SearchPeople :many
+-- Name contains the term (wildcards literal), or the exact email; never the
+-- caller. Top lifetime XP first.
+SELECT p.id, p.full_name, p.avatar_url, COALESCE(p.level, 1)::bigint AS level, p.league_tier, COALESCE(p.xp, 0)::bigint AS xp,
+       EXISTS (SELECT 1 FROM public.social_graph g WHERE g.follower_id = sqlc.arg(user_id) AND g.following_id = p.id)::bool AS following
+FROM public.profiles p
+WHERE p.id <> sqlc.arg(user_id)
+  AND (sqlc.arg(term)::text = ''
+       OR p.full_name ILIKE '%' || replace(replace(replace(sqlc.arg(term)::text, '\', '\\'), '%', '\%'), '_', '\_') || '%'
+       OR lower(p.email) = lower(sqlc.arg(term)::text))
+ORDER BY p.xp DESC NULLS LAST, p.id
+LIMIT sqlc.arg(max_rows)::int OFFSET sqlc.arg(skip)::int;
+
+-- name: ProfileExists :one
+SELECT EXISTS (SELECT 1 FROM public.profiles WHERE id = sqlc.arg(id))::bool AS found;
+
+-- name: InsertFollow :exec
+INSERT INTO public.social_graph (follower_id, following_id) VALUES (sqlc.arg(follower_id), sqlc.arg(following_id));
+
+-- name: DeleteFollow :execrows
+DELETE FROM public.social_graph WHERE follower_id = sqlc.arg(follower_id) AND following_id = sqlc.arg(following_id);

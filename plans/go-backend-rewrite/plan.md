@@ -226,7 +226,10 @@ Order (dependencies first, risk front-loaded):
         followed — with the lifetime-XP fallback; create / join / primary / leave),
         `communityOnly` middleware (404 while `FEATURE_COMMUNITY` is off); web
         `/community/boards`, `/community/clubs`. Leaderboard rows carry no email.
-  - [ ] 3.8b Circle: follows, user search (discover), my coaches.
+  - [x] 3.8b Circle: `community.CircleService` — `GET /community/circle` (following + my
+        coaches), `GET /community/people?q=&page=` (name contains, wildcards literal, or an
+        exact email; 10 per page; never returns email), `POST /community/follows`,
+        `DELETE /community/follows/{id}`; web `/community/circle`.
   - [ ] 3.8c Group streaks (create / join / leave, trained-today, group-day evaluation) +
         Today's group nudge.
 

@@ -21,6 +21,148 @@ type CommunityService interface {
 	LeaveClub(ctx context.Context, userID, clubID uuid.UUID) (string, error)
 }
 
+// CircleService is the Circle tab (flag-gated).
+type CircleService interface {
+	Circle(ctx context.Context, userID uuid.UUID) (community.CircleView, error)
+	People(ctx context.Context, userID uuid.UUID, term string, page int) (community.PeoplePage, error)
+	Follow(ctx context.Context, userID, id uuid.UUID) (string, error)
+	Unfollow(ctx context.Context, userID, id uuid.UUID) (string, error)
+}
+
+// PersonBody is another user as the community shows them (no email).
+type PersonBody struct {
+	UserID    uuid.UUID `json:"userId"`
+	Name      string    `json:"name" doc:"Full name, else \"Athlete\""`
+	AvatarURL *string   `json:"avatarUrl"`
+	Level     int64     `json:"level"`
+	Tier      string    `json:"tier"`
+	XP        int64     `json:"xp"`
+	Following bool      `json:"following"`
+}
+
+// CoachRefBody is one of your coaches.
+type CoachRefBody struct {
+	PersonBody
+	Sport string `json:"sport" doc:"Sport name, else \"General coaching\""`
+}
+
+// CircleBody is who you follow and your coaches.
+type CircleBody struct {
+	Following []PersonBody   `json:"following"`
+	Coaches   []CoachRefBody `json:"coaches"`
+}
+
+type circleOutput struct {
+	Body CircleBody
+}
+
+type peopleInput struct {
+	Q    string `query:"q" maxLength:"200" doc:"Name contains, or an exact email"`
+	Page int    `query:"page" minimum:"1" default:"1"`
+}
+
+// PeopleBody is a page of search results.
+type PeopleBody struct {
+	People  []PersonBody `json:"people"`
+	Page    int          `json:"page"`
+	HasNext bool         `json:"hasNext"`
+}
+
+type peopleOutput struct {
+	Body PeopleBody
+}
+
+type followInput struct {
+	Body struct {
+		UserID uuid.UUID `json:"userId"`
+	}
+}
+
+func personBody(r community.Row, following bool) PersonBody {
+	p := PersonBody{UserID: r.ID, Name: deref(r.FullName), AvatarURL: r.AvatarURL, Level: r.Level, Tier: deref(r.LeagueTier), XP: r.XP, Following: following}
+	if p.Name == "" {
+		p.Name = "Athlete"
+	}
+	if p.Tier == "" {
+		p.Tier = "bronze"
+	}
+	return p
+}
+
+func registerCircle(api huma.API, deps Deps) {
+	svc, logger := deps.Circle, deps.logger()
+	gated := huma.Middlewares{communityOnly(api, deps.CommunityEnabled), requireUser(api)}
+	tags := []string{"community"}
+	result := func(msg string) *resultOutput {
+		return &resultOutput{Body: ResultBody{Status: "success", Message: msg}}
+	}
+
+	huma.Register(api, huma.Operation{
+		OperationID: "getCircle", Method: http.MethodGet, Path: "/community/circle",
+		Summary: "People you follow and your coaches", Tags: tags, Middlewares: gated, Errors: []int{401, 404},
+	}, func(ctx context.Context, _ *struct{}) (*circleOutput, error) {
+		userID, _ := userFrom(ctx)
+		c, err := svc.Circle(ctx, userID)
+		if err != nil {
+			return nil, toProblem(ctx, logger, err)
+		}
+		body := CircleBody{Following: make([]PersonBody, len(c.Following)), Coaches: make([]CoachRefBody, len(c.Coaches))}
+		for i, r := range c.Following {
+			body.Following[i] = personBody(r, true)
+		}
+		for i, coach := range c.Coaches {
+			body.Coaches[i] = CoachRefBody{PersonBody: personBody(coach.Row, false), Sport: deref(coach.SportName)}
+			if body.Coaches[i].Sport == "" {
+				body.Coaches[i].Sport = "General coaching"
+			}
+		}
+		return &circleOutput{Body: body}, nil
+	})
+
+	huma.Register(api, huma.Operation{
+		OperationID: "searchPeople", Method: http.MethodGet, Path: "/community/people",
+		Summary:     "Find people to follow (by name, or an exact email)",
+		Description: "Top lifetime XP first, 10 per page; never returns emails.",
+		Tags:        tags, Middlewares: huma.Middlewares{communityOnly(api, deps.CommunityEnabled), requireUser(api), rateLimited(api, newLimiter(time.Second, 20))},
+		Errors: []int{401, 404, 429},
+	}, func(ctx context.Context, in *peopleInput) (*peopleOutput, error) {
+		userID, _ := userFrom(ctx)
+		page, err := svc.People(ctx, userID, in.Q, in.Page)
+		if err != nil {
+			return nil, toProblem(ctx, logger, err)
+		}
+		body := PeopleBody{People: make([]PersonBody, len(page.People)), Page: page.Page, HasNext: page.HasNext}
+		for i, p := range page.People {
+			body.People[i] = personBody(p.Row, p.Following)
+		}
+		return &peopleOutput{Body: body}, nil
+	})
+
+	huma.Register(api, huma.Operation{
+		OperationID: "follow", Method: http.MethodPost, Path: "/community/follows",
+		Summary: "Follow someone", Tags: tags, DefaultStatus: http.StatusCreated, Middlewares: gated, Errors: []int{400, 401, 404, 409},
+	}, func(ctx context.Context, in *followInput) (*resultOutput, error) {
+		userID, _ := userFrom(ctx)
+		msg, err := svc.Follow(ctx, userID, in.Body.UserID)
+		if err != nil {
+			return nil, toProblem(ctx, logger, err)
+		}
+		return result(msg), nil
+	})
+
+	huma.Register(api, huma.Operation{
+		OperationID: "unfollow", Method: http.MethodDelete, Path: "/community/follows/{id}",
+		Summary: "Unfollow someone", Tags: tags, Middlewares: gated, Errors: []int{401, 404},
+	}, func(ctx context.Context, in *idPathInput) (*resultOutput, error) {
+		userID, _ := userFrom(ctx)
+		msg, err := svc.Unfollow(ctx, userID, in.ID)
+		if err != nil {
+			return nil, toProblem(ctx, logger, err)
+		}
+		return result(msg), nil
+	})
+}
+
 // communityOnly answers 404 while the community flag is off, so the
 // surfaces don't exist rather than merely being hidden.
 func communityOnly(api huma.API, enabled bool) func(huma.Context, func(huma.Context)) {
