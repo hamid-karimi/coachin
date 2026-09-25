@@ -1,12 +1,3 @@
-// Command import-supabase copies the production Supabase project into a freshly
-// migrated CoachIn database, once, at go-live (Phase 7.1; deleted in 7.4):
-//
-//	import-supabase [-dry-run]
-//
-// SUPABASE_DATABASE_URL is the Supabase Postgres (direct connection, or a local
-// restore of its dump); MIGRATE_DATABASE_URL is our owner role. Set
-// SUPABASE_S3_* (Storage → S3 connection) to copy the photos too; S3_* is our
-// bucket. Users keep their passwords (bcrypt, rehashed on their next login).
 package main
 
 import (
@@ -16,43 +7,49 @@ import (
 	"io"
 	"log/slog"
 	"os"
-	"os/signal"
 	"slices"
-	"syscall"
 
 	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/objectstore"
 	"github.com/hamid-karimi/coachin/apps/api/internal/config"
 	"github.com/hamid-karimi/coachin/apps/api/internal/store"
 )
 
-func main() {
-	os.Exit(exitCode())
-}
-
-// exitCode runs the import and returns the process exit code, so deferred
-// cleanup happens before os.Exit.
-func exitCode() int {
-	dryRun := flag.Bool("dry-run", false, "copy inside a transaction, report, and roll back")
-	flag.Parse()
-	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer stop()
-	if err := run(ctx, *dryRun, logger); err != nil {
-		logger.Error("import failed", "error", err)
-		return 1
+// importSupabase copies the production Supabase project into a freshly migrated
+// CoachIn database, once, at go-live (Phase 7.1; removed in 7.4):
+//
+//	api import-supabase [-dry-run]
+//
+// SUPABASE_DATABASE_URL is the Supabase Postgres (direct connection, or a local
+// restore of its dump); MIGRATE_DATABASE_URL is our owner role. Set
+// SUPABASE_S3_* (Storage → S3 connection) to copy the photos too; S3_* is our
+// bucket. Users keep their passwords (bcrypt, rehashed on their next login).
+func importSupabase(ctx context.Context, args []string, logger *slog.Logger) error {
+	flags := flag.NewFlagSet("import-supabase", flag.ContinueOnError)
+	dryRun := flags.Bool("dry-run", false, "copy inside a transaction, report, and roll back")
+	if err := flags.Parse(args); err != nil {
+		return err
 	}
-	return 0
-}
-
-func run(ctx context.Context, dryRun bool, logger *slog.Logger) error {
 	cfg, err := config.LoadImport(os.Getenv)
 	if err != nil {
 		return err
 	}
-	report, err := store.ImportSupabase(ctx, cfg.SourceURL, cfg.TargetURL, dryRun)
+	report, err := store.ImportSupabase(ctx, cfg.SourceURL, cfg.TargetURL, *dryRun)
 	if err != nil {
 		return err
 	}
+	logImport(report, logger)
+	if *dryRun {
+		logger.Info("dry run: nothing was written")
+		return nil
+	}
+	if cfg.Photos == nil {
+		logger.Warn("SUPABASE_S3_ENDPOINT unset: photos were not copied")
+		return nil
+	}
+	return copyPhotos(ctx, cfg.Photos, report.PhotoKeys, logger)
+}
+
+func logImport(report store.ImportReport, logger *slog.Logger) {
 	logger.Info("users", "imported", report.Users, "without_password", report.NoPassword)
 	tables := make([]string, 0, len(report.Rows))
 	for table := range report.Rows {
@@ -66,15 +63,6 @@ func run(ctx context.Context, dryRun bool, logger *slog.Logger) error {
 		logger.Warn("source tables with no target (not imported)", "tables", report.Skipped)
 	}
 	logger.Info("check", "profiles_whose_xp_differs_from_ledger", report.XPMismatches, "photos", len(report.PhotoKeys))
-	if dryRun {
-		logger.Info("dry run: nothing was written")
-		return nil
-	}
-	if cfg.Photos == nil {
-		logger.Warn("SUPABASE_S3_ENDPOINT unset: photos were not copied")
-		return nil
-	}
-	return copyPhotos(ctx, cfg.Photos, report.PhotoKeys, logger)
 }
 
 // copyPhotos copies each stored object to the same key in our bucket; a missing

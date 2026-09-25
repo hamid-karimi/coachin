@@ -2,7 +2,7 @@
 COMPOSE := docker compose -f compose.yaml -f compose.dev.yaml
 
 .DEFAULT_GOAL := help
-.PHONY: help up infra down logs ps migrate migrate-status reset-db seed gen golden golden-activity e2e test lint
+.PHONY: help up infra down logs ps migrate migrate-status reset-db seed import-supabase gen golden golden-activity e2e test lint
 
 help: ## List the available commands
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  make %-15s %s\n", $$1, $$2}'
@@ -39,6 +39,9 @@ reset-db: .env ## Delete the local database and re-create it from migrations
 
 seed: .env ## Load demo accounts (trainee@ / coach@coachin.local, password Coachin-demo1)
 	$(COMPOSE) run --rm --build migrate seed
+
+import-supabase: .env ## One-time go-live copy of the Supabase project (SUPABASE_* in .env; ARGS=-dry-run rehearses)
+	$(COMPOSE) run --rm --build migrate import-supabase $(ARGS)
 
 gen: ## Regenerate sqlc queries, openapi/openapi.json, and the web app's typed API client
 	cd apps/api && sqlc generate
