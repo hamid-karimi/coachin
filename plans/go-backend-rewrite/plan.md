@@ -197,7 +197,9 @@ Order (dependencies first, risk front-loaded):
         /measurements` (snapshot + goal settlement in one tx; `goals.Settle` baseline
         rule), `GET/POST /goals`, `POST /goals/{id}/abandon`; Today's goal strip;
         `components/ui/native-select`.
-  - [ ] 3.6b Watch-data import (`POST /activities/import`, FORMULAS §14).
+  - [x] 3.6b Watch-data import: `POST /activities/import` (`app/activities.Importer`:
+        `activity.Sanitize` + `SplitImportable`, runs + ledger rows + XP in one tx under
+        the profile lock); web Body tab "Watch data" (parse → review → log).
   - [ ] 3.6c Photos: Garage adapter, re-encode, moderation, `GET /photos/{id}`,
         body/progress photos, analyze / extract.
 - [ ] 3.7 **Coaching** — invite codes, join statuses, roster/adherence, consent-gated

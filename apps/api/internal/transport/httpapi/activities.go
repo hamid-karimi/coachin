@@ -8,6 +8,7 @@ import (
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/danielgtaylor/huma/v2/adapters/humachi"
+	"github.com/google/uuid"
 
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/activities"
 )
@@ -15,6 +16,11 @@ import (
 // ActivityService parses watch files.
 type ActivityService interface {
 	Parse(uploads []activities.Upload) (activities.Parsed, error)
+}
+
+// ActivityImporter logs parsed runs.
+type ActivityImporter interface {
+	Import(ctx context.Context, userID uuid.UUID, raw []any) (string, error)
 }
 
 // ActivitySummaryBody is one run read from a watch file.
@@ -58,8 +64,28 @@ func limitBody(n int64) func(huma.Context, func(huma.Context)) {
 	}
 }
 
+type importActivitiesInput struct {
+	Body struct {
+		Activities []ActivitySummaryBody `json:"activities" maxItems:"20" doc:"Runs as returned by POST /activities/parse"`
+	}
+}
+
+// legacySummary is the snake_case shape activity.Sanitize validates.
+func legacySummary(a ActivitySummaryBody) map[string]any {
+	return map[string]any{
+		"date": a.Date, "distance_km": a.DistanceKm, "duration_min": a.DurationMin, "avg_hr": derefOr(a.AvgHR), "source": a.Source,
+	}
+}
+
+func derefOr(v *float64) any {
+	if v == nil {
+		return nil
+	}
+	return *v
+}
+
 func registerActivities(api huma.API, deps Deps) {
-	svc, logger := deps.Activities, deps.logger()
+	svc, importer, logger := deps.Activities, deps.ActivityImport, deps.logger()
 
 	huma.Register(api, huma.Operation{
 		OperationID: "parseActivities", Method: http.MethodPost, Path: "/activities/parse",
@@ -96,5 +122,25 @@ func registerActivities(api huma.API, deps Deps) {
 			}
 		}
 		return &activitiesParsedOutput{Body: body}, nil
+	})
+
+	huma.Register(api, huma.Operation{
+		OperationID: "importActivities", Method: http.MethodPost, Path: "/activities/import",
+		Summary:     "Log parsed runs as completed workouts (+60 × running multiplier each)",
+		Description: "Only the last 14 days; a date that already has a logged run is skipped (FORMULAS §14).",
+		Tags:        []string{"activities"}, DefaultStatus: http.StatusCreated,
+		Middlewares: huma.Middlewares{requireUser(api), rateLimited(api, newLimiter(10*time.Second, 10))},
+		Errors:      []int{400, 401, 429, 502},
+	}, func(ctx context.Context, in *importActivitiesInput) (*resultOutput, error) {
+		userID, _ := userFrom(ctx)
+		raw := make([]any, len(in.Body.Activities))
+		for i, a := range in.Body.Activities {
+			raw[i] = legacySummary(a)
+		}
+		msg, err := importer.Import(ctx, userID, raw)
+		if err != nil {
+			return nil, toProblem(ctx, logger, err)
+		}
+		return &resultOutput{Body: ResultBody{Status: "success", Message: msg}}, nil
 	})
 }

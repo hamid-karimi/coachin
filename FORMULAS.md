@@ -419,7 +419,8 @@ consumed by `apps/api/internal/app/calendar` (`Day.Meals`) and the web's
 
 ## 14. Watch-file activity import
 
-**Go:** `apps/api/internal/domain/activity` (`Sanitize`, `SplitImportable`).
+**Go:** `apps/api/internal/domain/activity` (`Sanitize`, `SplitImportable`), applied by
+`app/activities.Importer` (`POST /activities/import`).
 **Source of truth:** `legacy/lib/activity-import.ts` (`sanitizeActivities`,
 `splitImportableActivities`, unit-tested), `importActivitiesAction`
 (`legacy/app/profile/actions.ts`), parser `legacy/lib/activity-parse.ts`.
@@ -435,7 +436,10 @@ consumed by `apps/api/internal/app/calendar` (`Day.Meals`) and the web's
   distance to 0.01 km, duration to 0.1 min, pace = duration ÷ distance (unrounded
   inputs) to 0.01 min/km, HR rounded; the date is the start's UTC date.
 - **XP = 60 × running sport multiplier per imported run** — the exact
-  routine-log formula (§1), summed into one profile update.
+  routine-log formula (§1). Each run gets a ledger row (`workout_log:<sport id>:<date>`,
+  as a routine log) and the sum lands in one profile update, all in one transaction
+  under the profile lock (legacy skipped the ledger). The running sport is the first
+  sport whose name contains "run".
 - **Window**: only dates within the last **14 days** (and not in the future)
   import; older/future dates are skipped.
 - **Dedup**: one completed log per sport×date — dates that already have a

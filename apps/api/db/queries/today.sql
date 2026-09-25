@@ -81,3 +81,17 @@ SET xp = GREATEST(COALESCE(xp, 0) + sqlc.arg(amount)::int, 0),
     level = FLOOR(GREATEST(COALESCE(xp, 0) + sqlc.arg(amount)::int, 0) / 1000.0) + 1
 WHERE id = sqlc.arg(user_id)
 RETURNING COALESCE(xp, 0)::bigint AS xp;
+
+-- name: RunningSport :one
+-- The sport watch-file imports log under (legacy: first sport named like "run").
+SELECT id, xp_multiplier FROM public.sport_types WHERE name ILIKE '%run%' ORDER BY id LIMIT 1;
+
+-- name: LoggedDatesOf :many
+-- Which of the dates already have a completed log of the sport.
+SELECT DISTINCT date::text AS on_date FROM public.logs
+WHERE user_id = sqlc.arg(user_id) AND sport_type_id = sqlc.arg(sport_type_id) AND status = 'completed'
+  AND date = ANY(CAST(sqlc.arg(dates)::text[] AS date[]));
+
+-- name: InsertImportedLog :exec
+INSERT INTO public.logs (user_id, sport_type_id, date, status, notes)
+VALUES (sqlc.arg(user_id)::uuid, sqlc.arg(sport_type_id)::bigint, CAST(sqlc.arg(on_date)::text AS date), 'completed', sqlc.arg(notes)::text);

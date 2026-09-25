@@ -2,6 +2,7 @@ package httpapi
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"mime/multipart"
 	"net/http"
@@ -62,5 +63,30 @@ func TestParseActivitiesRoute(t *testing.T) {
 	code, _, raw = upload(map[string][]byte{"huge.fit": make([]byte, maxUploadBytes+1)})
 	if code != http.StatusUnprocessableEntity || !bytes.Contains([]byte(raw), []byte("request body too large")) {
 		t.Fatalf("body over the cap: %d %s", code, raw)
+	}
+}
+
+type fakeImporter struct{ raw []any }
+
+func (f *fakeImporter) Import(_ context.Context, _ uuid.UUID, raw []any) (string, error) {
+	f.raw = raw
+	return "Imported 1 run · +60 XP", nil
+}
+
+func TestImportActivitiesRoute(t *testing.T) {
+	fake := &fakeImporter{}
+	h, _ := New(Deps{Auth: &fakeAuth{user: uuid.New(), liveToken: "live-token"}, ActivityImport: fake})
+	cookie := map[string]string{"Cookie": "coachin_session=live-token"}
+	rec := send(t, h, http.MethodPost, BasePath+"/activities/import",
+		`{"activities":[{"date":"2026-09-24","distanceKm":5.02,"durationMin":30,"avgPaceMinKm":5.98,"avgHr":151,"source":"fit"}]}`, cookie)
+	if rec.Code != http.StatusCreated {
+		t.Fatalf("import: %d %s", rec.Code, rec.Body)
+	}
+	got := fake.raw[0].(map[string]any)
+	if got["distance_km"] != 5.02 || got["avg_hr"] != 151.0 || got["source"] != "fit" {
+		t.Fatalf("sanitize input = %+v", got)
+	}
+	if rec := send(t, h, http.MethodPost, BasePath+"/activities/import", `{"activities":[]}`, nil); rec.Code != http.StatusUnauthorized {
+		t.Fatalf("signed out: %d", rec.Code)
 	}
 }
