@@ -82,6 +82,8 @@ type Store interface {
 	Quotas(ctx context.Context, userID uuid.UUID) ([]routine.Quota, error)
 	Logs(ctx context.Context, userID uuid.UUID, from, to string) ([]quotas.Log, error)
 	LastProgressPhotoAt(ctx context.Context, userID uuid.UUID) (*time.Time, error)
+	// MealPlanDay is the active meal plan's menu for a weekday, nil without a plan.
+	MealPlanDay(ctx context.Context, userID uuid.UUID, weekday int) (*MealPlanDay, error)
 	Supplements(ctx context.Context, userID uuid.UUID) ([]SupplementRow, error)
 	TakenSupplementsOn(ctx context.Context, userID uuid.UUID, date string) ([]uuid.UUID, error)
 	HasAnySchedule(ctx context.Context, userID uuid.UUID) (bool, error)
@@ -157,6 +159,22 @@ type Day struct {
 	HasProgressPhoto bool
 	// Supplements is the whole stack; the checklist shows the Due ones.
 	Supplements []Supplement
+	// MealPlan is today's menu from the active AI meal plan; nil without one.
+	MealPlan *MealPlanDay
+}
+
+// MenuMeal is one planned meal of the active meal plan.
+type MenuMeal struct {
+	ID       uuid.UUID
+	MealType string
+	Title    string
+	Kcal     float64
+}
+
+// MealPlanDay is today's menu and the plan's daily calorie target.
+type MealPlanDay struct {
+	KcalTarget float64
+	Meals      []MenuMeal
 }
 
 // Today settles the streak, then loads the day.
@@ -217,6 +235,9 @@ func (s *Service) Today(ctx context.Context, userID uuid.UUID) (Day, error) {
 
 	if day.Supplements, err = s.supplements(ctx, userID, &day); err != nil {
 		return Day{}, err
+	}
+	if day.MealPlan, err = s.store.MealPlanDay(ctx, userID, weekday); err != nil {
+		return Day{}, fmt.Errorf("load meal plan: %w", err)
 	}
 	return day, nil
 }

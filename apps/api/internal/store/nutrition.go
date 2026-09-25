@@ -13,6 +13,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	appnutrition "github.com/hamid-karimi/coachin/apps/api/internal/app/nutrition"
+	"github.com/hamid-karimi/coachin/apps/api/internal/domain/aigen"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/nutrition"
 	"github.com/hamid-karimi/coachin/apps/api/internal/store/queries"
 )
@@ -247,4 +248,131 @@ func (s *NutritionStore) Country(ctx context.Context, userID uuid.UUID) (*string
 		return err
 	})
 	return country, err
+}
+
+var _ appnutrition.PlanStore = (*NutritionStore)(nil)
+
+// PlanProfile reads the body data targets are sized from.
+func (s *NutritionStore) PlanProfile(ctx context.Context, userID uuid.UUID) (appnutrition.PlanProfile, error) {
+	var p appnutrition.PlanProfile
+	err := s.asUser(ctx, userID, func(q *queries.Queries) error {
+		row, err := q.MealPlanProfile(ctx, userID)
+		if err != nil {
+			return err
+		}
+		p = appnutrition.PlanProfile{
+			Sex: row.Sex, BirthDate: ymd(row.BirthDate), HeightCm: numeric(row.HeightCm), WeightKg: numeric(row.WeightKg), Country: row.Country,
+		}
+		return nil
+	})
+	return p, err
+}
+
+// TrainingDaysPerWeek counts distinct weekdays with a fixed session.
+func (s *NutritionStore) TrainingDaysPerWeek(ctx context.Context, userID uuid.UUID) (int, error) {
+	var days int32
+	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		days, err = q.CountTrainingDays(ctx, userID)
+		return err
+	})
+	return int(days), err
+}
+
+// BodyAnalysis is the newest analyzed body photo's analysis.
+func (s *NutritionStore) BodyAnalysis(ctx context.Context, userID uuid.UUID) (json.RawMessage, error) {
+	var analysis []byte
+	err := s.asUser(ctx, userID, func(q *queries.Queries) error {
+		a, err := q.LatestBodyAnalysis(ctx, userID)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil
+		}
+		analysis = a
+		return err
+	})
+	return analysis, err
+}
+
+// HasActiveTrainingPlan reports any active training plan.
+func (s *NutritionStore) HasActiveTrainingPlan(ctx context.Context, userID uuid.UUID) (bool, error) {
+	var has bool
+	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		has, err = q.HasActiveTrainingPlan(ctx, userID)
+		return err
+	})
+	return has, err
+}
+
+// ActiveMealPlan loads the active plan and its meals (day, then plan order).
+func (s *NutritionStore) ActiveMealPlan(ctx context.Context, userID uuid.UUID) (*appnutrition.MealPlan, error) {
+	var plan *appnutrition.MealPlan
+	err := s.asUser(ctx, userID, func(q *queries.Queries) error {
+		menu, err := loadActiveMenu(ctx, q, userID)
+		if err != nil || menu == nil {
+			return err
+		}
+		row := menu.plan
+		plan = &appnutrition.MealPlan{
+			ID:      row.ID,
+			Targets: nutrition.Targets{Kcal: row.KcalTarget, ProteinG: row.ProteinGTarget, CarbsG: row.CarbsGTarget, FatG: row.FatGTarget},
+			Items:   make([]appnutrition.MealPlanItem, len(menu.items)),
+		}
+		_ = json.Unmarshal(row.Intake, &plan.Intake)
+		for i, r := range menu.items {
+			meal := aigen.PlannedMeal{
+				DayOfWeek: int(r.DayOfWeek), MealType: r.MealType, Title: r.Title, Recipe: deref(r.Recipe), VideoQuery: deref(r.VideoQuery),
+				Kcal: r.Kcal, ProteinG: r.ProteinG, CarbsG: r.CarbsG, FatG: r.FatG, SugarG: r.SugarG, FiberG: r.FiberG, SodiumMg: r.SodiumMg,
+				Ingredients: []nutrition.Ingredient{},
+			}
+			_ = json.Unmarshal(r.Ingredients, &meal.Ingredients)
+			plan.Items[i] = appnutrition.MealPlanItem{ID: r.ID, PlannedMeal: meal}
+		}
+		return nil
+	})
+	return plan, err
+}
+
+// SaveMealPlan replaces the active plan and syncs the calorie goal.
+func (s *NutritionStore) SaveMealPlan(ctx context.Context, userID uuid.UUID, plan appnutrition.NewMealPlan) error {
+	intake, err := json.Marshal(plan.Intake)
+	if err != nil {
+		return err
+	}
+	t := plan.Targets
+	return s.asUser(ctx, userID, func(q *queries.Queries) error {
+		if _, err := q.ArchiveMealPlans(ctx, userID); err != nil {
+			return fmt.Errorf("archive plan: %w", err)
+		}
+		planID, err := q.InsertMealPlan(ctx, queries.InsertMealPlanParams{
+			UserID: userID, Intake: intake, Kcal: t.Kcal, ProteinG: t.ProteinG, CarbsG: t.CarbsG, FatG: t.FatG,
+		})
+		if err != nil {
+			return fmt.Errorf("insert plan: %w", err)
+		}
+		for i, m := range plan.Meals {
+			ingredients, err := json.Marshal(m.Ingredients)
+			if err != nil {
+				return err
+			}
+			if err := q.InsertMealPlanItem(ctx, queries.InsertMealPlanItemParams{
+				PlanID: planID, UserID: userID, DayOfWeek: int32(m.DayOfWeek), MealType: m.MealType, Title: m.Title, // #nosec G115 -- 0..6
+				Ingredients: ingredients, Recipe: m.Recipe, VideoQuery: m.VideoQuery, Kcal: m.Kcal, ProteinG: m.ProteinG,
+				CarbsG: m.CarbsG, FatG: m.FatG, SugarG: m.SugarG, FiberG: m.FiberG, SodiumMg: m.SodiumMg, Sort: int32(i), // #nosec G115 -- ≤ 40 meals
+			}); err != nil {
+				return fmt.Errorf("insert meal %d: %w", i, err)
+			}
+		}
+		updated, err := q.UpdateCalorieGoal(ctx, queries.UpdateCalorieGoalParams{Kcal: t.Kcal, UserID: userID})
+		if err != nil || updated > 0 {
+			return err
+		}
+		return q.InsertCalorieGoal(ctx, queries.InsertCalorieGoalParams{UserID: userID, Kcal: t.Kcal})
+	})
+}
+
+// ArchiveMealPlan retires the active plan (a no-op without one).
+func (s *NutritionStore) ArchiveMealPlan(ctx context.Context, userID uuid.UUID) error {
+	return s.asUser(ctx, userID, func(q *queries.Queries) error {
+		_, err := q.ArchiveMealPlans(ctx, userID)
+		return err
+	})
 }

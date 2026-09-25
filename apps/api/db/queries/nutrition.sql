@@ -77,3 +77,60 @@ WHERE user_id = sqlc.arg(user_id)::uuid
 
 -- name: ProfileCountry :one
 SELECT country FROM public.profiles WHERE id = sqlc.arg(id);
+
+-- name: GetActiveMealPlan :one
+SELECT id, kcal_target::float8 AS kcal_target, protein_g_target::float8 AS protein_g_target,
+       carbs_g_target::float8 AS carbs_g_target, fat_g_target::float8 AS fat_g_target, intake
+FROM public.meal_plans
+WHERE user_id = sqlc.arg(user_id) AND status = 'active'
+ORDER BY created_at DESC
+LIMIT 1;
+
+-- name: ListMealPlanItems :many
+SELECT id, day_of_week, meal_type, title, ingredients, recipe, video_query, kcal::float8 AS kcal,
+       protein_g::float8 AS protein_g, carbs_g::float8 AS carbs_g, fat_g::float8 AS fat_g,
+       sugar_g::float8 AS sugar_g, fiber_g::float8 AS fiber_g, sodium_mg::float8 AS sodium_mg
+FROM public.meal_plan_items
+WHERE plan_id = sqlc.arg(plan_id) AND user_id = sqlc.arg(user_id)
+ORDER BY day_of_week, sort, id;
+
+-- name: ArchiveMealPlans :execrows
+UPDATE public.meal_plans SET status = 'archived' WHERE user_id = sqlc.arg(user_id) AND status = 'active';
+
+-- name: InsertMealPlan :one
+INSERT INTO public.meal_plans (user_id, status, intake, kcal_target, protein_g_target, carbs_g_target, fat_g_target)
+VALUES (sqlc.arg(user_id)::uuid, 'active', sqlc.arg(intake)::jsonb, sqlc.arg(kcal)::float8, sqlc.arg(protein_g)::float8,
+        sqlc.arg(carbs_g)::float8, sqlc.arg(fat_g)::float8)
+RETURNING id;
+
+-- name: InsertMealPlanItem :exec
+INSERT INTO public.meal_plan_items (plan_id, user_id, day_of_week, meal_type, title, ingredients, recipe, video_query,
+                                    kcal, protein_g, carbs_g, fat_g, sugar_g, fiber_g, sodium_mg, sort)
+VALUES (sqlc.arg(plan_id)::uuid, sqlc.arg(user_id)::uuid, sqlc.arg(day_of_week)::int, sqlc.arg(meal_type)::text,
+        sqlc.arg(title)::text, sqlc.arg(ingredients)::jsonb, sqlc.arg(recipe)::text, sqlc.arg(video_query)::text,
+        sqlc.arg(kcal)::float8, sqlc.arg(protein_g)::float8, sqlc.arg(carbs_g)::float8, sqlc.arg(fat_g)::float8,
+        sqlc.arg(sugar_g)::float8, sqlc.arg(fiber_g)::float8, sqlc.arg(sodium_mg)::float8, sqlc.arg(sort)::int);
+
+-- name: UpdateCalorieGoal :execrows
+UPDATE public.goals SET target_value = sqlc.arg(kcal)::float8
+WHERE user_id = sqlc.arg(user_id) AND goal_type = 'calorie_intake' AND status = 'active';
+
+-- name: InsertCalorieGoal :exec
+INSERT INTO public.goals (user_id, goal_type, target_value, status)
+VALUES (sqlc.arg(user_id)::uuid, 'calorie_intake', sqlc.arg(kcal)::float8, 'active');
+
+-- name: MealPlanProfile :one
+SELECT sex, birth_date, height_cm, weight_kg, country FROM public.profiles WHERE id = sqlc.arg(id);
+
+-- name: CountTrainingDays :one
+-- Distinct weekdays with a fixed session (any window), as the legacy planner counted.
+SELECT count(DISTINCT day_of_week)::int AS days FROM public.schedules WHERE user_id = sqlc.arg(user_id)::uuid;
+
+-- name: HasActiveTrainingPlan :one
+SELECT EXISTS (SELECT 1 FROM public.training_plans WHERE user_id = sqlc.arg(user_id) AND status = 'active');
+
+-- name: ListMealSlotsBetween :many
+SELECT date::text AS date, meal_type, kcal::float8 AS kcal
+FROM public.meal_logs
+WHERE user_id = sqlc.arg(user_id)::uuid
+  AND date BETWEEN CAST(sqlc.arg(from_date)::text AS date) AND CAST(sqlc.arg(to_date)::text AS date);

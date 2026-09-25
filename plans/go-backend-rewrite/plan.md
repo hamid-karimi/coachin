@@ -170,7 +170,7 @@ Order (dependencies first, risk front-loaded):
       so one query covers the week — logged/done state, viewed-week quota progress,
       collision chip); web `/calendar`; the shared plan sheet/icon moved to
       `app/(app)/components`. ICS export shipped in 3.3a. Meal-plan line → 3.5.
-- [ ] 3.5 **Nutrition** — USDA proxy, meal logs, photo estimate + batch confirm, day/trends,
+- [x] 3.5 **Nutrition** — USDA proxy, meal logs, photo estimate + batch confirm, day/trends,
       meal plans (M)
   - [x] 3.5a Meal logging: `GET /nutrition/day` (meals, totals, goal, 7/30-day trends),
         `GET /foods`, `GET /foods/usda` (`adapters/usda`), `POST /meals` (local / USDA
@@ -182,8 +182,12 @@ Order (dependencies first, risk front-loaded):
         data), `aigen.MealPhotoRequest` + `ParseMealEstimate` (golden `ai.json`, 15 new
         cases), `POST /meals/photo-estimate` (multipart, content-sniffed, profile country),
         `POST /meals/batch`; web Photo tab (device compression, review with search-to-add).
-  - [ ] 3.5c AI meal plan (`/nutrition/plan`, grocery list), Today's menu card, the
-        calendar's meal line + adherence.
+  - [x] 3.5c AI meal plan: `aigen.MealPlanRequest` + `ParseMealPlan` (golden `ai.json`),
+        `app/nutrition.Plans` (`GET/POST/DELETE /nutrition/plan`, `POST
+        /nutrition/plan/regenerate`; targets from FORMULAS §10, one-tx save that archives
+        the old plan and sets the calorie goal), grocery list; `GET /today` `mealPlan`,
+        `GET /calendar` `days[].meals` (+ adherence); web `/nutrition/plan`, Today's
+        meals card, calendar meal line.
 - [ ] 3.6 **Profile** — profile/measurements, goals, activity import, photos (Garage
       adapter, pure-Go re-encode, Gemini moderation, streamed `GET /photos/{id}`),
       analyze / extract, `?tab=` (L)

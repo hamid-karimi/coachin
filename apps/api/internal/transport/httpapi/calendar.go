@@ -32,6 +32,23 @@ type CalendarDayBody struct {
 	Routines      []CalendarRoutineBody `json:"routines"`
 	PlanItems     []PlanItemBody        `json:"planItems" doc:"Blended across every active plan, each in its own week"`
 	HardCollision bool                  `json:"hardCollision" doc:"2+ run/strength items that day"`
+	Meals         *DayMealsBody         `json:"meals,omitempty" doc:"The active meal plan's menu that weekday; absent without one"`
+}
+
+// MealAdherenceBody compares a day's logged meals with the plan (meal types and kcal only).
+type MealAdherenceBody struct {
+	SlotsPlanned int      `json:"slotsPlanned"`
+	SlotsLogged  int      `json:"slotsLogged"`
+	KcalPlanned  float64  `json:"kcalPlanned"`
+	KcalLogged   float64  `json:"kcalLogged"`
+	KcalRatio    *float64 `json:"kcalRatio"`
+}
+
+// DayMealsBody is a day's planned menu summary.
+type DayMealsBody struct {
+	PlannedCount int                `json:"plannedCount"`
+	PlannedKcal  float64            `json:"plannedKcal"`
+	Adherence    *MealAdherenceBody `json:"adherence,omitempty" doc:"Today and past days only"`
 }
 
 // CalendarBody is one Monday–Sunday week.
@@ -85,6 +102,14 @@ func registerCalendar(api huma.API, deps Deps) {
 			}
 			for j, item := range d.PlanItems {
 				day.PlanItems[j] = planItemBody(item)
+			}
+			if m := d.Meals; m != nil {
+				day.Meals = &DayMealsBody{PlannedCount: m.PlannedCount, PlannedKcal: m.PlannedKcal}
+				if a := m.Adherence; a != nil {
+					day.Meals.Adherence = &MealAdherenceBody{
+						SlotsPlanned: a.SlotsPlanned, SlotsLogged: a.SlotsLogged, KcalPlanned: a.KcalPlanned, KcalLogged: a.KcalLogged, KcalRatio: a.KcalRatio,
+					}
+				}
 			}
 			body.Days[i] = day
 		}

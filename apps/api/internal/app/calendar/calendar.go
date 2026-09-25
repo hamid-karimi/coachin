@@ -11,6 +11,7 @@ import (
 
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/routine"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/dates"
+	"github.com/hamid-karimi/coachin/apps/api/internal/domain/nutrition"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/planitem"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/quotas"
 )
@@ -41,6 +42,17 @@ type Store interface {
 	PlanItemsInWeeks(ctx context.Context, userID uuid.UUID, weekByPlan map[uuid.UUID]int) ([]PlanItem, error)
 	Logs(ctx context.Context, userID uuid.UUID, from, to string) ([]quotas.Log, error)
 	Quotas(ctx context.Context, userID uuid.UUID) ([]routine.Quota, error)
+	// MealPlanWeek is the active meal plan's menu by weekday; ok is false without a plan.
+	MealPlanWeek(ctx context.Context, userID uuid.UUID) (menu map[int][]nutrition.MealSlot, ok bool, err error)
+	// MealSlots are the logged meals dated from..to, by date.
+	MealSlots(ctx context.Context, userID uuid.UUID, from, to string) (map[string][]nutrition.MealSlot, error)
+}
+
+// DayMeals is a day's planned menu and, up to today, how the logs matched it.
+type DayMeals struct {
+	PlannedCount int
+	PlannedKcal  float64
+	Adherence    *nutrition.Adherence // nil on future days
 }
 
 // Service builds calendar weeks. now is injectable for tests.
@@ -74,6 +86,7 @@ type Day struct {
 	Routines      []Routine
 	PlanItems     []routine.PlanItem // blended across active plans
 	HardCollision bool
+	Meals         *DayMeals // nil without an active meal plan or a planned meal that weekday
 }
 
 // Week is the calendar page.
@@ -124,6 +137,11 @@ func (s *Service) Week(ctx context.Context, userID uuid.UUID, anchor string) (We
 		return Week{}, err
 	}
 
+	meals, err := s.meals(ctx, userID, week)
+	if err != nil {
+		return Week{}, err
+	}
+
 	doneSports, logged := completedByDate(logs)
 	week.Days = make([]Day, len(days))
 	for i, date := range days {
@@ -144,6 +162,7 @@ func (s *Service) Week(ctx context.Context, userID uuid.UUID, anchor string) (We
 			types[j] = item.ItemType
 		}
 		cell.HardCollision = planitem.HasHardCollision(types)
+		cell.Meals = meals(cell)
 		week.Days[i] = cell
 	}
 	return week, nil
@@ -182,6 +201,38 @@ func (s *Service) planItems(ctx context.Context, userID uuid.UUID, monday time.T
 		byDate[ymd] = append(byDate[ymd], item.PlanItem)
 	}
 	return byDate, nil
+}
+
+// meals returns the per-day meal summary builder: a no-op without an active
+// meal plan (logged meals are only read when there is one).
+func (s *Service) meals(ctx context.Context, userID uuid.UUID, week Week) (func(Day) *DayMeals, error) {
+	none := func(Day) *DayMeals { return nil }
+	menu, ok, err := s.store.MealPlanWeek(ctx, userID)
+	if err != nil {
+		return nil, fmt.Errorf("load meal plan: %w", err)
+	}
+	if !ok {
+		return none, nil
+	}
+	logged, err := s.store.MealSlots(ctx, userID, week.Monday, week.Sunday)
+	if err != nil {
+		return nil, fmt.Errorf("load meal logs: %w", err)
+	}
+	return func(day Day) *DayMeals {
+		planned := menu[day.Weekday]
+		if len(planned) == 0 {
+			return nil
+		}
+		meals := &DayMeals{PlannedCount: len(planned)}
+		for _, meal := range planned {
+			meals.PlannedKcal += meal.Kcal
+		}
+		if day.Date <= week.Today {
+			adherence := nutrition.AdherenceForDay(planned, logged[day.Date])
+			meals.Adherence = &adherence
+		}
+		return meals
+	}, nil
 }
 
 // completedByDate indexes the week's completed logs: sports per date, and

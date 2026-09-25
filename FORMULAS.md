@@ -282,13 +282,16 @@ t2 = t1 × (d2 / d1) ^ 1.06
 
 ## 10. Nutrition targets (meal plan)
 
-**Go:** `apps/api/internal/domain/nutrition` (`ComputeTargets`, `CanComputeTargets`).
+**Go:** `apps/api/internal/domain/nutrition` (`ComputeTargets`, `CanComputeTargets`);
+consumed by `apps/api/internal/app/nutrition/plan.go` (`Plans.Generate`).
 **Source of truth:** `legacy/lib/nutrition-targets.ts` (unit-tested in
 `legacy/lib/nutrition-targets.test.ts`). The AI meal-plan generator consumes these
 targets; it never computes them itself.
 
 - **BMR (Mifflin–St Jeor):** `10·kg + 6.25·cm − 5·age + s`, where `s = +5`
   (male), `−161` (female), `−78` (unspecified — the midpoint).
+- **Weekly training days** = distinct weekdays in the fixed schedule; none → **3**
+  (a moderate default, so a user without a routine isn't sized as sedentary).
 - **Activity factor** from weekly training days: `0 → 1.2`, `1–2 → 1.375`,
   `3–4 → 1.55`, `5–6 → 1.725`, `7 → 1.9`. `TDEE = BMR × factor`.
 - **Goal adjustment** on TDEE: `lose −18%`, `maintain 0`, `gain +12%`,
@@ -384,7 +387,8 @@ as `[{name, sets: [{weight_kg, reps}]}]` (legacy flat rows
 
 **Go:** `apps/api/internal/domain/nutrition` (`AdherenceForDay`; also `ToGrams`, `SummarizePeriod`, `BuildGroceryList`).
 **Source of truth:** `legacy/lib/meal-adherence.ts` (`mealAdherenceForDay`, unit-tested),
-consumed by `legacy/app/calendar/page.tsx` + `legacy/app/calendar/components/day-meals-line.tsx`.
+consumed by `apps/api/internal/app/calendar` (`Day.Meals`) and the web's
+`app/(app)/calendar/components/day-meals-line.tsx`.
 
 - For a date with an active meal plan, adherence compares the plan's meals for
   that weekday against the day's `meal_logs`: **slots** = distinct planned

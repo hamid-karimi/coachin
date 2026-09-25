@@ -1,6 +1,7 @@
 import { Check, TriangleAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { dayLabel, isRestDay, type CalendarDay } from "../lib/calendar";
+import { DayMealsLine } from "./day-meals-line";
 import { DayPlanItems } from "./day-plan-items";
 import { RoutineSessionItem } from "./routine-session-item";
 
@@ -39,6 +40,7 @@ export function DayCard({ day }: { day: CalendarDay }) {
           <DayPlanItems items={day.planItems} />
         </div>
       )}
+      {day.meals && <DayMealsLine meals={day.meals} />}
     </div>
   );
 }

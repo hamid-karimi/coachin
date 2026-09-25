@@ -89,6 +89,7 @@ func serve(ctx context.Context, _ []string, _ *slog.Logger) error {
 		Activities:       activities.NewService(watchfile.New(nil)),
 		Calendar:         calendar.NewService(store.NewCalendarStore(pool), nil),
 		Nutrition:        nutrition.NewService(store.NewNutritionStore(pool), usda.New(cfg.USDAAPIKey, ""), generator, nil),
+		MealPlan:         nutrition.NewPlans(store.NewNutritionStore(pool), generator, nil),
 		Cookies:          httpapi.CookieSettings{Secure: cfg.CookieSecure},
 		CommunityEnabled: cfg.CommunityEnabled,
 	})

@@ -12,6 +12,18 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const archiveMealPlans = `-- name: ArchiveMealPlans :execrows
+UPDATE public.meal_plans SET status = 'archived' WHERE user_id = $1 AND status = 'active'
+`
+
+func (q *Queries) ArchiveMealPlans(ctx context.Context, userID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, archiveMealPlans, userID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
 const awardDayAdherence = `-- name: AwardDayAdherence :one
 SELECT public.award_day_adherence(CAST($1::text AS date))::text AS result
 `
@@ -36,6 +48,18 @@ func (q *Queries) AwardMealXP(ctx context.Context, mealLogID uuid.UUID) (string,
 	return result, err
 }
 
+const countTrainingDays = `-- name: CountTrainingDays :one
+SELECT count(DISTINCT day_of_week)::int AS days FROM public.schedules WHERE user_id = $1::uuid
+`
+
+// Distinct weekdays with a fixed session (any window), as the legacy planner counted.
+func (q *Queries) CountTrainingDays(ctx context.Context, userID uuid.UUID) (int32, error) {
+	row := q.db.QueryRow(ctx, countTrainingDays, userID)
+	var days int32
+	err := row.Scan(&days)
+	return days, err
+}
+
 const deleteMealLog = `-- name: DeleteMealLog :execrows
 DELETE FROM public.meal_logs WHERE id = $1 AND user_id = $2
 `
@@ -51,6 +75,38 @@ func (q *Queries) DeleteMealLog(ctx context.Context, arg DeleteMealLogParams) (i
 		return 0, err
 	}
 	return result.RowsAffected(), nil
+}
+
+const getActiveMealPlan = `-- name: GetActiveMealPlan :one
+SELECT id, kcal_target::float8 AS kcal_target, protein_g_target::float8 AS protein_g_target,
+       carbs_g_target::float8 AS carbs_g_target, fat_g_target::float8 AS fat_g_target, intake
+FROM public.meal_plans
+WHERE user_id = $1 AND status = 'active'
+ORDER BY created_at DESC
+LIMIT 1
+`
+
+type GetActiveMealPlanRow struct {
+	ID             uuid.UUID `json:"id"`
+	KcalTarget     float64   `json:"kcal_target"`
+	ProteinGTarget float64   `json:"protein_g_target"`
+	CarbsGTarget   float64   `json:"carbs_g_target"`
+	FatGTarget     float64   `json:"fat_g_target"`
+	Intake         []byte    `json:"intake"`
+}
+
+func (q *Queries) GetActiveMealPlan(ctx context.Context, userID uuid.UUID) (GetActiveMealPlanRow, error) {
+	row := q.db.QueryRow(ctx, getActiveMealPlan, userID)
+	var i GetActiveMealPlanRow
+	err := row.Scan(
+		&i.ID,
+		&i.KcalTarget,
+		&i.ProteinGTarget,
+		&i.CarbsGTarget,
+		&i.FatGTarget,
+		&i.Intake,
+	)
+	return i, err
 }
 
 const getFood = `-- name: GetFood :one
@@ -131,6 +187,32 @@ func (q *Queries) GetFoodByFdcID(ctx context.Context, fdcID int32) (GetFoodByFdc
 	return i, err
 }
 
+const hasActiveTrainingPlan = `-- name: HasActiveTrainingPlan :one
+SELECT EXISTS (SELECT 1 FROM public.training_plans WHERE user_id = $1 AND status = 'active')
+`
+
+func (q *Queries) HasActiveTrainingPlan(ctx context.Context, userID uuid.UUID) (bool, error) {
+	row := q.db.QueryRow(ctx, hasActiveTrainingPlan, userID)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
+const insertCalorieGoal = `-- name: InsertCalorieGoal :exec
+INSERT INTO public.goals (user_id, goal_type, target_value, status)
+VALUES ($1::uuid, 'calorie_intake', $2::float8, 'active')
+`
+
+type InsertCalorieGoalParams struct {
+	UserID uuid.UUID `json:"user_id"`
+	Kcal   float64   `json:"kcal"`
+}
+
+func (q *Queries) InsertCalorieGoal(ctx context.Context, arg InsertCalorieGoalParams) error {
+	_, err := q.db.Exec(ctx, insertCalorieGoal, arg.UserID, arg.Kcal)
+	return err
+}
+
 const insertMealLog = `-- name: InsertMealLog :one
 INSERT INTO public.meal_logs (user_id, date, meal_type, food_id, free_text, quantity_g, kcal, protein_g, carbs_g, fat_g,
                               sugar_g, fiber_g, sodium_mg, entry_method, photo_estimate, created_at)
@@ -181,6 +263,86 @@ func (q *Queries) InsertMealLog(ctx context.Context, arg InsertMealLogParams) (u
 	var id uuid.UUID
 	err := row.Scan(&id)
 	return id, err
+}
+
+const insertMealPlan = `-- name: InsertMealPlan :one
+INSERT INTO public.meal_plans (user_id, status, intake, kcal_target, protein_g_target, carbs_g_target, fat_g_target)
+VALUES ($1::uuid, 'active', $2::jsonb, $3::float8, $4::float8,
+        $5::float8, $6::float8)
+RETURNING id
+`
+
+type InsertMealPlanParams struct {
+	UserID   uuid.UUID `json:"user_id"`
+	Intake   []byte    `json:"intake"`
+	Kcal     float64   `json:"kcal"`
+	ProteinG float64   `json:"protein_g"`
+	CarbsG   float64   `json:"carbs_g"`
+	FatG     float64   `json:"fat_g"`
+}
+
+func (q *Queries) InsertMealPlan(ctx context.Context, arg InsertMealPlanParams) (uuid.UUID, error) {
+	row := q.db.QueryRow(ctx, insertMealPlan,
+		arg.UserID,
+		arg.Intake,
+		arg.Kcal,
+		arg.ProteinG,
+		arg.CarbsG,
+		arg.FatG,
+	)
+	var id uuid.UUID
+	err := row.Scan(&id)
+	return id, err
+}
+
+const insertMealPlanItem = `-- name: InsertMealPlanItem :exec
+INSERT INTO public.meal_plan_items (plan_id, user_id, day_of_week, meal_type, title, ingredients, recipe, video_query,
+                                    kcal, protein_g, carbs_g, fat_g, sugar_g, fiber_g, sodium_mg, sort)
+VALUES ($1::uuid, $2::uuid, $3::int, $4::text,
+        $5::text, $6::jsonb, $7::text, $8::text,
+        $9::float8, $10::float8, $11::float8, $12::float8,
+        $13::float8, $14::float8, $15::float8, $16::int)
+`
+
+type InsertMealPlanItemParams struct {
+	PlanID      uuid.UUID `json:"plan_id"`
+	UserID      uuid.UUID `json:"user_id"`
+	DayOfWeek   int32     `json:"day_of_week"`
+	MealType    string    `json:"meal_type"`
+	Title       string    `json:"title"`
+	Ingredients []byte    `json:"ingredients"`
+	Recipe      string    `json:"recipe"`
+	VideoQuery  string    `json:"video_query"`
+	Kcal        float64   `json:"kcal"`
+	ProteinG    float64   `json:"protein_g"`
+	CarbsG      float64   `json:"carbs_g"`
+	FatG        float64   `json:"fat_g"`
+	SugarG      float64   `json:"sugar_g"`
+	FiberG      float64   `json:"fiber_g"`
+	SodiumMg    float64   `json:"sodium_mg"`
+	Sort        int32     `json:"sort"`
+}
+
+func (q *Queries) InsertMealPlanItem(ctx context.Context, arg InsertMealPlanItemParams) error {
+	_, err := q.db.Exec(ctx, insertMealPlanItem,
+		arg.PlanID,
+		arg.UserID,
+		arg.DayOfWeek,
+		arg.MealType,
+		arg.Title,
+		arg.Ingredients,
+		arg.Recipe,
+		arg.VideoQuery,
+		arg.Kcal,
+		arg.ProteinG,
+		arg.CarbsG,
+		arg.FatG,
+		arg.SugarG,
+		arg.FiberG,
+		arg.SodiumMg,
+		arg.Sort,
+	)
+	return err
 }
 
 const insertUSDAFood = `-- name: InsertUSDAFood :exec
@@ -273,6 +435,111 @@ func (q *Queries) ListMealNutrientsSince(ctx context.Context, arg ListMealNutrie
 	return items, nil
 }
 
+const listMealPlanItems = `-- name: ListMealPlanItems :many
+SELECT id, day_of_week, meal_type, title, ingredients, recipe, video_query, kcal::float8 AS kcal,
+       protein_g::float8 AS protein_g, carbs_g::float8 AS carbs_g, fat_g::float8 AS fat_g,
+       sugar_g::float8 AS sugar_g, fiber_g::float8 AS fiber_g, sodium_mg::float8 AS sodium_mg
+FROM public.meal_plan_items
+WHERE plan_id = $1 AND user_id = $2
+ORDER BY day_of_week, sort, id
+`
+
+type ListMealPlanItemsParams struct {
+	PlanID uuid.UUID `json:"plan_id"`
+	UserID uuid.UUID `json:"user_id"`
+}
+
+type ListMealPlanItemsRow struct {
+	ID          uuid.UUID `json:"id"`
+	DayOfWeek   int32     `json:"day_of_week"`
+	MealType    string    `json:"meal_type"`
+	Title       string    `json:"title"`
+	Ingredients []byte    `json:"ingredients"`
+	Recipe      *string   `json:"recipe"`
+	VideoQuery  *string   `json:"video_query"`
+	Kcal        float64   `json:"kcal"`
+	ProteinG    float64   `json:"protein_g"`
+	CarbsG      float64   `json:"carbs_g"`
+	FatG        float64   `json:"fat_g"`
+	SugarG      float64   `json:"sugar_g"`
+	FiberG      float64   `json:"fiber_g"`
+	SodiumMg    float64   `json:"sodium_mg"`
+}
+
+func (q *Queries) ListMealPlanItems(ctx context.Context, arg ListMealPlanItemsParams) ([]ListMealPlanItemsRow, error) {
+	rows, err := q.db.Query(ctx, listMealPlanItems, arg.PlanID, arg.UserID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListMealPlanItemsRow{}
+	for rows.Next() {
+		var i ListMealPlanItemsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.DayOfWeek,
+			&i.MealType,
+			&i.Title,
+			&i.Ingredients,
+			&i.Recipe,
+			&i.VideoQuery,
+			&i.Kcal,
+			&i.ProteinG,
+			&i.CarbsG,
+			&i.FatG,
+			&i.SugarG,
+			&i.FiberG,
+			&i.SodiumMg,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listMealSlotsBetween = `-- name: ListMealSlotsBetween :many
+SELECT date::text AS date, meal_type, kcal::float8 AS kcal
+FROM public.meal_logs
+WHERE user_id = $1::uuid
+  AND date BETWEEN CAST($2::text AS date) AND CAST($3::text AS date)
+`
+
+type ListMealSlotsBetweenParams struct {
+	UserID   uuid.UUID `json:"user_id"`
+	FromDate string    `json:"from_date"`
+	ToDate   string    `json:"to_date"`
+}
+
+type ListMealSlotsBetweenRow struct {
+	Date     string  `json:"date"`
+	MealType string  `json:"meal_type"`
+	Kcal     float64 `json:"kcal"`
+}
+
+func (q *Queries) ListMealSlotsBetween(ctx context.Context, arg ListMealSlotsBetweenParams) ([]ListMealSlotsBetweenRow, error) {
+	rows, err := q.db.Query(ctx, listMealSlotsBetween, arg.UserID, arg.FromDate, arg.ToDate)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListMealSlotsBetweenRow{}
+	for rows.Next() {
+		var i ListMealSlotsBetweenRow
+		if err := rows.Scan(&i.Date, &i.MealType, &i.Kcal); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listMealsOn = `-- name: ListMealsOn :many
 
 SELECT id, meal_type, free_text, quantity_g, kcal::float8 AS kcal,
@@ -336,6 +603,31 @@ func (q *Queries) ListMealsOn(ctx context.Context, arg ListMealsOnParams) ([]Lis
 		return nil, err
 	}
 	return items, nil
+}
+
+const mealPlanProfile = `-- name: MealPlanProfile :one
+SELECT sex, birth_date, height_cm, weight_kg, country FROM public.profiles WHERE id = $1
+`
+
+type MealPlanProfileRow struct {
+	Sex       *string        `json:"sex"`
+	BirthDate pgtype.Date    `json:"birth_date"`
+	HeightCm  pgtype.Numeric `json:"height_cm"`
+	WeightKg  pgtype.Numeric `json:"weight_kg"`
+	Country   *string        `json:"country"`
+}
+
+func (q *Queries) MealPlanProfile(ctx context.Context, id uuid.UUID) (MealPlanProfileRow, error) {
+	row := q.db.QueryRow(ctx, mealPlanProfile, id)
+	var i MealPlanProfileRow
+	err := row.Scan(
+		&i.Sex,
+		&i.BirthDate,
+		&i.HeightCm,
+		&i.WeightKg,
+		&i.Country,
+	)
+	return i, err
 }
 
 const mealXPOutstanding = `-- name: MealXPOutstanding :one
@@ -422,4 +714,22 @@ func (q *Queries) SearchFoods(ctx context.Context, pattern string) ([]SearchFood
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateCalorieGoal = `-- name: UpdateCalorieGoal :execrows
+UPDATE public.goals SET target_value = $1::float8
+WHERE user_id = $2 AND goal_type = 'calorie_intake' AND status = 'active'
+`
+
+type UpdateCalorieGoalParams struct {
+	Kcal   float64   `json:"kcal"`
+	UserID uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) UpdateCalorieGoal(ctx context.Context, arg UpdateCalorieGoalParams) (int64, error) {
+	result, err := q.db.Exec(ctx, updateCalorieGoal, arg.Kcal, arg.UserID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }

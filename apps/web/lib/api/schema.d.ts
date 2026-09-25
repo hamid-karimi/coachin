@@ -325,6 +325,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/nutrition/plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The active AI meal plan with its grocery list */
+        get: operations["getMealPlan"];
+        put?: never;
+        /**
+         * Generate a 7-day meal plan with AI (replaces the active one)
+         * @description Targets come from the profile and weekly training days (FORMULAS.md §10); the calorie-intake goal is set to the plan's target. Takes ~15-60 s.
+         */
+        post: operations["generateMealPlan"];
+        /** Discard the active meal plan (the calorie goal stays) */
+        delete: operations["discardMealPlan"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/nutrition/plan/regenerate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate a new week from the active plan's answers */
+        post: operations["regenerateMealPlan"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/plan-items/{id}/completion": {
         parameters: {
             query?: never;
@@ -779,6 +818,8 @@ export interface components {
             isToday: boolean;
             /** @description Any completed log that day */
             logged: boolean;
+            /** @description The active meal plan's menu that weekday; absent without one */
+            meals?: components["schemas"]["DayMealsBody"];
             /** @description Blended across every active plan, each in its own week */
             planItems: components["schemas"]["PlanItemBody"][];
             routines: components["schemas"]["CalendarRoutineBody"][];
@@ -837,6 +878,14 @@ export interface components {
             items: components["schemas"]["ReviewedItemBody"][];
             /** @enum {string} */
             mealType: "breakfast" | "lunch" | "dinner" | "snack";
+        };
+        DayMealsBody: {
+            /** @description Today and past days only */
+            adherence?: components["schemas"]["MealAdherenceBody"];
+            /** Format: int64 */
+            plannedCount: number;
+            /** Format: double */
+            plannedKcal: number;
         };
         ErrorDetail: {
             /** @description Where the error occurred, e.g. 'body.items[3].tags' or 'path.thing-id' */
@@ -911,6 +960,11 @@ export interface components {
         ForgotInputBody: {
             email: string;
         };
+        GroceryLineBody: {
+            /** Format: int64 */
+            count: number;
+            name: string;
+        };
         HealthBody: {
             /**
              * @description Always ok while the process is serving.
@@ -931,6 +985,10 @@ export interface components {
             targetStudentId?: string;
             /** Format: int64 */
             weeksTotal: number;
+        };
+        IngredientBody: {
+            name: string;
+            qty?: string;
         };
         IntakeContextBody: {
             /** Format: int64 */
@@ -990,6 +1048,16 @@ export interface components {
             email: string;
             password: string;
         };
+        MacroTargetsBody: {
+            /** Format: double */
+            carbsG: number;
+            /** Format: double */
+            fatG: number;
+            /** Format: double */
+            kcal: number;
+            /** Format: double */
+            proteinG: number;
+        };
         ManualStruct: {
             /** Format: double */
             carbsG?: number;
@@ -1010,6 +1078,18 @@ export interface components {
             /** @enum {string} */
             role: "student" | "coach" | "both" | "admin";
         };
+        MealAdherenceBody: {
+            /** Format: double */
+            kcalLogged: number;
+            /** Format: double */
+            kcalPlanned: number;
+            /** Format: double */
+            kcalRatio: number | null;
+            /** Format: int64 */
+            slotsLogged: number;
+            /** Format: int64 */
+            slotsPlanned: number;
+        };
         MealBody: {
             /** @enum {string} */
             entryMethod: "search" | "photo" | "manual";
@@ -1020,6 +1100,39 @@ export interface components {
             nutrients: components["schemas"]["NutrientsBody"];
             /** Format: double */
             quantityG: number | null;
+        };
+        MealPlanBody: {
+            id: string;
+            intake: components["schemas"]["MealPlanIntakeBody"];
+            /** @description By day, then plan order */
+            meals: components["schemas"]["PlannedMealBody"][];
+            targets: components["schemas"]["MacroTargetsBody"];
+        };
+        MealPlanIntakeBody: {
+            allergies: string[];
+            diet: string;
+            dislikes: string[];
+            /** @enum {string} */
+            goal: "lose" | "maintain" | "gain" | "recomp";
+            /**
+             * Format: int64
+             * @description 3, or 4 with a snack
+             */
+            mealsPerDay: number;
+        };
+        MealPlanPageBody: {
+            grocery: components["schemas"]["GroceryLineBody"][];
+            hasTrainingPlan: boolean;
+            /** @description Absent without an active plan */
+            plan?: components["schemas"]["MealPlanBody"];
+        };
+        MenuMealBody: {
+            id: string;
+            /** Format: double */
+            kcal: number;
+            /** @enum {string} */
+            mealType: "breakfast" | "lunch" | "dinner" | "snack";
+            title: string;
         };
         NutrientsBody: {
             /** Format: double */
@@ -1096,6 +1209,18 @@ export interface components {
             notes?: string;
             paceMinKm?: string;
             videoQuery?: string;
+        };
+        PlannedMealBody: {
+            /** Format: int64 */
+            dayOfWeek: number;
+            id: string;
+            ingredients: components["schemas"]["IngredientBody"][];
+            /** @enum {string} */
+            mealType: "breakfast" | "lunch" | "dinner" | "snack";
+            nutrients: components["schemas"]["NutrientsBody"];
+            recipe: string;
+            title: string;
+            videoQuery: string;
         };
         ProgramBody: {
             checkinDue: boolean;
@@ -1355,6 +1480,8 @@ export interface components {
             doneCount: number;
             /** @description 2+ run/strength sessions today */
             hardCollision: boolean;
+            /** @description Today's menu from the active AI meal plan; absent without one */
+            mealPlan?: components["schemas"]["TodayMealPlanBody"];
             /** @description Today's items across every active plan */
             planItems: components["schemas"]["TodayPlanItemBody"][];
             /**
@@ -1375,6 +1502,11 @@ export interface components {
             totalCount: number;
             /** Format: int64 */
             weekday: number;
+        };
+        TodayMealPlanBody: {
+            /** Format: double */
+            kcalTarget: number;
+            meals: components["schemas"]["MenuMealBody"][];
         };
         TodayPlanItemBody: {
             /** Format: date */
@@ -2488,6 +2620,225 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getMealPlan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MealPlanPageBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    generateMealPlan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MealPlanIntakeBody"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    discardMealPlan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    regenerateMealPlan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
                 headers: {
                     [name: string]: unknown;
                 };

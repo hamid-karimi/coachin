@@ -46,7 +46,7 @@ inactive; every coach feature checks for an **active** relationship.
 | `/calendar` | Week view blending routine + all active plan items + logged state. **Rewrite: ported** (meal-plan line arrives with Nutrition) | [README](apps/web/app/(app)/calendar/README.md) |
 | `/training` | Program manager: create (AI wizards), archive, weekly check-ins. **Rewrite: list, archive, .ics export, AI wizards (with watch-file upload), check-ins ported**. | [README](apps/web/app/(app)/training/README.md) |
 | `/training/new` | Plan wizards (running / muscle building); coach mode via `?student=<id>` | [README](legacy/app/training/README.md) |
-| `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan. **Rewrite: search / USDA / photo / manual logging, day summary, trends ported**; meal plan next | [README](apps/web/app/(app)/nutrition/README.md) |
+| `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan. **Rewrite: fully ported** (search / USDA / photo / manual logging, day summary, trends, `/nutrition/plan`) | [README](apps/web/app/(app)/nutrition/README.md) |
 | `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions | [README](legacy/app/coaching/README.md) |
 | `/community` | Social/leaderboard surfaces — **currently disabled** (feature flag; redirects to dashboard, nav item hidden). Coach invite codes are redeemed on `/profile` → "My coach" while off. | [README](legacy/app/community/README.md) |
 | `/profile` | Four tabs (`?tab=`): **Overview** (stats, hearts, goals, recent XP), **Progress** (charts, measurements, progress photos), **Body** (body profile, body photos, watch import), **Settings** (theme, nutrition sharing, my coach, logout) | — |
@@ -196,8 +196,8 @@ rewrites next week).
 4. Logging the same plan item twice must be rejected ("Session already
    logged").
 
-**Rewrite stack** (Today is ported; meals, goal strip, coaching card, and group nudge
-arrive with their modules; the daily stack is journey 5, steps 5–7):
+**Rewrite stack** (Today is ported, with the "Today's meals" card — journey 5, step 10;
+goal strip, coaching card, and group nudge arrive with their modules; the daily stack is journey 5, steps 5–7):
 - Header shows the date, "Hi, <first name>", the streak badge, and initials. Level
   ring + XP bar, hearts ("N hearts · a missed day costs one"), and (desktop) the
   Level / Streak / Total XP / League stat row.
@@ -241,8 +241,7 @@ arrive with their modules; the daily stack is journey 5, steps 5–7):
    the plain "N meals planned" link with no adherence. It's informational —
    never changes XP, streaks, or hearts (FORMULAS.md §13, Meal adherence).
 
-**Rewrite stack — Calendar (3.4)**: steps 1–3 as above; step 4 (meal plan line and
-adherence) arrives with Nutrition.
+**Rewrite stack — Calendar (3.4, meal line 3.5c)**: steps 1–4 as above.
 - Header: "Edit routine" → My week, "Manage programs" → `/training`.
 - "Prev" / "Next" move a week (`/calendar?week=<Monday>`); the label reads
   "Sep 21 – Sep 27 · this week" on the current week. A bad `?week=` shows this week.
@@ -329,6 +328,27 @@ adherence) arrives with Nutrition.
    keys: "AI estimation is temporarily unavailable — try again later"; a non-food photo:
    "Couldn't recognize food in that photo — try another angle". Photo-logged meals show
    a camera icon in the list.
+10. **Rewrite stack — AI meal plan (3.5c)**: Meals tab → "Meal plan" pill → `/nutrition/plan`.
+    - Without a plan: the wizard — goal chips (Lose fat / Maintain / Gain muscle /
+      Recomp), Diet (omnivore … keto), Meals / day (3 or 4), allergies and foods to
+      avoid (comma-separated). Without a training plan a dismissible hint links to
+      "build a training plan first".
+    - "Generate meal plan" → "Generating your week…" → "Meal plan ready — your calorie
+      goal is set to match." Without height, weight, and birth date on the profile:
+      "Add your height, weight, and birth date on your profile so we can size your
+      targets." (nothing saved). AI down: "AI is temporarily
+      unavailable — try again later". Generating is rate limited (3 quick tries, then
+      one every 20 s).
+    - The plan: "Daily target" kcal with protein · carbs · fat, then Mon → Sun, each meal
+      with type, title, kcal, macros, "Recipe & ingredients" (expands) and "Watch how"
+      (YouTube search); a "Grocery list" with ×counts; "Regenerate" (same answers, a new
+      week) and "Discard" ("Meal plan discarded." → back to the wizard; the calorie goal
+      stays).
+    - The Meals tab's "Today" card now reads "… / <target> kcal".
+    - Today shows **"Today's meals"** (today's weekday; "N kcal planned · target X";
+      "Full meal plan" link, or "Nothing planned for today — see the full plan for the
+      week.") and each calendar day ends with "N meals planned · X kcal" plus the
+      adherence line on today/past days. Both disappear after Discard.
 
 ### 6. Coaching
 
