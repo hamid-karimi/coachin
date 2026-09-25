@@ -1,0 +1,14 @@
+# The build context is the repo root: send only the workspace files and apps/web.
+*
+!package.json
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
+!apps/web
+apps/web/node_modules
+apps/web/.next
+apps/web/storybook-static
+apps/web/coverage
+apps/web/test-results
+apps/web/playwright-report
+apps/web/*.tsbuildinfo
+apps/web/Dockerfile*

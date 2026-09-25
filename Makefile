@@ -2,7 +2,7 @@
 COMPOSE := docker compose -f compose.yaml -f compose.dev.yaml
 
 .DEFAULT_GOAL := help
-.PHONY: help up infra down logs ps migrate migrate-status reset-db seed import-supabase gen e2e test lint
+.PHONY: help install up dev-web infra down logs ps migrate migrate-status reset-db seed import-supabase gen e2e test lint
 
 help: ## List the available commands
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  make %-15s %s\n", $$1, $$2}'
@@ -10,8 +10,14 @@ help: ## List the available commands
 .env:
 	cp .env.example .env
 
+install: ## Install the workspace's JS dependencies (tests, lint, native dev; `make up` needs none)
+	pnpm install
+
 up: .env ## Start the whole stack with hot reload at http://localhost:8080
 	$(COMPOSE) up --build --watch
+
+dev-web: ## Run Next.js natively on http://localhost:3000 against the running stack (make up)
+	pnpm --filter coachin-web dev
 
 infra: .env ## Start only Postgres, Garage, and Mailpit (run api/web natively)
 	$(COMPOSE) up -d --build postgres garage storage-init mailpit

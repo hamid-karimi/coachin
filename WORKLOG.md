@@ -5,6 +5,19 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · Monorepo (plan 5.4)
+
+**Done** (branch `claude/lucid-tesla-3737vk`, after 5.3): root `pnpm-workspace.yaml` +
+single `pnpm-lock.yaml` (moved from apps/web; importer renamed only), root `package.json`
+(scripts mirror the Makefile), `go.work` (+ `go.work.sum`). Web image builds from the repo
+root (`apps/web/Dockerfile` + `Dockerfile.dockerignore`; standalone at
+`apps/web/server.js`; `outputFileTracingRoot` / `turbopack.root` = repo root). `make
+install`, `make dev-web`: native Next on :3000 proxying `/api` to the stack
+(`apps/web/.env.development`, dev-only rewrite). Sandbox: 14/14 e2e on the new image
+layout; native dev signs in and renders the dashboard.
+
+**Next steps**: Phase 6.1–6.4, then local run instructions.
+
 ## 2026-09-25 · Phase 5.3 — legacy/ deleted
 
 **Done** (branch `claude/lucid-tesla-3737vk`, after #95): removed `legacy/` and

@@ -307,6 +307,10 @@ Order (dependencies first, risk front-loaded):
       (6) FORMULAS.md points at Go only; (7) CI diffs `openapi.json`. Root README,
       QA-ONBOARDING (Stack, module map, Running locally), CLAUDE.md, coding-style skill.
 
+- [x] 5.4 Monorepo: root pnpm workspace (one lockfile; web image built from the root),
+      `go.work`, root `package.json` scripts mirroring the Makefile, native `make dev-web`
+      (Next on :3000 proxying `/api` to the stack).
+
 ## Phase 6 — VPS readiness (M)
 
 - [ ] 6.1 Release workflow: build `api` + `web` images (amd64 + arm64) → GHCR on tag.
