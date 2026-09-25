@@ -47,23 +47,47 @@ func (s *TrainingStore) PlanItem(ctx context.Context, userID, itemID uuid.UUID) 
 	return ref, err
 }
 
-// SetPlanItemCompleted calls complete_plan_item (ADR-5 Step A).
-func (s *TrainingStore) SetPlanItemCompleted(ctx context.Context, userID, itemID uuid.UUID, completed bool, date string) (int, error) {
-	var result rpcResult
+// SetPlanItemCompleted toggles the item, writes or removes its log (dated
+// date), and writes the ledger move xpFor decides from the item's award and
+// undo counts — one transaction under the profile lock, so concurrent taps are
+// serialized and an item never nets two awards.
+func (s *TrainingStore) SetPlanItemCompleted(ctx context.Context, userID, itemID uuid.UUID, completed bool, date string, xpFor training.ToggleXP) (int, error) {
+	var delta int
 	err := s.asUser(ctx, userID, func(q *queries.Queries) error {
-		raw, err := q.CompletePlanItem(ctx, queries.CompletePlanItemParams{ItemID: itemID, Completed: completed, OnDate: date})
+		if err := q.LockProfile(ctx, userID); err != nil {
+			return fmt.Errorf("lock profile: %w", err)
+		}
+		item, err := q.PlanItemToToggle(ctx, queries.PlanItemToToggleParams{ID: itemID, UserID: userID})
+		if errors.Is(err, pgx.ErrNoRows) {
+			return training.ErrNotFound
+		}
 		if err != nil {
+			return fmt.Errorf("load item: %w", err)
+		}
+		award, undo := planitem.AwardReason(itemID.String()), planitem.UndoReason(itemID.String())
+		counts, err := q.CountLedgerReasons(ctx, queries.CountLedgerReasonsParams{UserID: &userID, AwardReason: award, UndoReason: undo})
+		if err != nil {
+			return fmt.Errorf("count awards: %w", err)
+		}
+		if err := q.SetPlanItemCompletion(ctx, queries.SetPlanItemCompletionParams{ID: itemID, Completed: completed}); err != nil {
+			return fmt.Errorf("set completion: %w", err)
+		}
+		if err := setPlanItemLog(ctx, q, userID, itemID, item.Title, completed, date); err != nil {
 			return err
 		}
-		return json.Unmarshal([]byte(raw), &result)
+		delta = xpFor(item.ItemType, int(counts.Awards), int(counts.Undos))
+		reason := map[bool]string{true: award, false: undo}[delta > 0]
+		return addXP(ctx, q, userID, delta, reason)
 	})
-	if err != nil {
-		return 0, err
+	return delta, err
+}
+
+// setPlanItemLog writes the completed item's log, or removes it on undo.
+func setPlanItemLog(ctx context.Context, q *queries.Queries, userID, itemID uuid.UUID, title string, completed bool, date string) error {
+	if !completed {
+		return q.DeletePlanItemLog(ctx, queries.DeletePlanItemLogParams{UserID: &userID, PlanItemID: &itemID})
 	}
-	if !result.Success {
-		return 0, fmt.Errorf("complete_plan_item: %s", result.Error)
-	}
-	return result.AwardedXP, nil
+	return q.InsertPlanItemLog(ctx, queries.InsertPlanItemLogParams{UserID: &userID, OnDate: date, Title: &title, PlanItemID: &itemID})
 }
 
 var _ training.ProgramStore = (*TrainingStore)(nil)

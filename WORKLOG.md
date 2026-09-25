@@ -5,6 +5,23 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · #86 merged (4.1) · Phase 4.2a — plan items + session logs in Go
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): `domain/planitem`
+`CompletionXP` (60/60/30/30/20) + `ToggleXP` (net at most one award; table-tested),
+`xp.SessionLogXP`; `TrainingStore.SetPlanItemCompleted` (lock profile → item → award/undo
+counts → completion → log insert/delete → ledger via `store.addXP`) and
+`CreateSessionLog` (lock → session log → done → `session_log:<id>` +10). The SQL
+functions are no longer called. `TestParallelAwardsPayOnce`: 8 parallel done taps pay 60,
+8 undos -60, 8 session logs +10.
+
+**Decisions**: legacy `complete_plan_item` had no lock (parallel taps could double-pay);
+the Go path serializes on the profile row. FORMULAS "done→undo→done nets zero" was wrong
+(redo pays again) — fixed.
+
+**Next steps**: 4.2b meals + calorie day (`award_meal_xp`, `award_day_adherence`), then
+goals, streak settle, check-ins, coaching, community; 4.3 drop retired functions.
+
 ## 2026-09-25 · #85 merged (3.9 share cards) · Phase 4.1 — XP ledger once-only index
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): migration 00009 — partial unique index `xp_transactions_once_idx` on

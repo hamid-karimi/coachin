@@ -21,13 +21,13 @@ type fakeStore struct {
 func (f *fakeStore) PlanItem(context.Context, uuid.UUID, uuid.UUID) (ItemRef, error) {
 	return f.item, f.err
 }
-func (f *fakeStore) SetPlanItemCompleted(_ context.Context, _, _ uuid.UUID, completed bool, date string) (int, error) {
+
+// SetPlanItemCompleted plays a ledger that holds one award exactly when undoing.
+func (f *fakeStore) SetPlanItemCompleted(_ context.Context, _, _ uuid.UUID, completed bool, date string, xpFor ToggleXP) (int, error) {
 	f.calls++
 	f.date = date
-	if completed {
-		return 60, nil
-	}
-	return -60, nil
+	awards := map[bool]int{true: 0, false: 1}[completed]
+	return xpFor(f.item.ItemType, awards, 0), nil
 }
 
 func kindOf(err error) apperr.Kind {

@@ -78,6 +78,43 @@ func HasHardCollision(itemTypes []string) bool {
 // Checkable reports whether an item type has a done toggle (meal notes don't).
 func Checkable(itemType string) bool { return itemType != "meal_note" }
 
+// completionXP is what marking an item done pays (FORMULAS §2): sessions weigh
+// like a routine workout, lighter items less.
+var completionXP = map[string]int{"run": 60, "strength": 60, "stretch": 30, "mobility": 30}
+
+// RecoveryXP is what any other checkable item (recovery) pays.
+const RecoveryXP = 20
+
+// CompletionXP is the XP for marking an item of this type done.
+func CompletionXP(itemType string) int {
+	if xp, ok := completionXP[itemType]; ok {
+		return xp
+	}
+	return RecoveryXP
+}
+
+// AwardReason and UndoReason are an item's ledger keys; they repeat by design
+// (done → undo → done), so the ledger counts them.
+func AwardReason(itemID string) string { return "plan_item:" + itemID }
+
+// UndoReason is the compensation key for AwardReason.
+func UndoReason(itemID string) string { return "plan_item_undo:" + itemID }
+
+// ToggleXP is the ledger move for setting an item's completion, given how many
+// awards and undos it already has: an item nets at most one award, so marking it
+// done pays once however often it is tapped, undo refunds it, and redoing pays
+// again. 0 means no ledger row.
+func ToggleXP(itemType string, completed bool, awards, undos int) int {
+	netted := awards > undos
+	if completed == netted {
+		return 0
+	}
+	if completed {
+		return CompletionXP(itemType)
+	}
+	return -CompletionXP(itemType)
+}
+
 // LogWindowOpen reports whether an item dated itemDate can be marked done
 // today: on its day or the day after. Both are calendar dates (YYYY-MM-DD
 // times at midnight in the same location). Undoing is always allowed and is

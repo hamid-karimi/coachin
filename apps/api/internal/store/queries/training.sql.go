@@ -109,17 +109,6 @@ func (q *Queries) AthleteProfile(ctx context.Context, id uuid.UUID) (AthleteProf
 	return i, err
 }
 
-const awardSessionLogXP = `-- name: AwardSessionLogXP :one
-SELECT public.award_session_log_xp($1)::text AS result
-`
-
-func (q *Queries) AwardSessionLogXP(ctx context.Context, logID uuid.UUID) (string, error) {
-	row := q.db.QueryRow(ctx, awardSessionLogXP, logID)
-	var result string
-	err := row.Scan(&result)
-	return result, err
-}
-
 const coachesStudent = `-- name: CoachesStudent :one
 SELECT EXISTS (
   SELECT 1 FROM public.coaching_relationships
@@ -139,23 +128,30 @@ func (q *Queries) CoachesStudent(ctx context.Context, arg CoachesStudentParams) 
 	return exists, err
 }
 
-const completePlanItem = `-- name: CompletePlanItem :one
-SELECT public.complete_plan_item($1, $2, CAST($3::text AS date))::text AS result
+const countLedgerReasons = `-- name: CountLedgerReasons :one
+SELECT count(*) FILTER (WHERE reason = $1::text) AS awards,
+       count(*) FILTER (WHERE reason = $2::text) AS undos
+FROM public.xp_transactions
+WHERE user_id = $3 AND reason IN ($1::text, $2::text)
 `
 
-type CompletePlanItemParams struct {
-	ItemID    uuid.UUID `json:"item_id"`
-	Completed bool      `json:"completed"`
-	OnDate    string    `json:"on_date"`
+type CountLedgerReasonsParams struct {
+	AwardReason string     `json:"award_reason"`
+	UndoReason  string     `json:"undo_reason"`
+	UserID      *uuid.UUID `json:"user_id"`
 }
 
-// Step A (ADR-5): the SQL function toggles the item, writes/removes the
-// linked log, and awards or compensates XP idempotently.
-func (q *Queries) CompletePlanItem(ctx context.Context, arg CompletePlanItemParams) (string, error) {
-	row := q.db.QueryRow(ctx, completePlanItem, arg.ItemID, arg.Completed, arg.OnDate)
-	var result string
-	err := row.Scan(&result)
-	return result, err
+type CountLedgerReasonsRow struct {
+	Awards int64 `json:"awards"`
+	Undos  int64 `json:"undos"`
+}
+
+// How many award and undo rows an item already has (they repeat by design).
+func (q *Queries) CountLedgerReasons(ctx context.Context, arg CountLedgerReasonsParams) (CountLedgerReasonsRow, error) {
+	row := q.db.QueryRow(ctx, countLedgerReasons, arg.AwardReason, arg.UndoReason, arg.UserID)
+	var i CountLedgerReasonsRow
+	err := row.Scan(&i.Awards, &i.Undos)
+	return i, err
 }
 
 const createTrainingPlan = `-- name: CreateTrainingPlan :one
@@ -197,6 +193,20 @@ func (q *Queries) CreateTrainingPlan(ctx context.Context, arg CreateTrainingPlan
 	var result string
 	err := row.Scan(&result)
 	return result, err
+}
+
+const deletePlanItemLog = `-- name: DeletePlanItemLog :exec
+DELETE FROM public.logs WHERE user_id = $1 AND plan_item_id = $2
+`
+
+type DeletePlanItemLogParams struct {
+	UserID     *uuid.UUID `json:"user_id"`
+	PlanItemID *uuid.UUID `json:"plan_item_id"`
+}
+
+func (q *Queries) DeletePlanItemLog(ctx context.Context, arg DeletePlanItemLogParams) error {
+	_, err := q.db.Exec(ctx, deletePlanItemLog, arg.UserID, arg.PlanItemID)
+	return err
 }
 
 const getActivePlan = `-- name: GetActivePlan :one
@@ -311,6 +321,30 @@ func (q *Queries) GetSessionItem(ctx context.Context, arg GetSessionItemParams) 
 	var i GetSessionItemRow
 	err := row.Scan(&i.ItemType, &i.Title, &i.Details)
 	return i, err
+}
+
+const insertPlanItemLog = `-- name: InsertPlanItemLog :exec
+INSERT INTO public.logs (user_id, date, sport_type_id, status, notes, plan_item_id)
+VALUES ($1, CAST($2::text AS date), NULL, 'completed', $3, $4)
+ON CONFLICT (plan_item_id) WHERE plan_item_id IS NOT NULL DO NOTHING
+`
+
+type InsertPlanItemLogParams struct {
+	UserID     *uuid.UUID `json:"user_id"`
+	OnDate     string     `json:"on_date"`
+	Title      *string    `json:"title"`
+	PlanItemID *uuid.UUID `json:"plan_item_id"`
+}
+
+// The completed item's log, dated the day it was marked done (one per item).
+func (q *Queries) InsertPlanItemLog(ctx context.Context, arg InsertPlanItemLogParams) error {
+	_, err := q.db.Exec(ctx, insertPlanItemLog,
+		arg.UserID,
+		arg.OnDate,
+		arg.Title,
+		arg.PlanItemID,
+	)
+	return err
 }
 
 const insertSessionLog = `-- name: InsertSessionLog :one
@@ -647,10 +681,35 @@ type MarkPlanItemCompletedParams struct {
 	UserID uuid.UUID `json:"user_id"`
 }
 
-// Logging implies the item is done; XP for the log itself comes next.
+// Logging implies the item is done; the log's own +10 XP comes next.
 func (q *Queries) MarkPlanItemCompleted(ctx context.Context, arg MarkPlanItemCompletedParams) error {
 	_, err := q.db.Exec(ctx, markPlanItemCompleted, arg.ID, arg.UserID)
 	return err
+}
+
+const planItemToToggle = `-- name: PlanItemToToggle :one
+SELECT i.item_type, i.title
+FROM public.plan_items i
+JOIN public.training_plans p ON p.id = i.plan_id
+WHERE i.id = $1 AND p.user_id = $2
+`
+
+type PlanItemToToggleParams struct {
+	ID     uuid.UUID `json:"id"`
+	UserID uuid.UUID `json:"user_id"`
+}
+
+type PlanItemToToggleRow struct {
+	ItemType string `json:"item_type"`
+	Title    string `json:"title"`
+}
+
+// The item's type and title (the log's note), owner only.
+func (q *Queries) PlanItemToToggle(ctx context.Context, arg PlanItemToToggleParams) (PlanItemToToggleRow, error) {
+	row := q.db.QueryRow(ctx, planItemToToggle, arg.ID, arg.UserID)
+	var i PlanItemToToggleRow
+	err := row.Scan(&i.ItemType, &i.Title)
+	return i, err
 }
 
 const profileRole = `-- name: ProfileRole :one
@@ -677,5 +736,19 @@ type SaveSessionFeedbackParams struct {
 
 func (q *Queries) SaveSessionFeedback(ctx context.Context, arg SaveSessionFeedbackParams) error {
 	_, err := q.db.Exec(ctx, saveSessionFeedback, arg.Feedback, arg.ID, arg.UserID)
+	return err
+}
+
+const setPlanItemCompletion = `-- name: SetPlanItemCompletion :exec
+UPDATE public.plan_items SET is_completed = $1 WHERE id = $2
+`
+
+type SetPlanItemCompletionParams struct {
+	Completed bool      `json:"completed"`
+	ID        uuid.UUID `json:"id"`
+}
+
+func (q *Queries) SetPlanItemCompletion(ctx context.Context, arg SetPlanItemCompletionParams) error {
+	_, err := q.db.Exec(ctx, setPlanItemCompletion, arg.Completed, arg.ID)
 	return err
 }

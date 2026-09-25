@@ -37,6 +37,9 @@ func Level(total int64) int64 {
 // sport's multiplier.
 const BaseWorkoutXP = 60
 
+// SessionLogXP is the one-time bonus for logging how a plan session went.
+const SessionLogXP = 10
+
 // Multiplier is a sport's effective XP multiplier: a missing or zero
 // sport_types.xp_multiplier counts as 1.
 func Multiplier(raw *float64) float64 {

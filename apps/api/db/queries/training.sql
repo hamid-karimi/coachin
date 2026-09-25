@@ -7,10 +7,31 @@ FROM public.plan_items i
 JOIN public.training_plans p ON p.id = i.plan_id
 WHERE i.id = sqlc.arg(id) AND p.user_id = sqlc.arg(user_id);
 
--- name: CompletePlanItem :one
--- Step A (ADR-5): the SQL function toggles the item, writes/removes the
--- linked log, and awards or compensates XP idempotently.
-SELECT public.complete_plan_item(sqlc.arg(item_id), sqlc.arg(completed), CAST(sqlc.arg(on_date)::text AS date))::text AS result;
+-- name: PlanItemToToggle :one
+-- The item's type and title (the log's note), owner only.
+SELECT i.item_type, i.title
+FROM public.plan_items i
+JOIN public.training_plans p ON p.id = i.plan_id
+WHERE i.id = sqlc.arg(id) AND p.user_id = sqlc.arg(user_id);
+
+-- name: CountLedgerReasons :one
+-- How many award and undo rows an item already has (they repeat by design).
+SELECT count(*) FILTER (WHERE reason = sqlc.arg(award_reason)::text) AS awards,
+       count(*) FILTER (WHERE reason = sqlc.arg(undo_reason)::text) AS undos
+FROM public.xp_transactions
+WHERE user_id = sqlc.arg(user_id) AND reason IN (sqlc.arg(award_reason)::text, sqlc.arg(undo_reason)::text);
+
+-- name: SetPlanItemCompletion :exec
+UPDATE public.plan_items SET is_completed = sqlc.arg(completed) WHERE id = sqlc.arg(id);
+
+-- name: InsertPlanItemLog :exec
+-- The completed item's log, dated the day it was marked done (one per item).
+INSERT INTO public.logs (user_id, date, sport_type_id, status, notes, plan_item_id)
+VALUES (sqlc.arg(user_id), CAST(sqlc.arg(on_date)::text AS date), NULL, 'completed', sqlc.arg(title), sqlc.arg(plan_item_id))
+ON CONFLICT (plan_item_id) WHERE plan_item_id IS NOT NULL DO NOTHING;
+
+-- name: DeletePlanItemLog :exec
+DELETE FROM public.logs WHERE user_id = sqlc.arg(user_id) AND plan_item_id = sqlc.arg(plan_item_id);
 
 -- name: ListActivePrograms :many
 SELECT id, race_date, goal_time, weeks_total, created_at, plan_kind, intake, created_by
@@ -95,13 +116,11 @@ VALUES (sqlc.arg(user_id), sqlc.arg(plan_item_id), sqlc.arg(sport), sqlc.narg(rp
 RETURNING id;
 
 -- name: MarkPlanItemCompleted :exec
--- Logging implies the item is done; XP for the log itself comes next.
+-- Logging implies the item is done; the log's own +10 XP comes next.
 UPDATE public.plan_items i SET is_completed = true
 FROM public.training_plans p
 WHERE i.id = sqlc.arg(id) AND p.id = i.plan_id AND p.user_id = sqlc.arg(user_id);
 
--- name: AwardSessionLogXP :one
-SELECT public.award_session_log_xp(sqlc.arg(log_id))::text AS result;
 
 -- name: SaveSessionFeedback :exec
 UPDATE public.session_logs SET ai_feedback = sqlc.arg(feedback)::jsonb

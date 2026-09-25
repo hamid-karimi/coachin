@@ -37,12 +37,12 @@ level = floor(totalXp / 1000) + 1
 | Action | XP | Reason key | Idempotent by | Source |
 |---|---|---|---|---|
 | Routine workout log | `round(60 × sport.xp_multiplier)` | `workout_log:<sportId>:<date>` (legacy rows: `workout_log:<sportId>`) | per sport per day | Go: `apps/api/internal/app/today` (`LogWorkout`); legacy `legacy/app/dashboard/actions.ts` |
-| Plan item — run | **60** | `plan_item:<id>` | per item (undo compensates) | `complete_plan_item` |
-| Plan item — strength | **60** | `plan_item:<id>` | per item | `complete_plan_item` |
-| Plan item — stretch | **30** | `plan_item:<id>` | per item | `complete_plan_item` |
-| Plan item — mobility | **30** | `plan_item:<id>` | per item | `complete_plan_item` |
-| Plan item — recovery | **20** | `plan_item:<id>` | per item | `complete_plan_item` |
-| Session log (how'd it go) | **10** | `session_log:<id>` | per log | `award_session_log_xp` |
+| Plan item — run | **60** | `plan_item:<id>` | per item (undo compensates) | Go: `domain/planitem` (`CompletionXP`, `ToggleXP`) via `store.TrainingStore.SetPlanItemCompleted` |
+| Plan item — strength | **60** | `plan_item:<id>` | per item | Go: `domain/planitem` |
+| Plan item — stretch | **30** | `plan_item:<id>` | per item | Go: `domain/planitem` |
+| Plan item — mobility | **30** | `plan_item:<id>` | per item | Go: `domain/planitem` |
+| Plan item — recovery | **20** | `plan_item:<id>` | per item | Go: `domain/planitem` |
+| Session log (how'd it go) | **10** | `session_log:<id>` | per log | Go: `xp.SessionLogXP` via `store.TrainingStore.CreateSessionLog` |
 | Meal log | **5** | `meal_log:<id>` | per log, **max 3/day** | `award_meal_xp` |
 | Calorie-goal day | **30** | `calorie_goal:<date>` | per day | `award_day_adherence` |
 | Goal achieved | **200** | `goal_achieved:<id>` | per goal | `achieve_goal` |
@@ -76,8 +76,11 @@ level = floor(totalXp / 1000) + 1
   `store.NutritionStore.DeleteMeal`). The cap counts the date's *remaining* awarded
   logs, so without the refund log → delete → log farmed unlimited XP (legacy bug); now a
   day nets at most 15 meal XP. Logs are awarded one at a time under the profile lock.
-- Plan-item **undo** writes a compensating `-XP` txn (`plan_item_undo:<id>`) so
-  done→undo→done nets zero. See `complete_plan_item`.
+- Plan-item **undo** writes a compensating `-XP` txn (`plan_item_undo:<id>`): an item
+  nets at most one award — done pays when awards ≤ undos, undo refunds when awards >
+  undos, anything else writes nothing (`planitem.ToggleXP`). Done → undo nets zero; redo
+  pays again. Taps run under the profile lock (legacy's SQL function had none, so two
+  parallel "done" taps could both pay).
 
 ---
 
