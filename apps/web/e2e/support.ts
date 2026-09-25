@@ -1,4 +1,4 @@
-import { expect, type APIResponse, type Page } from "@playwright/test";
+import { expect, type APIResponse, type Locator, type Page } from "@playwright/test";
 
 /** Demo accounts from `make seed` (an active coach ↔ trainee pair). */
 export const DEMO = {
@@ -48,11 +48,17 @@ export async function signIn(page: Page, email: string, password = DEMO.password
   throw new Error(`Sign-in for ${email} stayed rate limited`);
 }
 
-/** The single file input labelled label — once streaming has swapped in the final page. */
-export async function fileInput(page: Page, label: string) {
+/**
+ * Sets files on the file input labelled label. While a refresh streams in, React
+ * briefly keeps a hidden second copy of the page, so the input can be duplicated
+ * for a moment: retry until exactly one is there and the files are set.
+ */
+export async function upload(page: Page, label: string, files: Parameters<Locator["setInputFiles"]>[0]) {
   const input = page.locator(`input[type=file][aria-label='${label}']`);
-  await expect(input).toHaveCount(1);
-  return input;
+  await expect(async () => {
+    await expect(input).toHaveCount(1, { timeout: 1_000 });
+    await input.setInputFiles(files, { timeout: 1_000 });
+  }).toPass();
 }
 
 /** Calls the API as the signed-in user (arranging state a journey doesn't walk). */

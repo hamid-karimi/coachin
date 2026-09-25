@@ -1,16 +1,15 @@
 import { expect, test } from "@playwright/test";
-import { fileInput, jpeg, newAthlete, toast } from "./support";
+import { jpeg, newAthlete, toast, upload } from "./support";
 
 // QA journey 8 — progress photos: add two, compare, "Share progress".
 test("add two progress photos, compare them, build the share card", async ({ page }) => {
   await newAthlete(page, "Pam Photos");
   await page.goto("/profile?tab=progress");
-  const input = await fileInput(page, "Progress photo");
   for (const [name, color] of [
     ["before.jpg", "#335"],
     ["after.jpg", "#533"],
   ]) {
-    await input.setInputFiles(await jpeg(page, name, 600, 800, color));
+    await upload(page, "Progress photo", await jpeg(page, name, 600, 800, color));
     await expect(toast(page, "Progress photo added.")).toBeVisible();
   }
 
