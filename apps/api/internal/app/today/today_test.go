@@ -22,6 +22,7 @@ type fakeStore struct {
 	stack      []SupplementRow
 	taken      []uuid.UUID
 	hasRoutine bool
+	menu       *MealPlanDay
 }
 
 func (f *fakeStore) SettleStreak(context.Context, uuid.UUID) error { return nil }
@@ -47,6 +48,9 @@ func (f *fakeStore) Logs(context.Context, uuid.UUID, string, string) ([]quotas.L
 }
 func (f *fakeStore) LastProgressPhotoAt(context.Context, uuid.UUID) (*time.Time, error) {
 	return nil, nil
+}
+func (f *fakeStore) MealPlanDay(context.Context, uuid.UUID, int) (*MealPlanDay, error) {
+	return f.menu, nil
 }
 func (f *fakeStore) Supplements(context.Context, uuid.UUID) ([]SupplementRow, error) {
 	return f.stack, nil

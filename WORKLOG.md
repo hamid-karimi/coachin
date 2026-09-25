@@ -5,6 +5,25 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · #75 merged (3.5b) · Phase 3.5c — AI meal plan (Nutrition done)
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): `aigen.MealPlanRequest`/`ParseMealPlan`
+(golden `ai.json`, mealPlan cases), `app/nutrition.Plans` (page, generate, regenerate,
+discard; targets via `ComputeTargets`, 0 schedule days → 3 — now in FORMULAS §10),
+one-tx `SaveMealPlan` (archive old, insert plan + meals, set/insert calorie goal),
+`GET/POST/DELETE /nutrition/plan` + `/regenerate` (rate limited); `GET /today`
+`mealPlan`, `GET /calendar` `days[].meals` + adherence (today/past only). Web
+`/nutrition/plan` (wizard + plan view + grocery list), "Meal plan" pill, Today's meals
+card, calendar meal line. e2e with the fake AI (now answers "Design a 7-day meal plan"):
+missing-metrics error, generate → 2,890 kcal target synced to the Meals tab, Today card,
+7 calendar lines / 5 adherence lines, regenerate, discard.
+
+**Decisions**: Profile isn't ported yet, so the e2e set height/weight/birth date by SQL;
+the wizard's metrics error points at the profile, which 3.6 delivers.
+
+**Next steps**: 3.6 Profile (measurements, goals, activity import, photos via Garage,
+analyze/extract, `?tab=`), then 3.7 Coaching, 3.8 Community, share cards, Phases 4–7.
+
 ## 2026-09-24 (night, final+4) · #74 merged (3.5a) · Phase 3.5b — photo estimate
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): vision support in `adapters/ai`

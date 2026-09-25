@@ -6,7 +6,7 @@ The daily execution surface: see today's plan, log it, watch XP and the streak m
 
 | Call | What |
 | --- | --- |
-| `GET /today` | Settles the streak for past days (`evaluate_user_streak`), then returns `stats` (XP, level progress, streak, hearts, tier), today's fixed `sessions` (with `completed`, `estimatedXp`), today's `planItems` blended across every active plan (each in its own week), `planWeek`, `hardCollision`, `doneCount`/`totalCount` (meal notes excluded), weekly-target `quotas`, `progressPhoto` nudge |
+| `GET /today` | Settles the streak for past days (`evaluate_user_streak`), then returns `stats` (XP, level progress, streak, hearts, tier), today's fixed `sessions` (with `completed`, `estimatedXp`), today's `planItems` blended across every active plan (each in its own week), `planWeek`, `hardCollision`, `doneCount`/`totalCount` (meal notes excluded), weekly-target `quotas`, `progressPhoto` nudge, `mealPlan` (today's menu and the daily kcal target; absent without an active meal plan) |
 | `POST /today/workouts` | `{sportTypeId}` → `round(60 × multiplier)` XP; log, ledger row, and balance in one transaction; once per sport per day (409 otherwise) |
 | `POST /supplements` · `PUT /supplements/{id}/schedule` · `DELETE /supplements/{id}` · `PUT /supplements/{id}/taken` | Daily stack (max 20); the stack with `dueToday`/`takenToday` comes with `GET /today` |
 | `PUT /plan-items/{id}/completion` | `{completed}` → XP delta (`+60/+30/+20` by type, compensated on undo); done only on the item's day or the day after |
@@ -19,6 +19,8 @@ The daily execution surface: see today's plan, log it, watch XP and the streak m
 - `hooks/use-supplements.ts` — add / reschedule / remove / taken, each refetching Today
 - `lib/supplements.ts` — schedule options, Sunday-first weekday chips, `toggleDay`,
   `scheduleBody`, `dueChecklist` (unit-tested)
+- `components/todays-meals-card.tsx` — "Today's meals" from the active meal plan
+  (hidden without one), "Full meal plan" link, "N kcal planned · target X"
 - `hooks/use-today.ts` — `useToday` (suspense query), `useLogWorkout` (refetches Today and
   My week)
 - `lib/today.ts` — greeting, initials, date label, tier labels, level %, plurals, plan
@@ -47,7 +49,7 @@ the API's `workout-sets.json` golden vectors),
 
 ## Not yet ported (arrive with their modules)
 
-Today's meal-plan menu (Nutrition), featured goal strip
+Featured goal strip
 (Profile), coaching card (Coaching), group-streak nudge (Community), the session "Share
 it" card (share cards).
 

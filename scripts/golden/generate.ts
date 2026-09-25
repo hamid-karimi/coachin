@@ -74,6 +74,7 @@ import { generateWeekAdjustment } from "@/lib/ai/week-adjustment";
 // @ts-expect-error -- the stub's helpers are not in the legacy module's types
 import { calls as aiCalls, setReply as setAiReply } from "@/lib/ai/text-json";
 import { estimateMealFromPhoto } from "@/lib/ai/nutrition";
+import { generateMealPlan } from "@/lib/ai/meal-plan";
 
 if (process.env.TZ !== "UTC") {
   throw new Error("run with TZ=UTC (the API's pinned zone) — use `make golden`");
@@ -935,6 +936,42 @@ async function aiCases(): Promise<Case[]> {
       cases.push({
         fn: "mealPhoto", input: { photos: input.images.length, context: input.context, country: input.country }, reply, want,
         prompt: request.prompt, maxTokens: request.maxTokens ?? null, images: request.images.length,
+        schemaHint: JSON.stringify(geminiSchemaToHint(request.schema)),
+      });
+    }
+  }
+  // Weekly meal plan: the prompt per intake and the reply parsing.
+  const targets = { kcal: 2450, protein_g: 150, carbs_g: 280, fat_g: 80 };
+  const planIntakes = [
+    { goal: "maintain", diet: "omnivore", allergies: [], dislikes: [], meals_per_day: 3, targets, body_analysis: null, country: null },
+    { goal: "lose", diet: "vegetarian", allergies: ["peanuts", "shellfish"], dislikes: ["olives"], meals_per_day: 4,
+      targets, body_analysis: "Lean build. Slight anterior pelvic tilt.", country: "Iran" },
+  ] as const;
+  const planReplies = [
+    null,
+    JSON.stringify({ items: [
+      { day_of_week: 1, meal_type: "Breakfast", title: "  Oats & berries  ", ingredients: [{ name: " Oats ", qty: "80 g" }, { name: "", qty: "x" }, { name: "Milk" }, null],
+        recipe: "Mix.", video_query: "overnight oats", kcal: 450.6, protein_g: 20.4, carbs_g: "70", fat_g: -3, sugar_g: null, fiber_g: 9, sodium_mg: 120 },
+      { day_of_week: 6.6, meal_type: "snack", title: "Apple", kcal: 9000 },
+      { day_of_week: 7.6, meal_type: "lunch", title: "Out of range", kcal: 500 },
+      { day_of_week: 2, meal_type: "brunch", title: "Bad type", kcal: 500 },
+      { day_of_week: 3, meal_type: "dinner", title: "   ", kcal: 500 },
+      { day_of_week: "4", meal_type: "DINNER", title: "T".repeat(150), ingredients: "none", recipe: 42, kcal: "650" },
+    ] }),
+    JSON.stringify({ items: Array.from({ length: 45 }, (_, i) => ({ day_of_week: i % 7, meal_type: "lunch", title: `Meal ${i}`, kcal: 500,
+      ingredients: Array.from({ length: 25 }, (_, j) => ({ name: `Ing ${j}`, qty: "Q".repeat(50) })) })) }),
+    JSON.stringify({ items: {} }),
+    "{oops",
+  ];
+  for (const input of planIntakes) {
+    for (const reply of planReplies) {
+      aiCalls.length = 0;
+      setAiReply(reply === null ? null : { text: reply, model: "test-model" });
+      const want = await generateMealPlan({ ...input, allergies: [...input.allergies], dislikes: [...input.dislikes] });
+      const request = aiCalls[0];
+      cases.push({
+        fn: "mealPlan", input, reply, want,
+        prompt: request.prompt, maxTokens: request.maxTokens ?? null,
         schemaHint: JSON.stringify(geminiSchemaToHint(request.schema)),
       });
     }

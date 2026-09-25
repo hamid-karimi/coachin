@@ -74,6 +74,21 @@ type TodayBody struct {
 	Quotas        []QuotaBody         `json:"quotas"`
 	ProgressPhoto ProgressPhotoBody   `json:"progressPhoto"`
 	Supplements   []SupplementBody    `json:"supplements" doc:"The whole daily stack; the checklist shows dueToday ones"`
+	MealPlan      *TodayMealPlanBody  `json:"mealPlan,omitempty" doc:"Today's menu from the active AI meal plan; absent without one"`
+}
+
+// MenuMealBody is one planned meal.
+type MenuMealBody struct {
+	ID       uuid.UUID `json:"id"`
+	MealType string    `json:"mealType" enum:"breakfast,lunch,dinner,snack"`
+	Title    string    `json:"title"`
+	Kcal     float64   `json:"kcal"`
+}
+
+// TodayMealPlanBody is today's menu and the plan's daily target.
+type TodayMealPlanBody struct {
+	KcalTarget float64        `json:"kcalTarget"`
+	Meals      []MenuMealBody `json:"meals"`
 }
 
 type todayOutput struct {
@@ -148,8 +163,12 @@ func todayBody(day today.Day) TodayBody {
 		body.PlanItems[i] = TodayPlanItemBody{PlanItemBody: planItemBody(item.PlanItem), PlanID: item.PlanID, Week: item.Week, Date: item.Date}
 	}
 	for i, q := range day.Quotas {
-		body.Quotas[i] = QuotaBody{
-			ID: q.ID, SportTypeID: q.SportTypeID, SportName: q.SportName, SessionsPerWeek: q.SessionsPerWeek, DoneThisWeek: q.DoneThisWeek,
+		body.Quotas[i] = quotaBody(q)
+	}
+	if plan := day.MealPlan; plan != nil {
+		body.MealPlan = &TodayMealPlanBody{KcalTarget: plan.KcalTarget, Meals: make([]MenuMealBody, len(plan.Meals))}
+		for i, m := range plan.Meals {
+			body.MealPlan.Meals[i] = MenuMealBody(m)
 		}
 	}
 	return body

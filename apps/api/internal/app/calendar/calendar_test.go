@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/routine"
+	"github.com/hamid-karimi/coachin/apps/api/internal/domain/nutrition"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/quotas"
 )
 
@@ -19,6 +20,15 @@ type fakeStore struct {
 	quotas     []routine.Quota
 	weekByPlan map[uuid.UUID]int
 	logWindow  [2]string
+	menu       map[int][]nutrition.MealSlot
+	mealLogs   map[string][]nutrition.MealSlot
+}
+
+func (f *fakeStore) MealPlanWeek(context.Context, uuid.UUID) (map[int][]nutrition.MealSlot, bool, error) {
+	return f.menu, f.menu != nil, nil
+}
+func (f *fakeStore) MealSlots(context.Context, uuid.UUID, string, string) (map[string][]nutrition.MealSlot, error) {
+	return f.mealLogs, nil
 }
 
 func (f *fakeStore) SchedulesBetween(context.Context, uuid.UUID, string, string) ([]Schedule, error) {
@@ -124,5 +134,35 @@ func TestWeekAnchor(t *testing.T) {
 		if d.PlanItems == nil || d.Routines == nil {
 			t.Fatalf("nil lists on %s", d.Date)
 		}
+	}
+}
+
+func TestWeekMeals(t *testing.T) {
+	store := &fakeStore{
+		menu: map[int][]nutrition.MealSlot{
+			3: {{MealType: "breakfast", Kcal: 400}, {MealType: "dinner", Kcal: 600}}, // Wednesday
+			5: {{MealType: "lunch", Kcal: 700}},                                      // Friday (future)
+		},
+		mealLogs: map[string][]nutrition.MealSlot{"2026-09-23": {{MealType: "breakfast", Kcal: 450}, {MealType: "snack", Kcal: 100}}},
+	}
+	week, err := NewService(store, now).Week(context.Background(), uuid.New(), "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	wed, thu, fri := week.Days[2].Meals, week.Days[3].Meals, week.Days[4].Meals
+	if wed == nil || wed.PlannedCount != 2 || wed.PlannedKcal != 1000 || wed.Adherence == nil ||
+		wed.Adherence.SlotsLogged != 1 || wed.Adherence.KcalLogged != 550 {
+		t.Errorf("wednesday = %+v", wed)
+	}
+	if thu != nil {
+		t.Errorf("thursday has no planned meals: %+v", thu)
+	}
+	if fri == nil || fri.Adherence != nil {
+		t.Errorf("friday (future) = %+v", fri)
+	}
+	store.menu = nil
+	week, _ = NewService(store, now).Week(context.Background(), uuid.New(), "")
+	if week.Days[2].Meals != nil {
+		t.Error("meals without a plan")
 	}
 }

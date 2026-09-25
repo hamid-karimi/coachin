@@ -7,7 +7,7 @@ real dates. A daily-use surface and the gateway to programs ("Manage programs").
 
 | Call | What |
 | --- | --- |
-| `GET /calendar?week=YYYY-MM-DD` | The Monday–Sunday week containing `week` (this week when missing or invalid): `weekStart`/`weekEnd`, `prevWeek`/`nextWeek` (Mondays), `today`, `isCurrentWeek`, `quotas` (weekly targets scored on the **viewed** week's completed logs), and seven `days` — `routines` (fixed sessions whose `starts_on`/`ends_on` window covers the date; `done` when that sport has a completed log that day), `planItems` (blended across every active plan, each in its own week from its own start), `logged` (any completed log), `hardCollision` (2+ run/strength items) |
+| `GET /calendar?week=YYYY-MM-DD` | The Monday–Sunday week containing `week` (this week when missing or invalid): `weekStart`/`weekEnd`, `prevWeek`/`nextWeek` (Mondays), `today`, `isCurrentWeek`, `quotas` (weekly targets scored on the **viewed** week's completed logs), and seven `days` — `routines` (fixed sessions whose `starts_on`/`ends_on` window covers the date; `done` when that sport has a completed log that day), `planItems` (blended across every active plan, each in its own week from its own start), `logged` (any completed log), `hardCollision` (2+ run/strength items), `meals` with an active meal plan (`plannedCount`, `plannedKcal`, and `adherence` — slots logged / planned, kcal ratio — for today and past days only; FORMULAS §13) |
 
 ## Structure
 
@@ -19,7 +19,9 @@ real dates. A daily-use surface and the gateway to programs ("Manage programs").
 - `components/`
   - `calendar-view.tsx` — header (Edit routine, Manage programs), `week-nav.tsx`,
     `weekly-targets.tsx` (`QuotaChip`), the day cards
-  - `day-card.tsx` — "Today" badge, "logged", collision chip, rows, or "Rest"
+  - `day-card.tsx` — "Today" badge, "logged", collision chip, rows, or "Rest", then
+    `day-meals-line.tsx` ("3 meals planned · 1,800 kcal" → `/nutrition/plan`, plus the
+    muted adherence line; text from `nutrition/lib/meal-plan.ts`)
   - `routine-session-item.tsx` — row + sheet ("Every week at 07:00", edit link, "Log it on
     Today" only on today's card)
   - `day-plan-items.tsx` — rows opening the shared read-only
@@ -28,7 +30,3 @@ real dates. A daily-use surface and the gateway to programs ("Manage programs").
 Plan-item toggles and session logs refetch every calendar week
 (`PLAN_PROGRESS_KEYS`); a confirmed check-in does too.
 
-## Not yet ported
-
-The "N meals planned · X kcal" line and meal adherence under each day arrive with the
-Nutrition module (active meal plan).

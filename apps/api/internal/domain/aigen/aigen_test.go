@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/hamid-karimi/coachin/apps/api/internal/domain/nutrition"
 	"github.com/hamid-karimi/coachin/apps/api/internal/golden"
 )
 
@@ -146,12 +147,33 @@ func TestMatchesLegacy(t *testing.T) {
 			if equal, diff := golden.Equal(t, got, c.Want); !equal {
 				t.Errorf("case %d ParseMealEstimate: %s", i, diff)
 			}
+		case "mealPlan":
+			in := golden.Decode[struct {
+				Goal         string            `json:"goal"`
+				Diet         string            `json:"diet"`
+				Allergies    []string          `json:"allergies"`
+				Dislikes     []string          `json:"dislikes"`
+				MealsPerDay  int               `json:"meals_per_day"`
+				Targets      nutrition.Targets `json:"targets"`
+				BodyAnalysis *string           `json:"body_analysis"`
+				Country      *string           `json:"country"`
+			}](t, c.Input)
+			checkRequest(t, i, MealPlanRequest(MealPlanIntake(in)), c)
+			var got any = map[string]string{"error": ErrMealPlanUnavailable.Error()}
+			if c.Reply != nil {
+				if meals, err := ParseMealPlan(*c.Reply); err == nil {
+					got = meals
+				}
+			}
+			if equal, diff := golden.Equal(t, got, c.Want); !equal {
+				t.Errorf("case %d ParseMealPlan: %s", i, diff)
+			}
 		default:
 			t.Fatalf("case %d: unknown fn %q", i, c.Fn)
 		}
 	}
 	for _, fn := range []string{"extractJson", "anchorsPromptBlock", "validateItems", "marathonRequest", "hypertrophyRequest",
-		"planResult", "redFlagPrecheck", "sessionFeedback", "weekAdjustment", "mealPhoto"} {
+		"planResult", "redFlagPrecheck", "sessionFeedback", "weekAdjustment", "mealPhoto", "mealPlan"} {
 		if counts[fn] == 0 {
 			t.Errorf("no %s vectors", fn)
 		}
