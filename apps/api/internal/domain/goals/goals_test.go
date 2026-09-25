@@ -30,3 +30,25 @@ func TestGoalsMatchLegacy(t *testing.T) {
 		}
 	}
 }
+
+func TestSettle(t *testing.T) {
+	f := func(v float64) *float64 { return &v }
+	cases := []struct {
+		name        string
+		start, read *float64
+		target      float64
+		want        Settlement
+	}{
+		{"no reading", f(80), nil, 70, Keep},
+		{"no start → baseline, never paid", nil, f(65), 70, SetBaseline},
+		{"losing, not there yet", f(80), f(75), 70, Keep},
+		{"losing, crossed", f(80), f(69.5), 70, Achieve},
+		{"gaining, crossed", f(60), f(70), 70, Achieve},
+		{"gaining, went the wrong way", f(60), f(55), 70, Keep},
+	}
+	for _, c := range cases {
+		if got := Settle(c.start, c.target, c.read); got != c.want {
+			t.Errorf("%s: Settle = %v, want %v", c.name, got, c.want)
+		}
+	}
+}

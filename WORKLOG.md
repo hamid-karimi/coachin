@@ -5,6 +5,22 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · #76 merged (3.5c) · Phase 3.6a — Profile tabs, goals, measurements
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): `app/profile` (body profile,
+sharing, overview, progress, measurements, goals) + `ProfileStore` + `db/queries/profile.sql`;
+endpoints `/me/body`, `/me/nutrition-sharing`, `/me/overview`, `/me/progress`,
+`/measurements`, `/goals`; `domain/goals.Settle` (baseline rule — fixes legacy paying
++200 on a start-less weight-loss goal; FORMULAS §6), `domain/xp.ReasonLabel`. Web
+`/profile` 4 tabs (`?tab=`, per-tab prefetch in `app/lib/profile-data.ts`), Today goal
+strip, `components/ui/native-select` (+ story). e2e: goal baseline then payout
+(+200, confetti), body profile save, measurements + chart order, sharing toggle, remove.
+
+**Next steps**: 3.6b watch-data import (`POST /activities/import`, FORMULAS §14 — the
+parse endpoint already exists), then 3.6c photos (Garage adapter, re-encode, moderation,
+`GET /photos/{id}`, analyze/extract), 3.7 Coaching, 3.8 Community, share cards, Phases 4–7.
+Suggested follow-up: move the 7 hand-styled `<select>`s onto `NativeSelect`.
+
 ## 2026-09-25 · #75 merged (3.5b) · Phase 3.5c — AI meal plan (Nutrition done)
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): `aigen.MealPlanRequest`/`ParseMealPlan`

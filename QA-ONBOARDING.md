@@ -49,7 +49,7 @@ inactive; every coach feature checks for an **active** relationship.
 | `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan. **Rewrite: fully ported** (search / USDA / photo / manual logging, day summary, trends, `/nutrition/plan`) | [README](apps/web/app/(app)/nutrition/README.md) |
 | `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions | [README](legacy/app/coaching/README.md) |
 | `/community` | Social/leaderboard surfaces — **currently disabled** (feature flag; redirects to dashboard, nav item hidden). Coach invite codes are redeemed on `/profile` → "My coach" while off. | [README](legacy/app/community/README.md) |
-| `/profile` | Four tabs (`?tab=`): **Overview** (stats, hearts, goals, recent XP), **Progress** (charts, measurements, progress photos), **Body** (body profile, body photos, watch import), **Settings** (theme, nutrition sharing, my coach, logout) | — |
+| `/profile` | Four tabs (`?tab=`): **Overview** (stats, hearts, goals, recent XP), **Progress** (charts, measurements, progress photos), **Body** (body profile, body photos, watch import), **Settings** (theme, nutrition sharing, my coach, logout). **Rewrite: tabs, goals, measurements, charts, body profile, sharing ported**; photos and watch import next | [README](apps/web/app/(app)/profile/README.md) |
 | `/auth` | Login / signup; on the rewrite also forgot / reset password and email verification | [README](legacy/app/auth/README.md) |
 | `/status` | Rewrite only: API, database, and storage health | — |
 
@@ -197,7 +197,7 @@ rewrites next week).
    logged").
 
 **Rewrite stack** (Today is ported, with the "Today's meals" card — journey 5, step 10;
-goal strip, coaching card, and group nudge arrive with their modules; the daily stack is journey 5, steps 5–7):
+the goal strip — journey 9; coaching card and group nudge arrive with their modules; the daily stack is journey 5, steps 5–7):
 - Header shows the date, "Hi, <first name>", the streak badge, and initials. Level
   ring + XP bar, hearts ("N hearts · a missed day costs one"), and (desktop) the
   Level / Streak / Total XP / League stat row.
@@ -399,6 +399,39 @@ goal strip, coaching card, and group nudge arrive with their modules; the daily 
    exercises logged ≥3 times. Charts hide individually without data; an
    explainer shows when everything is empty. Values must match the raw logs.
 
+### 9. Profile & goals (rewrite stack, 3.6a)
+
+1. Header on every tab: avatar in a level-progress ring, name, "email · joined
+   <Month Year>", Level / tier / "N days" streak chips; "Log out" on desktop (Settings on
+   phones). Tabs: Overview · Progress · Body · Settings (`?tab=`; unknown → Overview).
+2. **Overview**: Total XP · Streak · Best streak · Workouts (completed logs), the hearts
+   line ("N of 3 hearts."), Goals, Training links (My programs, Recurring routine),
+   Recent XP (5 newest ledger rows: "Running workout", "Streak bonus", "Meal log",
+   "Meal log undo -5", "Goal achieved +200" — no ids in labels).
+3. **Goals**: "No goals yet" → pick a metric (only types without an active goal), target,
+   optional date → "Goal created."; a second active goal of a type is refused ("You
+   already have an active weight goal"). Weight / body fat show "75kg now · 50% there ·
+   by Dec 31" and a bar; untracked types show a hint ("Tracking arrives once runs carry
+   distance."). Remove → confirm → "Goal removed." (no XP). Achieved goals show as green
+   trophy badges (3 newest).
+4. **Goal payout** (FORMULAS §6): a weight goal set **before any measurement** takes the
+   next reading as its start and pays nothing; a goal set after a reading starts from it.
+   Crossing the target pays **+200 XP once**: "Goal achieved: Weight 70kg! +200 XP" plus
+   confetti; the goal moves to the badges.
+5. **Progress**: charts (weekly volume, weekly km, body weight with 2+ measurements, top
+   sets for exercises on 3+ days) or the "Charts appear here…" explainer; Measurements:
+   weight (30–300) and/or body fat (3–60) → "Measurement logged." ("Enter a weight or a
+   body fat percentage" when both blank); the last 6 readings with ✕ to delete
+   ("Measurement deleted."). Two readings on one day chart in the order logged.
+6. **Body**: birth date (age 10–120: "Enter a valid birth date"), sex, height (100–250),
+   country (56 chars), training history (2,000 chars) → "Profile updated." Blank fields
+   clear. These feed the AI training and meal plans (the meal plan's "Add your height,
+   weight, and birth date…" error is fixed here plus a Progress measurement).
+7. **Settings**: Theme, "Share nutrition with my coach" (Turn on → "Your coach can now see
+   your nutrition."; Turn off → "Nutrition sharing turned off."), Password.
+8. **Today**: with a tracked goal, a strip "Weight goal · 74.6kg → 72kg" + bar (the goal
+   closest to done) links to the profile.
+
 ## Gamification rules QA must know
 
 All from [`FORMULAS.md`](FORMULAS.md) — spot-check against it, not intuition:
@@ -408,6 +441,8 @@ All from [`FORMULAS.md`](FORMULAS.md) — spot-check against it, not intuition:
   logging and daily calorie adherence have their own fixed awards.
 - Levels: every 1000 XP. Streaks count **days**, driven by fixed-session
   required days; hearts absorb missed required days.
+- Goals: reaching a weight / body-fat target pays +200 XP once; a goal without a start
+  takes the next reading as its baseline (never pays on it).
 - Weekly targets (quotas), strength **total volume**, and **supplements**
   are informational / celebration only — they never move XP, streaks,
   hearts, or tiers.

@@ -1,7 +1,12 @@
 // Package xp holds the level math and XP awards (FORMULAS.md §1).
 package xp
 
-import "github.com/hamid-karimi/coachin/apps/api/internal/domain/jsnum"
+import (
+	"strconv"
+	"strings"
+
+	"github.com/hamid-karimi/coachin/apps/api/internal/domain/jsnum"
+)
 
 // PointsPerLevel is flat: every level costs the same XP.
 const PointsPerLevel = 1000
@@ -50,4 +55,38 @@ func EstimatedWeeklyXP(sessionMultipliers []float64) int64 {
 		total += BaseWorkoutXP * m
 	}
 	return int64(jsnum.Round(total))
+}
+
+// ReasonLabel is the ledger reason as the profile's "Recent XP" list shows it
+// (legacy formatReason): "workout_log:<sport id>" → "<Sport> workout", anything
+// about streaks → "Streak bonus", otherwise the reason without its ":<id>"
+// suffix and with spaces for underscores (legacy kept the id: "goal
+// achieved:3f2a…").
+func ReasonLabel(reason *string, sportNames map[int64]string) string {
+	if reason == nil || *reason == "" {
+		return "XP earned"
+	}
+	r := *reason
+	if id, ok := strings.CutPrefix(r, "workout_log:"); ok {
+		if n, err := strconv.ParseInt(id, 10, 64); err == nil && isDigits(id) { // legacy /^workout_log:(\d+)$/
+			if name, ok := sportNames[n]; ok {
+				return name + " workout"
+			}
+			return "Workout logged"
+		}
+	}
+	if strings.Contains(r, "streak") {
+		return "Streak bonus"
+	}
+	kind, _, _ := strings.Cut(r, ":")
+	return strings.ReplaceAll(kind, "_", " ")
+}
+
+func isDigits(s string) bool {
+	for _, c := range s {
+		if c < '0' || c > '9' {
+			return false
+		}
+	}
+	return s != ""
 }
