@@ -248,7 +248,7 @@ Order (dependencies first, risk front-loaded):
       awards vs undos are counted) and legacy's undated `workout_log:<sportId>`; existing
       duplicates relabeled `#dup<n>` (amounts kept). The store maps a violation to the use
       case's "already logged" error (`store.awardedTwice`).
-- [ ] 4.2 Replace each SQL function with a Go use case in one transaction (Step B), one PR
+- [x] 4.2 Replace each SQL function with a Go use case in one transaction (Step B), one PR
       per group: plan items + session logs · meals + calorie day · goals · streak settle ·
       check-ins / week adjustment · coaching joins/assign · clubs/groups/leaderboard.
       Each gets a concurrency test (parallel duplicates → exactly one award).
@@ -271,9 +271,15 @@ Order (dependencies first, risk front-loaded):
         `apply_week_adjustment` is no longer called; 8 parallel confirms → one +20.
   - Cross-user functions stay `SECURITY DEFINER` primitives (ADR-5 amendment):
     coach / club / group joins by code, `assign_coach_schedule_to_student`,
-    `evaluate_group_days`, `group_trained_today`, `get_weekly_leaderboard`.
-- [ ] 4.3 Migration dropping retired functions (keep `sync_league_tier` and photo-cap
-      triggers).
+    `evaluate_group_days`, `group_trained_today`, `get_weekly_leaderboard` — and the
+    ones that grant membership or write another user's rows: `create_club_with_owner`,
+    `create_training_group`, `leave_training_group` (deletes the emptied group), and
+    `create_training_plan` (coach mode writes the trainee's plan). The app role has no
+    insert policy on `club_members` / `group_members` / `training_groups` for good reason.
+- [x] 4.3 Migration 00010 drops the 7 retired functions (`complete_plan_item`,
+      `award_session_log_xp`, `award_meal_xp`, `award_day_adherence`, `achieve_goal`,
+      `evaluate_user_streak`, `apply_week_adjustment`); its Down restores them. The streak
+      parity test installs legacy's function from `internal/store/testdata`.
 - [ ] 4.4 FORMULAS.md: Go files are the only source of truth.
 - **Gate**: full suites + golden vectors + every QA journey re-run.
 
