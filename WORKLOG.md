@@ -5,6 +5,17 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · Phase 5.1b — the remaining QA journeys
+
+**Done** (branch `claude/lucid-tesla-3737vk`, added to PR #93): specs for journeys
+1 (my week), 4 (calendar), 7 (watch import; GPX built relative to today), 8 (progress
+photos drawn on a canvas, compare, "Share progress"); `support.jpeg`. 14/14 green on the
+sandbox (56 s — the register back-off waits out the auth burst of 10).
+
+**Next steps**: 5.2 security review (`/security-review`), including the RLS notes
+(profiles select USING (true), `get_weekly_leaderboard` ids, clubs readable with codes);
+then 5.3 delete `legacy/`.
+
 ## 2026-09-25 · #92 merged (4.4) · Phase 5.1a — Playwright QA journeys in CI
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): `@playwright/test`

@@ -50,3 +50,20 @@ export async function api(page: Page, method: "GET" | "POST" | "PUT" | "DELETE",
 export function toast(page: Page, text: string | RegExp) {
   return page.locator("[data-sonner-toast]").filter({ hasText: text }).last();
 }
+
+/** A solid-color JPEG drawn in the page (the fake moderation reads its shape: tall = body photo). */
+export async function jpeg(page: Page, name: string, width: number, height: number, color: string) {
+  const base64 = await page.evaluate(
+    ([w, h, fill]) => {
+      const canvas = document.createElement("canvas");
+      canvas.width = Number(w);
+      canvas.height = Number(h);
+      const ctx = canvas.getContext("2d")!;
+      ctx.fillStyle = String(fill);
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      return canvas.toDataURL("image/jpeg", 0.9).split(",")[1];
+    },
+    [width, height, color],
+  );
+  return { name, mimeType: "image/jpeg", buffer: Buffer.from(base64, "base64") };
+}

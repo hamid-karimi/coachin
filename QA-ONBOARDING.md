@@ -557,10 +557,12 @@ All from [`FORMULAS.md`](FORMULAS.md) — spot-check against it, not intuition:
 
 **Automated journeys**: `make e2e` starts the stack with a fake Claude
 (`deploy/e2e/fakeai.mjs`, always the same plan / meal / photo answers) and Community on,
-seeds the demo accounts, and runs `apps/web/e2e` in a phone-sized Chromium. Covered today:
-journey 0 (sign-in, register, log out, role landing), 2 (generate + archive a plan; a race
-too soon), 3 (log today's routine session once), 5 + 8 (manual meal, "Share today" card,
-remove), 6 (coach invite code → trainee joins), 9 (weight goal pays +200), 10 (group
+seeds the demo accounts, and runs `apps/web/e2e` in a phone-sized Chromium — one spec per
+journey: 0 (sign-in, register, log out, role landing), 1 (fixed session + weekly target),
+2 (generate + archive a plan; a race too soon), 3 (log today's routine session once),
+4 (calendar week + paging), 5 (manual meal, "Share today" card, remove), 6 (coach invite
+code → trainee joins), 7 (watch import: a recent run once, an old one skipped), 8 (two
+progress photos → compare → "Share progress"), 9 (weight goal pays +200), 10 (group
 streak create + join). Each journey signs up a fresh athlete, so runs don't depend on each
 other; CI runs the same suite on every PR (job "E2E journeys").
 
