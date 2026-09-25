@@ -82,11 +82,16 @@ func New(ctx context.Context, cfg Config, logger *slog.Logger) (*Client, error) 
 // GenerateJSON returns the JSON answer, or ok=false when every provider is
 // unavailable or failed (the caller shows "temporarily unavailable").
 func (c *Client) GenerateJSON(ctx context.Context, req aigen.Request) (aigen.Result, bool) {
-	if text, ok := c.claudeJSON(ctx, req); ok {
+	text, ok, refused := c.claudeJSON(ctx, req)
+	if ok {
 		return aigen.Result{Text: text, Model: c.claudeModel}, true
 	}
-	if text, ok := c.geminiJSON(ctx, req); ok {
-		return aigen.Result{Text: text, Model: c.geminiModel}, true
+	if refused && req.Strict {
+		// A user photo Claude won't look at is a safety block, not an outage.
+		return aigen.Result{Model: c.claudeModel, Blocked: true}, true
+	}
+	if result, ok := c.geminiJSON(ctx, req); ok {
+		return result, true
 	}
 	return aigen.Result{}, false
 }
@@ -102,9 +107,10 @@ func claudeSystem(schema aigen.Schema) string {
 	}, "\n")
 }
 
-func (c *Client) claudeJSON(ctx context.Context, req aigen.Request) (string, bool) {
+// claudeJSON returns the JSON answer; refused reports a refusal stop.
+func (c *Client) claudeJSON(ctx context.Context, req aigen.Request) (text string, ok, refused bool) {
 	if c.claude == nil {
-		return "", false
+		return "", false, false
 	}
 	ctx, cancel := context.WithTimeout(ctx, callTimeout)
 	defer cancel()
@@ -128,45 +134,69 @@ func (c *Client) claudeJSON(ctx context.Context, req aigen.Request) (string, boo
 	for stream.Next() {
 		if err := message.Accumulate(stream.Current()); err != nil {
 			c.logger.WarnContext(ctx, "claude stream failed", "error", err)
-			return "", false
+			return "", false, false
 		}
 	}
 	if err := stream.Err(); err != nil {
 		c.logger.WarnContext(ctx, "claude generation failed", "error", err)
-		return "", false
+		return "", false, false
 	}
 	if message.StopReason == anthropic.StopReasonRefusal {
 		c.logger.WarnContext(ctx, "claude declined the request")
-		return "", false
+		return "", false, true
 	}
-	var text strings.Builder
+	var out strings.Builder
 	for _, block := range message.Content {
 		if block.Type == "text" {
-			text.WriteString(block.Text)
+			out.WriteString(block.Text)
 		}
 	}
-	return aigen.ExtractJSON(text.String())
+	text, ok = aigen.ExtractJSON(out.String())
+	return text, ok, false
 }
 
-func (c *Client) geminiJSON(ctx context.Context, req aigen.Request) (string, bool) {
+// strictSafety blocks sexual content at the lowest threshold (legacy STRICT_SAFETY).
+var strictSafety = []*genai.SafetySetting{
+	{Category: genai.HarmCategorySexuallyExplicit, Threshold: genai.HarmBlockThresholdBlockLowAndAbove},
+}
+
+// geminiBlocked reports a prompt or answer stopped by the safety filter.
+func geminiBlocked(response *genai.GenerateContentResponse) bool {
+	if response.PromptFeedback != nil && response.PromptFeedback.BlockReason != "" {
+		return true
+	}
+	for _, candidate := range response.Candidates {
+		if candidate.FinishReason == genai.FinishReasonSafety {
+			return true
+		}
+	}
+	return false
+}
+
+func (c *Client) geminiJSON(ctx context.Context, req aigen.Request) (aigen.Result, bool) {
 	if c.gemini == nil {
-		return "", false
+		return aigen.Result{}, false
 	}
 	ctx, cancel := context.WithTimeout(ctx, callTimeout)
 	defer cancel()
+	config := &genai.GenerateContentConfig{ResponseMIMEType: "application/json", ResponseSchema: geminiSchema(req.Schema)}
+	if req.Strict {
+		config.SafetySettings = strictSafety
+	}
 	response, err := c.gemini.Models.GenerateContent(ctx, c.geminiModel,
-		[]*genai.Content{genai.NewContentFromParts(geminiParts(req), genai.RoleUser)},
-		&genai.GenerateContentConfig{ResponseMIMEType: "application/json", ResponseSchema: geminiSchema(req.Schema)},
-	)
+		[]*genai.Content{genai.NewContentFromParts(geminiParts(req), genai.RoleUser)}, config)
 	if err != nil {
 		c.logger.WarnContext(ctx, "gemini generation failed", "error", err)
-		return "", false
+		return aigen.Result{}, false
+	}
+	if req.Strict && geminiBlocked(response) {
+		return aigen.Result{Model: c.geminiModel, Blocked: true}, true
 	}
 	text := response.Text()
 	if json, ok := aigen.ExtractJSON(text); ok {
-		return json, true
+		return aigen.Result{Text: json, Model: c.geminiModel}, true
 	}
-	return text, text != ""
+	return aigen.Result{Text: text, Model: c.geminiModel}, text != ""
 }
 
 // claudeContent is the images (base64) followed by the prompt.

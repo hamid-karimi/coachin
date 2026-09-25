@@ -26,6 +26,9 @@ type Request struct {
 	MaxTokens int
 	// Images go before the prompt (vision requests).
 	Images []Image
+	// Strict applies the strictest sexual-content safety threshold (user
+	// photos); a provider block comes back as Result.Blocked.
+	Strict bool
 }
 
 // Image is an inline image for a vision prompt.
@@ -38,6 +41,8 @@ type Image struct {
 type Result struct {
 	Text  string
 	Model string
+	// Blocked is a Strict request the provider refused on safety grounds.
+	Blocked bool
 }
 
 // GeneratedPlan is a parsed, validated plan.

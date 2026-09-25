@@ -7,8 +7,14 @@ type Build = Parameters<typeof prefetchQueries>[0];
 /** What each profile tab reads on top of the header (/today + /me/overview). */
 const TAB_QUERIES: Record<ProfileTab, Build> = {
   overview: (api, qc) => [qc.prefetchQuery(api.queryOptions("get", "/goals"))],
-  progress: (api, qc) => [qc.prefetchQuery(api.queryOptions("get", "/me/progress"))],
-  body: (api, qc) => [qc.prefetchQuery(api.queryOptions("get", "/me/body"))],
+  progress: (api, qc) => [
+    qc.prefetchQuery(api.queryOptions("get", "/me/progress")),
+    qc.prefetchQuery(api.queryOptions("get", "/photos")),
+  ],
+  body: (api, qc) => [
+    qc.prefetchQuery(api.queryOptions("get", "/me/body")),
+    qc.prefetchQuery(api.queryOptions("get", "/photos")),
+  ],
   settings: (api, qc) => [qc.prefetchQuery(api.queryOptions("get", "/me/body"))],
 };
 

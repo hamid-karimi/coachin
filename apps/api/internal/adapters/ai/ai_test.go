@@ -132,3 +132,37 @@ func TestGeminiSchemaKeepsOrder(t *testing.T) {
 		t.Errorf("schema = %+v", s)
 	}
 }
+
+func TestStrictRequests(t *testing.T) {
+	strict := request
+	strict.Strict = true
+
+	// A Claude refusal of a user photo is a block, not a fallback.
+	claude := claudeServer(t, http.StatusOK, "refusal", "", nil)
+	defer claude.Close()
+	var calls atomic.Int32
+	gemini := geminiServer(t, `{"summary":"gemini"}`, &calls)
+	defer gemini.Close()
+	c := newClient(t, Config{ClaudeAPIKey: "k", ClaudeBaseURL: claude.URL, GeminiAPIKey: "g", GeminiBaseURL: gemini.URL})
+	if result, ok := c.GenerateJSON(context.Background(), strict); !ok || !result.Blocked || calls.Load() != 0 {
+		t.Fatalf("claude refusal: %+v, %v, gemini calls %d", result, ok, calls.Load())
+	}
+
+	// Gemini gets the strict safety setting and reports its block.
+	var seen map[string]any
+	blocking := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_ = json.NewDecoder(r.Body).Decode(&seen)
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(map[string]any{"promptFeedback": map[string]any{"blockReason": "SAFETY"}})
+	}))
+	defer blocking.Close()
+	c = newClient(t, Config{GeminiAPIKey: "g", GeminiBaseURL: blocking.URL})
+	result, ok := c.GenerateJSON(context.Background(), strict)
+	if !ok || !result.Blocked {
+		t.Fatalf("gemini block: %+v, %v", result, ok)
+	}
+	safety := seen["safetySettings"].([]any)[0].(map[string]any)
+	if safety["category"] != "HARM_CATEGORY_SEXUALLY_EXPLICIT" || safety["threshold"] != "BLOCK_LOW_AND_ABOVE" {
+		t.Errorf("safety settings = %v", seen["safetySettings"])
+	}
+}

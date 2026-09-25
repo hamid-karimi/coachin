@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/ai"
+	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/imaging"
 	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/mail"
 	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/objectstore"
 	"github.com/hamid-karimi/coachin/apps/api/internal/adapters/password"
@@ -18,6 +19,7 @@ import (
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/auth"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/calendar"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/nutrition"
+	"github.com/hamid-karimi/coachin/apps/api/internal/app/photos"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/profile"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/routine"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/supplements"
@@ -93,6 +95,7 @@ func serve(ctx context.Context, _ []string, _ *slog.Logger) error {
 		Nutrition:        nutrition.NewService(store.NewNutritionStore(pool), usda.New(cfg.USDAAPIKey, ""), generator, nil),
 		MealPlan:         nutrition.NewPlans(store.NewNutritionStore(pool), generator, nil),
 		Profile:          profile.NewService(store.NewProfileStore(pool), nil),
+		Photos:           photos.NewService(store.NewPhotoStore(pool), objects, imaging.New(), generator),
 		Cookies:          httpapi.CookieSettings{Secure: cfg.CookieSecure},
 		CommunityEnabled: cfg.CommunityEnabled,
 	})
