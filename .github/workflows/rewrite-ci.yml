@@ -1,7 +1,7 @@
 name: rewrite-ci
 
 # The Go rewrite lives on its own long-lived branch; main/develop keep the
-# legacy app and are not built here.
+# previous (Supabase) app and are not built here.
 on:
   pull_request:
     branches: [feat/backend-rewrite-with-go]

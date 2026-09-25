@@ -24,17 +24,18 @@ services:
   web:
     image: coachin/web:dev
     build:
-      context: ./apps/web
+      context: .
+      dockerfile: apps/web/Dockerfile
       target: dev
     develop:
       watch:
         - action: sync
           path: ./apps/web
-          target: /app
+          target: /app/apps/web
           ignore:
             - node_modules/
             - .next/
         - action: rebuild
           path: ./apps/web/package.json
         - action: rebuild
-          path: ./apps/web/pnpm-lock.yaml
+          path: ./pnpm-lock.yaml

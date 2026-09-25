@@ -10,11 +10,8 @@ change it there, change it here. They must never disagree.
 > **Golden vectors** (`testdata/golden/*.json`) pin the formulas for both the Go tests and
 > the web copies that need them offline (`apps/web/lib/running.ts`, `workout-sets.ts`,
 > `food-units.ts`). A formula change edits the Go code, its vectors, and this file in one
-> change. The vectors were first generated from the legacy TypeScript (`make golden`);
-> that snapshot is history now — CI no longer regenerates from `legacy/`.
->
-> **Legacy origin** lines point at the code each section was ported from — read-only
-> reference until `legacy/` is deleted at cutover.
+> change. The vectors were first generated from the legacy TypeScript app (still on
+> `main`); the Go code owns them now.
 
 > Values in **bold** are tunable knobs — safe to change. Formulas are the shape of the
 > calculation — changing them is a behavior change, not just a tune.
@@ -23,7 +20,6 @@ change it there, change it here. They must never disagree.
 
 ## 1. XP & Levels
 
-**Legacy origin:** `legacy/lib/xp.ts`, and every `award_*` RPC in `legacy/supabase/migrations/`.
 **Go:** `apps/api/internal/domain/xp` (`LevelProgress`, `Level`).
 
 ### Level from total XP
@@ -39,7 +35,7 @@ level = floor(totalXp / 1000) + 1
 
 | Action | XP | Reason key | Idempotent by | Source |
 |---|---|---|---|---|
-| Routine workout log | `round(60 × sport.xp_multiplier)` | `workout_log:<sportId>:<date>` (legacy rows: `workout_log:<sportId>`) | per sport per day | Go: `apps/api/internal/app/today` (`LogWorkout`); legacy `legacy/app/dashboard/actions.ts` |
+| Routine workout log | `round(60 × sport.xp_multiplier)` | `workout_log:<sportId>:<date>` (legacy rows: `workout_log:<sportId>`) | per sport per day | Go: `apps/api/internal/app/today` (`LogWorkout`) |
 | Plan item — run | **60** | `plan_item:<id>` | per item (undo compensates) | Go: `domain/planitem` (`CompletionXP`, `ToggleXP`) via `store.TrainingStore.SetPlanItemCompleted` |
 | Plan item — strength | **60** | `plan_item:<id>` | per item | Go: `domain/planitem` |
 | Plan item — stretch | **30** | `plan_item:<id>` | per item | Go: `domain/planitem` |
@@ -69,8 +65,7 @@ level = floor(totalXp / 1000) + 1
   time) — enforced by the API (`domain/planitem.LogWindowOpen`), not just the button.
 - **"My week" estimate** (display only, awards nothing):
   `round(Σ over fixed sessions of 60 × multiplier)` — rounded once over the sum, not per
-  session. Go: `apps/api/internal/domain/xp` (`EstimatedWeeklyXP`); legacy:
-  `legacy/app/onboarding/page.tsx`.
+  session. Go: `apps/api/internal/domain/xp` (`EstimatedWeeklyXP`).
 - **Plan-item XP is per item** (idempotent by `plan_item:<id>`), so with **multiple active
   plans** each item's award stands on its own and the totals simply **sum across plans** —
   no double-counting, nothing special per discipline.
@@ -93,10 +88,6 @@ level = floor(totalXp / 1000) + 1
 **Go:** `apps/api/internal/domain/streak` (`Next`; `Window`, `History.Required`,
 `SettleRange` for the lazy settle, run by `store.TodayStore.SettleStreak` under the profile
 lock — `TestStreakSettleMatchesSQL` checks it against the legacy SQL function).
-**Legacy origin:** `legacy/lib/streak.ts` (`nextStreakState`, unit-tested in `legacy/lib/streak.test.ts`),
-mirrored by `evaluate_user_streak` (latest:
-`legacy/supabase/migrations/20260706150000_streak_multi_plan.sql`, superseding the original in
-`20260706110000_streak_and_league.sql`).
 
 Stored on `profiles.current_streak` / `best_streak` / `hearts` (0–**3**), settled lazily up
 to **yesterday** on dashboard/profile load (`streak_evaluated_date` tracks progress; first
@@ -132,7 +123,6 @@ Per settled day, given whether the user **trained** and whether it was a **requi
 ### Group streak
 **Go:** `evaluate_group_days` (SQL, `apps/api/db/migrations/00008_group_days_from_second_member.sql`),
 run for each of the caller's groups by `GET /community/groups` (`internal/app/community/groups.go`).
-**Legacy origin:** `evaluate_group_streak` in `legacy/supabase/migrations/20260705140000_training_groups.sql`.
 
 - Days settle once they are over: from the day after the last evaluated day (a new group:
   the day it got its **2nd member**) through **yesterday**. Groups with fewer than
@@ -155,8 +145,6 @@ run for each of the caller's groups by `GET /community/groups` (`internal/app/co
 ## 3. Leagues / Tiers
 
 **Go:** `apps/api/internal/domain/tiers` (`FromXP`, `MinXP`, `FromLeague`).
-**Legacy origin:** `legacy/lib/tiers.ts` (`leagueTierFromXp` + `LEAGUE_TIER_MIN_XP`, unit-tested),
-mirrored by `league_tier_for_xp` in `legacy/supabase/migrations/20260706110000_streak_and_league.sql`.
 
 - Tiers, low→high: `bronze → silver → gold → platinum`.
 - **Tier from lifetime XP (cumulative thresholds — only ever goes up):**
@@ -177,7 +165,6 @@ mirrored by `league_tier_for_xp` in `legacy/supabase/migrations/20260706110000_s
 
 ## 4. Running math
 
-**Legacy origin:** `legacy/lib/running.ts`.
 **Go:** `apps/api/internal/domain/running`.
 
 ### Riegel race-time prediction
@@ -208,7 +195,6 @@ t2 = t1 × (d2 / d1) ^ 1.06
 ## 5. Race-plan intake gates
 
 **Go:** `apps/api/internal/app/training/generation.go` (the race wizard's validation).
-**Legacy origin:** `generatePlanAction` in `legacy/app/training/actions.ts`.
 
 - Race distance must be **1–500 km**.
 - Race date must be **≥ 4 weeks** away (`weeksUntil = floor(days / 7)`), else rejected.
@@ -221,7 +207,6 @@ t2 = t1 × (d2 / d1) ^ 1.06
 
 ## 6. Goal progress
 
-**Legacy origin:** `legacy/lib/goals.ts` (`goalProgress`).
 **Go:** `apps/api/internal/domain/goals` (`ProgressOf`, `TypeMeta`).
 
 - **Direction:** `down` when a usable `start` exists and `target < start` (e.g. weight
@@ -259,7 +244,6 @@ measurement's transaction.
 
 ## 7. Weekly scorecard & check-in decision
 
-**Legacy origin:** `legacy/lib/scorecard.ts`.
 **Go:** `apps/api/internal/domain/scorecard` (`ComputeWeek`, `Decide`, `StalledLifts`).
 
 ### Scorecard
@@ -290,7 +274,6 @@ measurement's transaction.
 
 **Go:** `apps/api/internal/domain/nutrition/xp.go` (`MealAward`, `CalorieDayXP`), applied by
 `store.NutritionStore.LogMeals`.
-**Legacy origin:** `legacy/supabase/migrations/20260705120000_nutrition.sql`.
 
 - **Meal log XP = 5**, capped at **3 awarded meals/day** (§1).
 - **Calorie-goal bonus = 30 XP/day**, awarded when a *past* day's intake is **within ±10%**
@@ -303,7 +286,6 @@ measurement's transaction.
 
 ## 9. Plan weeks & calendar dates
 
-**Legacy origin:** `legacy/lib/dates.ts` (unit-tested in `legacy/lib/dates.test.ts`).
 **Go:** `apps/api/internal/domain/dates` (takes `now` explicitly).
 
 - **Week 1** = the Monday-anchored week containing the plan's `created_at`. Weeks are
@@ -325,9 +307,7 @@ measurement's transaction.
 
 **Go:** `apps/api/internal/domain/nutrition` (`ComputeTargets`, `CanComputeTargets`);
 consumed by `apps/api/internal/app/nutrition/plan.go` (`Plans.Generate`).
-**Legacy origin:** `legacy/lib/nutrition-targets.ts` (unit-tested in
-`legacy/lib/nutrition-targets.test.ts`). The AI meal-plan generator consumes these
-targets; it never computes them itself.
+The AI meal-plan generator consumes these targets; it never computes them itself.
 
 - **BMR (Mifflin–St Jeor):** `10·kg + 6.25·cm − 5·age + s`, where `s = +5`
   (male), `−161` (female), `−78` (unspecified — the midpoint).
@@ -350,16 +330,14 @@ targets; it never computes them itself.
 ## 11. Weekly quotas
 
 **Go:** `apps/api/internal/domain/quotas` (`ProgressOf`).
-**Legacy origin:** `legacy/lib/weekly-quotas.ts` (`quotaProgress`, unit-tested in
-`legacy/lib/weekly-quotas.test.ts`). Stored in `weekly_quotas` (one row per user × sport,
-`sessions_per_week` 1–14).
+Stored in `weekly_quotas` (one row per user × sport, `sessions_per_week` 1–14).
 
 - A quota is an **informational weekly target**: sport × N sessions per week, no fixed day.
 - Fulfilled automatically by **completed** logs: `done` = count of **distinct dates** with a
   completed log of that sport within the **Mon–Sun local week** (two logs of the same sport
   on one day count as **1** — mirrors the streak's day-based counting).
-- The week window (Monday-first, `mondayOf` / `toLocalYMD` in `legacy/lib/dates.ts`) is applied by
-  the **caller** — `quotaProgress` only counts the logs it is given, so it works for past
+- The week window (Monday-first, `dates.MondayOf`) is applied by
+  the **caller** — `quotas.ProgressOf` only counts the logs it is given, so it works for past
   weeks too. `done` is raw and may exceed the target; capping the display is a UI concern.
 - On the rewrite, `GET /routine` applies the window in `apps/api/internal/app/routine`
   (`MondayOf(now)` … +6 days, server time = UTC, as the legacy Vercel server did) and
@@ -370,11 +348,8 @@ targets; it never computes them itself.
 ## 12. Strength session volume (celebration stat)
 
 **Go:** `apps/api/internal/domain/workout` (`TotalVolumeKg`, `VolumeEquivalence`, `ParsePrescription`, `NormalizeLoggedExercises`).
-**Legacy origin:** `legacy/lib/workout-sets.ts` (`totalVolumeKg`, `volumeEquivalence`,
-`parsePrescription`, `normalizeLoggedExercises` — unit-tested in
-`legacy/lib/workout-sets.test.ts`). Logged per set in `session_logs.actual.exercises`
-as `[{name, sets: [{weight_kg, reps}]}]` (legacy flat rows
-`{name, sets, reps, weight_kg}` are normalized to N identical set entries).
+Logged per set in `session_logs.actual.exercises` as `[{name, sets: [{weight_kg, reps}]}]`
+(legacy flat rows `{name, sets, reps, weight_kg}` are normalized to N identical set entries).
 
 - **Total volume** = Σ over every set of `weight_kg × reps`, rounded to 0.1 kg.
   Non-finite/negative values count as 0; bodyweight sets (0 kg) add no volume.
@@ -394,13 +369,6 @@ as `[{name, sets: [{weight_kg, reps}]}]` (legacy flat rows
 `Normalize`, `Window` — the coach view's 7-day training-day window); due-today per stack
 entry in `apps/api/internal/app/today`, mutations in `apps/api/internal/app/supplements`,
 the coach's read-only rate in `apps/api/internal/app/coaching` (`TraineeNutrition`).
-**Legacy origin:** `supplements` + `supplement_logs` tables
-(`20260708090000_supplements.sql`, schedules in
-`20260709120000_supplement_schedules.sql`, coach read in
-`20260709130000_supplements_coach_read.sql`), dashboard card
-`legacy/app/dashboard/components/supplements-card.tsx`, actions in
-`legacy/app/dashboard/supplements-actions.ts`, due-day + rate helpers
-`legacy/lib/supplement-schedule.ts` and `legacy/lib/supplement-adherence.ts`.
 
 - A supplement is a user-defined habit (name + optional dose text).
   Taking one inserts a `supplement_logs` row for the local date; the
@@ -428,8 +396,7 @@ the coach's read-only rate in `apps/api/internal/app/coaching` (`TraineeNutritio
 ### Meal adherence (calendar, informational)
 
 **Go:** `apps/api/internal/domain/nutrition` (`AdherenceForDay`; also `ToGrams`, `SummarizePeriod`, `BuildGroceryList`).
-**Legacy origin:** `legacy/lib/meal-adherence.ts` (`mealAdherenceForDay`, unit-tested),
-consumed by `apps/api/internal/app/calendar` (`Day.Meals`) and the web's
+Consumed by `apps/api/internal/app/calendar` (`Day.Meals`) and the web's
 `app/(app)/calendar/components/day-meals-line.tsx`.
 
 - For a date with an active meal plan, adherence compares the plan's meals for
@@ -448,9 +415,6 @@ consumed by `apps/api/internal/app/calendar` (`Day.Meals`) and the web's
 
 **Go:** `apps/api/internal/domain/activity` (`Sanitize`, `SplitImportable`), applied by
 `app/activities.Importer` (`POST /activities/import`).
-**Legacy origin:** `legacy/lib/activity-import.ts` (`sanitizeActivities`,
-`splitImportableActivities`, unit-tested), `importActivitiesAction`
-(`legacy/app/profile/actions.ts`), parser `legacy/lib/activity-parse.ts`.
 
 - Uploaded .fit/.gpx files are parsed to run summaries (≤3 files/upload,
   ≤20 activities) and logged as **completed runs** (`logs` rows) from the
@@ -478,10 +442,7 @@ consumed by `apps/api/internal/app/calendar` (`Day.Meals`) and the web's
 ## 15. Progress charts & photo nudge
 
 **Go:** `apps/api/internal/domain/progress` (`WeeklyVolume`, `WeeklyKm`, `ExerciseTopSets`, `WeightSeries`, `IsPhotoDue`).
-**Legacy origin:** `legacy/lib/progress-charts.ts` (`weeklyVolume`, `weeklyKm`,
-`exerciseTopSets`, `weightSeries`) and `legacy/lib/progress-photo-nudge.ts`
-(`isProgressPhotoDue`) — both unit-tested. Rendered on Profile → Progress;
-the nudge renders on the dashboard.
+Rendered on Profile → Progress; the nudge renders on the dashboard.
 
 - **Week buckets**: contiguous **Monday-anchored local weeks** (`mondayOf`),
   default **8 weeks** ending in the current week; zero weeks are kept so bars

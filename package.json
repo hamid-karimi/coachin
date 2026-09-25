@@ -1,0 +1,16 @@
+{
+  "name": "coachin",
+  "private": true,
+  "packageManager": "pnpm@12.6.0",
+  "scripts": {
+    "dev": "make up",
+    "dev:web": "make dev-web",
+    "down": "make down",
+    "seed": "make seed",
+    "gen": "make gen",
+    "test": "make test",
+    "lint": "make lint",
+    "e2e": "make e2e",
+    "storybook": "pnpm --filter coachin-web storybook"
+  }
+}

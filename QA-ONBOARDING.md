@@ -12,11 +12,11 @@ sessions and meals, and earn XP / streaks / league tiers for consistency.
 Coaches connect to trainees via invite codes and can monitor adherence,
 generate plans for them, and (with consent) see their nutrition.
 
-Stack: Next.js (App Router) + Supabase (Postgres with row-level security).
-**On `feat/backend-rewrite-with-go`** the same app is being rebuilt as a Go API +
-frontend-only Next.js on Docker (no Supabase). Modules move over one at a time; until
-a module is ported its page is a placeholder. Journey 0 below covers what already runs
-there — see "Running the app locally" for that stack.
+Stack (`feat/backend-rewrite-with-go`): a **Go API** (Postgres with row-level security,
+Garage object storage for photos) and a **frontend-only Next.js** app behind Caddy, all in
+Docker — see "Running the app locally". Every module is ported. Steps marked **Rewrite
+stack** describe what the rewrite added or changed compared with the previous
+Next.js + Supabase app (still on `main` until go-live); the other steps hold for both.
 All rules for XP, streaks, tiers, goals, and date math live in
 [`FORMULAS.md`](FORMULAS.md) — **that file is the source of truth** when you
 need to check whether a number is correct.
@@ -41,21 +41,21 @@ inactive; every coach feature checks for an **active** relationship.
 
 | Route | What it does | Docs |
 | --- | --- | --- |
-| `/onboarding` | "My week" editor: fixed weekly sessions (anchors) + weekly targets (quotas). Also the first-run flow. **Ported to the rewrite.** | [README](apps/web/app/(app)/onboarding/README.md) |
-| `/dashboard` | "Today": today's routine + plan items, logging, streaks, hearts, XP. **Ported to the rewrite**, including the daily stack. | [README](apps/web/app/(app)/dashboard/README.md) |
-| `/calendar` | Week view blending routine + all active plan items + logged state. **Rewrite: ported** (meal-plan line arrives with Nutrition) | [README](apps/web/app/(app)/calendar/README.md) |
-| `/training` | Program manager: create (AI wizards), archive, weekly check-ins. **Rewrite: list, archive, .ics export, AI wizards (with watch-file upload), check-ins ported**. | [README](apps/web/app/(app)/training/README.md) |
-| `/training/new` | Plan wizards (running / muscle building); coach mode via `?student=<id>` | [README](legacy/app/training/README.md) |
-| `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan. **Rewrite: fully ported** (search / USDA / photo / manual logging, day summary, trends, `/nutrition/plan`) | [README](apps/web/app/(app)/nutrition/README.md) |
-| `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions. **Rewrite: ported** (+ `/coaching/trainees/<id>/nutrition`) | [README](apps/web/app/(app)/coaching/README.md) |
-| `/community` | Social/leaderboard surfaces — **currently disabled** (feature flag; redirects to dashboard, nav item hidden). Coach invite codes are redeemed on `/profile` → "My coach" while off. **Rewrite: boards, clubs, circle, group streaks ported**; test with `FEATURE_COMMUNITY=true` | [README](apps/web/app/(app)/community/README.md) |
-| `/profile` | Four tabs (`?tab=`): **Overview** (stats, hearts, goals, recent XP), **Progress** (charts, measurements, progress photos), **Body** (body profile, body photos, watch import), **Settings** (theme, nutrition sharing, my coach, logout). **Rewrite: fully ported** | [README](apps/web/app/(app)/profile/README.md) |
-| `/auth` | Login / signup; on the rewrite also forgot / reset password and email verification | [README](legacy/app/auth/README.md) |
-| `/status` | Rewrite only: API, database, and storage health | — |
+| `/onboarding` | "My week" editor: fixed weekly sessions (anchors) + weekly targets (quotas). Also the first-run flow. | [README](apps/web/app/(app)/onboarding/README.md) |
+| `/dashboard` | "Today": today's routine + plan items, logging, streaks, hearts, XP, the daily stack. | [README](apps/web/app/(app)/dashboard/README.md) |
+| `/calendar` | Week view blending routine + all active plan items + logged state + the day's meal-plan line. | [README](apps/web/app/(app)/calendar/README.md) |
+| `/training` | Program manager: create (AI wizards), archive, weekly check-ins, `.ics` export, watch-file upload in the wizard. | [README](apps/web/app/(app)/training/README.md) |
+| `/training/new` | Plan wizards (running / muscle building); coach mode via `?student=<id>` | [README](apps/web/app/(app)/training/README.md) |
+| `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan (search / USDA / photo / manual logging, day summary, trends, `/nutrition/plan`). | [README](apps/web/app/(app)/nutrition/README.md) |
+| `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions, `/coaching/trainees/<id>/nutrition`. | [README](apps/web/app/(app)/coaching/README.md) |
+| `/community` | Social/leaderboard surfaces — **currently disabled** (feature flag; redirects to dashboard, nav item hidden). Coach invite codes are redeemed on `/profile` → "My coach" while off. Boards, clubs, circle, group streaks; test with `FEATURE_COMMUNITY=true` | [README](apps/web/app/(app)/community/README.md) |
+| `/profile` | Four tabs (`?tab=`): **Overview** (stats, hearts, goals, recent XP), **Progress** (charts, measurements, progress photos), **Body** (body profile, body photos, watch import), **Settings** (theme, nutrition sharing, my coach, logout). | [README](apps/web/app/(app)/profile/README.md) |
+| `/auth` | Login / signup, forgot / reset password, email verification | [README](apps/web/app/auth/README.md) |
+| `/status` | API, database, and storage health | — |
 
 ## Core journeys to test
 
-### 0. Accounts & sign-in (rewrite stack)
+### 0. Accounts & sign-in
 
 Run `make up` then `make seed`; demo accounts `trainee@coachin.local` /
 `coach@coachin.local`, password `Coachin-demo1`. Emails land in Mailpit
@@ -552,8 +552,21 @@ All from [`FORMULAS.md`](FORMULAS.md) — spot-check against it, not intuition:
 
 ## Running the app locally
 
-**Rewrite stack (`feat/backend-rewrite-with-go`)**: Docker only — `make up`, then
-`make seed`, open http://localhost:8080. See the root [`README.md`](README.md).
+Docker only — no Go or Node needed on your machine:
+
+```bash
+make up        # the whole stack with hot reload (first run copies .env.example → .env)
+make seed      # once: trainee@coachin.local / coach@coachin.local, password Coachin-demo1
+```
+
+Open http://localhost:8080 (always through Caddy — not `:3000`). Emails the app sends
+(verification, password reset) land in Mailpit at http://localhost:8025. `make down`
+stops it (data is kept); `make reset-db` starts over with an empty database. AI features
+need `CLAUDE_API_KEY` (or `GEMINI_API_KEY`) in `.env`; Community needs
+`FEATURE_COMMUNITY=true`. More in the root [`README.md`](README.md).
+
+For coach features use **two** accounts (coach + trainee), ideally in separate browser
+profiles; the seeded pair is already linked.
 
 **Automated journeys**: `make e2e` starts the stack with a fake Claude
 (`deploy/e2e/fakeai.mjs`, always the same plan / meal / photo answers) and Community on,
@@ -565,25 +578,6 @@ code → trainee joins), 7 (watch import: a recent run once, an old one skipped)
 progress photos → compare → "Share progress"), 9 (weight goal pays +200), 10 (group
 streak create + join). Each journey signs up a fresh athlete, so runs don't depend on each
 other; CI runs the same suite on every PR (job "E2E journeys").
-
-**Legacy app (`main` / `develop`)**:
-
-```bash
-pnpm install
-pnpm dev            # Next.js dev server on :3000
-pnpm test           # vitest unit suite
-pnpm storybook      # component workbench on :6006
-```
-
-- Env: `.env.local` needs the Supabase URL/key plus AI keys (Gemini /
-  Anthropic; USDA key for food search). Ask a developer for a filled file —
-  there is no `.env.example` yet.
-- Database: Supabase migrations live in `legacy/supabase/migrations/` and are
-  applied with the Supabase CLI. There is **no seed script**; create test
-  accounts by signing up. For a coach account, have a developer set
-  `profiles.role = 'coach'` (or `'both'`) on your user, then exercise the
-  invite-code flow to link a trainee account. Testing coach features needs
-  **two** accounts (coach + trainee), ideally in separate browser profiles.
 
 ## Reporting bugs
 

@@ -33,6 +33,7 @@ yarn-error.log*
 # env files (.env.example is the committed template)
 .env*
 !.env.example
+!apps/web/.env.development
 
 # vercel
 .vercel

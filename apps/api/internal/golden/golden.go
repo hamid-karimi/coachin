@@ -1,6 +1,6 @@
-// Package golden loads the parity vectors in testdata/golden, generated from
-// the legacy TypeScript formulas by scripts/golden/generate.ts (`make golden`).
-// Domain tests replay them to prove the Go port computes the same results.
+// Package golden loads the parity vectors in testdata/golden. They were first
+// generated from the legacy TypeScript formulas and are owned by the Go code now:
+// a formula change edits the code, its vectors, and FORMULAS.md together.
 package golden
 
 import (

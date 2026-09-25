@@ -1,0 +1,9 @@
+# The monorepo: apps/web is the one JS package (the Go API is apps/api, tied in
+# by go.work). One lockfile at the root.
+packages:
+  - apps/web
+
+# Dependencies allowed to run install scripts (pnpm blocks all others).
+allowBuilds:
+  esbuild: true
+  unrs-resolver: true

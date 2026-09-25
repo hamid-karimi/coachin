@@ -113,7 +113,9 @@ services:
 
   web:
     image: coachin/web:local
-    build: ./apps/web
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
     restart: unless-stopped
     environment:
       API_INTERNAL_URL: http://api:8080
