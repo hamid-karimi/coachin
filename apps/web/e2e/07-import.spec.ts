@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { fileInput, newAthlete, toast } from "./support";
+import { newAthlete, toast, upload } from "./support";
 
 /** A 30-minute run (~5.3 km) that started daysAgo at 07:00 UTC, as GPX. */
 function gpxRun(daysAgo: number) {
@@ -18,12 +18,12 @@ function gpxRun(daysAgo: number) {
 test("import a recent run once; a run older than 14 days is skipped", async ({ page }) => {
   await newAthlete(page, "Ivy Import");
   await page.goto("/profile?tab=body");
-  await (await fileInput(page, "Watch files")).setInputFiles([gpxRun(2), gpxRun(20)]);
+  await upload(page, "Watch files", [gpxRun(2), gpxRun(20)]);
   await expect(toast(page, "parsed")).toBeVisible();
   await page.getByRole("button", { name: /Log 2 runs/ }).click();
   await expect(toast(page, "Imported 1 run")).toContainText("1 skipped");
 
-  await (await fileInput(page, "Watch files")).setInputFiles([gpxRun(2)]);
+  await upload(page, "Watch files", [gpxRun(2)]);
   await expect(toast(page, "parsed")).toBeVisible();
   await page.getByRole("button", { name: /Log 1 run/ }).click();
   await expect(toast(page, "Those days already have a logged run")).toBeVisible();
