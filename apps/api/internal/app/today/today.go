@@ -71,8 +71,8 @@ var ErrAlreadyLogged = errors.New("already logged today")
 // Store is the persistence the use cases need; user-scoped methods run as
 // that user.
 type Store interface {
-	// SettleStreak evaluates every unsettled past day (idempotent).
-	SettleStreak(ctx context.Context, userID uuid.UUID) error
+	// SettleStreak settles every unsettled day before today (idempotent).
+	SettleStreak(ctx context.Context, userID uuid.UUID, today string) error
 	Stats(ctx context.Context, userID uuid.UUID) (ProfileStats, error)
 	SessionsOn(ctx context.Context, userID uuid.UUID, weekday int, date string) ([]SessionRow, error)
 	LoggedSportsOn(ctx context.Context, userID uuid.UUID, date string) ([]int64, error)
@@ -182,7 +182,7 @@ func (s *Service) Today(ctx context.Context, userID uuid.UUID) (Day, error) {
 	now := s.now()
 	date, weekday := dates.ToYMD(now), int(now.Weekday())
 
-	if err := s.store.SettleStreak(ctx, userID); err != nil {
+	if err := s.store.SettleStreak(ctx, userID, date); err != nil {
 		return Day{}, fmt.Errorf("settle streak: %w", err)
 	}
 	stored, err := s.store.Stats(ctx, userID)

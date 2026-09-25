@@ -87,7 +87,9 @@ level = floor(totalXp / 1000) + 1
 ## 2. Streaks
 
 ### Personal streak + hearts
-**Go:** `apps/api/internal/domain/streak` (`Next`).
+**Go:** `apps/api/internal/domain/streak` (`Next`; `Window`, `History.Required`,
+`SettleRange` for the lazy settle, run by `store.TodayStore.SettleStreak` under the profile
+lock — `TestStreakSettleMatchesSQL` checks it against the legacy SQL function).
 **Source of truth:** `legacy/lib/streak.ts` (`nextStreakState`, unit-tested in `legacy/lib/streak.test.ts`),
 mirrored by `evaluate_user_streak` (latest:
 `legacy/supabase/migrations/20260706150000_streak_multi_plan.sql`, superseding the original in

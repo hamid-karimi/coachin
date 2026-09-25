@@ -5,6 +5,23 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · #88 merged (4.2b) · Phase 4.2c — streak settle in Go
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): `domain/streak`
+`Window` (first run = yesterday only), `History.Required` (routine in its window, or a
+non-meal slot of any active plan in its own week), `SettleRange` (folds `Next`);
+`TodayStore.SettleStreak(ctx, user, today)` locks the profile, reads trained dates /
+schedules / active-plan slots once, saves state + `streak_evaluated_date`. Parity test
+seeds identical histories for two users and settles one via the SQL function, one via Go
+(resets, heart spends, growth all agree), with 8 parallel Go settles.
+
+**Decisions**: "today" now comes from the use case clock (was the DB's CURRENT_DATE;
+both UTC in the containers). Settle errors now surface (the SQL function swallowed them
+into a jsonb error).
+
+**Next steps**: 4.2d check-ins / week adjustment (`apply_week_adjustment`, weekly_checkin
+XP), 4.2e coaching joins/assign, 4.2f community; 4.3 drop retired functions.
+
 ## 2026-09-25 · #87 merged (4.2a) · Phase 4.2b — meals, calorie day, goals in Go
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): `domain/nutrition`

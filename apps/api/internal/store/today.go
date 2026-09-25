@@ -8,11 +8,14 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/routine"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/today"
+	"github.com/hamid-karimi/coachin/apps/api/internal/domain/dates"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/planitem"
+	"github.com/hamid-karimi/coachin/apps/api/internal/domain/streak"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/supplements"
 	"github.com/hamid-karimi/coachin/apps/api/internal/store/queries"
 )
@@ -30,13 +33,82 @@ func NewTodayStore(pool *pgxpool.Pool) *TodayStore {
 	return &TodayStore{RoutineStore: NewRoutineStore(pool)}
 }
 
-// SettleStreak runs evaluate_user_streak. The function reports its own
-// failures in its result and never blocks the page, as in the legacy app.
-func (s *TodayStore) SettleStreak(ctx context.Context, userID uuid.UUID) error {
+// SettleStreak settles every unsettled past day through yesterday
+// (FORMULAS §2) under the profile lock, so concurrent loads settle once.
+func (s *TodayStore) SettleStreak(ctx context.Context, userID uuid.UUID, today string) error {
+	day, err := time.Parse(dates.YMDLayout, today)
+	if err != nil {
+		return fmt.Errorf("today: %w", err)
+	}
 	return s.asUser(ctx, userID, func(q *queries.Queries) error {
-		_, err := q.SettleStreak(ctx)
-		return err
+		if err := q.LockProfile(ctx, userID); err != nil {
+			return fmt.Errorf("lock profile: %w", err)
+		}
+		row, err := q.StreakState(ctx, userID)
+		if err != nil {
+			return fmt.Errorf("streak state: %w", err)
+		}
+		var settled *time.Time
+		if row.SettledThrough.Valid {
+			settled = &row.SettledThrough.Time
+		}
+		from, to, ok := streak.Window(settled, day)
+		if !ok {
+			return nil
+		}
+		history, err := streakHistory(ctx, q, userID, dates.ToYMD(from), dates.ToYMD(to))
+		if err != nil {
+			return err
+		}
+		next := streak.SettleRange(streak.State{Streak: int(row.Streak), Best: int(row.Best), Hearts: int(row.Hearts)}, from, to, history)
+		return q.SaveStreak(ctx, queries.SaveStreakParams{
+			Streak: int32(next.Streak), Best: int32(next.Best), Hearts: int32(next.Hearts), // #nosec G115 -- day counts
+			SettledThrough: dates.ToYMD(to), UserID: userID,
+		})
 	})
+}
+
+// streakHistory reads what settling from..to needs: trained dates, routine
+// schedules, and every active plan's slots.
+func streakHistory(ctx context.Context, q *queries.Queries, userID uuid.UUID, from, to string) (streak.History, error) {
+	trained, err := q.TrainedDates(ctx, queries.TrainedDatesParams{UserID: &userID, FromDate: from, ToDate: to})
+	if err != nil {
+		return streak.History{}, fmt.Errorf("trained dates: %w", err)
+	}
+	schedules, err := q.StreakSchedules(ctx, &userID)
+	if err != nil {
+		return streak.History{}, fmt.Errorf("schedules: %w", err)
+	}
+	slots, err := q.ActivePlanSlots(ctx, userID)
+	if err != nil {
+		return streak.History{}, fmt.Errorf("plan slots: %w", err)
+	}
+	h := streak.History{Trained: make(map[string]bool, len(trained))}
+	for _, d := range trained {
+		h.Trained[d] = true
+	}
+	for _, s := range schedules {
+		h.Schedules = append(h.Schedules, streak.Schedule{DayOfWeek: int(s.DayOfWeek), StartsOn: ymdOrEmpty(s.StartsOn), EndsOn: ymdOrEmpty(s.EndsOn)})
+	}
+	index := map[uuid.UUID]int{} // plan id → position in h.Plans
+	for _, s := range slots {
+		i, seen := index[s.ID]
+		if !seen {
+			i = len(h.Plans)
+			index[s.ID] = i
+			h.Plans = append(h.Plans, streak.Plan{CreatedAt: s.CreatedAt, WeeksTotal: int(s.WeeksTotal), Slots: map[streak.Slot]bool{}})
+		}
+		h.Plans[i].Slots[streak.Slot{Week: int(s.Week), DayOfWeek: int(s.DayOfWeek)}] = true
+	}
+	return h, nil
+}
+
+// ymdOrEmpty is a nullable date as YYYY-MM-DD, "" when NULL.
+func ymdOrEmpty(d pgtype.Date) string {
+	if s := ymd(d); s != nil {
+		return *s
+	}
+	return ""
 }
 
 // Stats reads the profile's counters.

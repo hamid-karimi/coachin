@@ -13,6 +13,48 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const activePlanSlots = `-- name: ActivePlanSlots :many
+SELECT tp.id, tp.created_at, tp.weeks_total, pi.week, pi.day_of_week::int AS day_of_week
+FROM public.training_plans tp
+JOIN public.plan_items pi ON pi.plan_id = tp.id
+WHERE tp.user_id = $1 AND tp.status = 'active' AND pi.item_type <> 'meal_note'
+`
+
+type ActivePlanSlotsRow struct {
+	ID         uuid.UUID `json:"id"`
+	CreatedAt  time.Time `json:"created_at"`
+	WeeksTotal int32     `json:"weeks_total"`
+	Week       int32     `json:"week"`
+	DayOfWeek  int32     `json:"day_of_week"`
+}
+
+// Every active plan's non-meal (week, weekday) slots, with the plan's start and length.
+func (q *Queries) ActivePlanSlots(ctx context.Context, userID uuid.UUID) ([]ActivePlanSlotsRow, error) {
+	rows, err := q.db.Query(ctx, activePlanSlots, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ActivePlanSlotsRow{}
+	for rows.Next() {
+		var i ActivePlanSlotsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.WeeksTotal,
+			&i.Week,
+			&i.DayOfWeek,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const addProfileXP = `-- name: AddProfileXP :one
 UPDATE public.profiles
 SET xp = GREATEST(COALESCE(xp, 0) + $1::int, 0),
@@ -366,19 +408,30 @@ func (q *Queries) RunningSport(ctx context.Context) (RunningSportRow, error) {
 	return i, err
 }
 
-const settleStreak = `-- name: SettleStreak :one
-
-SELECT public.evaluate_user_streak()::text AS result
+const saveStreak = `-- name: SaveStreak :exec
+UPDATE public.profiles
+SET current_streak = $1::int, best_streak = $2::int, hearts = $3::int,
+    streak_evaluated_date = CAST($4::text AS date)
+WHERE id = $5
 `
 
-// Today: stats, today's sessions and plan items, workout logging.
-// Run with the coachin_app pool inside store.WithUser.
-// Settles every unevaluated past day (idempotent); FORMULAS.md §2.
-func (q *Queries) SettleStreak(ctx context.Context) (string, error) {
-	row := q.db.QueryRow(ctx, settleStreak)
-	var result string
-	err := row.Scan(&result)
-	return result, err
+type SaveStreakParams struct {
+	Streak         int32     `json:"streak"`
+	Best           int32     `json:"best"`
+	Hearts         int32     `json:"hearts"`
+	SettledThrough string    `json:"settled_through"`
+	UserID         uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) SaveStreak(ctx context.Context, arg SaveStreakParams) error {
+	_, err := q.db.Exec(ctx, saveStreak,
+		arg.Streak,
+		arg.Best,
+		arg.Hearts,
+		arg.SettledThrough,
+		arg.UserID,
+	)
+	return err
 }
 
 const sportMultiplier = `-- name: SportMultiplier :one
@@ -390,6 +443,65 @@ func (q *Queries) SportMultiplier(ctx context.Context, id int64) (*float32, erro
 	var xp_multiplier *float32
 	err := row.Scan(&xp_multiplier)
 	return xp_multiplier, err
+}
+
+const streakSchedules = `-- name: StreakSchedules :many
+SELECT day_of_week::int AS day_of_week, starts_on, ends_on FROM public.schedules WHERE user_id = $1
+`
+
+type StreakSchedulesRow struct {
+	DayOfWeek int32       `json:"day_of_week"`
+	StartsOn  pgtype.Date `json:"starts_on"`
+	EndsOn    pgtype.Date `json:"ends_on"`
+}
+
+func (q *Queries) StreakSchedules(ctx context.Context, userID *uuid.UUID) ([]StreakSchedulesRow, error) {
+	rows, err := q.db.Query(ctx, streakSchedules, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []StreakSchedulesRow{}
+	for rows.Next() {
+		var i StreakSchedulesRow
+		if err := rows.Scan(&i.DayOfWeek, &i.StartsOn, &i.EndsOn); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const streakState = `-- name: StreakState :one
+
+SELECT COALESCE(current_streak, 0)::int AS streak, COALESCE(best_streak, 0)::int AS best,
+       COALESCE(hearts, 3)::int AS hearts, streak_evaluated_date AS settled_through
+FROM public.profiles WHERE id = $1
+`
+
+type StreakStateRow struct {
+	Streak         int32       `json:"streak"`
+	Best           int32       `json:"best"`
+	Hearts         int32       `json:"hearts"`
+	SettledThrough pgtype.Date `json:"settled_through"`
+}
+
+// Today: stats, today's sessions and plan items, workout logging.
+// Run with the coachin_app pool inside store.WithUser.
+// Read after LockProfile, so concurrent settles run one at a time.
+func (q *Queries) StreakState(ctx context.Context, userID uuid.UUID) (StreakStateRow, error) {
+	row := q.db.QueryRow(ctx, streakState, userID)
+	var i StreakStateRow
+	err := row.Scan(
+		&i.Streak,
+		&i.Best,
+		&i.Hearts,
+		&i.SettledThrough,
+	)
+	return i, err
 }
 
 const todayProfile = `-- name: TodayProfile :one
@@ -419,4 +531,37 @@ func (q *Queries) TodayProfile(ctx context.Context, userID uuid.UUID) (TodayProf
 		&i.LeagueTier,
 	)
 	return i, err
+}
+
+const trainedDates = `-- name: TrainedDates :many
+SELECT DISTINCT date::text AS on_date FROM public.logs
+WHERE user_id = $1 AND status = 'completed'
+  AND date BETWEEN CAST($2::text AS date) AND CAST($3::text AS date)
+`
+
+type TrainedDatesParams struct {
+	UserID   *uuid.UUID `json:"user_id"`
+	FromDate string     `json:"from_date"`
+	ToDate   string     `json:"to_date"`
+}
+
+// Dates with a completed log of any discipline.
+func (q *Queries) TrainedDates(ctx context.Context, arg TrainedDatesParams) ([]string, error) {
+	rows, err := q.db.Query(ctx, trainedDates, arg.UserID, arg.FromDate, arg.ToDate)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []string{}
+	for rows.Next() {
+		var on_date string
+		if err := rows.Scan(&on_date); err != nil {
+			return nil, err
+		}
+		items = append(items, on_date)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

@@ -1,9 +1,33 @@
 -- Today: stats, today's sessions and plan items, workout logging.
 -- Run with the coachin_app pool inside store.WithUser.
 
--- name: SettleStreak :one
--- Settles every unevaluated past day (idempotent); FORMULAS.md §2.
-SELECT public.evaluate_user_streak()::text AS result;
+-- name: StreakState :one
+-- Read after LockProfile, so concurrent settles run one at a time.
+SELECT COALESCE(current_streak, 0)::int AS streak, COALESCE(best_streak, 0)::int AS best,
+       COALESCE(hearts, 3)::int AS hearts, streak_evaluated_date AS settled_through
+FROM public.profiles WHERE id = sqlc.arg(user_id);
+
+-- name: TrainedDates :many
+-- Dates with a completed log of any discipline.
+SELECT DISTINCT date::text AS on_date FROM public.logs
+WHERE user_id = sqlc.arg(user_id) AND status = 'completed'
+  AND date BETWEEN CAST(sqlc.arg(from_date)::text AS date) AND CAST(sqlc.arg(to_date)::text AS date);
+
+-- name: StreakSchedules :many
+SELECT day_of_week::int AS day_of_week, starts_on, ends_on FROM public.schedules WHERE user_id = sqlc.arg(user_id);
+
+-- name: ActivePlanSlots :many
+-- Every active plan's non-meal (week, weekday) slots, with the plan's start and length.
+SELECT tp.id, tp.created_at, tp.weeks_total, pi.week, pi.day_of_week::int AS day_of_week
+FROM public.training_plans tp
+JOIN public.plan_items pi ON pi.plan_id = tp.id
+WHERE tp.user_id = sqlc.arg(user_id) AND tp.status = 'active' AND pi.item_type <> 'meal_note';
+
+-- name: SaveStreak :exec
+UPDATE public.profiles
+SET current_streak = sqlc.arg(streak)::int, best_streak = sqlc.arg(best)::int, hearts = sqlc.arg(hearts)::int,
+    streak_evaluated_date = CAST(sqlc.arg(settled_through)::text AS date)
+WHERE id = sqlc.arg(user_id);
 
 -- name: TodayProfile :one
 SELECT COALESCE(xp, 0)::bigint AS xp, COALESCE(current_streak, 0)::int AS current_streak,

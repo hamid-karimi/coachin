@@ -261,6 +261,11 @@ Order (dependencies first, risk front-loaded):
         (passed in as `appnutrition.MealRules`), `goals.AchievedXP`;
         `NutritionStore.LogMeals` and `ProfileStore.AddMeasurement` write the ledger —
         `award_meal_xp`, `award_day_adherence`, `achieve_goal` are no longer called.
+  - [x] 4.2c Streak settle: `streak.Window` / `History.Required` / `SettleRange`;
+        `TodayStore.SettleStreak(today)` reads the range's trained dates, schedules and
+        active-plan slots once, under the profile lock — `evaluate_user_streak` is no
+        longer called. `TestStreakSettleMatchesSQL` (3 seeded histories, SQL vs Go, 8
+        parallel settles).
 - [ ] 4.3 Migration dropping retired functions (keep `sync_league_tier` and photo-cap
       triggers).
 - [ ] 4.4 FORMULAS.md: Go files are the only source of truth.
