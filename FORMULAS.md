@@ -3,15 +3,18 @@
 Single source of truth for every formula, constant, and decision rule in the app.
 
 **How this file works:** edit the math here, then ask an AI (or yourself) to update the
-code to match. Each section lists its **source of truth** file(s) — the code that must
-stay in sync. When you change a number here, change it there. When you change it there,
-change it here. They must never disagree.
+code to match. Each section names its **Go** code — the only source of truth since Phase
+4.4 — that must stay in sync. When you change a number here, change it there. When you
+change it there, change it here. They must never disagree.
 
-> **Go rewrite in progress:** the `legacy/…` paths below are today's implementation and the
-> reference for the port. Go paths (`apps/api/internal/domain/…`) are added next to them as
-> each section is ported, and become the only source of truth in Phase 4. Each Go port
-> replays golden vectors produced by the legacy code (`make golden` → `testdata/golden/`),
-> so a formula change must land in both until the legacy copy is deleted.
+> **Golden vectors** (`testdata/golden/*.json`) pin the formulas for both the Go tests and
+> the web copies that need them offline (`apps/web/lib/running.ts`, `workout-sets.ts`,
+> `food-units.ts`). A formula change edits the Go code, its vectors, and this file in one
+> change. The vectors were first generated from the legacy TypeScript (`make golden`);
+> that snapshot is history now — CI no longer regenerates from `legacy/`.
+>
+> **Legacy origin** lines point at the code each section was ported from — read-only
+> reference until `legacy/` is deleted at cutover.
 
 > Values in **bold** are tunable knobs — safe to change. Formulas are the shape of the
 > calculation — changing them is a behavior change, not just a tune.
@@ -20,7 +23,7 @@ change it here. They must never disagree.
 
 ## 1. XP & Levels
 
-**Source of truth:** `legacy/lib/xp.ts`, and every `award_*` RPC in `legacy/supabase/migrations/`.
+**Legacy origin:** `legacy/lib/xp.ts`, and every `award_*` RPC in `legacy/supabase/migrations/`.
 **Go:** `apps/api/internal/domain/xp` (`LevelProgress`, `Level`).
 
 ### Level from total XP
@@ -90,7 +93,7 @@ level = floor(totalXp / 1000) + 1
 **Go:** `apps/api/internal/domain/streak` (`Next`; `Window`, `History.Required`,
 `SettleRange` for the lazy settle, run by `store.TodayStore.SettleStreak` under the profile
 lock — `TestStreakSettleMatchesSQL` checks it against the legacy SQL function).
-**Source of truth:** `legacy/lib/streak.ts` (`nextStreakState`, unit-tested in `legacy/lib/streak.test.ts`),
+**Legacy origin:** `legacy/lib/streak.ts` (`nextStreakState`, unit-tested in `legacy/lib/streak.test.ts`),
 mirrored by `evaluate_user_streak` (latest:
 `legacy/supabase/migrations/20260706150000_streak_multi_plan.sql`, superseding the original in
 `20260706110000_streak_and_league.sql`).
@@ -129,7 +132,7 @@ Per settled day, given whether the user **trained** and whether it was a **requi
 ### Group streak
 **Go:** `evaluate_group_days` (SQL, `apps/api/db/migrations/00008_group_days_from_second_member.sql`),
 run for each of the caller's groups by `GET /community/groups` (`internal/app/community/groups.go`).
-**Source of truth:** `evaluate_group_streak` in `legacy/supabase/migrations/20260705140000_training_groups.sql`.
+**Legacy origin:** `evaluate_group_streak` in `legacy/supabase/migrations/20260705140000_training_groups.sql`.
 
 - Days settle once they are over: from the day after the last evaluated day (a new group:
   the day it got its **2nd member**) through **yesterday**. Groups with fewer than
@@ -152,7 +155,7 @@ run for each of the caller's groups by `GET /community/groups` (`internal/app/co
 ## 3. Leagues / Tiers
 
 **Go:** `apps/api/internal/domain/tiers` (`FromXP`, `MinXP`, `FromLeague`).
-**Source of truth:** `legacy/lib/tiers.ts` (`leagueTierFromXp` + `LEAGUE_TIER_MIN_XP`, unit-tested),
+**Legacy origin:** `legacy/lib/tiers.ts` (`leagueTierFromXp` + `LEAGUE_TIER_MIN_XP`, unit-tested),
 mirrored by `league_tier_for_xp` in `legacy/supabase/migrations/20260706110000_streak_and_league.sql`.
 
 - Tiers, low→high: `bronze → silver → gold → platinum`.
@@ -174,7 +177,7 @@ mirrored by `league_tier_for_xp` in `legacy/supabase/migrations/20260706110000_s
 
 ## 4. Running math
 
-**Source of truth:** `legacy/lib/running.ts`.
+**Legacy origin:** `legacy/lib/running.ts`.
 **Go:** `apps/api/internal/domain/running`.
 
 ### Riegel race-time prediction
@@ -204,7 +207,8 @@ t2 = t1 × (d2 / d1) ^ 1.06
 
 ## 5. Race-plan intake gates
 
-**Source of truth:** `generatePlanAction` in `legacy/app/training/actions.ts`.
+**Go:** `apps/api/internal/app/training/generation.go` (the race wizard's validation).
+**Legacy origin:** `generatePlanAction` in `legacy/app/training/actions.ts`.
 
 - Race distance must be **1–500 km**.
 - Race date must be **≥ 4 weeks** away (`weeksUntil = floor(days / 7)`), else rejected.
@@ -217,7 +221,7 @@ t2 = t1 × (d2 / d1) ^ 1.06
 
 ## 6. Goal progress
 
-**Source of truth:** `legacy/lib/goals.ts` (`goalProgress`).
+**Legacy origin:** `legacy/lib/goals.ts` (`goalProgress`).
 **Go:** `apps/api/internal/domain/goals` (`ProgressOf`, `TypeMeta`).
 
 - **Direction:** `down` when a usable `start` exists and `target < start` (e.g. weight
@@ -255,7 +259,7 @@ measurement's transaction.
 
 ## 7. Weekly scorecard & check-in decision
 
-**Source of truth:** `legacy/lib/scorecard.ts`.
+**Legacy origin:** `legacy/lib/scorecard.ts`.
 **Go:** `apps/api/internal/domain/scorecard` (`ComputeWeek`, `Decide`, `StalledLifts`).
 
 ### Scorecard
@@ -284,7 +288,9 @@ measurement's transaction.
 
 ## 8. Nutrition
 
-**Source of truth:** `legacy/supabase/migrations/20260705120000_nutrition.sql`.
+**Go:** `apps/api/internal/domain/nutrition/xp.go` (`MealAward`, `CalorieDayXP`), applied by
+`store.NutritionStore.LogMeals`.
+**Legacy origin:** `legacy/supabase/migrations/20260705120000_nutrition.sql`.
 
 - **Meal log XP = 5**, capped at **3 awarded meals/day** (§1).
 - **Calorie-goal bonus = 30 XP/day**, awarded when a *past* day's intake is **within ±10%**
@@ -297,7 +303,7 @@ measurement's transaction.
 
 ## 9. Plan weeks & calendar dates
 
-**Source of truth:** `legacy/lib/dates.ts` (unit-tested in `legacy/lib/dates.test.ts`).
+**Legacy origin:** `legacy/lib/dates.ts` (unit-tested in `legacy/lib/dates.test.ts`).
 **Go:** `apps/api/internal/domain/dates` (takes `now` explicitly).
 
 - **Week 1** = the Monday-anchored week containing the plan's `created_at`. Weeks are
@@ -319,7 +325,7 @@ measurement's transaction.
 
 **Go:** `apps/api/internal/domain/nutrition` (`ComputeTargets`, `CanComputeTargets`);
 consumed by `apps/api/internal/app/nutrition/plan.go` (`Plans.Generate`).
-**Source of truth:** `legacy/lib/nutrition-targets.ts` (unit-tested in
+**Legacy origin:** `legacy/lib/nutrition-targets.ts` (unit-tested in
 `legacy/lib/nutrition-targets.test.ts`). The AI meal-plan generator consumes these
 targets; it never computes them itself.
 
@@ -344,7 +350,7 @@ targets; it never computes them itself.
 ## 11. Weekly quotas
 
 **Go:** `apps/api/internal/domain/quotas` (`ProgressOf`).
-**Source of truth:** `legacy/lib/weekly-quotas.ts` (`quotaProgress`, unit-tested in
+**Legacy origin:** `legacy/lib/weekly-quotas.ts` (`quotaProgress`, unit-tested in
 `legacy/lib/weekly-quotas.test.ts`). Stored in `weekly_quotas` (one row per user × sport,
 `sessions_per_week` 1–14).
 
@@ -364,7 +370,7 @@ targets; it never computes them itself.
 ## 12. Strength session volume (celebration stat)
 
 **Go:** `apps/api/internal/domain/workout` (`TotalVolumeKg`, `VolumeEquivalence`, `ParsePrescription`, `NormalizeLoggedExercises`).
-**Source of truth:** `legacy/lib/workout-sets.ts` (`totalVolumeKg`, `volumeEquivalence`,
+**Legacy origin:** `legacy/lib/workout-sets.ts` (`totalVolumeKg`, `volumeEquivalence`,
 `parsePrescription`, `normalizeLoggedExercises` — unit-tested in
 `legacy/lib/workout-sets.test.ts`). Logged per set in `session_logs.actual.exercises`
 as `[{name, sets: [{weight_kg, reps}]}]` (legacy flat rows
@@ -388,7 +394,7 @@ as `[{name, sets: [{weight_kg, reps}]}]` (legacy flat rows
 `Normalize`, `Window` — the coach view's 7-day training-day window); due-today per stack
 entry in `apps/api/internal/app/today`, mutations in `apps/api/internal/app/supplements`,
 the coach's read-only rate in `apps/api/internal/app/coaching` (`TraineeNutrition`).
-**Source of truth:** `supplements` + `supplement_logs` tables
+**Legacy origin:** `supplements` + `supplement_logs` tables
 (`20260708090000_supplements.sql`, schedules in
 `20260709120000_supplement_schedules.sql`, coach read in
 `20260709130000_supplements_coach_read.sql`), dashboard card
@@ -422,7 +428,7 @@ the coach's read-only rate in `apps/api/internal/app/coaching` (`TraineeNutritio
 ### Meal adherence (calendar, informational)
 
 **Go:** `apps/api/internal/domain/nutrition` (`AdherenceForDay`; also `ToGrams`, `SummarizePeriod`, `BuildGroceryList`).
-**Source of truth:** `legacy/lib/meal-adherence.ts` (`mealAdherenceForDay`, unit-tested),
+**Legacy origin:** `legacy/lib/meal-adherence.ts` (`mealAdherenceForDay`, unit-tested),
 consumed by `apps/api/internal/app/calendar` (`Day.Meals`) and the web's
 `app/(app)/calendar/components/day-meals-line.tsx`.
 
@@ -442,7 +448,7 @@ consumed by `apps/api/internal/app/calendar` (`Day.Meals`) and the web's
 
 **Go:** `apps/api/internal/domain/activity` (`Sanitize`, `SplitImportable`), applied by
 `app/activities.Importer` (`POST /activities/import`).
-**Source of truth:** `legacy/lib/activity-import.ts` (`sanitizeActivities`,
+**Legacy origin:** `legacy/lib/activity-import.ts` (`sanitizeActivities`,
 `splitImportableActivities`, unit-tested), `importActivitiesAction`
 (`legacy/app/profile/actions.ts`), parser `legacy/lib/activity-parse.ts`.
 
@@ -472,7 +478,7 @@ consumed by `apps/api/internal/app/calendar` (`Day.Meals`) and the web's
 ## 15. Progress charts & photo nudge
 
 **Go:** `apps/api/internal/domain/progress` (`WeeklyVolume`, `WeeklyKm`, `ExerciseTopSets`, `WeightSeries`, `IsPhotoDue`).
-**Source of truth:** `legacy/lib/progress-charts.ts` (`weeklyVolume`, `weeklyKm`,
+**Legacy origin:** `legacy/lib/progress-charts.ts` (`weeklyVolume`, `weeklyKm`,
 `exerciseTopSets`, `weightSeries`) and `legacy/lib/progress-photo-nudge.ts`
 (`isProgressPhotoDue`) — both unit-tested. Rendered on Profile → Progress;
 the nudge renders on the dashboard.

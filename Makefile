@@ -45,7 +45,7 @@ gen: ## Regenerate sqlc queries, openapi/openapi.json, and the web app's typed A
 	cd apps/api && go run ./cmd/api openapi > ../../openapi/openapi.json
 	cd apps/web && pnpm gen:api
 
-golden: ## Regenerate testdata/golden from the legacy TypeScript formulas (Node 22+)
+golden: ## History: snapshot testdata/golden from the legacy TypeScript (overwrites the Go-owned vectors — Phase 4.4)
 	TZ=UTC node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/golden/register.mjs scripts/golden/generate.ts
 
 golden-activity: ## Rebuild the watch-file fixtures + vectors (GOLDEN_DEPS=dir with @garmin/fitsdk@21 fast-xml-parser@5 installed)
