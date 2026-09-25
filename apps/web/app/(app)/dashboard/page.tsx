@@ -4,6 +4,7 @@ import { CalendarRange, UtensilsCrossed } from "lucide-react";
 import { getMe } from "@/app/lib/me-data";
 import { prefetchQueries } from "@/app/lib/prefetch";
 import { EntryCard } from "./components/entry-card";
+import { GoalStrip } from "./components/goal-strip";
 import { PlanAndTargets } from "./components/plan-and-targets";
 import { ProgressOverview } from "./components/progress-overview";
 import { ProgressPhotoNudge } from "./components/progress-photo-nudge";
@@ -17,7 +18,10 @@ export const metadata: Metadata = { title: "Today · CoachIn" };
 export default async function DashboardPage() {
   const [me, state] = await Promise.all([
     getMe(),
-    prefetchQueries((api, qc) => [qc.prefetchQuery(api.queryOptions("get", "/today"))]),
+    prefetchQueries((api, qc) => [
+      qc.prefetchQuery(api.queryOptions("get", "/today")),
+      qc.prefetchQuery(api.queryOptions("get", "/goals")),
+    ]),
   ]);
   return (
     <HydrationBoundary state={state}>
@@ -41,6 +45,7 @@ export default async function DashboardPage() {
         <TodaysMealsCard />
         <ProgressPhotoNudge />
         <SupplementsCard />
+        <GoalStrip />
         <TodaysPlan />
       </div>
     </HydrationBoundary>

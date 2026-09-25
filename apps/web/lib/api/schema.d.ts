@@ -197,6 +197,44 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/goals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Active goals with progress and the 3 most recently achieved */
+        get: operations["listGoals"];
+        put?: never;
+        /**
+         * Set a goal (one active per type)
+         * @description Weight and body-fat goals start from the latest reading, so direction (lose vs gain) is fixed from day one.
+         */
+        post: operations["createGoal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/goals/{id}/abandon": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Stop tracking an active goal (no XP) */
+        post: operations["abandonGoal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/healthz": {
         parameters: {
             query?: never;
@@ -223,6 +261,75 @@ export interface paths {
         };
         /** The signed-in user */
         get: operations["me"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me/body": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The body profile, measurement snapshot, and nutrition sharing */
+        get: operations["getBodyProfile"];
+        /** Save the body profile (birth date, sex, height, training history, country) */
+        put: operations["updateBodyProfile"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me/nutrition-sharing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Let the active coach see meal logs and the meal plan (or revoke it) */
+        put: operations["setNutritionSharing"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Profile overview: join date, workout count, recent XP */
+        get: operations["getProfileOverview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me/progress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Progress charts and recent measurements */
+        get: operations["getProfileProgress"];
         put?: never;
         post?: never;
         delete?: never;
@@ -303,6 +410,43 @@ export interface paths {
         post?: never;
         /** Remove a meal (its meal XP is given back) */
         delete: operations["deleteMeal"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/measurements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Log weight and/or body fat
+         * @description Refreshes the profile snapshot and settles weight / body-fat goals (+200 XP each) in one transaction.
+         */
+        post: operations["addMeasurement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/measurements/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a measurement */
+        delete: operations["deleteMeasurement"];
         options?: never;
         head?: never;
         patch?: never;
@@ -748,6 +892,25 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        ActiveGoalBody: {
+            /** Format: date-time */
+            achievedAt: string | null;
+            /**
+             * Format: double
+             * @description Null while the metric isn't tracked yet
+             */
+            current: number | null;
+            /** @enum {string} */
+            goalType: "weight" | "body_fat_pct" | "calorie_intake" | "calories_burned" | "weekly_run_km" | "monthly_run_km";
+            id: string;
+            progress?: components["schemas"]["GoalProgressBody"];
+            /** Format: double */
+            start: number | null;
+            /** Format: double */
+            target: number;
+            /** Format: date */
+            targetDate: string | null;
+        };
         ActivitiesParsedBody: {
             activities: components["schemas"]["ActivitySummaryBody"][];
             message: string;
@@ -791,6 +954,28 @@ export interface components {
              * @enum {string}
              */
             scheduleType: "daily" | "training_days" | "custom";
+        };
+        BodyProfileBody: {
+            /** Format: date */
+            birthDate: string | null;
+            /**
+             * Format: double
+             * @description Snapshot of the latest body-fat measurement
+             */
+            bodyFatPct: number | null;
+            country: string | null;
+            /** Format: double */
+            heightCm: number | null;
+            /** @description The active coach may read meal logs and the meal plan */
+            nutritionSharing: boolean;
+            /** @enum {string|null} */
+            sex: "male" | "female" | "other" | null;
+            trainingHistory: string | null;
+            /**
+             * Format: double
+             * @description Snapshot of the latest weight measurement
+             */
+            weightKg: number | null;
         };
         CalendarBody: {
             days: components["schemas"]["CalendarDayBody"][];
@@ -838,6 +1023,11 @@ export interface components {
             currentPassword: string;
             password: string;
         };
+        ChartPoint: {
+            label: string;
+            /** Format: double */
+            value: number;
+        };
         CheckinConfirmedBody: {
             /** Format: int64 */
             awardedXp: number;
@@ -878,6 +1068,13 @@ export interface components {
             items: components["schemas"]["ReviewedItemBody"][];
             /** @enum {string} */
             mealType: "breakfast" | "lunch" | "dinner" | "snack";
+        };
+        CreateGoalInputBody: {
+            goalType: string;
+            /** Format: double */
+            target: number;
+            /** @description YYYY-MM-DD */
+            targetDate?: string;
         };
         DayMealsBody: {
             /** @description Today and past days only */
@@ -947,6 +1144,10 @@ export interface components {
             /** Format: double */
             sugarG: number;
         };
+        ExerciseTrend: {
+            name: string;
+            points: components["schemas"]["ChartPoint"][];
+        };
         Features: {
             community: boolean;
         };
@@ -959,6 +1160,32 @@ export interface components {
         };
         ForgotInputBody: {
             email: string;
+        };
+        GoalBody: {
+            /** Format: date-time */
+            achievedAt: string | null;
+            /** @enum {string} */
+            goalType: "weight" | "body_fat_pct" | "calorie_intake" | "calories_burned" | "weekly_run_km" | "monthly_run_km";
+            id: string;
+            /** Format: double */
+            start: number | null;
+            /** Format: double */
+            target: number;
+            /** Format: date */
+            targetDate: string | null;
+        };
+        GoalProgressBody: {
+            achieved: boolean;
+            /** @enum {string} */
+            direction: "up" | "down";
+            /** Format: double */
+            pct: number;
+        };
+        GoalsBody: {
+            /** @description The 3 most recent */
+            achieved: components["schemas"]["GoalBody"][];
+            /** @description Newest first */
+            active: components["schemas"]["ActiveGoalBody"][];
         };
         GroceryLineBody: {
             /** Format: int64 */
@@ -1126,6 +1353,34 @@ export interface components {
             /** @description Absent without an active plan */
             plan?: components["schemas"]["MealPlanBody"];
         };
+        MeasurementBody: {
+            /** Format: double */
+            bodyFatPct: number | null;
+            id: string;
+            /** Format: date */
+            measuredAt: string;
+            /** Format: double */
+            weightKg: number | null;
+        };
+        MeasurementInputBody: {
+            /**
+             * Format: double
+             * @description 3–60
+             */
+            bodyFatPct?: number;
+            /**
+             * Format: double
+             * @description 30–300
+             */
+            weightKg?: number;
+        };
+        MeasurementLoggedBody: {
+            /** @description Goals this reading achieved (+200 XP each), e.g. "Weight 70kg" */
+            achievedGoals: string[];
+            message: string;
+            /** @enum {string} */
+            status: "success" | "info";
+        };
         MenuMealBody: {
             id: string;
             /** Format: double */
@@ -1221,6 +1476,29 @@ export interface components {
             recipe: string;
             title: string;
             videoQuery: string;
+        };
+        ProfileOverviewBody: {
+            avatarUrl: string | null;
+            /** Format: date-time */
+            joinedAt: string;
+            /** @description The 5 newest ledger rows */
+            recentXp: components["schemas"]["XPEntryBody"][];
+            /**
+             * Format: int64
+             * @description Completed workout logs
+             */
+            workoutCount: number;
+        };
+        ProfileProgressBody: {
+            measurements: components["schemas"]["MeasurementBody"][];
+            /** @description Heaviest set per day for up to 3 exercises logged on 3+ days */
+            topSets: components["schemas"]["ExerciseTrend"][];
+            /** @description 8 weeks of running distance */
+            weeklyKm: components["schemas"]["ChartPoint"][];
+            /** @description 8 weeks of strength volume (kg), oldest first */
+            weeklyVolume: components["schemas"]["ChartPoint"][];
+            /** @description Body weight from the measurements shown */
+            weight: components["schemas"]["ChartPoint"][];
         };
         ProgramBody: {
             checkinDue: boolean;
@@ -1415,6 +1693,9 @@ export interface components {
              */
             totalVolumeKg: number;
         };
+        SharingInputBody: {
+            enabled: boolean;
+        };
         SportTypeBody: {
             /** Format: int64 */
             id: number;
@@ -1561,6 +1842,19 @@ export interface components {
             name: string;
             per100g: components["schemas"]["NutrientsBody"];
         };
+        UpdateBodyInputBody: {
+            /** @description YYYY-MM-DD; blank clears */
+            birthDate?: string;
+            country?: string;
+            /**
+             * Format: double
+             * @description 100–250; absent clears
+             */
+            heightCm?: number;
+            /** @description male, female, other; blank clears */
+            sex?: string;
+            trainingHistory?: string;
+        };
         WorkoutLoggedBody: {
             /** Format: int64 */
             earnedXp: number;
@@ -1571,6 +1865,15 @@ export interface components {
             status: "success" | "info";
             /** Format: int64 */
             totalXp: number;
+        };
+        XPEntryBody: {
+            /** Format: int64 */
+            amount: number;
+            /** Format: date-time */
+            createdAt: string;
+            id: string;
+            /** @description e.g. "Running workout", "Streak bonus" */
+            label: string;
         };
     };
     responses: never;
@@ -2237,6 +2540,171 @@ export interface operations {
             };
         };
     };
+    listGoals: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoalsBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    createGoal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateGoalInputBody"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    abandonGoal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
     healthz: {
         parameters: {
             query?: never;
@@ -2282,6 +2750,231 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MeBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getBodyProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BodyProfileBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    updateBodyProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateBodyInputBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    setNutritionSharing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SharingInputBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getProfileOverview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileOverviewBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getProfileProgress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileProgressBody"];
                 };
             };
             /** @description Unauthorized */
@@ -2564,6 +3257,124 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    addMeasurement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MeasurementInputBody"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeasurementLoggedBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    deleteMeasurement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultBody"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+            /** @description Not Found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

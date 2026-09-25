@@ -18,6 +18,7 @@ import (
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/auth"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/calendar"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/nutrition"
+	"github.com/hamid-karimi/coachin/apps/api/internal/app/profile"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/routine"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/supplements"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/today"
@@ -90,6 +91,7 @@ func serve(ctx context.Context, _ []string, _ *slog.Logger) error {
 		Calendar:         calendar.NewService(store.NewCalendarStore(pool), nil),
 		Nutrition:        nutrition.NewService(store.NewNutritionStore(pool), usda.New(cfg.USDAAPIKey, ""), generator, nil),
 		MealPlan:         nutrition.NewPlans(store.NewNutritionStore(pool), generator, nil),
+		Profile:          profile.NewService(store.NewProfileStore(pool), nil),
 		Cookies:          httpapi.CookieSettings{Secure: cfg.CookieSecure},
 		CommunityEnabled: cfg.CommunityEnabled,
 	})

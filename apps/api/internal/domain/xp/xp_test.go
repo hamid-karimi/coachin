@@ -57,3 +57,26 @@ func TestEstimatedWeeklyXP(t *testing.T) {
 		}
 	}
 }
+
+func TestReasonLabel(t *testing.T) {
+	sports := map[int64]string{1: "Running"}
+	str := func(s string) *string { return &s }
+	cases := []struct {
+		reason *string
+		want   string
+	}{
+		{nil, "XP earned"},
+		{str(""), "XP earned"},
+		{str("workout_log:1"), "Running workout"},
+		{str("workout_log:9"), "Workout logged"},
+		{str("workout_log:1a"), "workout log"},
+		{str("streak_bonus:7"), "Streak bonus"},
+		{str("goal_achieved:abc"), "goal achieved"},
+		{str("plan_item_done"), "plan item done"},
+	}
+	for _, c := range cases {
+		if got := ReasonLabel(c.reason, sports); got != c.want {
+			t.Errorf("ReasonLabel(%v) = %q, want %q", c.reason, got, c.want)
+		}
+	}
+}

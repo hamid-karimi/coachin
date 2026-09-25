@@ -85,3 +85,36 @@ func ProgressOf(start *float64, target float64, current *float64) (progress Prog
 	}
 	return Progress{Pct: max(0, min(100, pct)), Direction: direction, Achieved: achieved}, true
 }
+
+// Settlement is what a new measurement does to an active goal.
+type Settlement int
+
+// Settlements.
+const (
+	// Keep leaves the goal as it is.
+	Keep Settlement = iota
+	// SetBaseline records the reading as the goal's start: a goal without a
+	// start can't tell "lose to 70" from "gain to 70", so it never pays out
+	// on its first reading.
+	SetBaseline
+	// Achieve settles the goal (+200 XP).
+	Achieve
+)
+
+// Settle decides what a reading does to an active goal.
+func Settle(start *float64, target float64, reading *float64) Settlement {
+	if reading == nil || !jsnum.IsFinite(*reading) {
+		return Keep
+	}
+	if start == nil {
+		return SetBaseline
+	}
+	if progress, ok := ProgressOf(start, target, reading); ok && progress.Achieved {
+		return Achieve
+	}
+	return Keep
+}
+
+// FromMeasurement reports whether a goal type's current value is a body
+// measurement (weight, body fat).
+func FromMeasurement(t Type) bool { return TypeMeta[t].Source == "measurement" }

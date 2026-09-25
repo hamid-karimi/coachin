@@ -191,6 +191,15 @@ Order (dependencies first, risk front-loaded):
 - [ ] 3.6 **Profile** — profile/measurements, goals, activity import, photos (Garage
       adapter, pure-Go re-encode, Gemini moderation, streamed `GET /photos/{id}`),
       analyze / extract, `?tab=` (L)
+  - [x] 3.6a Profile tabs (`?tab=`), `GET/PUT /me/body`, `PUT /me/nutrition-sharing`,
+        `GET /me/overview` (join date, workouts, recent XP labels), `GET /me/progress`
+        (charts from `domain/progress`, last 6 measurements), `POST/DELETE
+        /measurements` (snapshot + goal settlement in one tx; `goals.Settle` baseline
+        rule), `GET/POST /goals`, `POST /goals/{id}/abandon`; Today's goal strip;
+        `components/ui/native-select`.
+  - [ ] 3.6b Watch-data import (`POST /activities/import`, FORMULAS §14).
+  - [ ] 3.6c Photos: Garage adapter, re-encode, moderation, `GET /photos/{id}`,
+        body/progress photos, analyze / extract.
 - [ ] 3.7 **Coaching** — invite codes, join statuses, roster/adherence, consent-gated
       trainee nutrition/supplements, assign weekly plan, coach-mode plan generation (M)
 - [ ] 3.8 **Community** — clubs, follows, groups, leaderboard, discover; `404` while the

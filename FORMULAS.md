@@ -218,6 +218,21 @@ t2 = t1 × (d2 / d1) ^ 1.06
   ```
   clamped to 0–100.
 
+### Settling measurement goals (+200 XP)
+
+**Go:** `domain/goals.Settle`, applied by `app/profile.AddMeasurement` in the
+measurement's transaction.
+
+- A new **weight / body-fat** goal starts from the latest reading (newest non-null of the
+  last 10 measurements, else the profile snapshot), so its direction is known from day
+  one. Other goal types have no start.
+- Each new measurement, per active weight / body-fat goal: no reading for that metric →
+  unchanged; **no start** → the reading becomes the start (the baseline) and pays
+  nothing; otherwise **achieved** per the rule above → `achieve_goal` (status
+  `achieved`, `+200` XP, reason `goal_achieved:<id>`, once).
+- Legacy saved goals without a start, so a "lose to 70" goal read as "gain to 70" and
+  paid out on the first reading above 70; the baseline rule closes that.
+
 ---
 
 ## 7. Weekly scorecard & check-in decision

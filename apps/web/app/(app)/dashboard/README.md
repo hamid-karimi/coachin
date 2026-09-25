@@ -14,11 +14,15 @@ The daily execution surface: see today's plan, log it, watch XP and the streak m
 
 ## Structure
 
-- `page.tsx` — prefetches `/today` (+ `getMe` for the name) and hydrates; no logic
+- `page.tsx` — prefetches `/today` and `/goals` (+ `getMe` for the name) and hydrates; no
+  logic
 - `loading.tsx` — skeleton
 - `hooks/use-supplements.ts` — add / reschedule / remove / taken, each refetching Today
 - `lib/supplements.ts` — schedule options, Sunday-first weekday chips, `toggleDay`,
   `scheduleBody`, `dueChecklist` (unit-tested)
+- `components/goal-strip.tsx` — the tracked goal closest to done ("Weight goal · 74.6kg →
+  72kg" + bar) linking to the profile; hidden without one (`profile/lib/profile.ts`
+  `featuredGoal`)
 - `components/todays-meals-card.tsx` — "Today's meals" from the active meal plan
   (hidden without one), "Full meal plan" link, "N kcal planned · target X"
 - `hooks/use-today.ts` — `useToday` (suspense query), `useLogWorkout` (refetches Today and
@@ -49,8 +53,7 @@ the API's `workout-sets.json` golden vectors),
 
 ## Not yet ported (arrive with their modules)
 
-Featured goal strip
-(Profile), coaching card (Coaching), group-streak nudge (Community), the session "Share
+Coaching card (Coaching), group-streak nudge (Community), the session "Share
 it" card (share cards).
 
 ## Differences from legacy
