@@ -344,11 +344,13 @@ func (q *Queries) InsertSessionLog(ctx context.Context, arg InsertSessionLogPara
 
 const latestBodyAnalysis = `-- name: LatestBodyAnalysis :one
 SELECT analysis FROM public.body_photos
-WHERE user_id = $1 AND analysis IS NOT NULL
+WHERE user_id = $1 AND kind = 'body_photo' AND analysis IS NOT NULL
 ORDER BY analyzed_at DESC NULLS LAST
 LIMIT 1
 `
 
+// Body photos only: a report's extracted metrics are not a body analysis
+// (legacy read any kind, so a newer report hid the analysis from prompts).
 func (q *Queries) LatestBodyAnalysis(ctx context.Context, userID uuid.UUID) ([]byte, error) {
 	row := q.db.QueryRow(ctx, latestBodyAnalysis, userID)
 	var analysis []byte

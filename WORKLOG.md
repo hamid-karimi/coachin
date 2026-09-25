@@ -5,6 +5,20 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · Phase 3.6d — body analysis + report extraction (Profile done)
+
+**Done** (branch `claude/lucid-tesla-3737vk`, on top of #79 until it merges):
+`aigen.BodyAnalysisRequest`/`ParseBodyAnalysis`, `ReportRequest`/`ParseReportMetrics`;
+`app/photos` Library / Analyze / Extract; `POST /photos/analyze`,
+`POST /photos/{id}/extract`, `GET /photos` + `analysis`/`consented`; `LatestBodyAnalysis`
+now body photos only (legacy bug: a newer report hid the analysis from the plan prompts).
+Web: consent + analysis card, "Extract metrics" → "Save as measurement". e2e with the
+fake AI: consent refusal, analysis card, extraction prefill 74.2 / 16.5 → measurement.
+
+**Next steps**: 3.7 Coaching (invite codes, join, roster/adherence, consent-gated
+trainee nutrition/supplements, assign weekly plan, coach-mode generation; decide coach
+photo access), 3.8 Community, share cards, Phases 4–7.
+
 ## 2026-09-25 · #78 merged (3.6b) · Phase 3.6c — photos
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): `objectstore` Put/Get/Delete;

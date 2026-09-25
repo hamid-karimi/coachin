@@ -209,6 +209,42 @@
         ],
         "type": "object"
       },
+      "AnalyzeInputBody": {
+        "additionalProperties": false,
+        "properties": {
+          "consent": {
+            "description": "Must be true: the user agrees to AI analysis of their photos",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "consent"
+        ],
+        "type": "object"
+      },
+      "BodyAnalysisBody": {
+        "additionalProperties": false,
+        "properties": {
+          "buildNotes": {
+            "type": "string"
+          },
+          "postureNotes": {
+            "type": "string"
+          },
+          "trainingConsiderations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "buildNotes",
+          "postureNotes",
+          "trainingConsiderations"
+        ],
+        "type": "object"
+      },
       "BodyProfileBody": {
         "additionalProperties": false,
         "properties": {
@@ -1738,12 +1774,20 @@
       "PhotosBody": {
         "additionalProperties": false,
         "properties": {
+          "analysis": {
+            "$ref": "#/components/schemas/BodyAnalysisBody",
+            "description": "On the newest analyzed body photo; fed to the plan prompts"
+          },
           "bodyPhotos": {
             "description": "The AI analysis set (max 5)",
             "items": {
               "$ref": "#/components/schemas/PhotoBody"
             },
             "type": "array"
+          },
+          "consented": {
+            "description": "AI photo analysis consent was given",
+            "type": "boolean"
           },
           "progress": {
             "description": "The progress journal (max 24)",
@@ -1763,7 +1807,8 @@
         "required": [
           "bodyPhotos",
           "reports",
-          "progress"
+          "progress",
+          "consented"
         ],
         "type": "object"
       },
@@ -2252,6 +2297,54 @@
           "password",
           "confirmPassword",
           "fullName"
+        ],
+        "type": "object"
+      },
+      "ReportMetricsBody": {
+        "additionalProperties": false,
+        "properties": {
+          "bodyFatPct": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "muscleMassKg": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "notes": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "info"
+            ],
+            "type": "string"
+          },
+          "weightKg": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "weightKg",
+          "bodyFatPct",
+          "muscleMassKg",
+          "notes",
+          "status",
+          "message"
         ],
         "type": "object"
       },
@@ -5593,6 +5686,98 @@
         ]
       }
     },
+    "/photos/analyze": {
+      "post": {
+        "description": "Records consent the first time, reads the newest 5 body photos in one call, and stores the result on the newest. Not medical advice.",
+        "operationId": "analyzePhotos",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalyzeInputBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultBody"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "502": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        },
+        "summary": "AI observations from your body photos (consent required)",
+        "tags": [
+          "photos"
+        ]
+      }
+    },
     "/photos/{id}": {
       "delete": {
         "operationId": "deletePhoto",
@@ -5731,6 +5916,107 @@
           }
         },
         "summary": "Stream one of your photos (JPEG)",
+        "tags": [
+          "photos"
+        ]
+      }
+    },
+    "/photos/{id}/extract": {
+      "post": {
+        "operationId": "extractReport",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportMetricsBody"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "502": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        },
+        "summary": "Read weight / body fat from a report photo (to confirm as a measurement)",
         "tags": [
           "photos"
         ]

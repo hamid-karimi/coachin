@@ -67,8 +67,10 @@ WHERE user_id = sqlc.arg(user_id) AND goal_type = 'calorie_intake' AND status = 
 LIMIT 1;
 
 -- name: LatestBodyAnalysis :one
+-- Body photos only: a report's extracted metrics are not a body analysis
+-- (legacy read any kind, so a newer report hid the analysis from prompts).
 SELECT analysis FROM public.body_photos
-WHERE user_id = sqlc.arg(user_id) AND analysis IS NOT NULL
+WHERE user_id = sqlc.arg(user_id) AND kind = 'body_photo' AND analysis IS NOT NULL
 ORDER BY analyzed_at DESC NULLS LAST
 LIMIT 1;
 

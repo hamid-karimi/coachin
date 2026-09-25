@@ -97,3 +97,52 @@ func (s *PhotoStore) DeletePhoto(ctx context.Context, userID, id uuid.UUID) (str
 	}
 	return path, err == nil, err
 }
+
+// RecordConsent stamps the first AI-analysis consent.
+func (s *PhotoStore) RecordConsent(ctx context.Context, userID uuid.UUID) error {
+	return s.asUser(ctx, userID, func(q *queries.Queries) error { return q.RecordPhotoConsent(ctx, userID) })
+}
+
+// Consented reports whether the user ever consented to AI photo analysis.
+func (s *PhotoStore) Consented(ctx context.Context, userID uuid.UUID) (bool, error) {
+	var consented bool
+	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		consented, err = q.PhotoConsented(ctx, userID)
+		return err
+	})
+	return consented, err
+}
+
+// PathsOfKind lists the newest images of a kind.
+func (s *PhotoStore) PathsOfKind(ctx context.Context, userID uuid.UUID, kind photos.Kind, limit int) ([]photos.StoredPhoto, error) {
+	var rows []queries.ListPhotoPathsOfKindRow
+	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		rows, err = q.ListPhotoPathsOfKind(ctx, queries.ListPhotoPathsOfKindParams{UserID: userID, Kind: string(kind), MaxRows: int32(limit)}) // #nosec G115 -- small cap
+		return err
+	})
+	out := make([]photos.StoredPhoto, len(rows))
+	for i, r := range rows {
+		out[i] = photos.StoredPhoto{ID: r.ID, Path: r.StoragePath}
+	}
+	return out, err
+}
+
+// PhotoPathOfKind finds one of the user's images of a kind.
+func (s *PhotoStore) PhotoPathOfKind(ctx context.Context, userID, id uuid.UUID, kind photos.Kind) (string, bool, error) {
+	var path string
+	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		path, err = q.PhotoPathOfKind(ctx, queries.PhotoPathOfKindParams{ID: id, UserID: userID, Kind: string(kind)})
+		return err
+	})
+	if errors.Is(err, pgx.ErrNoRows) {
+		return "", false, nil
+	}
+	return path, err == nil, err
+}
+
+// SaveAnalysis stores an AI read (analysis or report metrics) on a row.
+func (s *PhotoStore) SaveAnalysis(ctx context.Context, userID, id uuid.UUID, analysis []byte) error {
+	return s.asUser(ctx, userID, func(q *queries.Queries) error {
+		return q.SavePhotoAnalysis(ctx, queries.SavePhotoAnalysisParams{ID: id, UserID: userID, Analysis: analysis})
+	})
+}

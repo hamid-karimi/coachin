@@ -14,6 +14,7 @@ import (
 
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/apperr"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/photos"
+	"github.com/hamid-karimi/coachin/apps/api/internal/domain/aigen"
 )
 
 type fakePhotos struct {
@@ -29,9 +30,23 @@ func (f *fakePhotos) UploadProgress(_ context.Context, _ uuid.UUID, uploads []ph
 	f.set, f.uploads = "progress", uploads
 	return "Progress photo added.", nil
 }
-func (f *fakePhotos) Photos(context.Context, uuid.UUID) ([]photos.Photo, error) {
+func (f *fakePhotos) Library(context.Context, uuid.UUID) (photos.Library, error) {
 	now := time.Now()
-	return []photos.Photo{{ID: uuid.New(), Kind: photos.Progress, CreatedAt: now}, {ID: uuid.New(), Kind: photos.Report, CreatedAt: now}}, nil
+	return photos.Library{
+		Photos:    []photos.Photo{{ID: uuid.New(), Kind: photos.Progress, CreatedAt: now}, {ID: uuid.New(), Kind: photos.Report, CreatedAt: now}},
+		Analysis:  &aigen.BodyAnalysis{BuildNotes: "Lean", TrainingConsiderations: []string{"Hips"}},
+		Consented: true,
+	}, nil
+}
+func (f *fakePhotos) Analyze(_ context.Context, _ uuid.UUID, consent bool) (string, error) {
+	if !consent {
+		return "", apperr.New(apperr.Invalid, "Tick the consent box to run AI analysis")
+	}
+	return "Body analysis ready.", nil
+}
+func (f *fakePhotos) Extract(context.Context, uuid.UUID, uuid.UUID) (aigen.ReportMetrics, error) {
+	w := 72.4
+	return aigen.ReportMetrics{WeightKg: &w, Notes: "InBody"}, nil
 }
 func (f *fakePhotos) Open(_ context.Context, _, id uuid.UUID) (io.ReadCloser, int64, error) {
 	if id == uuid.Nil {
@@ -81,7 +96,8 @@ func TestPhotoRoutes(t *testing.T) {
 	rec = send(t, h, http.MethodGet, BasePath+"/photos", "", headers(""))
 	var list PhotosBody
 	_ = json.Unmarshal(rec.Body.Bytes(), &list)
-	if rec.Code != http.StatusOK || len(list.Progress) != 1 || len(list.Reports) != 1 || list.BodyPhotos == nil {
+	if rec.Code != http.StatusOK || len(list.Progress) != 1 || len(list.Reports) != 1 || list.BodyPhotos == nil ||
+		!list.Consented || list.Analysis.BuildNotes != "Lean" {
 		t.Fatalf("list: %d %s", rec.Code, rec.Body)
 	}
 
@@ -98,5 +114,14 @@ func TestPhotoRoutes(t *testing.T) {
 	}
 	if rec := send(t, h, http.MethodDelete, BasePath+"/photos/"+uuid.NewString(), "", headers("")); rec.Code != http.StatusOK {
 		t.Fatalf("delete: %d", rec.Code)
+	}
+	if rec := send(t, h, http.MethodPost, BasePath+"/photos/analyze", `{"consent":false}`, headers("application/json")); rec.Code != http.StatusBadRequest {
+		t.Fatalf("analyze without consent: %d", rec.Code)
+	}
+	rec = send(t, h, http.MethodPost, BasePath+"/photos/"+uuid.NewString()+"/extract", "", headers(""))
+	var metrics ReportMetricsBody
+	_ = json.Unmarshal(rec.Body.Bytes(), &metrics)
+	if rec.Code != http.StatusOK || *metrics.WeightKg != 72.4 || metrics.BodyFatPct != nil || metrics.Status != "info" {
+		t.Fatalf("extract: %d %s", rec.Code, rec.Body)
 	}
 }

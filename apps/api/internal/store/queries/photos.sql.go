@@ -86,6 +86,44 @@ func (q *Queries) InsertPhotoUnderCap(ctx context.Context, arg InsertPhotoUnderC
 	return id, err
 }
 
+const listPhotoPathsOfKind = `-- name: ListPhotoPathsOfKind :many
+SELECT id, storage_path FROM public.body_photos
+WHERE user_id = $1 AND kind = $2::text
+ORDER BY created_at DESC
+LIMIT $3::int
+`
+
+type ListPhotoPathsOfKindParams struct {
+	UserID  uuid.UUID `json:"user_id"`
+	Kind    string    `json:"kind"`
+	MaxRows int32     `json:"max_rows"`
+}
+
+type ListPhotoPathsOfKindRow struct {
+	ID          uuid.UUID `json:"id"`
+	StoragePath string    `json:"storage_path"`
+}
+
+func (q *Queries) ListPhotoPathsOfKind(ctx context.Context, arg ListPhotoPathsOfKindParams) ([]ListPhotoPathsOfKindRow, error) {
+	rows, err := q.db.Query(ctx, listPhotoPathsOfKind, arg.UserID, arg.Kind, arg.MaxRows)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListPhotoPathsOfKindRow{}
+	for rows.Next() {
+		var i ListPhotoPathsOfKindRow
+		if err := rows.Scan(&i.ID, &i.StoragePath); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listPhotos = `-- name: ListPhotos :many
 SELECT id, kind, created_at, analysis, analyzed_at FROM public.body_photos
 WHERE user_id = $1
@@ -126,6 +164,17 @@ func (q *Queries) ListPhotos(ctx context.Context, userID uuid.UUID) ([]ListPhoto
 	return items, nil
 }
 
+const photoConsented = `-- name: PhotoConsented :one
+SELECT (ai_photo_consent_at IS NOT NULL)::bool AS consented FROM public.profiles WHERE id = $1
+`
+
+func (q *Queries) PhotoConsented(ctx context.Context, userID uuid.UUID) (bool, error) {
+	row := q.db.QueryRow(ctx, photoConsented, userID)
+	var consented bool
+	err := row.Scan(&consented)
+	return consented, err
+}
+
 const photoPath = `-- name: PhotoPath :one
 SELECT storage_path FROM public.body_photos WHERE id = $1 AND user_id = $2
 `
@@ -140,4 +189,48 @@ func (q *Queries) PhotoPath(ctx context.Context, arg PhotoPathParams) (string, e
 	var storage_path string
 	err := row.Scan(&storage_path)
 	return storage_path, err
+}
+
+const photoPathOfKind = `-- name: PhotoPathOfKind :one
+SELECT storage_path FROM public.body_photos
+WHERE id = $1 AND user_id = $2 AND kind = $3::text
+`
+
+type PhotoPathOfKindParams struct {
+	ID     uuid.UUID `json:"id"`
+	UserID uuid.UUID `json:"user_id"`
+	Kind   string    `json:"kind"`
+}
+
+func (q *Queries) PhotoPathOfKind(ctx context.Context, arg PhotoPathOfKindParams) (string, error) {
+	row := q.db.QueryRow(ctx, photoPathOfKind, arg.ID, arg.UserID, arg.Kind)
+	var storage_path string
+	err := row.Scan(&storage_path)
+	return storage_path, err
+}
+
+const recordPhotoConsent = `-- name: RecordPhotoConsent :exec
+UPDATE public.profiles SET ai_photo_consent_at = now() WHERE id = $1 AND ai_photo_consent_at IS NULL
+`
+
+// First consent wins (kept as the moment the user agreed).
+func (q *Queries) RecordPhotoConsent(ctx context.Context, userID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, recordPhotoConsent, userID)
+	return err
+}
+
+const savePhotoAnalysis = `-- name: SavePhotoAnalysis :exec
+UPDATE public.body_photos SET analysis = $1::jsonb, analyzed_at = now()
+WHERE id = $2 AND user_id = $3
+`
+
+type SavePhotoAnalysisParams struct {
+	Analysis []byte    `json:"analysis"`
+	ID       uuid.UUID `json:"id"`
+	UserID   uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) SavePhotoAnalysis(ctx context.Context, arg SavePhotoAnalysisParams) error {
+	_, err := q.db.Exec(ctx, savePhotoAnalysis, arg.Analysis, arg.ID, arg.UserID)
+	return err
 }

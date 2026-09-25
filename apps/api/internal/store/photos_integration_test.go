@@ -2,6 +2,7 @@ package store_test
 
 import (
 	"context"
+	"strings"
 	"sync"
 	"testing"
 
@@ -65,5 +66,34 @@ func TestPhotosOnPostgres(t *testing.T) {
 	}
 	if _, ok, _ := st.PhotoPath(ctx, ada, id); ok {
 		t.Fatal("deleted photo still readable")
+	}
+
+	// Consent is stamped once; analysis lands on a body photo, and a newer
+	// report's metrics never shadow it in the plan prompts.
+	if ok, _ := st.Consented(ctx, ada); ok {
+		t.Fatal("consented before asking")
+	}
+	_ = st.RecordConsent(ctx, ada)
+	if ok, _ := st.Consented(ctx, ada); !ok {
+		t.Fatal("consent not recorded")
+	}
+	body, _ := st.PathsOfKind(ctx, ada, photos.BodyPhoto, 5)
+	if len(body) != 5 {
+		t.Fatalf("body photos = %d", len(body))
+	}
+	if err := st.SaveAnalysis(ctx, ada, body[0].ID, []byte(`{"build_notes":"Lean","posture_notes":"Upright"}`)); err != nil {
+		t.Fatal(err)
+	}
+	if ok, _ := st.InsertPhoto(ctx, ada, "ada/r.jpg", photos.Report, 3); !ok {
+		t.Fatal("report refused")
+	}
+	reports, _ := st.PathsOfKind(ctx, ada, photos.Report, 3)
+	if _, ok, _ := st.PhotoPathOfKind(ctx, ada, reports[0].ID, photos.BodyPhoto); ok {
+		t.Fatal("a report passed as a body photo")
+	}
+	_ = st.SaveAnalysis(ctx, ada, reports[0].ID, []byte(`{"weight_kg":70,"notes":""}`))
+	analysis, err := store.NewNutritionStore(pool).BodyAnalysis(ctx, ada)
+	if err != nil || !strings.Contains(string(analysis), "Lean") {
+		t.Fatalf("plan prompt analysis = %s, %v", analysis, err)
 	}
 }

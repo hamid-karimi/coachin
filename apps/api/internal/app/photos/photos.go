@@ -66,6 +66,18 @@ type Store interface {
 	PhotoPath(ctx context.Context, userID, id uuid.UUID) (string, bool, error)
 	// DeletePhoto removes the row and returns its storage path.
 	DeletePhoto(ctx context.Context, userID, id uuid.UUID) (string, bool, error)
+	RecordConsent(ctx context.Context, userID uuid.UUID) error
+	Consented(ctx context.Context, userID uuid.UUID) (bool, error)
+	// PathsOfKind lists the newest limit images of a kind (id, storage path).
+	PathsOfKind(ctx context.Context, userID uuid.UUID, kind Kind, limit int) ([]StoredPhoto, error)
+	PhotoPathOfKind(ctx context.Context, userID, id uuid.UUID, kind Kind) (string, bool, error)
+	SaveAnalysis(ctx context.Context, userID, id uuid.UUID, analysis []byte) error
+}
+
+// StoredPhoto is a row's id and object key.
+type StoredPhoto struct {
+	ID   uuid.UUID
+	Path string
 }
 
 // Objects is the private bucket.
@@ -274,11 +286,6 @@ func (s *Service) UploadProgress(ctx context.Context, userID uuid.UUID, uploads 
 		return "", apperr.New(apperr.Invalid, progressFull)
 	}
 	return "Progress photo added.", nil
-}
-
-// Photos lists the user's images, newest first.
-func (s *Service) Photos(ctx context.Context, userID uuid.UUID) ([]Photo, error) {
-	return s.store.Photos(ctx, userID)
 }
 
 // Open streams one of the user's images; the caller closes it.
