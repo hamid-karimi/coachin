@@ -2,6 +2,7 @@ package store_test
 
 import (
 	"context"
+	"errors"
 	"sync"
 	"testing"
 	"time"
@@ -12,6 +13,7 @@ import (
 	appnutrition "github.com/hamid-karimi/coachin/apps/api/internal/app/nutrition"
 	appprofile "github.com/hamid-karimi/coachin/apps/api/internal/app/profile"
 	"github.com/hamid-karimi/coachin/apps/api/internal/app/training"
+	"github.com/hamid-karimi/coachin/apps/api/internal/domain/aigen"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/dates"
 	"github.com/hamid-karimi/coachin/apps/api/internal/domain/nutrition"
 	"github.com/hamid-karimi/coachin/apps/api/internal/store"
@@ -155,5 +157,31 @@ func TestParallelAwardsPayOnce(t *testing.T) {
 	}
 	if ledger, profile, _ := balance(); ledger != 70+15+200 || profile != ledger {
 		t.Fatalf("after meals and goal: ledger %d, profile %d", ledger, profile)
+	}
+
+	// 8 parallel confirms of one week's check-in: one lands (+20), the rest are refused.
+	prescription := "Goblet squat 3x10"
+	var refused int
+	var refusedMu sync.Mutex
+	checkinXP := parallel(8, func() int {
+		got, err := st.ApplyWeekAdjustment(ctx, ada, training.WeekAdjustment{
+			PlanID: plan, CheckinWeek: 1, TargetWeek: 2, Decision: "advance",
+			Items: []aigen.PlanItemInput{{DayOfWeek: 3, ItemType: "strength", Title: "Legs", Description: &prescription}},
+		})
+		if errors.Is(err, training.ErrAlreadyCheckedIn) {
+			refusedMu.Lock()
+			refused++
+			refusedMu.Unlock()
+		} else if err != nil {
+			t.Error(err)
+		}
+		return got
+	})
+	if checkinXP != 20 || refused != 7 {
+		t.Fatalf("8 parallel check-ins paid %d with %d refused, want 20 and 7", checkinXP, refused)
+	}
+	var description string
+	if err := owner.QueryRow(ctx, `SELECT description FROM plan_items WHERE plan_id = $1 AND week = 2`, plan).Scan(&description); err != nil || description != prescription {
+		t.Fatalf("rewritten item description = %q, %v", description, err)
 	}
 }

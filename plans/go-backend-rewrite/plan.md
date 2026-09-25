@@ -266,6 +266,12 @@ Order (dependencies first, risk front-loaded):
         active-plan slots once, under the profile lock — `evaluate_user_streak` is no
         longer called. `TestStreakSettleMatchesSQL` (3 seeded histories, SQL vs Go, 8
         parallel settles).
+  - [x] 4.2d Weekly check-ins: `TrainingStore.ApplyWeekAdjustment` (check-in row,
+        week-scoped rewrite keeping item descriptions, `xp.WeeklyCheckinXP` once) —
+        `apply_week_adjustment` is no longer called; 8 parallel confirms → one +20.
+  - Cross-user functions stay `SECURITY DEFINER` primitives (ADR-5 amendment):
+    coach / club / group joins by code, `assign_coach_schedule_to_student`,
+    `evaluate_group_days`, `group_trained_today`, `get_weekly_leaderboard`.
 - [ ] 4.3 Migration dropping retired functions (keep `sync_league_tier` and photo-cap
       triggers).
 - [ ] 4.4 FORMULAS.md: Go files are the only source of truth.

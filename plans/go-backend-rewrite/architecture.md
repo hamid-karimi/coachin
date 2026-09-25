@@ -157,6 +157,17 @@ FORMULAS.md, QA-ONBOARDING.md, WORKLOG.md, CLAUDE.md, README.md
 - **Concurrency**: streak settle and group-day evaluation lock the profile / group row
   (`SELECT … FOR UPDATE`).
 - **Kept in SQL**: true invariants only — `sync_league_tier` trigger, photo-cap trigger.
+- **Amendment (Phase 4.2, 2026-09-25)**: functions that act **across users** stay as
+  narrow `SECURITY DEFINER` primitives — redeeming a coach / club / group invite code
+  (the caller reads another user's code and joins their row), a coach replacing a
+  trainee's schedule, group-day evaluation (pays every member), `group_trained_today`,
+  and `get_weekly_leaderboard`. Under ADR-4 a request runs as its user with RLS on, and
+  `WithSystem` is reserved for migrations / importer / jobs, so moving these into Go
+  would need either RLS policies that expose other users' rows (e.g. every invite code)
+  or a request-time RLS bypass — both weaker than a function that does exactly one
+  cross-user step. Their XP rules stay pinned by Go-side tests; everything that touches
+  only the caller's rows is Step B (4.2a–d, plan creation, club / group creation and
+  leaving).
 - **Parity**: `testdata/golden/*.json` generated from today's `lib/*.test.ts` cases; Go runs
   the same vectors. FORMULAS.md pointers move to `apps/api/internal/domain/*.go`.
 
