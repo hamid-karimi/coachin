@@ -5,6 +5,23 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · #81 merged (3.7 Coaching) · Phase 3.8a — Community boards + clubs
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): `app/community` (Leaderboard with
+lifetime fallback, Clubs, CreateClub with code retry, JoinClub, SetPrimaryClub, LeaveClub
+with primary hand-off) + `store.CommunityStore`; `communityOnly` middleware → 404 while
+`FEATURE_COMMUNITY` is off; `/community/leaderboard`, `/community/clubs` (+ join, primary,
+membership). Web `/community` layout (flag guard, tabs), boards, clubs. e2e with the flag
+on (`FEATURE_COMMUNITY=true docker compose … up`): trainee creates a club, coach joins,
+club board, leave.
+
+**Decisions**: leaderboard rows drop email (legacy exposed every user's email on the
+global board); clubs are read only through the caller's memberships (the `clubs` table
+is readable by everyone, invite codes included — Phase 4.5 hardening).
+
+**Next steps**: 3.8b circle (follows, discover search, my coaches), 3.8c groups + Today
+nudge; then share cards; Phases 4–7.
+
 ## 2026-09-25 · #80 merged (3.6d, Profile done) · Phase 3.7 — Coaching
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): `domain/coaching` (WeekStrip, invite

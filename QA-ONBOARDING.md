@@ -48,7 +48,7 @@ inactive; every coach feature checks for an **active** relationship.
 | `/training/new` | Plan wizards (running / muscle building); coach mode via `?student=<id>` | [README](legacy/app/training/README.md) |
 | `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan. **Rewrite: fully ported** (search / USDA / photo / manual logging, day summary, trends, `/nutrition/plan`) | [README](apps/web/app/(app)/nutrition/README.md) |
 | `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions. **Rewrite: ported** (+ `/coaching/trainees/<id>/nutrition`) | [README](apps/web/app/(app)/coaching/README.md) |
-| `/community` | Social/leaderboard surfaces — **currently disabled** (feature flag; redirects to dashboard, nav item hidden). Coach invite codes are redeemed on `/profile` → "My coach" while off. | [README](legacy/app/community/README.md) |
+| `/community` | Social/leaderboard surfaces — **currently disabled** (feature flag; redirects to dashboard, nav item hidden). Coach invite codes are redeemed on `/profile` → "My coach" while off. **Rewrite: boards + clubs ported** (circle, groups next); test with `FEATURE_COMMUNITY=true` | [README](apps/web/app/(app)/community/README.md) |
 | `/profile` | Four tabs (`?tab=`): **Overview** (stats, hearts, goals, recent XP), **Progress** (charts, measurements, progress photos), **Body** (body profile, body photos, watch import), **Settings** (theme, nutrition sharing, my coach, logout). **Rewrite: fully ported** except "My coach" (Coaching) and "Share progress" (share cards) | [README](apps/web/app/(app)/profile/README.md) |
 | `/auth` | Login / signup; on the rewrite also forgot / reset password and email verification | [README](legacy/app/auth/README.md) |
 | `/status` | Rewrite only: API, database, and storage health | — |
@@ -482,6 +482,24 @@ the goal strip — journey 9; coaching card and group nudge arrive with their mo
    your nutrition."; Turn off → "Nutrition sharing turned off."), Password.
 8. **Today**: with a tracked goal, a strip "Weight goal · 74.6kg → 72kg" + bar (the goal
    closest to done) links to the profile.
+
+### 10. Community (rewrite stack, `FEATURE_COMMUNITY=true`)
+
+With the flag **off** (default): no Community nav item, `/community/*` redirects to
+`/dashboard`, and every `/api/v1/community/*` call answers **404**.
+
+With it on (restart the stack with `FEATURE_COMMUNITY=true`):
+1. **Boards** (`/community/boards`): Global · My Club · My Circle pills. Each board says
+   what counts ("XP this week · resets Monday · everyone on CoachIn"); your row is
+   highlighted ("YOU"). When nobody on a board earned XP this week it ranks lifetime XP
+   and says so. Empty: "Join a club to compete…", "Follow a few people to unlock the
+   Circle board…". Rows show name (or "Athlete"), level, tier, XP — **never an email**.
+2. **Clubs** (`/community/clubs`): "Create club" (3+ characters: "Club name must be at
+   least 3 characters.") → "Club created. Invite code: CLUB-ABC234" → the club shows
+   Primary + Owner and its code. Another account joins with the code (any case) → "You
+   joined the club successfully." (a wrong code: "Invalid club invite code"); both now
+   see each other on My Club. "Make primary" switches the My Club board; "Leave" (confirm)
+   → "You left the club." — leaving your primary promotes your next club.
 
 ## Gamification rules QA must know
 

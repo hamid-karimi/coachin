@@ -222,6 +222,13 @@ Order (dependencies first, risk front-loaded):
       coaching card, Profile → "My coach" (coach-mode generation shipped in 3.3).
 - [ ] 3.8 **Community** — clubs, follows, groups, leaderboard, discover; `404` while the
       flag is off (M)
+  - [x] 3.8a Boards + clubs: `app/community` (weekly leaderboard — global / primary club /
+        followed — with the lifetime-XP fallback; create / join / primary / leave),
+        `communityOnly` middleware (404 while `FEATURE_COMMUNITY` is off); web
+        `/community/boards`, `/community/clubs`. Leaderboard rows carry no email.
+  - [ ] 3.8b Circle: follows, user search (discover), my coaches.
+  - [ ] 3.8c Group streaks (create / join / leave, trained-today, group-day evaluation) +
+        Today's group nudge.
 
 ## Phase 4 — Retire SQL business logic (M)
 
