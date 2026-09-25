@@ -25,7 +25,7 @@ type fakeStore struct {
 	menu       *MealPlanDay
 }
 
-func (f *fakeStore) SettleStreak(context.Context, uuid.UUID) error { return nil }
+func (f *fakeStore) SettleStreak(context.Context, uuid.UUID, string) error { return nil }
 func (f *fakeStore) Stats(context.Context, uuid.UUID) (ProfileStats, error) {
 	return ProfileStats{XP: 2500, Hearts: 7, LeagueTier: "silver"}, nil
 }
