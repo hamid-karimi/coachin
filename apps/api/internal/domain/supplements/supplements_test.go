@@ -3,7 +3,9 @@ package supplements
 import (
 	"encoding/json"
 	"reflect"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/hamid-karimi/coachin/apps/api/internal/golden"
 )
@@ -60,6 +62,32 @@ func TestNormalize(t *testing.T) {
 	for _, c := range cases {
 		if got := Normalize(c.kind, c.days); !reflect.DeepEqual(got, c.want) {
 			t.Errorf("Normalize(%q, %v) = %+v, want %+v", c.kind, c.days, got, c.want)
+		}
+	}
+}
+
+func TestWindow(t *testing.T) {
+	end := time.Date(2026, 9, 25, 12, 0, 0, 0, time.Local) // Friday
+	str := func(s string) *string { return &s }
+	// A plan started Mon 09-14 (week 2 = 09-21..27) training Wednesdays in week 2;
+	// a Friday routine that only starts 09-25.
+	window := Window(end, 7, []PlanDay{{PlanCreatedAt: time.Date(2026, 9, 14, 8, 0, 0, 0, time.Local), WeeksTotal: 8, Week: 2, Weekday: 3}},
+		[]RoutineDay{{Weekday: 5, StartsOn: str("2026-09-25")}})
+	if len(window) != 7 || window[0].YMD != "2026-09-19" || window[6].YMD != "2026-09-25" {
+		t.Fatalf("window = %+v", window)
+	}
+	training := []string{}
+	for _, d := range window {
+		if d.IsTrainingDay {
+			training = append(training, d.YMD)
+		}
+	}
+	if strings.Join(training, ",") != "2026-09-23,2026-09-25" {
+		t.Errorf("training days = %v", training)
+	}
+	for _, d := range Window(end, 3, nil, nil) {
+		if !d.IsTrainingDay {
+			t.Errorf("no structure: %s should count as training", d.YMD)
 		}
 	}
 }

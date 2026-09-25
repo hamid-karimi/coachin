@@ -47,7 +47,7 @@ inactive; every coach feature checks for an **active** relationship.
 | `/training` | Program manager: create (AI wizards), archive, weekly check-ins. **Rewrite: list, archive, .ics export, AI wizards (with watch-file upload), check-ins ported**. | [README](apps/web/app/(app)/training/README.md) |
 | `/training/new` | Plan wizards (running / muscle building); coach mode via `?student=<id>` | [README](legacy/app/training/README.md) |
 | `/nutrition` | Meal logging (search / photo / manual), targets, trends, AI meal plan. **Rewrite: fully ported** (search / USDA / photo / manual logging, day summary, trends, `/nutrition/plan`) | [README](apps/web/app/(app)/nutrition/README.md) |
-| `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions | [README](legacy/app/coaching/README.md) |
+| `/coaching` | Coach hub: roster, adherence, invite codes, leaderboard, per-trainee actions. **Rewrite: ported** (+ `/coaching/trainees/<id>/nutrition`) | [README](apps/web/app/(app)/coaching/README.md) |
 | `/community` | Social/leaderboard surfaces — **currently disabled** (feature flag; redirects to dashboard, nav item hidden). Coach invite codes are redeemed on `/profile` → "My coach" while off. | [README](legacy/app/community/README.md) |
 | `/profile` | Four tabs (`?tab=`): **Overview** (stats, hearts, goals, recent XP), **Progress** (charts, measurements, progress photos), **Body** (body profile, body photos, watch import), **Settings** (theme, nutrition sharing, my coach, logout). **Rewrite: fully ported** except "My coach" (Coaching) and "Share progress" (share cards) | [README](apps/web/app/(app)/profile/README.md) |
 | `/auth` | Login / signup; on the rewrite also forgot / reset password and email verification | [README](legacy/app/auth/README.md) |
@@ -368,6 +368,28 @@ the goal strip — journey 9; coaching card and group nudge arrive with their mo
    7-day taken rate). Turning the toggle off must revoke access immediately —
    both the meals and the stack sections then show the opt-in explainer.
    Coaches must never be able to edit trainee meals or supplements.
+4. **Rewrite stack (3.7)** — sign in as `coach@coachin.local` (lands on `/coaching`).
+   - "No trainees yet — share an invite code to connect." → pick a sport → "New invite
+     code" → "New invite code generated: COACH-1-ABC234" (listed, "Active"); a new code
+     for the same sport replaces the old one (the old code stops working).
+   - As the trainee (Profile → Settings → "My coach"): a wrong code → "Invalid invite
+     code"; the right one (any case, spaces trimmed) → "Coach added successfully.";
+     again → "You’re already connected to this coach." A trainee opening `/coaching` is
+     sent to `/dashboard`; a coach-only account can't redeem ("Your current role cannot
+     add a coach.").
+   - Roster row: name, "Running · Level 1 · 545 XP this week", 7 dots Mon→Sun (hover:
+     "Wed: done", "Fri: planned today", "Mon: missed", "Tue: rest"), "2 of 4 this week"
+     (or "No plan assigned yet"), "Off-track · Running 0%" chips for plans under 50%,
+     total XP; actions Assign plan (confirm "Replace <name>'s weekly routine with
+     yours?"; without a routine of your own: "Coach has no schedule to assign"), Generate
+     plan, and Nutrition (only while the trainee shares).
+   - Nutrition page: "<name> — nutrition", "Meal plan targets: 2,580 kcal · 125g
+     protein", a card per day with meals ("Dinner · Grilled chicken · 248 kcal · 46g
+     protein") and a kcal badge that turns orange over target, then "Daily stack" with
+     "N/M due days". Sharing off → only the opt-in explainer (the API returns nothing
+     else). Another coach's trainee → 404.
+   - "Trainee leaderboard" ranks trainees by this week's XP. Today (coach): "Coaching ·
+     1 trainee · 1 trained this week".
 
 ### 7. Watch-data import (Profile)
 

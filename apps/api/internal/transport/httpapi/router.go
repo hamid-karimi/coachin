@@ -39,6 +39,8 @@ type Deps struct {
 	MealPlan         MealPlanService
 	Profile          ProfileService
 	Photos           PhotoService
+	Coaching         CoachingService
+	TraineeNutrition TraineeNutritionService
 	Cookies          CookieSettings
 	CommunityEnabled bool
 }
@@ -84,6 +86,7 @@ func New(deps Deps) (http.Handler, huma.API) {
 	registerMealPlan(api, deps)
 	registerProfile(api, deps)
 	registerPhotos(api, deps)
+	registerCoaching(api, deps)
 
 	// Rejects cross-site state-changing requests (Sec-Fetch-Site / Origin),
 	// the CSRF guard for cookie sessions.

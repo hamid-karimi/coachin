@@ -115,3 +115,7 @@ export function useAnalyzePhotos() {
 export function useExtractReport() {
   return $api.useMutation("post", "/photos/{id}/extract", useMutationFeedback([]));
 }
+
+export function useJoinCoach(onDone?: () => void) {
+  return $api.useMutation("post", "/coaching/join", useMutationFeedback([], onDone));
+}

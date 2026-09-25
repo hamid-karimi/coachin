@@ -6,6 +6,7 @@ import { BodyPhotosSection } from "./body-photos-section";
 import { BodyProfileForm } from "./body-profile-form";
 import { ChangePasswordForm } from "./change-password-form";
 import { GoalsSection } from "./goals-section";
+import { JoinCoachForm } from "./join-coach-form";
 import { LogoutButton } from "./logout-button";
 import { MeasurementsSection } from "./measurements-section";
 import { NutritionSharingToggle } from "./nutrition-sharing-toggle";
@@ -16,7 +17,12 @@ import { ProgressCharts } from "./progress-charts";
 import { RecentXp } from "./recent-xp";
 import { TrainingLinks } from "./training-links";
 
-const TABS: Record<ProfileTab, () => ReactNode> = {
+interface TabOptions {
+  /** While Community is off, coach invite codes are redeemed here. */
+  community: boolean;
+}
+
+const TABS: Record<ProfileTab, (options: TabOptions) => ReactNode> = {
   overview: () => (
     <>
       <ProfileStats />
@@ -57,8 +63,15 @@ const TABS: Record<ProfileTab, () => ReactNode> = {
       </ProfileSection>
     </>
   ),
-  settings: () => (
+  settings: ({ community }) => (
     <>
+      {!community && (
+        <ProfileSection title='My coach'>
+          <div className='bg-card border-border rounded-xl border p-4'>
+            <JoinCoachForm />
+          </div>
+        </ProfileSection>
+      )}
       <ProfileSection title='Settings'>
         <div className='bg-card border-border divide-border divide-y rounded-xl border px-4'>
           <div className='flex items-center justify-between gap-3 py-3'>
@@ -84,6 +97,6 @@ const TABS: Record<ProfileTab, () => ReactNode> = {
 };
 
 /** The sections of one profile tab. */
-export function ProfileTabContent({ tab }: { tab: ProfileTab }) {
-  return TABS[tab]();
+export function ProfileTabContent({ tab, community }: { tab: ProfileTab } & TabOptions) {
+  return TABS[tab]({ community });
 }

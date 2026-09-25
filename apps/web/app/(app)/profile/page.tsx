@@ -25,7 +25,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Sear
           </div>
         </div>
         <ProfileTabs active={tab} />
-        <ProfileTabContent tab={tab} />
+        <ProfileTabContent tab={tab} community={me?.features.community ?? false} />
       </div>
     </HydrationBoundary>
   );
