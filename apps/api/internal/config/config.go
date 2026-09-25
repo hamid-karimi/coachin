@@ -113,6 +113,40 @@ func LoadMigrate(getenv Getenv) (string, error) {
 	return url, r.err()
 }
 
+// Import is the one-time Supabase import (Phase 7.1): the source database, the
+// target (owner) database, and — when photos are copied — both buckets.
+type Import struct {
+	SourceURL string
+	TargetURL string
+	// Photos is set when SUPABASE_S3_ENDPOINT is: copy storage objects too.
+	Photos *ImportPhotos
+}
+
+// ImportPhotos are the Supabase Storage bucket (S3 protocol) and ours.
+type ImportPhotos struct {
+	Source S3
+	Target S3
+}
+
+// LoadImport reads the `import-supabase` configuration.
+func LoadImport(getenv Getenv) (Import, error) {
+	r := reader{getenv: getenv}
+	cfg := Import{SourceURL: r.required("SUPABASE_DATABASE_URL"), TargetURL: r.required("MIGRATE_DATABASE_URL")}
+	if r.optional("SUPABASE_S3_ENDPOINT", "") != "" {
+		cfg.Photos = &ImportPhotos{
+			Source: S3{
+				Endpoint:        r.required("SUPABASE_S3_ENDPOINT"),
+				Region:          r.required("SUPABASE_S3_REGION"),
+				Bucket:          r.optional("SUPABASE_S3_BUCKET", "body-photos"),
+				AccessKeyID:     r.required("SUPABASE_S3_ACCESS_KEY_ID"),
+				SecretAccessKey: r.required("SUPABASE_S3_SECRET_ACCESS_KEY"),
+			},
+			Target: r.s3(),
+		}
+	}
+	return cfg, r.err()
+}
+
 // LoadGarage reads the `storage-init` configuration.
 func LoadGarage(getenv Getenv) (Garage, error) {
 	r := reader{getenv: getenv}
