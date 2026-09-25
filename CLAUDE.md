@@ -9,7 +9,6 @@ Next.js**, self-hosted with Docker Compose (Postgres, Garage, Caddy). Plan and d
 | `apps/api/` | Go 1.27 API (chi + huma → OpenAPI 3.1, pgx, goose). Migrations in `apps/api/db/migrations/` |
 | `apps/web/` | Next.js 16 frontend (TanStack Query, nuqs, generated client from `openapi/openapi.json`) |
 | `deploy/` | Caddy, Garage, Postgres init config used by `compose.yaml` |
-| `legacy/` | The old Next.js + Supabase app — **read-only reference** for the port; deleted at cutover |
 
 `make help` lists every task (`make up` runs the whole stack at http://localhost:8080).
 
@@ -70,7 +69,7 @@ disagree. Read it before touching XP, streaks, tiers, goals, plans, or scorecard
 ## Module docs
 
 Each `apps/web/app/<module>/README.md` documents behavior — update it when you change the
-module (during the port, `legacy/app/<module>/README.md` is the reference to carry over).
+module. (The pre-rewrite app is on `main` if you need to check how something used to work.)
 
 ## QA doc — keep it current
 

@@ -1,6 +1,6 @@
 ---
 name: coding-style
-description: Coachin coding principles and architecture rules. Use whenever writing, refactoring, or reviewing code in this repo — components, pages, hooks, server actions, or tests.
+description: Coachin coding principles and architecture rules. Use whenever writing, refactoring, or reviewing code in this repo — components, pages, hooks, Go packages, or tests.
 ---
 
 # Coachin coding style
@@ -16,7 +16,7 @@ Break big components into small, focused ones. A component that renders several 
 
 ## 2. Reusable components go to the UI kit + Storybook
 
-Anything used (or plausibly usable) by two modules moves to `components/design-system/` with a colocated `*.stories.tsx`. Follow the existing pattern (`stat-card.tsx` + `stat-card.stories.tsx`). Keep design-system components presentational: props in, JSX out, no data fetching, no server actions — that's what makes them story-able.
+Anything used (or plausibly usable) by two modules moves to `components/design-system/` with a colocated `*.stories.tsx`. Follow the existing pattern (`stat-card.tsx` + `stat-card.stories.tsx`). Keep design-system components presentational: props in, JSX out, no data fetching, no mutations — that's what makes them story-able.
 
 ## 3. Logic lives outside components
 
@@ -36,7 +36,7 @@ Every non-trivial function in `lib/` (and module `lib/` dirs) gets a colocated `
 
 ## 6. SSR first
 
-Server components by default. `"use client"` only at the interactive leaves (buttons, forms, things using hooks) — never on a whole page or section when only one button inside it is interactive. Mutations go through server actions (`actions.ts`), state-critical multi-step writes (XP, streaks, memberships) through SECURITY DEFINER RPCs with idempotency guards — follow `complete_plan_item` / `award_session_log_xp` as the pattern.
+Server components by default. `"use client"` only at the interactive leaves (buttons, forms, things using hooks) — never on a whole page or section when only one button inside it is interactive. Data comes from the Go API: the page prefetches on the server (`lib/api/server.ts`) into TanStack Query, and client leaves read and mutate through the module's query hooks (`app/<module>/hooks/use-*.ts`, calling `lib/api/browser.ts`). State-critical multi-step writes (XP, streaks, memberships) live in the Go API — one transaction, under the profile lock, idempotent by a once-only XP reason — never in the web app.
 
 ## 7. Hashmaps over if/else and switch
 
@@ -54,7 +54,7 @@ If/else stays for genuinely boolean or guard logic — use early returns there, 
 
 ## 8. useReducer over useState sprawl
 
-Three-plus related `useState` calls in one component (wizards, multi-field forms, multi-step flows) become a single `useReducer` with a typed action union. For server data, prefer `useActionState` with server actions (existing pattern) over client state at all.
+Three-plus related `useState` calls in one component (wizards, multi-field forms, multi-step flows) become a single `useReducer` with a typed action union. For server data, use the module's TanStack Query hooks rather than client state at all.
 
 ## 9. Single responsibility, SOLID, DRY
 
@@ -66,11 +66,11 @@ Layers, outer depends on inner, never the reverse:
 
 1. **Pages** (`app/**/page.tsx`) — orchestration only
 2. **Components** (`components/`, `app/<module>/components/`) — presentation
-3. **Hooks / server actions** (`components/hooks/`, `actions.ts`) — application flow
+3. **Hooks** (`components/hooks/`, `app/<module>/hooks/`) — application flow, API queries and mutations
 4. **Domain logic** (`lib/`, `app/<module>/lib/`) — pure, framework-free, unit-tested
-5. **Data access** (`lib/supabase/`, RPCs) — the only place that knows about the database
+5. **Data access** (`lib/api/` — the typed client generated from `openapi/openapi.json`) — the only place that knows about the API
 
-`lib/` domain functions never import React, Next, or Supabase. Components never call Supabase directly — data arrives via props (server) or actions (mutations).
+`lib/` domain functions never import React, Next, or the API client. Components never call the API client directly — data arrives via props (server) or query hooks (client).
 
 ## 11. Follow the design system
 

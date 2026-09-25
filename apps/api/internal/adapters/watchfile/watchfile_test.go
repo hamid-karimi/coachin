@@ -13,8 +13,8 @@ type fileCase struct {
 	Want json.RawMessage `json:"want"`
 }
 
-// The fixtures and their expected summaries come from running the legacy
-// parsers (scripts/golden/activity-files.ts).
+// The fixtures and their expected summaries were recorded from the legacy
+// TypeScript parsers.
 func TestGoldenWatchFiles(t *testing.T) {
 	parser := New(func() time.Time { return time.Date(2026, 9, 24, 12, 0, 0, 0, time.UTC) })
 	for _, c := range golden.Load[fileCase](t, "activity-files") {

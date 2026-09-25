@@ -1,6 +1,6 @@
 // Code generated from Node 24 ICU (CLDR 48) via Intl.DisplayNames(["en"], {type: "region"}),
-// the table the legacy app used. DO NOT EDIT by hand; regenerate from
-// testdata/golden/profile.json (make golden) if CLDR data ever needs a refresh.
+// the table the legacy app used (testdata/golden/profile.json). DO NOT EDIT by hand;
+// regenerate from Intl.DisplayNames if CLDR data ever needs a refresh.
 
 package profile
 

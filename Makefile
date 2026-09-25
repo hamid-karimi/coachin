@@ -2,7 +2,7 @@
 COMPOSE := docker compose -f compose.yaml -f compose.dev.yaml
 
 .DEFAULT_GOAL := help
-.PHONY: help up infra down logs ps migrate migrate-status reset-db seed import-supabase gen golden golden-activity e2e test lint
+.PHONY: help up infra down logs ps migrate migrate-status reset-db seed import-supabase gen e2e test lint
 
 help: ## List the available commands
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  make %-15s %s\n", $$1, $$2}'
@@ -47,13 +47,6 @@ gen: ## Regenerate sqlc queries, openapi/openapi.json, and the web app's typed A
 	cd apps/api && sqlc generate
 	cd apps/api && go run ./cmd/api openapi > ../../openapi/openapi.json
 	cd apps/web && pnpm gen:api
-
-golden: ## History: snapshot testdata/golden from the legacy TypeScript (overwrites the Go-owned vectors — Phase 4.4)
-	TZ=UTC node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/golden/register.mjs scripts/golden/generate.ts
-
-golden-activity: ## Rebuild the watch-file fixtures + vectors (GOLDEN_DEPS=dir with @garmin/fitsdk@21 fast-xml-parser@5 installed)
-	@test -n "$(GOLDEN_DEPS)" || (echo "npm i --prefix /tmp/golden-deps @garmin/fitsdk@21 fast-xml-parser@5, then GOLDEN_DEPS=/tmp/golden-deps/node_modules make golden-activity" && exit 1)
-	GOLDEN_DEPS=$(GOLDEN_DEPS) TZ=UTC node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/golden/register.mjs scripts/golden/activity-files.ts
 
 e2e: .env ## Run the Playwright QA journeys against the stack with the fake Claude (compose.e2e.yaml)
 	docker compose -f compose.yaml -f compose.e2e.yaml up -d --build

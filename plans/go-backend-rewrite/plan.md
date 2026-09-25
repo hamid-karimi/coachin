@@ -298,9 +298,14 @@ Order (dependencies first, risk front-loaded):
 - [x] 5.2 Security review of auth, uploads, authorization, and fixes —
       [`security-review.md`](security-review.md): profiles private (cards view for
       others), leaderboard without emails, clubs members-only, edge security headers.
-- [ ] 5.3 Delete `legacy/` (and with it `supabase/`, Vercel/Next server code). Verify spec
-      §8 criteria 1–7. Rewrite root README (stack, `make up`), QA-ONBOARDING ("Stack",
-      "Running the app locally"), module READMEs.
+- [x] 5.3 Delete `legacy/` (and with it `supabase/`, Vercel/Next server code) and the
+      golden generator (`scripts/golden`, `make golden`; the vectors stay, Go-owned).
+      Spec §8: (1) Go domain tests replay every vector; (2) 14 Playwright journeys in CI;
+      (3) `make up` + `make seed`; (4) no `@supabase/*`, `supabase/`, or vercel config —
+      `auth.users` appears only in the one-time importer (removed in 7.4) and migration
+      comments; (5) no sharp / AI SDK / fitsdk / fast-xml-parser / `"use server"` in web;
+      (6) FORMULAS.md points at Go only; (7) CI diffs `openapi.json`. Root README,
+      QA-ONBOARDING (Stack, module map, Running locally), CLAUDE.md, coding-style skill.
 
 ## Phase 6 — VPS readiness (M)
 

@@ -3,10 +3,10 @@
 Training + gamification app: plan your week, log workouts and meals, earn XP, streaks, and
 league tiers; coaches follow their trainees.
 
-This branch (`feat/backend-rewrite-with-go`) rebuilds it as a **Go API + frontend-only
-Next.js**, fully self-hosted with Docker. The current production app (Next.js + Supabase on
-Vercel) lives on `main` / `develop`, with a read-only copy in [`legacy/`](legacy/) as the
-reference for the port.
+This branch (`feat/backend-rewrite-with-go`) is a **Go API + frontend-only Next.js**
+monorepo, fully self-hosted with Docker (Postgres, Garage object storage, Caddy). The
+previous production app (Next.js + Supabase on Vercel) lives on `main` / `develop` until
+go-live.
 
 - Plan, spec, architecture: [`plans/go-backend-rewrite/`](plans/go-backend-rewrite/)
 - Formulas (XP, streaks, tiers…): [`FORMULAS.md`](FORMULAS.md)
@@ -35,7 +35,7 @@ make up        # first run copies .env.example → .env, builds, starts, hot-rel
 Open http://localhost:8080 to sign in; http://localhost:8080/status shows the API, database, and storage as
 healthy. Edit files under `apps/web` or `apps/api` and the stack reloads on its own.
 
-AI features (training plans; later meal plans and photo estimates) need
+AI features (training plans, meal plans, photo estimates, photo moderation) need
 `CLAUDE_API_KEY` and/or `GEMINI_API_KEY` in `.env` — Claude first, Gemini as the fallback.
 Without them those features answer "temporarily unavailable"; everything else works.
 
@@ -47,7 +47,7 @@ reset) show up in Mailpit at http://localhost:8025.
 Claude and Community on (`compose.e2e.yaml`); CI runs the same suite.
 
 `make help` lists everything else (`down`, `logs`, `migrate`, `reset-db`, `gen`, `test`,
-`lint`, `infra`, `golden`).
+`lint`, `infra`, `import-supabase`).
 
 > After pulling a change that adds a database role (like this one), run `make reset-db`
 > once: roles are created only when the Postgres volume is first initialized.
@@ -59,13 +59,14 @@ Go 1.27, Node 24 with `corepack enable` (pnpm 12), [sqlc](https://sqlc.dev) 1.31
 ## Repository layout
 
 ```
-apps/api/        Go API — cmd/api (serve, migrate, storage-init, openapi, healthcheck)
+apps/api/        Go API — cmd/api (serve, migrate, storage-init, seed, openapi, healthcheck,
+                 import-supabase)
 apps/web/        Next.js frontend — typed client generated from openapi/openapi.json
 openapi/         The API contract, generated from Go (`make gen`); CI checks it is current
-deploy/          Caddyfile, Garage config, Postgres init script
+deploy/          Caddyfile, Garage config, Postgres init script, runbooks (deploy/README.md)
 compose.yaml     The whole stack (also what runs on the VPS)
 compose.dev.yaml Local-only additions: hot reload, Mailpit, Postgres port
-legacy/          Old Next.js + Supabase app — reference only, deleted at cutover
+testdata/        Golden vectors pinning every formula (see FORMULAS.md)
 plans/           Rewrite spec, architecture, and phased plan
 ```
 

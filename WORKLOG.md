@@ -5,6 +5,17 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · Phase 5.3 — legacy/ deleted
+
+**Done** (branch `claude/lucid-tesla-3737vk`, after #95): removed `legacy/` and
+`scripts/golden` (+ `make golden`, `golden-activity`); `testdata/golden` stays (Go-owned).
+FORMULAS.md "Legacy origin" pointers dropped (Go pointers only, spec §8.6). README,
+QA-ONBOARDING (Stack, module map, Running locally), CLAUDE.md, coding-style skill (data
+layer = Go API via `lib/api` + TanStack Query hooks). Spec §8 criteria 1–7 checked (plan 5.3).
+
+**Next steps**: monorepo tooling (root pnpm workspace + go.work, root scripts, native
+`pnpm dev` with API_INTERNAL_URL), Phase 6.1–6.4, local run instructions.
+
 ## 2026-09-25 · #94 merged (5.2) · Phase 7.1 — Supabase importer
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR): `api import-supabase [-dry-run]`
