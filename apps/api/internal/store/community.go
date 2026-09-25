@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	appcommunity "github.com/hamid-karimi/coachin/apps/api/internal/app/community"
@@ -169,4 +170,83 @@ func (s *CommunityStore) LeaveClub(ctx context.Context, userID, clubID uuid.UUID
 		return nil
 	})
 	return left, err
+}
+
+var _ appcommunity.CircleStore = (*CommunityStore)(nil)
+
+// FollowingProfiles lists the people the user follows.
+func (s *CommunityStore) FollowingProfiles(ctx context.Context, userID uuid.UUID) ([]appcommunity.Row, error) {
+	var rows []queries.ListFollowingProfilesRow
+	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		rows, err = q.ListFollowingProfiles(ctx, &userID)
+		return err
+	})
+	out := make([]appcommunity.Row, len(rows))
+	for i, r := range rows {
+		out[i] = appcommunity.Row{ID: r.ID, FullName: r.FullName, AvatarURL: r.AvatarUrl, Level: r.Level, LeagueTier: r.LeagueTier, XP: r.Xp}
+	}
+	return out, err
+}
+
+// MyCoaches lists the user's active coaches.
+func (s *CommunityStore) MyCoaches(ctx context.Context, userID uuid.UUID) ([]appcommunity.Coach, error) {
+	var rows []queries.ListMyCoachesRow
+	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		rows, err = q.ListMyCoaches(ctx, userID)
+		return err
+	})
+	out := make([]appcommunity.Coach, len(rows))
+	for i, r := range rows {
+		out[i] = appcommunity.Coach{Row: appcommunity.Row{ID: r.ID, FullName: r.FullName, AvatarURL: r.AvatarUrl, Level: r.Level, LeagueTier: r.LeagueTier}, SportName: r.SportName}
+	}
+	return out, err
+}
+
+// SearchPeople finds others by name or exact email.
+func (s *CommunityStore) SearchPeople(ctx context.Context, userID uuid.UUID, term string, skip, limit int) ([]appcommunity.Person, error) {
+	var rows []queries.SearchPeopleRow
+	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		rows, err = q.SearchPeople(ctx, queries.SearchPeopleParams{UserID: &userID, Term: term, Skip: int32(skip), MaxRows: int32(limit)}) // #nosec G115 -- small paging values
+		return err
+	})
+	out := make([]appcommunity.Person, len(rows))
+	for i, r := range rows {
+		out[i] = appcommunity.Person{
+			Row:       appcommunity.Row{ID: r.ID, FullName: r.FullName, AvatarURL: r.AvatarUrl, Level: r.Level, LeagueTier: r.LeagueTier, XP: r.Xp},
+			Following: r.Following,
+		}
+	}
+	return out, err
+}
+
+// ProfileExists checks a user id.
+func (s *CommunityStore) ProfileExists(ctx context.Context, userID, id uuid.UUID) (bool, error) {
+	var found bool
+	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		found, err = q.ProfileExists(ctx, id)
+		return err
+	})
+	return found, err
+}
+
+// Follow inserts the edge; a duplicate reports false.
+func (s *CommunityStore) Follow(ctx context.Context, userID, id uuid.UUID) (bool, error) {
+	err := s.asUser(ctx, userID, func(q *queries.Queries) error {
+		return q.InsertFollow(ctx, queries.InsertFollowParams{FollowerID: &userID, FollowingID: &id})
+	})
+	var pgErr *pgconn.PgError
+	if errors.As(err, &pgErr) && pgErr.Code == uniqueViolation {
+		return false, nil
+	}
+	return err == nil, err
+}
+
+// Unfollow deletes the edge.
+func (s *CommunityStore) Unfollow(ctx context.Context, userID, id uuid.UUID) (bool, error) {
+	var n int64
+	err := s.asUser(ctx, userID, func(q *queries.Queries) (err error) {
+		n, err = q.DeleteFollow(ctx, queries.DeleteFollowParams{FollowerID: &userID, FollowingID: &id})
+		return err
+	})
+	return n > 0, err
 }

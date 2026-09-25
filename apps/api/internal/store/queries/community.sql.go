@@ -54,6 +54,37 @@ func (q *Queries) DeleteClubMembership(ctx context.Context, arg DeleteClubMember
 	return is_primary, err
 }
 
+const deleteFollow = `-- name: DeleteFollow :execrows
+DELETE FROM public.social_graph WHERE follower_id = $1 AND following_id = $2
+`
+
+type DeleteFollowParams struct {
+	FollowerID  *uuid.UUID `json:"follower_id"`
+	FollowingID *uuid.UUID `json:"following_id"`
+}
+
+func (q *Queries) DeleteFollow(ctx context.Context, arg DeleteFollowParams) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteFollow, arg.FollowerID, arg.FollowingID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const insertFollow = `-- name: InsertFollow :exec
+INSERT INTO public.social_graph (follower_id, following_id) VALUES ($1, $2)
+`
+
+type InsertFollowParams struct {
+	FollowerID  *uuid.UUID `json:"follower_id"`
+	FollowingID *uuid.UUID `json:"following_id"`
+}
+
+func (q *Queries) InsertFollow(ctx context.Context, arg InsertFollowParams) error {
+	_, err := q.db.Exec(ctx, insertFollow, arg.FollowerID, arg.FollowingID)
+	return err
+}
+
 const isClubMember = `-- name: IsClubMember :one
 SELECT EXISTS (SELECT 1 FROM public.club_members WHERE club_id = $1 AND user_id = $2)::bool AS member
 `
@@ -170,6 +201,93 @@ func (q *Queries) ListFollowing(ctx context.Context, userID *uuid.UUID) ([]*uuid
 	return items, nil
 }
 
+const listFollowingProfiles = `-- name: ListFollowingProfiles :many
+SELECT p.id, p.full_name, p.avatar_url, COALESCE(p.level, 1)::bigint AS level, p.league_tier, COALESCE(p.xp, 0)::bigint AS xp
+FROM public.social_graph g JOIN public.profiles p ON p.id = g.following_id
+WHERE g.follower_id = $1
+ORDER BY g.created_at
+`
+
+type ListFollowingProfilesRow struct {
+	ID         uuid.UUID `json:"id"`
+	FullName   *string   `json:"full_name"`
+	AvatarUrl  *string   `json:"avatar_url"`
+	Level      int64     `json:"level"`
+	LeagueTier *string   `json:"league_tier"`
+	Xp         int64     `json:"xp"`
+}
+
+func (q *Queries) ListFollowingProfiles(ctx context.Context, userID *uuid.UUID) ([]ListFollowingProfilesRow, error) {
+	rows, err := q.db.Query(ctx, listFollowingProfiles, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListFollowingProfilesRow{}
+	for rows.Next() {
+		var i ListFollowingProfilesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.FullName,
+			&i.AvatarUrl,
+			&i.Level,
+			&i.LeagueTier,
+			&i.Xp,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listMyCoaches = `-- name: ListMyCoaches :many
+SELECT p.id, p.full_name, p.avatar_url, COALESCE(p.level, 1)::bigint AS level, p.league_tier, st.name AS sport_name
+FROM public.coaching_relationships cr JOIN public.profiles p ON p.id = cr.coach_id
+LEFT JOIN public.sport_types st ON st.id = cr.sport_type_id
+WHERE cr.student_id = $1 AND cr.status = 'active'
+ORDER BY cr.created_at
+`
+
+type ListMyCoachesRow struct {
+	ID         uuid.UUID `json:"id"`
+	FullName   *string   `json:"full_name"`
+	AvatarUrl  *string   `json:"avatar_url"`
+	Level      int64     `json:"level"`
+	LeagueTier *string   `json:"league_tier"`
+	SportName  *string   `json:"sport_name"`
+}
+
+func (q *Queries) ListMyCoaches(ctx context.Context, userID uuid.UUID) ([]ListMyCoachesRow, error) {
+	rows, err := q.db.Query(ctx, listMyCoaches, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListMyCoachesRow{}
+	for rows.Next() {
+		var i ListMyCoachesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.FullName,
+			&i.AvatarUrl,
+			&i.Level,
+			&i.LeagueTier,
+			&i.SportName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const markPrimaryClub = `-- name: MarkPrimaryClub :exec
 UPDATE public.club_members SET is_primary = true WHERE user_id = $1 AND club_id = $2
 `
@@ -184,6 +302,17 @@ func (q *Queries) MarkPrimaryClub(ctx context.Context, arg MarkPrimaryClubParams
 	return err
 }
 
+const profileExists = `-- name: ProfileExists :one
+SELECT EXISTS (SELECT 1 FROM public.profiles WHERE id = $1)::bool AS found
+`
+
+func (q *Queries) ProfileExists(ctx context.Context, id uuid.UUID) (bool, error) {
+	row := q.db.QueryRow(ctx, profileExists, id)
+	var found bool
+	err := row.Scan(&found)
+	return found, err
+}
+
 const promoteNextPrimaryClub = `-- name: PromoteNextPrimaryClub :exec
 UPDATE public.club_members SET is_primary = true
 WHERE id = (SELECT m.id FROM public.club_members m WHERE m.user_id = $1 ORDER BY m.joined_at LIMIT 1)
@@ -192,6 +321,70 @@ WHERE id = (SELECT m.id FROM public.club_members m WHERE m.user_id = $1 ORDER BY
 func (q *Queries) PromoteNextPrimaryClub(ctx context.Context, userID uuid.UUID) error {
 	_, err := q.db.Exec(ctx, promoteNextPrimaryClub, userID)
 	return err
+}
+
+const searchPeople = `-- name: SearchPeople :many
+SELECT p.id, p.full_name, p.avatar_url, COALESCE(p.level, 1)::bigint AS level, p.league_tier, COALESCE(p.xp, 0)::bigint AS xp,
+       EXISTS (SELECT 1 FROM public.social_graph g WHERE g.follower_id = $1 AND g.following_id = p.id)::bool AS following
+FROM public.profiles p
+WHERE p.id <> $1
+  AND ($2::text = ''
+       OR p.full_name ILIKE '%' || replace(replace(replace($2::text, '\', '\\'), '%', '\%'), '_', '\_') || '%'
+       OR lower(p.email) = lower($2::text))
+ORDER BY p.xp DESC NULLS LAST, p.id
+LIMIT $4::int OFFSET $3::int
+`
+
+type SearchPeopleParams struct {
+	UserID  *uuid.UUID `json:"user_id"`
+	Term    string     `json:"term"`
+	Skip    int32      `json:"skip"`
+	MaxRows int32      `json:"max_rows"`
+}
+
+type SearchPeopleRow struct {
+	ID         uuid.UUID `json:"id"`
+	FullName   *string   `json:"full_name"`
+	AvatarUrl  *string   `json:"avatar_url"`
+	Level      int64     `json:"level"`
+	LeagueTier *string   `json:"league_tier"`
+	Xp         int64     `json:"xp"`
+	Following  bool      `json:"following"`
+}
+
+// Name contains the term (wildcards literal), or the exact email; never the
+// caller. Top lifetime XP first.
+func (q *Queries) SearchPeople(ctx context.Context, arg SearchPeopleParams) ([]SearchPeopleRow, error) {
+	rows, err := q.db.Query(ctx, searchPeople,
+		arg.UserID,
+		arg.Term,
+		arg.Skip,
+		arg.MaxRows,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []SearchPeopleRow{}
+	for rows.Next() {
+		var i SearchPeopleRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.FullName,
+			&i.AvatarUrl,
+			&i.Level,
+			&i.LeagueTier,
+			&i.Xp,
+			&i.Following,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const totalXPBoard = `-- name: TotalXPBoard :many

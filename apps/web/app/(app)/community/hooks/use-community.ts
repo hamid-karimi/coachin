@@ -33,3 +33,32 @@ export function useSetPrimaryClub() {
 export function useLeaveClub(onDone?: () => void) {
   return $api.useMutation("delete", "/community/clubs/{id}/membership", useMutationFeedback(CLUB_KEYS, onDone));
 }
+
+export function useCircle() {
+  return $api.useSuspenseQuery("get", "/community/circle").data;
+}
+
+/** Search results; keeps showing the previous page while the next one loads. */
+export function usePeople(q: string, page: number) {
+  return $api.useQuery(
+    "get",
+    "/community/people",
+    { params: { query: { q, page } } },
+    { placeholderData: (prev) => prev },
+  );
+}
+
+/** Follows move the circle, search results, and the Circle board. */
+const FOLLOW_KEYS = [
+  ["get", "/community/circle"],
+  ["get", "/community/people"],
+  ["get", "/community/leaderboard"],
+];
+
+export function useFollow() {
+  return $api.useMutation("post", "/community/follows", useMutationFeedback(FOLLOW_KEYS));
+}
+
+export function useUnfollow() {
+  return $api.useMutation("delete", "/community/follows/{id}", useMutationFeedback(FOLLOW_KEYS));
+}

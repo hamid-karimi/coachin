@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canCoach, homeFor } from "./roles";
+import { canCoach, canTrain, homeFor } from "./roles";
 
 describe("roles", () => {
   it("lands pure coaches on /coaching and everyone else on /dashboard", () => {
@@ -12,5 +12,10 @@ describe("roles", () => {
   it("lets coach, both, and admin coach", () => {
     expect(["coach", "both", "admin"].every(canCoach)).toBe(true);
     expect(["student", null, undefined].some(canCoach)).toBe(false);
+  });
+
+  it("lets students, both, and admins have a coach", () => {
+    expect(["student", "both", "admin", null].every(canTrain)).toBe(true);
+    expect(canTrain("coach")).toBe(false);
   });
 });
