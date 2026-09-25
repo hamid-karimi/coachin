@@ -314,15 +314,16 @@ Order (dependencies first, risk front-loaded):
 
 ## Phase 7 — Go-live (S–M)
 
-- [ ] 7.1 `cmd/import-supabase` (one-time): users (UUID, email, bcrypt hash, verified
-      date), all public tables, storage objects → Garage. Dry run against a production
-      snapshot locally; verify counts + spot-check XP/streaks/photos.
+- [x] 7.1 `api import-supabase` (one-time; `make import-supabase [ARGS=-dry-run]`): users
+      (UUID, email, bcrypt hash, verified date), all shared public tables, storage objects
+      → Garage; refuses a non-empty target. `TestImportSupabase`. Runbook:
+      `deploy/README.md`. The dry run against a production snapshot happens in 7.2.
 - [ ] 7.2 Provision the VPS (Phase 6 runbook), point DNS, deploy, import production data
       during a short maintenance window.
 - [ ] 7.3 Smoke-test every QA journey on the live domain; old users log in with their
       existing passwords.
 - [ ] 7.4 Switch off Vercel and Supabase after a safe period (keep a final Supabase dump
-      archived). Delete `cmd/import-supabase`.
+      archived). Delete the `import-supabase` command.
 
 ---
 

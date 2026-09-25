@@ -5,6 +5,22 @@ branch · what was done · decisions · next steps. Rules in `CLAUDE.md` § Work
 
 ---
 
+## 2026-09-25 · #94 merged (5.2) · Phase 7.1 — Supabase importer
+
+**Done** (branch `claude/lucid-tesla-3737vk` → PR): `api import-supabase [-dry-run]`
+(`cmd/api/import_supabase.go`, `store.ImportSupabase`): auth.users → users (bcrypt kept,
+no-password → `!`), every shared public table via text COPY in one transaction
+(replication role), `#dup<n>` ledger relabel, sequences reset, photo keys copied from
+Supabase S3 to Garage, XP-vs-ledger check; refuses a non-empty target.
+`TestImportSupabase`. `make import-supabase ARGS=-dry-run`; `SUPABASE_*` in
+`.env.example` + the migrate service; runbook in the new `deploy/README.md`.
+
+**Decisions**: a subcommand of the API binary (not a separate cmd) so the VPS runs it from
+the image without Go.
+
+**Next steps**: 5.3 delete legacy/ + docs, monorepo tooling (root pnpm workspace +
+go.work, native `pnpm dev` with API_INTERNAL_URL), Phase 6.1–6.4, local run instructions.
+
 ## 2026-09-25 · #93 merged (5.1) · Phase 5.2 — security review
 
 **Done** (branch `claude/lucid-tesla-3737vk` → PR):
